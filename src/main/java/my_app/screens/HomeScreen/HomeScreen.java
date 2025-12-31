@@ -13,8 +13,8 @@ public class HomeScreen {
     }
 
     public Component render (){
-        return new Column(new ColumnProps(), new ColumnStyler().bgColor("blue"))
-                .child(new FlexView(new FlexViewProps().centerHorizontally(), new FlexViewStyler().bgColor("orange"))
+        return new Column(new ColumnProps(), new ColumnStyler().bgColor("#fff"))
+                .child(new GridFlow(new GridFlowProps().tileSize(200, 220).centerHorizontally().spacingOf(16))
                         .items(cardItemList,this::CardColumn)
                 );
     }
@@ -34,7 +34,7 @@ public class HomeScreen {
             new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas")
     );
     Component CardColumn(CardItem cardItem){
-        return new Column()
+        return new Column(new ColumnProps().centerHorizontally(), new ColumnStyler().bgColor("#fff").borderColor("black").borderWidth(1))
                 .child(new Image(cardItem.img, new ImageProps().size(100)))
                 .child(new Text(cardItem.title, new TextProps().fontSize(18).bold()))
                 .child(new Text(cardItem.desc,  new TextProps().fontSize(16)));
