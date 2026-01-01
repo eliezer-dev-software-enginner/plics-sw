@@ -20,21 +20,21 @@ public class HomeScreen {
     }
 
 
-    record CardItem(String img, String title, String desc){}
+    record CardItem(String img, String title, String desc, String destination){}
     List<CardItem> cardItemList = List.of(
-            new CardItem("/assets/venda.png", "Venda (F3)","Tela de vendas"),
-            new CardItem("/assets/ordem_servico.png", "Ordem de serviço (F5)","Tela de vendas"),
-            new CardItem("/assets/produtos.png", "Venda (F3)","Tela de vendas"),
-            new CardItem("/assets/clientes.png", "Ordem de serviço (F5)","Tela de vendas"),
-            new CardItem("/assets/contas_a_receber.png", "Venda (F3)","Tela de vendas"),
-            new CardItem("/assets/pdv.png", "Ordem de serviço (F5)","Tela de vendas"),
-            new CardItem("/assets/despesas.png", "Venda (F3)","Tela de vendas"),
-            new CardItem("/assets/compras.png", "Ordem de serviço (F5)","Tela de vendas"),
-            new CardItem("/assets/abertura.png", "Venda (F3)","Tela de vendas"),
-            new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas")
+            new CardItem("/assets/venda.png", "Venda (F3)","Tela de vendas","cad-produto"),
+            new CardItem("/assets/ordem_servico.png", "Ordem de serviço (F5)","Tela de vendas",null),
+            new CardItem("/assets/produtos.png", "Venda (F3)","Tela de vendas",null),
+            new CardItem("/assets/clientes.png", "Ordem de serviço (F5)","Tela de vendas",null),
+            new CardItem("/assets/contas_a_receber.png", "Venda (F3)","Tela de vendas",null),
+            new CardItem("/assets/pdv.png", "Ordem de serviço (F5)","Tela de vendas",null),
+            new CardItem("/assets/despesas.png", "Venda (F3)","Tela de vendas",null),
+            new CardItem("/assets/compras.png", "Ordem de serviço (F5)","Tela de vendas",null),
+            new CardItem("/assets/abertura.png", "Venda (F3)","Tela de vendas",null),
+            new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
     );
     Component CardColumn(CardItem cardItem){
-        return new Column(new ColumnProps().centerHorizontally(), new ColumnStyler().bgColor("#fff").borderColor("black").borderWidth(1))
+        return new Column(new ColumnProps().centerHorizontally().onClick(()-> router.spawnWindow(cardItem.destination)), new ColumnStyler().bgColor("#fff").borderColor("black").borderWidth(1))
                 .child(new Image(cardItem.img, new ImageProps().size(100)))
                 .child(new Text(cardItem.title, new TextProps().fontSize(18).bold()))
                 .child(new Text(cardItem.desc,  new TextProps().fontSize(16)));
