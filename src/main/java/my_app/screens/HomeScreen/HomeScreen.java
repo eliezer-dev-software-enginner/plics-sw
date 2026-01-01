@@ -1,6 +1,7 @@
 package my_app.screens.HomeScreen;
 
 import megalodonte.*;
+import megalodonte.components.*;
 
 import java.util.List;
 

@@ -1,6 +1,9 @@
 package my_app.screens.DetailScreen;
 
 import megalodonte.*;
+import megalodonte.components.Column;
+import megalodonte.components.Component;
+import megalodonte.components.Text;
 
 public class DetailScreen {
     Router router;

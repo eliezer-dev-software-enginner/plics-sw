@@ -2,6 +2,9 @@ package my_app.screens.profileScreen;
 
 import javafx.scene.paint.Color;
 import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.inputs.Input;
+import megalodonte.components.inputs.TextAreaInput;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.entypo.Entypo;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -27,6 +30,8 @@ public class ProdutoScreen {
 
     List<String> fornecedores = List.of("Fornecedor Padrão");
     State<String> fornecedorSelected = new State<>("Fornecedor Padrão");
+
+    State<String> observações = new State<>("");
 
 
     public Component render (){
@@ -86,7 +91,7 @@ public class ProdutoScreen {
                         .child(InputColumn("Comissão", descState))
                 )
                 .child(new Row(rowProps)
-                        .child(InputColumn("Observações", codigoBarrasState))
+                        .child(TextAreaColumn("Observações", observações))
                         .child(InputColumn("Estoque", descState))//fornecedor padrão
                 )
 
@@ -100,6 +105,12 @@ public class ProdutoScreen {
                         .items(list)
                         .value(stateSelected))
                 ;
+    }
+
+    Component TextAreaColumn(String label, State<String> inputState){
+        return new Column()
+                .child(new Text(label, new TextProps().fontSize(25)))
+                .child(new TextAreaInput(inputState,new InputProps().fontSize(20).height(140)));
     }
 
     Component InputColumn(String label, State<String> inputState){
