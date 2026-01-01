@@ -3,6 +3,9 @@ package my_app.screens.profileScreen;
 import javafx.scene.paint.Color;
 import megalodonte.*;
 import megalodonte.components.*;
+import megalodonte.components.Button;
+import megalodonte.components.Component;
+import megalodonte.components.Image;
 import megalodonte.components.inputs.Input;
 import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.props.CardProps;
@@ -10,6 +13,7 @@ import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.entypo.Entypo;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.List;
@@ -24,7 +28,9 @@ public class ProdutoScreen {
     }
 
     public Component render (){
-        return new Column(new ColumnProps().paddingAll(15))
+        return new Column(new ColumnProps().paddingAll(15), new ColumnStyler().bgColor("#fff"))
+                .child(Menu())
+                .child(new SpacerVertical(30))
                 .child(
                         new Row(new RowProps().paddingAll(20)
                                 .spacingOf(20), new RowStyler().borderWidth(1).borderColor("black").borderRadius(1))
@@ -38,15 +44,30 @@ public class ProdutoScreen {
                 .child(new Text("Dica 2: O sistema não permite gravar produtos diferentes com o mesmo código de barras!",new TextProps().fontSize(24).color("orange")));
     }
 
+    Component Menu(){
+        return new Row(new RowProps().spacingOf(20))
+                .child(MenuItem("Salvar (CTRL + S)", Entypo.SAVE, "green", ()->IO.println("save")))
+                .child(MenuItem("Cancelar (CTRL + C)", Entypo.REPLY, "red", ()->IO.println("cancel")));
+    }
+
+    Component MenuItem(String title,Ikon ikon,  String color, Runnable onClick){
+
+       var icon = Component.FromJavaFxNode(FontIcon.of(ikon, 50, Color.web(color)));
+
+        return new Card(new Column(new ColumnProps().centerHorizontally())
+                .child(new Clickable(icon).onClick(onClick::run))
+                .child(new Text(title, new TextProps().fontSize(19))));
+    }
 
     Component ContainerRight(){
 
         State<String> imagemState = new State<>("/assets/produto-generico.png");
 
         return new Card(
-                new Column()
+                new Column(new ColumnProps().centerHorizontally().spacingOf(15))
                     .child(new Text("Foto do produto",new TextProps().fontSize(20).bold()))
                     .child(new Image(imagemState, new ImageProps().size(120)))
+                        .child(new SpacerVertical().fill())
                     .child(new Button("Inserir imagem", new ButtonProps().fontSize(20).bgColor("#A6B1E1"))),
                 new CardProps().height(300).padding(20)
         );
@@ -91,13 +112,13 @@ public class ProdutoScreen {
 
     Component TextAreaColumn(String label, State<String> inputState){
         return new Column()
-                .child(new Text(label, new TextProps().fontSize(25)))
+                .child(new Text(label, new TextProps().fontSize(22)))
                 .child(new TextAreaInput(inputState,new InputProps().fontSize(20).height(140)));
     }
 
     Component InputColumn(String label, State<String> inputState){
         return new Column()
-                .child(new Text(label, new TextProps().fontSize(25)))
+                .child(new Text(label, new TextProps().fontSize(22)))
                 .child(new Input(inputState,new InputProps().fontSize(20).height(40)));
     }
 
@@ -107,7 +128,7 @@ public class ProdutoScreen {
     Component InputColumn(String label, State<String> inputState, Ikon icon){
             var fonticon = FontIcon.of(icon, 15, Color.web("green"));
 
-            var inputProps = new InputProps().fontSize(20).height(40);
+            var inputProps = new InputProps().fontSize(22).height(40);
 
             var input = icon == Entypo.CREDIT? new Input(inputState, inputProps)
                 .onChange(value -> {
@@ -120,7 +141,7 @@ public class ProdutoScreen {
                 }) : new Input(inputState, inputProps);
 
         return new Column()
-                    .child(new Text(label, new TextProps().fontSize(25)))
+                    .child(new Text(label, new TextProps().fontSize(22)))
                     .child(input.left(fonticon));
     }
 }
