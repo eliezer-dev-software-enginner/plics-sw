@@ -4,6 +4,7 @@ import megalodonte.*;
 import megalodonte.components.Column;
 import megalodonte.components.Component;
 import megalodonte.components.Text;
+import megalodonte.router.Router;
 
 public class DetailScreen {
     Router router;

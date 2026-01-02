@@ -2,6 +2,7 @@ package my_app.screens.HomeScreen;
 
 import megalodonte.*;
 import megalodonte.components.*;
+import megalodonte.router.Router;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class HomeScreen {
     List<CardItem> cardItemList = List.of(
             new CardItem("/assets/venda.png", "Venda (F3)","Tela de vendas","cad-produto"),
             new CardItem("/assets/ordem_servico.png", "Ordem de serviço (F5)","Tela de vendas",null),
-            new CardItem("/assets/produtos.png", "Venda (F3)","Tela de vendas",null),
+            new CardItem("/assets/produtos.png", "Produtos (F3)","Tela de produtos","cad-produtos/teste}"),
             new CardItem("/assets/clientes.png", "Ordem de serviço (F5)","Tela de vendas",null),
             new CardItem("/assets/contas_a_receber.png", "Venda (F3)","Tela de vendas",null),
             new CardItem("/assets/pdv.png", "Ordem de serviço (F5)","Tela de vendas",null),

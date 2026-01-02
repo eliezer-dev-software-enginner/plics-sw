@@ -9,6 +9,8 @@ import megalodonte.components.Image;
 import megalodonte.components.inputs.Input;
 import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.props.CardProps;
+import megalodonte.router.RouteParamsAware;
+import megalodonte.router.Router;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.entypo.Entypo;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -17,18 +19,27 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static my_app.screens.produtoScreen.ProdutoComponents.*;
 
-public class ProdutoScreen {
+public class ProdutoScreen implements RouteParamsAware {
     private Router router;
     private ProdutoScreenViewModel vm;
 
     public ProdutoScreen(Router router) {
+        this.router = router;
         this.vm = new ProdutoScreenViewModel();
     }
 
+    private String id;
+    @Override
+    public void onRouteParams(Map<String, String> params) {
+        this.id = params.get("id");
+    }
+
     public Component render (){
+        IO.println("[id]: " + id);
         return new Column(new ColumnProps().paddingAll(15), new ColumnStyler().bgColor("#fff"))
                 .c_child(Menu())
                 .c_child(new SpacerVertical(30))
@@ -49,11 +60,11 @@ public class ProdutoScreen {
     Component Menu(){
         return new Row(new RowProps().spacingOf(20))
                 .r_child(MenuItem("Novo", Entypo.ADD_TO_LIST, "green", () -> limpar()))
-                .r_child(MenuItem("Salvar", Entypo.SAVE, "green", () -> executar(vm::salvar)))
+                .r_child(MenuItem("Salvar (CTRL + S)", Entypo.SAVE, "green", () -> executar(vm::salvar)))
                 .r_child(MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(vm::atualizar)))
                 .r_child(MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(vm::excluir)))
                 .r_child(new SpacerHorizontal().fill())
-                .r_child(MenuItem("Sair", Entypo.REPLY, "red", () -> IO.println("A implementar")));
+                .r_child(MenuItem("Sair", Entypo.REPLY, "red", () -> router.closeSpawn("cad-produtos/"+id)));
     }
 
     Component MenuItem(String title,Ikon ikon,  String color, Runnable onClick){
@@ -65,6 +76,8 @@ public class ProdutoScreen {
                     .c_child(new Clickable(icon).onClick(onClick::run))
                     .c_child(new Text(title, new TextProps().fontSize(19))));
     }
+
+
 
     @FunctionalInterface
     interface Action {

@@ -42,7 +42,7 @@ public class Main extends Application {
     }
 
     public static void initializeScene(Stage stage) throws Exception {
-        stage.setTitle("Adb file pusher");
+        stage.setTitle("Erp local");
         //stage.setResizable(false);
 
         final var router = new AppRoutes().defineRoutes(stage);

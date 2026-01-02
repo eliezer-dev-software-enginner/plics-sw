@@ -41,7 +41,9 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-*.txt
+
 
 java_fx_modules
 build.gradle-funcionando_gera_fatjar.kts-draft
+*.txt
+*.db
