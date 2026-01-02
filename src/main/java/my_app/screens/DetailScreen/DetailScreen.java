@@ -13,7 +13,7 @@ public class DetailScreen {
 
     public Component render (){
         return new Column()
-                .child(new Text("Detail screen", new TextProps().fontSize(30))
+                .c_child(new Text("Detail screen", new TextProps().fontSize(30))
                 );
     }
 }

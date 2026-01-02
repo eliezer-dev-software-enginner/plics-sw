@@ -4,7 +4,7 @@ import javafx.stage.Stage;
 import megalodonte.Router;
 import my_app.screens.DetailScreen.DetailScreen;
 import my_app.screens.HomeScreen.HomeScreen;
-import my_app.screens.profileScreen.ProdutoScreen;
+import my_app.screens.produtoScreen.ProdutoScreen;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;

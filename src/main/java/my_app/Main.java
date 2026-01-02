@@ -3,6 +3,7 @@ package my_app;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import my_app.db.DBInitializer;
 import my_app.hotreload.CoesionApp;
 import my_app.hotreload.HotReload;
 import my_app.routes.AppRoutes;
@@ -19,6 +20,13 @@ public class Main extends Application {
 
     static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+
+        DBInitializer.init();
     }
 
     @Override

@@ -15,7 +15,7 @@ public class HomeScreen {
 
     public Component render (){
         return new Column(new ColumnProps(), new ColumnStyler().bgColor("#fff"))
-                .child(new GridFlow(new GridFlowProps().tileSize(200, 220).centerHorizontally().spacingOf(16))
+                .c_child(new GridFlow(new GridFlowProps().tileSize(200, 220).centerHorizontally().spacingOf(16))
                         .items(cardItemList,this::CardColumn)
                 );
     }
@@ -36,8 +36,8 @@ public class HomeScreen {
     );
     Component CardColumn(CardItem cardItem){
         return new Column(new ColumnProps().centerHorizontally().onClick(()-> router.spawnWindow(cardItem.destination)), new ColumnStyler().bgColor("#fff").borderColor("black").borderWidth(1))
-                .child(new Image(cardItem.img, new ImageProps().size(100)))
-                .child(new Text(cardItem.title, new TextProps().fontSize(18).bold()))
-                .child(new Text(cardItem.desc,  new TextProps().fontSize(16)));
+                .c_child(new Image(cardItem.img, new ImageProps().size(100)))
+                .c_child(new Text(cardItem.title, new TextProps().fontSize(18).bold()))
+                .c_child(new Text(cardItem.desc,  new TextProps().fontSize(16)));
     }
 }

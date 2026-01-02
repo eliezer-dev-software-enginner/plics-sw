@@ -62,6 +62,9 @@ dependencies {
     implementation("org.kordamp.ikonli:ikonli-antdesignicons-pack:12.4.0")
     implementation("org.kordamp.ikonli:ikonli-entypo-pack:12.4.0")
 
+    //sqlite
+    implementation("org.xerial:sqlite-jdbc:3.45.1.0")
+
     //implementation("megalodonte:megalodonte-previewer-components:1.0.0")
 
     // Dependências JavaFX removidas (agora gerenciadas pelo bloco 'javafx { ... }')
