@@ -27,8 +27,8 @@ public class AutenticacaoScreen {
                                         new TextProps().color("#94a3b8").fontSize(20)))
                                 .c_child(new SpacerVertical(10))
                                 .c_child(columnImponent("Chave de Licença", licensa, "XXXX-XXXX-XXXX-XXXX"))
-                                .c_child(columnImponent("Usuário / Login", licensa, "Seu usuário"))
-                                .c_child(columnImponent("Senha", licensa,"••••••••"))
+                                .c_child(columnImponent("Usuário / Login", login, "Seu usuário"))
+                                .c_child(columnImponent("Senha", senha,"••••••••"))
                                 .c_child(new Button("Entrar no Sistema",
                                         new ButtonProps().fillWidth().height(45).bgColor("#2563eb")
                                                 .fontSize(20).textColor("white"))),
