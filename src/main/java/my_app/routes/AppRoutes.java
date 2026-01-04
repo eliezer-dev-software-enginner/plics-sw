@@ -2,8 +2,8 @@ package my_app.routes;
 
 import javafx.stage.Stage;
 import megalodonte.router.Router;
-import my_app.screens.DetailScreen.AutenticacaoScreen;
-import my_app.screens.DetailScreen.DetailScreen;
+import my_app.screens.authScreen.AutenticacaoScreen;
+import my_app.screens.authScreen.DetailScreen;
 import my_app.screens.HomeScreen.HomeScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;
 

@@ -9,6 +9,7 @@ import megalodonte.components.Image;
 import megalodonte.components.inputs.Input;
 import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.props.CardProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.RouteParamsAware;
 import megalodonte.router.Router;
 import org.kordamp.ikonli.Ikon;
@@ -52,8 +53,8 @@ public class ProdutoScreen implements RouteParamsAware {
                 )
                 .c_child(new SpacerVertical(30))
                 .c_child(new Text("Informaçoẽs", new TextProps().fontSize(30)))
-                .c_child(new Text("Dica 1: Pressione CTRL + G para gerar o código de barras",new TextProps().fontSize(24).color("orange")))
-                .c_child(new Text("Dica 2: O sistema não permite gravar produtos diferentes com o mesmo código de barras!",new TextProps().fontSize(24).color("orange")));
+                .c_child(new Text("Dica 1: Pressione CTRL + G para gerar o código de barras",new TextProps().fontSize(24)))
+                .c_child(new Text("Dica 2: O sistema não permite gravar produtos diferentes com o mesmo código de barras!",new TextProps().fontSize(24)));
     }
 
     //TODO: opções de Editar e Excluir só aparecem ao buscar produto

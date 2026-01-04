@@ -2,6 +2,7 @@ package my_app.screens.HomeScreen;
 
 import megalodonte.*;
 import megalodonte.components.*;
+import megalodonte.props.TextProps;
 import megalodonte.router.Router;
 
 import java.util.List;

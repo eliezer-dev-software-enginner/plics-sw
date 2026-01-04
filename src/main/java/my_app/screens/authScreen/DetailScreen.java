@@ -1,9 +1,9 @@
-package my_app.screens.DetailScreen;
+package my_app.screens.authScreen;
 
-import megalodonte.*;
 import megalodonte.components.Column;
 import megalodonte.components.Component;
 import megalodonte.components.Text;
+import megalodonte.props.TextProps;
 import megalodonte.router.Router;
 
 public class DetailScreen {

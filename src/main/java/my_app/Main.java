@@ -3,6 +3,8 @@ package my_app;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import megalodonte.theme.ThemeManager;
+import my_app.core.Themes;
 import my_app.db.DBInitializer;
 import my_app.hotreload.CoesionApp;
 import my_app.hotreload.HotReload;
@@ -45,7 +47,10 @@ public class Main extends Application {
         stage.setTitle("Erp local");
         //stage.setResizable(false);
 
+        ThemeManager.setTheme(Themes.DARK);
+
         final var router = new AppRoutes().defineRoutes(stage);
+
 
         final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
 
