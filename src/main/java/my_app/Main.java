@@ -47,7 +47,7 @@ public class Main extends Application {
         stage.setTitle("Erp local");
         //stage.setResizable(false);
 
-        ThemeManager.setTheme(Themes.DARK);
+        ThemeManager.setTheme(Themes.LIGHT);
 
         final var router = new AppRoutes().defineRoutes(stage);
 

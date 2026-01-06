@@ -8,6 +8,18 @@ public class CategoriaModel {
     public String nome;
     public Long dataCriacao;
 
+    public CategoriaModel(){}
+
+    public CategoriaModel(Long id, String nome, Long dataCriacao){
+        this.id = id;
+        this(nome,dataCriacao);
+    }
+
+    public CategoriaModel(String nome, Long dataCriacao){
+        this.nome = nome;
+        this.dataCriacao = dataCriacao;
+    }
+
     public static CategoriaModel fromResultSet(ResultSet rs) throws SQLException {
         var model  = new CategoriaModel();
         model.id = rs.getLong("id");
