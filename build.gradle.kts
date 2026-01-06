@@ -1,13 +1,10 @@
 plugins {
     id("java")
     id("maven-publish")
+    id("application")
 
     // 🛑 CORREÇÃO: Usando o ID e a versão CORRETOS conforme a documentação oficial.
     id("org.openjfx.javafxplugin") version "0.1.0"
-
-    // 🔥 SHADOW (fat jar)
-    //id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.gradleup.shadow") version "8.3.5"
 }
 
 group = "megalodonte"
@@ -72,6 +69,10 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("my_app.Main")
 }
 
 tasks.jar {
