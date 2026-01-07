@@ -5,6 +5,8 @@ import megalodonte.components.*;
 import megalodonte.props.TextProps;
 import megalodonte.props.TextVariant;
 import megalodonte.router.Router;
+import megalodonte.theme.Theme;
+import megalodonte.theme.ThemeManager;
 
 public class AccessScreen {
     Router router;
@@ -12,6 +14,8 @@ public class AccessScreen {
     public AccessScreen(Router router) {
         this.router = router;
     }
+
+    private Theme theme = ThemeManager.theme();
 
     public Component render (){
         return new Column(new ColumnProps().centerHorizontally()).c_child(
@@ -21,7 +25,12 @@ public class AccessScreen {
                         .c_child(new Text("Acesso padrão configurado como", new TextProps().variant(TextVariant.BODY)))
                         .c_child(textRow()))
                 .c_child(new SpacerVertical(20))
-                .c_child(new Button("Entrar no sistema", new ButtonProps().onClick(()->{})))
+                .c_child(new Button("Entrar no sistema",
+                        new ButtonProps()
+                                .bgColor(theme.colors().primary())
+                                .textColor("#fff")
+                                .fontSize(theme.typography().body())
+                                .onClick(()->router.navigateTo("home"))))
                 ;
     }
 
