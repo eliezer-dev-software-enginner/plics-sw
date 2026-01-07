@@ -19,6 +19,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class Components {
 
     static Theme theme = ThemeManager.theme();
+    
     public static Component errorText(String message){
         return new Column(new ColumnProps(), new ColumnStyler().bgColor("white")).c_child(new SpacerVertical(5))
                 .c_child(new Text(message, new TextProps().variant(TextVariant.SUBTITLE), new TextStyler().color("red")));
@@ -31,16 +32,7 @@ public class Components {
                 .r_child(MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)))
                 .r_child(new SpacerHorizontal().fill())
                 //.r_child(MenuItem("Sair", Entypo.REPLY, "red", () -> router.closeSpawn("cad-produtos/"+id)));
-        ;
-    }
-
-    private static void executar(Action action) {
-        try {
-            action.run();
-            IO.println("Operação realizada com sucesso");
-        } catch (Exception e) {
-            IO.println(e.getMessage());
-        }
+                ;
     }
 
     public static Component MenuItem(String title, Ikon ikon, String color, Runnable onClick){
@@ -52,15 +44,9 @@ public class Components {
                         .c_child(icon)
                         .c_child(new SpacerVertical(6))
                         .c_child(new Text(title, new TextProps().variant(TextVariant.BODY)))
-            ), onClick
+        ), onClick
         );
     }
-
-    @FunctionalInterface
-    interface Action {
-        void run() throws Exception;
-    }
-
 
 
     public static Component searchInput(State<String> stateInput, String placeholder){
@@ -109,20 +95,6 @@ public class Components {
     }
 
     /**
-     * Exemplo de Row com métodos width e maxWidth.
-     */
-    public static Component rowWithWidthConstraints() {
-        return new Row(new RowProps()
-            .width(300)
-            .maxWidth(500)
-            .spacingOf(10)
-            .paddingAll(15))
-            .r_child(new Text("Conteúdo com largura fixa"))
-            .r_child(new SpacerHorizontal(10))
-            .r_child(new Text("Mais conteúdo"));
-    }
-
-    /**
      * Exemplo de formulário com larguras controladas.
      */
     public static Component formRowWithConstraints(String labelText, Component inputComponent) {
@@ -147,32 +119,6 @@ public class Components {
             .c_child(new SpacerVertical(10))
             .c_child(new Text("Conteúdo da coluna com largura fixa."))
             .c_child(clickableButton("Ação Principal", () -> IO.println("Botão principal clicado")));
-    }
-
-    /**
-     * Exemplo de layout responsivo com larguras.
-     */
-    public static Component responsiveLayout() {
-        return new Column(new ColumnProps()
-            .width(800)
-            .maxWidth(1200)
-            .spacingOf(20)
-            .paddingAll(25))
-            .c_child(new Text("Layout Responsivo", new TextProps().variant(TextVariant.TITLE)))
-            .c_child(new Row(new RowProps()
-                .width(750)
-                .spacingOf(10))
-                .r_child(new Column(new ColumnProps()
-                    .width(350)
-                    .spacingOf(10))
-                    .c_child(new Text("Coluna Esquerda"))
-                    .c_child(clickableButton("Opção 1", () -> IO.println("Opção 1"))))
-                .r_child(new SpacerHorizontal(50))
-                .r_child(new Column(new ColumnProps()
-                    .width(350)
-                    .spacingOf(10))
-                    .c_child(new Text("Coluna Direita"))
-                    .c_child(clickableButton("Opção 2", () -> IO.println("Opção 2")))));
     }
 
     /**
@@ -212,16 +158,17 @@ public class Components {
             .spacingOf(10))
             .c_child(new Row(new RowProps()
                 .width(320)
-                .centerHorizontally()
+                .centerHorizontally())
                 .r_child(new Text("Título Alinhado", new TextProps().variant(TextVariant.SUBTITLE))))
             .c_child(new Row(new RowProps()
                 .width(320)
-                .centerHorizontally()
-                .r_child(clickableButton("Botão Centralizado", () -> IO.println("Botão centralizado clicado")))));
+                .centerHorizontally())
+                .r_child(new Button("Botão Centralizado", new ButtonProps().primary().onClick(() -> IO.println("Botão centralizado clicado"))))));
     }
 
+
     /**
-     * Exemplos de botões com variantes de tema.
+     * Exemplo de botões com variantes de tema.
      */
     public static Component themeButtons() {
         return new Column(new ColumnProps()
@@ -233,100 +180,23 @@ public class Components {
                 .r_child(new Button("Primary", new ButtonProps().primary().height(45).onClick(() -> IO.println("Primary clicked"))))
                 .r_child(new Button("Secondary", new ButtonProps().secondary().height(45).onClick(() -> IO.println("Secondary clicked"))))
                 .r_child(new Button("Success", new ButtonProps().success().height(45).onClick(() -> IO.println("Success clicked")))))
-            .c_child(new Button("Warning", new ButtonProps().warning().height(45).onClick(() -> IO.println("Warning clicked")))))
-            .c_child(new Button("Danger", new ButtonProps().danger().height(45).onClick(() -> IO.println("Danger clicked")))))
-            .c_child(new Button("Ghost", new ButtonProps().ghost().height(45).onClick(() -> IO.println("Ghost clicked")))))
-            .c_child(new Button("Disabled", new ButtonProps().disabled().height(45).onClick(() -> {})))
-            .c_child(new SpacerHorizontal(10))
-            .r_child(new Button("Custom", new ButtonProps().bgColor(theme.colors().secondary()).height(45).onClick(() -> IO.println("Custom clicked")))));
+            .c_child(new Button("Warning", new ButtonProps().warning().height(45).onClick(() -> IO.println("Warning clicked"))));
     }
 
-    /**
-     * Exemplo de botões com variantes e larguras diferentes.
-     */
-    public static Component sizedButtons() {
-        return new Column(new ColumnProps()
-            .spacingOf(15)
-            .width(400))
-            .c_child(new Text("Botões com Tamanhos", new TextProps().variant(TextVariant.TITLE)))
-            .c_child(new Row(new RowProps()
-                .spacingOf(10))
-                .r_child(new Button("Pequeno", new ButtonProps()
-                    .primary()
-                    .fontSize(12)
-                    .height(35)
-                    .onClick(() -> IO.println("Small button clicked"))))
-                .r_child(new Button("Médio", new ButtonProps()
-                    .primary()
-                    .fontSize(14)
-                    .height(45)
-                    .onClick(() -> IO.println("Medium button clicked"))))
-                .r_child(new Button("Grande", new ButtonProps()
-                    .primary()
-                    .fontSize(16)
-                    .height(55)
-                    .onClick(() -> IO.println("Large button clicked")))))
-            .c_child(new Button("Largo", new ButtonProps()
-                    .primary()
-                    .fontSize(14)
-                    .fillWidth()
-                    .height(45)
-                    .onClick(() -> IO.println("Full width button clicked")))));
-    }
 
-    /**
-     * Exemplo de botões com icons.
-     */
-    public static Component iconButtons() {
-        return new Column(new ColumnProps()
-            .spacingOf(15)
-            .width(400))
-            .c_child(new Text("Botões com Ícones", new TextProps().variant(TextVariant.TITLE)))
-            .c_child(new Row(new RowProps()
-                .spacingOf(10))
-                .r_child(new Button("Success", new ButtonProps()
-                    .success()
-                    .height(40)
-                    .onClick(() -> IO.println("Success with icon clicked"))))
-                .r_child(new Button("Warning", new ButtonProps()
-                    .warning()
-                    .height(40)
-                    .onClick(() -> IO.println("Warning with icon clicked"))))))
-            .c_child(new Row(new RowProps()
-                .spacingOf(10))
-                .r_child(new Button("Danger", new ButtonProps()
-                    .danger()
-                    .height(40)
-                    .onClick(() -> IO.println("Danger with icon clicked"))))
-                .r_child(new Button("Ghost", new ButtonProps()
-                    .ghost()
-                    .height(40)
-                    .onClick(() -> IO.println("Ghost with icon clicked")))))));
-    }
 
-    /**
-     * Exemplo de formulário com botões temáticos.
-     */
-    public static Component formWithButtons() {
-        return new Card(new Column(new ColumnProps()
-            .paddingAll(20)
-            .spacingOf(15))
-            .c_child(new Text("Formulário Temático", new TextProps().variant(TextVariant.TITLE)))
-            .c_child(formRowWithConstraints("Nome:", new Input(megalodonte.State.of(""), 
-                new megalodonte.InputProps().width(200).placeHolder("Digite seu nome"))))
-            .c_child(formRowWithConstraints("Email:", new Input(megalodonte.State.of(""), 
-                new megalodonte.InputProps().width(200).placeHolder("Digite seu email"))))
-            .c_child(new Row(new RowProps()
-                .spacingOf(10)
-                .r_child(new Button("Cancelar", new ButtonProps()
-                    .secondary()
-                    .height(45)
-                    .onClick(() -> IO.println("Cancel clicked")))))
-                .r_child(new Button("Salvar", new ButtonProps()
-                    .primary()
-                    .height(45)
-                    .fillWidth()
-                    .onClick(() -> IO.println("Save clicked")))))));
-    }
+@FunctionalInterface
+interface Action {
+    void run() throws Exception;
 }
+
+
+private static void executar(Action action) {
+        try {
+            action.run();
+            IO.println("Operation completed successfully");
+        } catch (Exception e) {
+            IO.println("Error: " + e.getMessage());
+        }
+    }
 }
