@@ -65,6 +65,7 @@ public class AutenticacaoScreen {
         var value = licensa.get();
         try {
             new LicensaRepository().salvar(value);
+            router.navigateTo("access");
         } catch (SQLException e) {
             IO.println(e.getMessage());
             //[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: licensas.valor)

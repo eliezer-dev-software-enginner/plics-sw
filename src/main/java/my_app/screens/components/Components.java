@@ -107,4 +107,116 @@ public class Components {
                 .activeColor("rgba(0,0,0,0.06)")
         );
     }
+
+    /**
+     * Exemplo de Row com métodos width e maxWidth.
+     */
+    public static Component rowWithWidthConstraints() {
+        return new Row(new RowProps()
+            .width(300)
+            .maxWidth(500)
+            .spacingOf(10)
+            .paddingAll(15))
+            .r_child(new Text("Conteúdo com largura fixa"))
+            .r_child(new SpacerHorizontal(10))
+            .r_child(new Text("Mais conteúdo"));
+    }
+
+    /**
+     * Exemplo de formulário com larguras controladas.
+     */
+    public static Component formRowWithConstraints(String labelText, Component inputComponent) {
+        return new Row(new RowProps()
+            .spacingOf(10)
+            .width(400)
+            .paddingAll(5))
+            .r_child(new Text(labelText, new TextProps().variant(TextVariant.BODY)))
+            .r_child(inputComponent);
+    }
+
+    /**
+     * Exemplo de coluna com largura e espaçamento controlados.
+     */
+    public static Component columnWithWidthConstraints() {
+        return new Column(new ColumnProps()
+            .width(300)
+            .maxWidth(500)
+            .spacingOf(15)
+            .paddingAll(20))
+            .c_child(new Text("Título da Coluna", new TextProps().variant(TextVariant.SUBTITLE)))
+            .c_child(new SpacerVertical(10))
+            .c_child(new Text("Conteúdo da coluna com largura fixa."))
+            .c_child(clickableButton("Ação Principal", () -> IO.println("Botão principal clicado")));
+    }
+
+    /**
+     * Exemplo de layout responsivo com larguras.
+     */
+    public static Component responsiveLayout() {
+        return new Column(new ColumnProps()
+            .width(800)
+            .maxWidth(1200)
+            .spacingOf(20)
+            .paddingAll(25))
+            .c_child(new Text("Layout Responsivo", new TextProps().variant(TextVariant.TITLE)))
+            .c_child(new Row(new RowProps()
+                .width(750)
+                .spacingOf(10))
+                .r_child(new Column(new ColumnProps()
+                    .width(350)
+                    .spacingOf(10))
+                    .c_child(new Text("Coluna Esquerda"))
+                    .c_child(clickableButton("Opção 1", () -> IO.println("Opção 1"))))
+                .r_child(new SpacerHorizontal(50))
+                .r_child(new Column(new ColumnProps()
+                    .width(350)
+                    .spacingOf(10))
+                    .c_child(new Text("Coluna Direita"))
+                    .c_child(clickableButton("Opção 2", () -> IO.println("Opção 2")))));
+    }
+
+    /**
+     * Exemplo de alinhamento horizontal centralizado.
+     */
+    public static Component centeredRow() {
+        return new Row(new RowProps()
+            .width(400)
+            .spacingOf(15)
+            .centerHorizontally()
+            .paddingAll(10))
+            .r_child(new Text("Item 1"))
+            .r_child(new Text("Item 2"))
+            .r_child(new Text("Item 3"));
+    }
+
+    /**
+     * Exemplo de alinhamento vertical centralizado.
+     */
+    public static Component centeredColumn() {
+        return new Column(new ColumnProps()
+            .width(300)
+            .spacingOf(20)
+            .centerVertically()
+            .paddingAll(15))
+            .c_child(new Text("Topo"))
+            .c_child(new Text("Meio"))
+            .c_child(new Text("Fundo"));
+    }
+
+    /**
+     * Exemplo de card com alinhamento controlado.
+     */
+    public static Component alignedCard() {
+        return new Card(new Column(new ColumnProps()
+            .width(350)
+            .spacingOf(10))
+            .c_child(new Row(new RowProps()
+                .width(320)
+                .centerHorizontally())
+                .r_child(new Text("Título Alinhado", new TextProps().variant(TextVariant.SUBTITLE))))
+            .c_child(new Row(new RowProps()
+                .width(320)
+                .centerHorizontally())
+                .r_child(clickableButton("Botão Centralizado", () -> IO.println("Botão centralizado clicado")))));
+    }
 }
