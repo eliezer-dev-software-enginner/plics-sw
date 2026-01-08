@@ -59,10 +59,8 @@ public class ProdutoScreen {
         }
         
         try {
-            executar(() -> {
-                vm.buscar();
-                IO.println("Produto carregado para edição");
-            });
+            vm.buscar();
+            IO.println("Produto carregado para edição");
         } catch (Exception e) {
             IO.println("Erro ao buscar produto: " + e.getMessage());
         }
@@ -76,12 +74,12 @@ public class ProdutoScreen {
         }
         
         try {
-            executar(() -> {
+
                 vm.excluir();
                 vm.refreshProdutos();
                 limparFormulario();
                 IO.println("Produto excluído com sucesso");
-            });
+
         } catch (Exception e) {
             IO.println("Erro ao excluir produto: " + e.getMessage());
         }
@@ -152,12 +150,7 @@ public class ProdutoScreen {
                                 .bgColor("#10b981")
                                 .textColor("white")
                                 .fontSize(16)
-                                .onClick(() -> executar(() -> {
-                                    vm.salvar();
-                                    vm.refreshProdutos();
-                                    limparFormulario();
-                                    IO.println("Produto salvo com sucesso");
-                                }))))
+                                .onClick(() -> handleSalvar())))
                 .r_child(new Button("Limpar", 
                         new ButtonProps()
                                 .fillWidth()
@@ -165,7 +158,19 @@ public class ProdutoScreen {
                                 .bgColor("#6b7280")
                                 .textColor("white")
                                 .fontSize(16)
-                                .onClick(this::limparFormulario)));
+                                .onClick(this::limparFormulario))
+                );
+    }
+
+    private void handleSalvar() {
+        try{
+            vm.salvar();
+            vm.refreshProdutos();
+            limparFormulario();
+            IO.println("Produto salvo com sucesso");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -174,14 +179,6 @@ public class ProdutoScreen {
         void run() throws Exception;
     }
 
-    private void executar(Action action) {
-        try {
-            action.run();
-            IO.println("Operação realizada com sucesso");
-        } catch (Exception e) {
-            IO.println(e.getMessage());
-        }
-    }
 
     private void limparFormulario() {
         vm.codigoBarras.set("");
