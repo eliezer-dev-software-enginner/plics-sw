@@ -19,7 +19,7 @@ public class AppRoutes {
                 new Router.Route("cad-produtos/${id}",router-> new ProdutoScreen(router), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
                 new Router.Route("categoria",router-> new CategoriaScreen(router), new Router.RouteProps(1000, 700, "Gerenciamento de categorias", false))
         );
-        return new Router(routes, "auth", stage);
+        return new Router(routes, "home", stage);
     }
 }
 
