@@ -23,12 +23,15 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final State<String> codigoBarras = new State<>("123456789");
     public final State<String> descricao = new State<>("");
     public final State<String> precoCompra = new State<>("0");
+    public final State<String> precoVenda = new State<>("0");
+    
+    // Store raw numeric values
+    private BigDecimal rawPrecoCompra = BigDecimal.ZERO;
+    private BigDecimal rawPrecoVenda = BigDecimal.ZERO;
 
     // depois vira ComputedState
     public final State<String> margem = new State<>("0");
     public final State<String> lucro = new State<>("0");
-
-    public final State<String> precoVenda = new State<>("0");
 
     public final State<String> comissao = new State<>("");
     public final State<String> garantia = new State<>("");
@@ -53,8 +56,8 @@ public class ProdutoScreenViewModel extends ViewModel {
         var p = new ProdutoModel();
         p.codigoBarras = codigoBarras.get();
         p.descricao = descricao.get();
-        p.precoCompra = parseMonetario(precoCompra.get());
-        p.precoVenda = parseMonetario(precoVenda.get());
+        p.precoCompra = parseMonetarioRaw(precoCompra.get());
+        p.precoVenda = parseMonetarioRaw(precoVenda.get());
         p.unidade = unidadeSelected.get();
         p.categoriaId = 1L;   // temporário
         p.fornecedorId = 1L;  // temporário
@@ -133,20 +136,29 @@ public class ProdutoScreenViewModel extends ViewModel {
         loadProdutos();
     }
 
-    private BigDecimal parseMonetario(String valorMonetario) {
+    public void updateRawPrecos(BigDecimal precoCompraRaw, BigDecimal precoVendaRaw) {
+        this.rawPrecoCompra = precoCompraRaw;
+        this.rawPrecoVenda = precoVendaRaw;
+    }
+
+    private BigDecimal parseMonetarioRaw(String valorMonetario) {
         if (valorMonetario == null || valorMonetario.trim().isEmpty()) {
             return BigDecimal.ZERO;
         }
         
         try {
-            // Remove "R$", espaços e pontos de milhar, substitui vírgula por ponto
-            String limpo = valorMonetario
-                    .replace("R$", "")
-                    .replace(" ", "")
-                    .replace(".", "")
-                    .replace(",", ".");
+            // Se já vier formatado como BRL, remove formatação
+            if (valorMonetario.contains("R$")) {
+                String limpo = valorMonetario
+                        .replace("R$", "")
+                        .replace(" ", "")
+                        .replace(".", "")
+                        .replace(",", ".");
+                return new BigDecimal(limpo);
+            }
             
-            return new BigDecimal(limpo);
+            // Se for apenas números (do input sem formatação), converte direto
+            return new BigDecimal(valorMonetario);
         } catch (NumberFormatException e) {
             return BigDecimal.ZERO;
         }
