@@ -9,6 +9,15 @@ public class FornecedorModel {
     public String cpfCnpj;
     public Long dataCriacao;
 
+    public FornecedorModel() {}
+
+    public FornecedorModel(Long id, String nome, String cpfCnpj, Long dataCriacao) {
+        this.id = id;
+        this.nome = nome;
+        this.cpfCnpj = cpfCnpj;
+        this.dataCriacao = dataCriacao;
+    }
+
     public static FornecedorModel fromResultSet(ResultSet rs) throws SQLException {
         var model = new FornecedorModel();
         model.id = rs.getLong("id");

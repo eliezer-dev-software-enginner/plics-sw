@@ -1,6 +1,7 @@
 package my_app.db.repositories;
 
 import my_app.db.DB;
+import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
 
 import java.sql.*;
@@ -14,29 +15,29 @@ public class FornecedorRepository {
     }
 
     // CREATE
-    public FornecedorModel salvar(FornecedorModel model) throws SQLException {
+    public FornecedorModel salvar(FornecedorDto dto) throws SQLException {
         String sql = """
         INSERT INTO fornecedor 
         (nome, cpfCnpj, data_criacao) VALUES (?,?,?)
         """;
 
-        long dataCriacao = model.dataCriacao != null ? model.dataCriacao : System.currentTimeMillis();
+        long dataCriacao = dto.dataCriacao() != null ? dto.dataCriacao() : System.currentTimeMillis();
 
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, model.nome);
-            ps.setString(2, model.cpfCnpj);
+            ps.setString(1, dto.nome());
+            ps.setString(2, dto.cnpj());
             ps.setLong(3, dataCriacao);
             ps.executeUpdate();
             
-            // Recupera o ID gerado
+            // Recupera o ID gerado e cria nova instância
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    model.id = generatedKeys.getLong(1);
-                    model.dataCriacao = dataCriacao;
+                    long idGerado = generatedKeys.getLong(1);
+                    return new FornecedorModel(idGerado, dto.nome(), dto.cnpj(), dataCriacao);
                 }
             }
         }
-        return model;
+        throw new SQLException("Falha ao recuperar ID gerado");
     }
 
     public List<FornecedorModel> listar() throws SQLException {
