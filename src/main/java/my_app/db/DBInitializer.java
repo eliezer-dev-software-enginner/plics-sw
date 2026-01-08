@@ -59,6 +59,16 @@ public final class DBInitializer {
                     )
                 """);
 
+                st.execute("""
+                    CREATE TABLE IF NOT EXISTS usuarios (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT NOT NULL,
+                        senha TEXT NOT NULL,
+                        cargo TEXT NOT NULL,
+                        data_criacao INTEGER NOT NULL
+                    )
+                """);
+
             }
             
             // Inserir dados padrão na primeira execução
@@ -80,6 +90,20 @@ public final class DBInitializer {
         // Verificar se já existe fornecedor padrão
         if (!existeFornecedorPadrao(conn)) {
             inserirFornecedorPadrao(conn);
+        }
+
+        if (!existeLoginPadrao(conn)) {
+            inserirLoginPadrao(conn);
+        }
+    }
+
+    private static boolean existeLoginPadrao(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM usuarios WHERE nome = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "admin");
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
         }
     }
     
@@ -117,6 +141,17 @@ public final class DBInitializer {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "Fornecedor Padrão");
             ps.setLong(2, System.currentTimeMillis());
+            ps.executeUpdate();
+        }
+    }
+
+    private static void inserirLoginPadrao(Connection conn) throws SQLException {
+        String sql = "INSERT INTO usuarios (nome, senha, cargo, data_criacao) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "admin");
+            ps.setString(2, "1234");
+            ps.setString(3, "admin");
+            ps.setLong(4, System.currentTimeMillis());
             ps.executeUpdate();
         }
     }
