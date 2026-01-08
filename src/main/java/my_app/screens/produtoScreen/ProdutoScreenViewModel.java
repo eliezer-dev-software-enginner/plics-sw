@@ -147,18 +147,23 @@ public class ProdutoScreenViewModel extends ViewModel {
         }
         
         try {
-            // Se já vier formatado como BRL, remove formatação
-            if (valorMonetario.contains("R$")) {
-                String limpo = valorMonetario
-                        .replace("R$", "")
-                        .replace(" ", "")
-                        .replace(".", "")
-                        .replace(",", ".");
-                return new BigDecimal(limpo);
+            // Remove todos os caracteres não numéricos exceto vírgula e ponto
+            String limpo = valorMonetario.replaceAll("[^0-9.,]", "");
+            
+            // Se tiver vírgula, remove pontos (milhar) e substitui vírgula por ponto (decimal)
+            if (limpo.contains(",")) {
+                limpo = limpo.replace(".", "").replace(",", ".");
             }
             
-            // Se for apenas números (do input sem formatação), converte direto
-            return new BigDecimal(valorMonetario);
+            // Remove ponto decimal duplicado se houver
+            int lastDotIndex = limpo.lastIndexOf(".");
+            if (lastDotIndex > 0 && limpo.indexOf(".") != lastDotIndex) {
+                limpo = limpo.substring(0, lastDotIndex).replace(".", "") + limpo.substring(lastDotIndex);
+            }
+            
+            if (limpo.isEmpty()) return BigDecimal.ZERO;
+            
+            return new BigDecimal(limpo);
         } catch (NumberFormatException e) {
             return BigDecimal.ZERO;
         }
