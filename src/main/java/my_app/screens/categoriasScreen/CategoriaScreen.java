@@ -14,6 +14,7 @@ import megalodonte.router.Router;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.models.CategoriaModel;
+import my_app.db.repositories.CategoriaRepository;
 import my_app.screens.components.Components;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public class CategoriaScreen {
     }
 
     private Theme theme = ThemeManager.theme();
+
+    private CategoriaRepository categoriaRepository = new CategoriaRepository();
 
     public Component render() {
         return new Column(new ColumnProps().paddingAll(25), new ColumnStyler().bgColor(theme.colors().background()))
@@ -80,14 +83,24 @@ public class CategoriaScreen {
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                         .r_child(new Input(nome, new InputProps().height(45).fontSize(18).placeHolder("Ex: Eletrônicos")))
                         .r_child(new Button(btnText, new ButtonProps().fillWidth().height(45).bgColor("#2563eb").fontSize(20).textColor("white")
-                                .onClick(()-> {
-                                   String value = nome.get();
-                                    IO.println("Nome: " + value);
-                                    categoriasObservable.add(new CategoriaModel(value.trim(), System.currentTimeMillis()));
-                                })))
+                                .onClick(this::handleAdd)))
                 ));
     }
 
+    private void handleAdd(){
+        String value = nome.get();
+        IO.println("Nome: " + value);
+
+        var model = new CategoriaModel(value.trim(), System.currentTimeMillis());
+
+        try{
+            var id = categoriaRepository.salvar(model);
+            categoriasObservable.add(new CategoriaModel(value.trim(), System.currentTimeMillis()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     Component table() {
         TableView<CategoriaModel> table = new TableView<>();

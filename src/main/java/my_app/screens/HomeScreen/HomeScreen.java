@@ -21,13 +21,13 @@ public class HomeScreen {
 
     public Component render (){
         return new Column(new ColumnProps(), new ColumnStyler().bgColor("#fff"))
-                .c_child(Component.FromJavaFxNode(menu()))
+                .c_child(Component.FromJavaFxNode(menuBar()))
                 .c_child(new GridFlow(new GridFlowProps().tileSize(200, 220).centerHorizontally().spacingOf(16))
                         .items(cardItemList,this::CardColumn)
                 );
     }
 
-    private Node menu(){
+    private Node menuBar(){
         var menuBar = new MenuBar();
         var menu = new Menu("Preferências");
        // var itemPreferences = new MenuItem("Preferências");
@@ -42,7 +42,7 @@ public class HomeScreen {
     List<CardItem> cardItemList = List.of(
             new CardItem("/assets/venda.png", "Venda (F3)","Tela de vendas","cad-produto"),
             new CardItem("/assets/ordem_servico.png", "Ordem de serviço (F5)","Tela de vendas",null),
-            new CardItem("/assets/produtos.png", "Produtos (F3)","Tela de produtos","cad-produtos/teste}"),
+            new CardItem("/assets/produtos.png", "Produtos (F3)","Tela de produtos","cad-produtos"),
             new CardItem("/assets/clientes.png", "Ordem de serviço (F5)","Tela de vendas",null),
             new CardItem("/assets/contas_a_receber.png", "Venda (F3)","Tela de vendas",null),
             new CardItem("/assets/pdv.png", "Ordem de serviço (F5)","Tela de vendas",null),

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import static my_app.screens.produtoScreen.ProdutoComponents.*;
 
-public class ProdutoScreen implements RouteParamsAware {
+public class ProdutoScreen {
     private Router router;
     private ProdutoScreenViewModel vm;
 
@@ -33,14 +33,8 @@ public class ProdutoScreen implements RouteParamsAware {
         this.vm = new ProdutoScreenViewModel();
     }
 
-    private String id;
-    @Override
-    public void onRouteParams(Map<String, String> params) {
-        this.id = params.get("id");
-    }
-
     public Component render (){
-        IO.println("[id]: " + id);
+       // IO.println("[id]: " + id);
         return new Column(new ColumnProps().paddingAll(15), new ColumnStyler().bgColor("#fff"))
                 .c_child(Menu())
                 .c_child(new SpacerVertical(30))
@@ -65,7 +59,7 @@ public class ProdutoScreen implements RouteParamsAware {
                 .r_child(MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(vm::atualizar)))
                 .r_child(MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(vm::excluir)))
                 .r_child(new SpacerHorizontal().fill())
-                .r_child(MenuItem("Sair", Entypo.REPLY, "red", () -> router.closeSpawn("cad-produtos/"+id)));
+                .r_child(MenuItem("Sair", Entypo.REPLY, "red", () -> router.closeSpawn()));
     }
 
     Component MenuItem(String title,Ikon ikon,  String color, Runnable onClick){

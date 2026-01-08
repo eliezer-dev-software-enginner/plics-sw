@@ -72,23 +72,23 @@ class CategoriaRepositoryTest {
     @Test
     void atualizar() throws SQLException {
         var model = categoriaFake();
-        repo.salvar(model);
+        var salvo = repo.salvar(model);
 
-        model.nome = "cat2";
-        repo.atualizar(model);
+        salvo.nome = "cat2";
+        repo.atualizar(salvo);
 
-        var atualizado = repo.buscarPorId(model.id);
+        var atualizado = repo.buscarPorId(salvo.id);
         assertEquals("cat2", atualizado.nome);
     }
 
     @Test
     void excluir() throws SQLException {
         var model = categoriaFake();
-        repo.salvar(model);
+        var salvo = repo.salvar(model);
 
-        repo.excluir(model.id);
+        repo.excluir(salvo.id);
 
-        assertNull(repo.buscarPorId(model.id));
+        assertNull(repo.buscarPorId(salvo.id));
     }
 
 

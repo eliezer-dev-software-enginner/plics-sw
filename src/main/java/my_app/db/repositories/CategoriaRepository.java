@@ -27,15 +27,15 @@ public class CategoriaRepository {
             ps.setLong(2, dataCriacao);
             ps.executeUpdate();
             
-            // Recupera o ID gerado
+            // Recupera o ID gerado e cria nova instância
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    model.id = generatedKeys.getLong(1);
-                    model.dataCriacao = dataCriacao;
+                    long idGerado = generatedKeys.getLong(1);
+                    return new CategoriaModel(idGerado, model.nome, dataCriacao);
                 }
             }
         }
-        return model;
+        throw new SQLException("Falha ao recuperar ID gerado");
     }
 
     public List<CategoriaModel> listar() throws SQLException {

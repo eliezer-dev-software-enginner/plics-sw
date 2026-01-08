@@ -26,7 +26,7 @@ public class DebugInputApp extends Application {
         button.setOnAction(e -> {
             String value = nome.get();
             System.out.println("Valor no State: '" + value + "'");
-            System.out.println("Valor no Input: '" + input.field.getText() + "'");
+            System.out.println("Valor no Input: '" + nome.get() + "'");
         });
         
         javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(10, input.getNode(), button);
