@@ -25,9 +25,9 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final State<String> precoCompra = new State<>("0");
     public final State<String> precoVenda = new State<>("0");
     
-    // Store raw numeric values
-    private BigDecimal rawPrecoCompra = BigDecimal.ZERO;
-    private BigDecimal rawPrecoVenda = BigDecimal.ZERO;
+    // Raw values in cents (para cálculos)
+    public final State<String> precoCompraRaw = new State<>("0");
+    public final State<String> precoVendaRaw = new State<>("0");
 
     // depois vira ComputedState
     public final State<String> margem = new State<>("0");
@@ -56,8 +56,9 @@ public class ProdutoScreenViewModel extends ViewModel {
         var p = new ProdutoModel();
         p.codigoBarras = codigoBarras.get();
         p.descricao = descricao.get();
-        p.precoCompra = parseMonetarioRaw(precoCompra.get());
-        p.precoVenda = parseMonetarioRaw(precoVenda.get());
+        // Converte de centavos para reais
+        p.precoCompra = new BigDecimal(precoCompraRaw.get()).movePointLeft(2);
+        p.precoVenda = new BigDecimal(precoVendaRaw.get()).movePointLeft(2);
         p.unidade = unidadeSelected.get();
         p.categoriaId = 1L;   // temporário
         p.fornecedorId = 1L;  // temporário
@@ -71,6 +72,10 @@ public class ProdutoScreenViewModel extends ViewModel {
         descricao.set(p.descricao);
         precoCompra.set(p.precoCompra.toString());
         precoVenda.set(p.precoVenda.toString());
+        
+        // Converte reais para centavos para o raw state
+        precoCompraRaw.set(p.precoCompra.multiply(new BigDecimal("100")).toString());
+        precoVendaRaw.set(p.precoVenda.multiply(new BigDecimal("100")).toString());
         unidadeSelected.set(p.unidade);
         categoriaSelected.set(String.valueOf(p.categoriaId));
         fornecedorSelected.set(String.valueOf(p.fornecedorId));
@@ -136,10 +141,7 @@ public class ProdutoScreenViewModel extends ViewModel {
         loadProdutos();
     }
 
-    public void updateRawPrecos(BigDecimal precoCompraRaw, BigDecimal precoVendaRaw) {
-        this.rawPrecoCompra = precoCompraRaw;
-        this.rawPrecoVenda = precoVendaRaw;
-    }
+    
 
     private BigDecimal parseMonetarioRaw(String valorMonetario) {
         if (valorMonetario == null || valorMonetario.trim().isEmpty()) {

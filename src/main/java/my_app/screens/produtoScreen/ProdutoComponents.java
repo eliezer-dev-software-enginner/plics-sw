@@ -35,10 +35,10 @@ public class ProdutoComponents {
                                 .r_child(SelectColumn("Unidade", vm.unidades ,vm.unidadeSelected))
                                 .r_child(InputColumn("Marca", vm.marca))
                 ).c_child(new Row(rowProps)
-                        .r_child(InputColumn("Preço de compra", vm.precoCompra, Entypo.CREDIT))
+                        .r_child(InputColumn("Preço de compra", vm.precoCompra, vm.precoCompraRaw, Entypo.CREDIT))
                         .r_child(InputColumn("Margem %", vm.margem))
                         .r_child(InputColumn("Lucro", vm.lucro,Entypo.CREDIT))
-                        .r_child(InputColumn("Preço de venda", vm.precoVenda,Entypo.CREDIT))
+                        .r_child(InputColumn("Preço de venda", vm.precoVenda, vm.precoVendaRaw, Entypo.CREDIT))
                 ).c_child(new Row(rowProps)
                         .r_child(SelectColumn("Categoria",vm.categorias, vm.categoriaSelected))
                         .r_child(SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected))//fornecedor padrão
@@ -90,7 +90,7 @@ public class ProdutoComponents {
     private static final NumberFormat BRL =
             NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
-    public static Component InputColumn(String label, State<String> inputState, Ikon icon){
+    public static Component InputColumn(String label, State<String> inputState, State<String> rawState, Ikon icon){
         var fonticon = FontIcon.of(icon, 15, Color.web("green"));
 
         var inputProps = new InputProps().fontSize(22).height(40);
@@ -100,10 +100,23 @@ public class ProdutoComponents {
                     String numeric = value.replaceAll("[^0-9]", "");
                     if (numeric.isEmpty()) return "";
 
+                    // Atualiza o state com o valor bruto (em centavos)
+                    rawState.set(numeric);
+
                     BigDecimal raw = new BigDecimal(numeric).movePointLeft(2);
 
                     return BRL.format(raw);
                 }) : new Input(inputState, inputProps);
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(22)))
+                .c_child(input.left(fonticon));
+    }
+
+    public static Component InputColumn(String label, State<String> inputState, Ikon icon){
+        var fonticon = FontIcon.of(icon, 15, Color.web("green"));
+        var inputProps = new InputProps().fontSize(22).height(40);
+        var input = new Input(inputState, inputProps);
 
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(22)))

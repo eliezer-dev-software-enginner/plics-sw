@@ -185,6 +185,8 @@ public class ProdutoScreen {
         vm.descricao.set("");
         vm.precoCompra.set("0");
         vm.precoVenda.set("0");
+        vm.precoCompraRaw.set("0");
+        vm.precoVendaRaw.set("0");
         vm.margem.set("0");
         vm.lucro.set("0");
         vm.comissao.set("");
