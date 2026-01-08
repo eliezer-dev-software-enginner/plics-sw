@@ -1,6 +1,7 @@
 package my_app.db.repositories;
 
 import my_app.db.DB;
+import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 
 import java.sql.*;
@@ -14,16 +15,16 @@ public class CategoriaRepository {
     }
 
     // CREATE
-    public CategoriaModel salvar(CategoriaModel model) throws SQLException {
+    public CategoriaModel salvar(CategoriaDto dto) throws SQLException {
         String sql = """
         INSERT INTO categoria 
         (nome, data_criacao) VALUES (?,?)
         """;
 
-        long dataCriacao = model.dataCriacao != null ? model.dataCriacao : System.currentTimeMillis();
+        long dataCriacao = dto.dataCriacao() != null ? dto.dataCriacao() : System.currentTimeMillis();
 
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, model.nome);
+            ps.setString(1, dto.nome());
             ps.setLong(2, dataCriacao);
             ps.executeUpdate();
             
@@ -31,7 +32,7 @@ public class CategoriaRepository {
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long idGerado = generatedKeys.getLong(1);
-                    return new CategoriaModel(idGerado, model.nome, dataCriacao);
+                    return new CategoriaModel(idGerado, dto.nome(), dataCriacao);
                 }
             }
         }

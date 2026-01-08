@@ -2,6 +2,7 @@ package my_app.db.repositories;
 
 import my_app.db.DB;
 import my_app.db.DBInitializer;
+import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,8 @@ class CategoriaRepositoryTest {
 
     @Test
     void salvar() throws SQLException {
-        var model = categoriaFake();
-        model.nome = "cat1";
-        var salvo = repo.salvar(model);
+        var dto = new CategoriaDto("cat1", System.currentTimeMillis());
+        var salvo = repo.salvar(dto);
 
         var encontrado = repo.buscarPorId(salvo.id);
 
@@ -44,13 +44,11 @@ class CategoriaRepositoryTest {
                     listaInicial.stream().anyMatch(p -> p.nome.equals("Geral"))
             );
 
-            var model1 = categoriaFake();
-            var model2 = categoriaFake();
-            model1.nome = "categ1";
-            model2.nome = "categ2";
+            var dto1 = new CategoriaDto("categ1", System.currentTimeMillis());
+            var dto2 = new CategoriaDto("categ2", System.currentTimeMillis());
 
-            repo.salvar(model1);
-            repo.salvar(model2);
+            repo.salvar(dto1);
+            repo.salvar(dto2);
 
             var lista = repo.listar();
 
@@ -71,8 +69,8 @@ class CategoriaRepositoryTest {
 
     @Test
     void atualizar() throws SQLException {
-        var model = categoriaFake();
-        var salvo = repo.salvar(model);
+        var dto = categoriaDtoFake();
+        var salvo = repo.salvar(dto);
 
         salvo.nome = "cat2";
         repo.atualizar(salvo);
@@ -83,14 +81,18 @@ class CategoriaRepositoryTest {
 
     @Test
     void excluir() throws SQLException {
-        var model = categoriaFake();
-        var salvo = repo.salvar(model);
+        var dto = categoriaDtoFake();
+        var salvo = repo.salvar(dto);
 
         repo.excluir(salvo.id);
 
         assertNull(repo.buscarPorId(salvo.id));
     }
 
+
+    private CategoriaDto categoriaDtoFake() {
+        return new CategoriaDto("cat1", System.currentTimeMillis());
+    }
 
     private CategoriaModel categoriaFake() {
         var model = new CategoriaModel();

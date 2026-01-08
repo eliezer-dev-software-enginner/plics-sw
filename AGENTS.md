@@ -259,6 +259,7 @@ private ProdutoModel produtoFake() {
 - Use feature branches for new functionality
 - Ensure all tests pass before committing
 - Run `./gradlew build` before pushing changes
+- **IMPORTANT**: Always create a commit after successful modifications using `git commit -m`
 
 ## Additional Resources
 

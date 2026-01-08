@@ -13,6 +13,7 @@ import megalodonte.props.TextVariant;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.screens.components.Components;
@@ -91,11 +92,12 @@ public class CategoriaScreen {
         String value = nome.get();
         IO.println("Nome: " + value);
 
-        var model = new CategoriaModel(value.trim(), System.currentTimeMillis());
+        var dto = new CategoriaDto(value.trim(), System.currentTimeMillis());
 
         try{
-            var id = categoriaRepository.salvar(model);
-            categoriasObservable.add(new CategoriaModel(value.trim(), System.currentTimeMillis()));
+            var model = categoriaRepository.salvar(dto);
+            categoriasObservable.add(model);
+            IO.println("Categoria '" + model.nome + "' cadastrada com ID: " + model.id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
