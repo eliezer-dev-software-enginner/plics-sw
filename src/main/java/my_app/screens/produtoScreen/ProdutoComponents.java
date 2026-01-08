@@ -75,6 +75,14 @@ public class ProdutoComponents {
                         .value(stateSelected));
     }
 
+    public static Component SelectColumn(String label, State<List<String>> listState, State<String> stateSelected){
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(25)))
+                .c_child(new Select<String>(new SelectProps().height(40))
+                        .items(listState.get())
+                        .value(stateSelected));
+    }
+
     private static final NumberFormat BRL =
             NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
