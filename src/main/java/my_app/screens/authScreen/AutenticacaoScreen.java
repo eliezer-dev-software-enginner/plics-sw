@@ -41,7 +41,7 @@ public class AutenticacaoScreen {
                         new Card(new Column(
                                 new ColumnProps().spacingOf(10).paddingAll(20), new ColumnStyler().bgColor(theme
                                 .colors().surface()))
-                                .c_child(new Text("BR Nation", new TextProps().tone(TextTone.PRIMARY).variant(TextVariant.TITLE)))
+                                .c_child(new Text("Plics", new TextProps().tone(TextTone.PRIMARY).variant(TextVariant.TITLE)))
                                 .c_child(new Text("Bem vindo ao BR Nation, mais que um gerenciador de estoque",
                                         new TextProps().variant(TextVariant.SUBTITLE)))//"#94a3b8"
                                 .c_child(new SpacerVertical(10))
@@ -61,6 +61,8 @@ public class AutenticacaoScreen {
         //TODO: implementar
         errorMessage.set("");
         hasError.set(false);
+
+        IO.println("click");
 
         var value = licensa.get();
 

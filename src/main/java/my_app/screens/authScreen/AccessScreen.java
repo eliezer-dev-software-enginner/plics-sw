@@ -7,6 +7,7 @@ import megalodonte.props.TextVariant;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import my_app.db.DBInitializer;
 
 public class AccessScreen {
     Router router;
@@ -30,8 +31,13 @@ public class AccessScreen {
                                 .bgColor(theme.colors().primary())
                                 .textColor("#fff")
                                 .fontSize(theme.typography().body())
-                                .onClick(()->router.navigateTo("home"))))
+                                .onClick(()-> handleClick())))
                 ;
+    }
+
+    private void handleClick(){
+        DBInitializer.init();
+        router.navigateTo("home");
     }
 
     public Component textRow(){
