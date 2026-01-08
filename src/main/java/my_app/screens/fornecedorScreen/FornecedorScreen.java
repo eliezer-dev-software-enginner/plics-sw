@@ -1,5 +1,9 @@
 package my_app.screens.fornecedorScreen;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableColumn;
@@ -14,6 +18,7 @@ import megalodonte.router.Router;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.dto.FornecedorDto;
+import my_app.db.models.CategoriaModel;
 import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.screens.components.Components;
@@ -25,20 +30,24 @@ public class FornecedorScreen {
     private final Router router;
     private final Theme theme = ThemeManager.theme();
     private final FornecedorRepository fornecedorRepository = new FornecedorRepository();
-    private final List<FornecedorModel> fornecedores;
+
+private final ObservableList<FornecedorModel> fornecedores = FXCollections.observableArrayList();
 
     public FornecedorScreen(Router router) {
         this.router = router;
-        this.fornecedores = loadFornecedores();
+        loadFornecedores();
     }
 
-    private List<FornecedorModel> loadFornecedores() {
+    private void loadFornecedores() {
         try {
-            return fornecedorRepository.listar();
+            fornecedores.clear();
+            fornecedores.addAll(fornecedorRepository.listar());
         } catch (Exception e) {
             throw new RuntimeException("Erro ao carregar fornecedores", e);
         }
     }
+
+    
 
     public Component render() {
         return new Column(new ColumnProps().paddingAll(25), new ColumnStyler().bgColor(theme.colors().background()))
@@ -91,10 +100,7 @@ public class FornecedorScreen {
         try {
             var dto = new FornecedorDto(nomeValue, cnpjValue, "", "", "", System.currentTimeMillis());
             var model = fornecedorRepository.salvar(dto);
-            
-            // Atualiza lista de fornecedores
-            fornecedores.clear();
-            fornecedores.addAll(loadFornecedores());
+            fornecedores.add(model);
             
             IO.println("Fornecedor '" + model.nome + "' cadastrado com ID: " + model.id);
             
@@ -145,7 +151,7 @@ public class FornecedorScreen {
         });
 
         table.getColumns().addAll(idCol, nomeCol, cnpjCol, dataCol);
-        table.getItems().addAll(fornecedores);
+        table.setItems(fornecedores);
 
         return Component.FromJavaFxNode(table);
     }
