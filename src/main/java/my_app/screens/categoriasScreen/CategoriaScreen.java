@@ -5,14 +5,15 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import megalodonte.*;
+import megalodonte.State;
 import megalodonte.components.*;
 import megalodonte.components.inputs.Input;
-import megalodonte.props.TextProps;
-import megalodonte.props.TextVariant;
+import megalodonte.props.*;
 import megalodonte.router.Router;
+import megalodonte.styles.ColumnStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import megalodonte.utils.related.TextVariant;
 import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.repositories.CategoriaRepository;
@@ -172,7 +173,7 @@ public class CategoriaScreen {
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        return new Card(Component.FromJavaFxNode(table));
+        return new Card(Component.CreateFromJavaFxNode(table));
     }
 
 

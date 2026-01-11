@@ -1,12 +1,16 @@
 package my_app.screens.authScreen;
 
-import megalodonte.*;
+
 import megalodonte.components.*;
+import megalodonte.props.ButtonProps;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
-import megalodonte.props.TextVariant;
 import megalodonte.router.Router;
+import megalodonte.styles.RowStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import megalodonte.utils.related.TextVariant;
 import my_app.db.DBInitializer;
 
 public class AccessScreen {

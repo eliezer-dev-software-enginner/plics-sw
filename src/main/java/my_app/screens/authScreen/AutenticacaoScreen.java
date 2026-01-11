@@ -1,15 +1,16 @@
 package my_app.screens.authScreen;
 
-import megalodonte.*;
+import megalodonte.ComputedState;
+import megalodonte.Show;
+import megalodonte.State;
 import megalodonte.components.*;
 import megalodonte.components.inputs.Input;
-import megalodonte.props.CardProps;
-import megalodonte.props.TextProps;
-import megalodonte.props.TextTone;
-import megalodonte.props.TextVariant;
+import megalodonte.props.*;
 import megalodonte.router.Router;
+import megalodonte.styles.ColumnStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import megalodonte.utils.related.TextVariant;
 import my_app.db.repositories.LicensaRepository;
 import my_app.screens.components.Components;
 

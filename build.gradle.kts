@@ -45,13 +45,12 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.10.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.10.0")
 
+    implementation("megalodonte:megalodonte-base:1.0.0-beta")
     implementation("megalodonte:simple-clipboard:1.0.0")
-    implementation("megalodonte:components:1.0.0")
-    implementation("megalodonte:reactivity:1.0.0")
-    implementation("megalodonte:props:1.0.0")
-    implementation("megalodonte:megalodonte-hot-preview:1.0.0")
+    implementation("megalodonte:megalodonte-components:1.0.0-beta")
+    implementation("megalodonte:megalodonte-reactivity:1.0.0-beta")
     implementation("megalodonte:megalodonte-router:1.0.0-beta")
-    implementation("megalodonte:megalodonte-styles:1.0.0")
+    implementation("megalodonte:megalodonte-theme:1.0.0-beta")
 
 
     implementation("org.kordamp.ikonli:ikonli-core:12.4.0")

@@ -12,11 +12,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.inputs.Input;
-import megalodonte.props.TextProps;
-import megalodonte.props.TextVariant;
+import megalodonte.props.*;
 import megalodonte.router.Router;
+import megalodonte.styles.ColumnStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import megalodonte.utils.related.TextVariant;
 import my_app.db.dto.FornecedorDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.FornecedorModel;
@@ -159,7 +160,7 @@ public class FornecedorScreen {
         table.getColumns().addAll(idCol, nomeCol, cnpjCol, dataCol);
         table.setItems(fornecedores);
 
-        return Component.FromJavaFxNode(table);
+        return Component.CreateFromJavaFxNode(table);
     }
 
     private static Component InputColumn(String label, State<String> inputState) {

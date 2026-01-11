@@ -4,12 +4,12 @@ import javafx.scene.paint.Color;
 import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.inputs.Input;
-import megalodonte.props.CardProps;
-import megalodonte.props.ClickableProps;
-import megalodonte.props.TextProps;
-import megalodonte.props.TextVariant;
+import megalodonte.props.*;
+import megalodonte.styles.ColumnStyler;
+import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import megalodonte.utils.related.TextVariant;
 import my_app.screens.produtoScreen.ProdutoScreen;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
@@ -37,7 +37,7 @@ public class Components {
 
     public static Component MenuItem(String title, Ikon ikon, String color, Runnable onClick){
 
-        var icon = Component.FromJavaFxNode(FontIcon.of(ikon, 40, Color.web(color)));
+        var icon = Component.CreateFromJavaFxNode(FontIcon.of(ikon, 40, Color.web(color)));
 
         return new Clickable(new Card(
                 new Column(new ColumnProps().centerHorizontally())
@@ -78,7 +78,7 @@ public class Components {
      * Exemplo de Clickable com ícone e texto.
      */
     public static Component clickableButtonWithIcon(String text, Ikon icon, String color, Runnable onClick) {
-        var iconNode = Component.FromJavaFxNode(FontIcon.of(icon, 16, Color.web(color)));
+        var iconNode = Component.CreateFromJavaFxNode(FontIcon.of(icon, 16, Color.web(color)));
         
         return new Clickable(
             new Row(new RowProps().spacingOf(8))

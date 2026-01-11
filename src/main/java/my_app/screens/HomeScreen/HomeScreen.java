@@ -6,8 +6,12 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import megalodonte.*;
 import megalodonte.components.*;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.GridFlowProps;
+import megalodonte.props.ImageProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.Router;
+import megalodonte.styles.ColumnStyler;
 
 import java.util.List;
 
@@ -21,7 +25,7 @@ public class HomeScreen {
 
     public Component render (){
         return new Column(new ColumnProps(), new ColumnStyler().bgColor("#fff"))
-                .c_child(Component.FromJavaFxNode(menuBar()))
+                .c_child(Component.CreateFromJavaFxNode(menuBar()))
                 .c_child(new GridFlow(new GridFlowProps().tileSize(200, 220).centerHorizontally().spacingOf(16))
                         .items(cardItemList,this::CardColumn)
                 );

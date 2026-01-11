@@ -1,10 +1,9 @@
 package my_app.screens.components;
 
-import megalodonte.ButtonProps;
-import megalodonte.ColumnProps;
 import megalodonte.State;
 import megalodonte.ForEachState;
 import megalodonte.components.*;
+import megalodonte.props.ButtonProps;
 import megalodonte.props.TextProps;
 
 import java.util.Arrays;

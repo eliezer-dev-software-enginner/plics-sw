@@ -5,8 +5,7 @@ import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.inputs.Input;
 import megalodonte.components.inputs.TextAreaInput;
-import megalodonte.props.CardProps;
-import megalodonte.props.TextProps;
+import megalodonte.props.*;
 import my_app.db.models.ProdutoModel;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.entypo.Entypo;
@@ -201,7 +200,7 @@ public class ProdutoComponents {
                 "-fx-selection-bar-non-focused: #93c5fd;"
         );
 
-        return Component.FromJavaFxNode(table);
+        return Component.CreateFromJavaFxNode(table);
     }
 
 }
