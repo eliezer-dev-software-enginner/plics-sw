@@ -19,6 +19,12 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class Components {
 
     static Theme theme = ThemeManager.theme();
+
+    public static Component InputColumn(String label, State<String> inputState) {
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(22)))
+                .c_child(new Input(inputState, new InputProps().fontSize(20).height(40)));
+    }
     
     public static Component errorText(String message){
         return new Column(new ColumnProps(), new ColumnStyler().bgColor("white")).c_child(new SpacerVertical(5))

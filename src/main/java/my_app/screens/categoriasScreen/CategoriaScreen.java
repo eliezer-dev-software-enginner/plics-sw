@@ -2,7 +2,6 @@ package my_app.screens.categoriasScreen;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import megalodonte.State;
@@ -18,10 +17,6 @@ import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.screens.components.Components;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.ArrayList;
 
 public class CategoriaScreen {
     private final Router router;
