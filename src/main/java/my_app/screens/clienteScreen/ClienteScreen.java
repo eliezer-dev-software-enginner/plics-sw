@@ -50,6 +50,7 @@ public class ClienteScreen {
                        this::handleClickMenuEdit,
                         () -> {
                             // delete logic
+                            //TODO: implementar lógica de deletar
                         }
                 ))
                 .c_child(new SpacerVertical(10))
