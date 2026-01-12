@@ -22,6 +22,8 @@ import my_app.db.repositories.ClienteRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.screens.components.Components;
 
+import java.sql.SQLException;
+
 public class ClienteScreen {
     private final Router router;
     private final Theme theme = ThemeManager.theme();
@@ -48,10 +50,7 @@ public class ClienteScreen {
         return new Column(new ColumnProps().paddingAll(7), new ColumnStyler().bgColor(theme.colors().background()))
                 .c_child(Components.commonCustomMenus(this::handleClickMenuNew,
                        this::handleClickMenuEdit,
-                        () -> {
-                            // delete logic
-                            //TODO: implementar lógica de deletar
-                        }
+                       this::handleClickMenuDelete
                 ))
                 .c_child(new SpacerVertical(10))
                 .c_child(form())
@@ -69,6 +68,20 @@ public class ClienteScreen {
         nome.set(clienteSelecionado.get().nome);
         cnpj.set(clienteSelecionado.get().cpfCnpj);
         btnText.set("+ Atualizar");
+    }
+
+    private void handleClickMenuDelete() {
+        if(clienteSelecionado != null){
+            try{
+                clienteRepository.excluirById(clienteSelecionado.get().id);
+                IO.println("cliente excluido com sucesso");
+                clientes.removeIf(clienteModel -> clienteModel.id.equals(clienteSelecionado.get().id));
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
 
