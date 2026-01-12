@@ -79,6 +79,23 @@ public final class DBInitializer {
                     )
                 """);
 
+                st.execute("""
+                    CREATE TABLE IF NOT EXISTS empresas (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT,
+                        cpfCnpj TEXT,
+                        celular TEXT,
+                        endereco_cep TEXT,
+                        endereco_cidade TEXT,
+                        endereco_rua TEXT,
+                        endereco_bairro TEXT,
+                        local_pagamento TEXT,
+                        texto_responsabilidade TEXT,
+                        texto_termo_de_servico TEXT,
+                        data_criacao INTEGER NOT NULL
+                    )
+                """);
+
             }
             
             // Inserir dados padrão na primeira execução
@@ -104,6 +121,10 @@ public final class DBInitializer {
 
         if (!existeLoginPadrao(conn)) {
             inserirLoginPadrao(conn);
+        }
+
+        if(!existeEmpresaPadrao(conn)){
+            inserirEmpresaPadrao(conn);
         }
     }
 
@@ -134,6 +155,28 @@ public final class DBInitializer {
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() && rs.getInt(1) > 0;
             }
+        }
+    }
+
+    private static boolean existeEmpresaPadrao(Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM empresas WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, 1);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    private static void inserirEmpresaPadrao(Connection conn) throws SQLException {
+        String sql = "INSERT INTO empresas (texto_responsabilidade, data_criacao) VALUES (?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, """
+                    APÓS O VENCIMENTO COBRAR MULTA DE ATRASO 2,00
+                    NÃO RECEBER ATRASADO
+                    JUROS DE 0,01 AO DIA.""");
+            ps.setLong(2, System.currentTimeMillis());
+           ps.executeUpdate();
         }
     }
     

@@ -24,6 +24,13 @@ public class Components {
         return new Text(title, new TextProps().bold().variant(TextVariant.BODY));
     }
 
+    public static Component ButtonCadastro(String textState, Runnable handleAdd){
+        return new Button(textState, new ButtonProps().fillWidth().height(35).bgColor("#2563eb")
+                .fontSize(theme.typography().small())
+                .textColor("white")
+                .onClick(handleAdd));
+    }
+
     public static Component ButtonCadastro(State<String> textState, Runnable handleAdd){
         return new Button(textState, new ButtonProps().fillWidth().height(35).bgColor("#2563eb")
                 .fontSize(theme.typography().small())
