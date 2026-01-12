@@ -6,6 +6,7 @@ import megalodonte.components.*;
 import megalodonte.components.inputs.Input;
 import megalodonte.props.*;
 import megalodonte.styles.ColumnStyler;
+import megalodonte.styles.InputStyler;
 import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
@@ -30,10 +31,17 @@ public class Components {
                 .onClick(handleAdd));
     }
 
-    public static Component InputColumn(String label, State<String> inputState) {
+    public static Component InputColumn(String label, State<String> inputState, String placeholder) {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
-                .c_child(new Input(inputState, new InputProps().fontSize(theme.typography().small()).height(35)));
+                .c_child(new Input(inputState,
+                        new InputProps().fontSize(theme.typography().small()).height(35)
+                                .placeHolder(placeholder),
+                        new InputStyler().
+                                borderWidth(theme.border().width())
+                                .borderColor(theme.colors().primary())
+                        )
+                );
     }
     
     public static Component errorText(String message){

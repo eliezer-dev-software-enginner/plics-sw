@@ -96,9 +96,9 @@ public class ClienteScreen {
                         .c_child(Components.FormTitle("Cadastrar cliente"))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.InputColumn("Nome", nome))
-                                .r_child(Components.InputColumn("CPF/CNPJ", cnpj))
-                                .r_child(Components.InputColumn("Celular", celular))
+                                .r_child(Components.InputColumn("Nome", nome, "Ex: João"))
+                                .r_child(Components.InputColumn("CPF/CNPJ", cnpj,"xx..."))
+                                .r_child(Components.InputColumn("Celular", celular,"(xx)xxxxx-yyyy"))
                                 .r_child(Components.ButtonCadastro(btnText,this::handleAdd))
                         ));
     }

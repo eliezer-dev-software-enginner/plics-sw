@@ -88,8 +88,8 @@ public class FornecedorScreen {
                                 .r_child(new Text("Cadastro de Fornecedor", new TextProps().bold().variant(TextVariant.SUBTITLE))))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.InputColumn("Nome Fantasia", nome))
-                                .r_child(Components.InputColumn("CNPJ", cnpj))
+                                .r_child(Components.InputColumn("Nome Fantasia", nome,"Ex: Empresa 123"))
+                                .r_child(Components.InputColumn("CNPJ", cnpj, "xx..."))
                                 .r_child(Components.ButtonCadastro(btnText, this::handleAdd))
                         ));
     }

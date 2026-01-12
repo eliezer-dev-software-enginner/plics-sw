@@ -84,7 +84,7 @@ public class CategoriaScreen {
                 .c_child(new SpacerVertical(20))
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                         .r_child(
-                                Components.InputColumn("Ex: Eletrônicos", nome))
+                                Components.InputColumn("Nome", nome,"Ex: Eletrômicos"))
                         .r_child(Components.ButtonCadastro(btnText,this::handleAdd))
                 ));
     }
@@ -123,7 +123,7 @@ public class CategoriaScreen {
                         "-fx-control-inner-background: %s; ".formatted(theme.colors().surface()) + // Fundo das células
                         "-fx-text-background-color: %s;".formatted("black") +// Cor do texto
                 "-fx-selection-bar: %s; ".formatted(theme.colors().primary()) + // Cor da barra de seleção (Azul igual ao seu botão)
-                        "-fx-selection-bar-non-focused: ;".formatted(theme.colors().primary())  // Cor quando a tabela perde o foco
+                        "-fx-selection-bar-non-focused: %s;".formatted(theme.colors().primary())  // Cor quando a tabela perde o foco
         );
 
         //individual
