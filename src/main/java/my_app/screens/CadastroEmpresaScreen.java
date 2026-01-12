@@ -13,8 +13,11 @@ import megalodonte.styles.ColumnStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.dto.CategoriaDto;
+import my_app.db.dto.EmpresaDto;
 import my_app.db.models.CategoriaModel;
+import my_app.db.models.EmpresaModel;
 import my_app.db.repositories.CategoriaRepository;
+import my_app.db.repositories.EmpresaRepository;
 import my_app.screens.components.Components;
 
 import java.sql.SQLException;
@@ -32,19 +35,29 @@ public class CadastroEmpresaScreen {
     State<String> localPagamento = State.of("");
     State<String> textoResponsabilidade = State.of("");
 
-//    private CategoriaRepository categoriaRepository = new CategoriaRepository();
+    private EmpresaRepository empresaRepository = new EmpresaRepository();
     public CadastroEmpresaScreen(Router router) {
         this.router = router;
         fetchData();
     }
 
     private void fetchData() {
-//        try {
-//            categoriasObservable.clear();
-//            categoriasObservable.addAll(categoriaRepository.listar());
-//        } catch (Exception e) {
-//            throw new RuntimeException("Erro ao carregar categorias", e);
-//        }
+        try {
+           var list = empresaRepository.listar();
+           if(!list.isEmpty()){
+               var model = list.getFirst();
+               nome.set(model.nome);
+               celular.set(model.telefone);
+               cep.set(model.cep);
+               cidade.set(model.cidade);
+               bairro.set(model.bairro);
+               rua.set(model.rua);
+               localPagamento.set(model.localPagamento);
+               textoResponsabilidade.set(model.textoResponsabilidade);
+           }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao carregar categorias", e);
+        }
     }
 
     private final Theme theme = ThemeManager.theme();
@@ -96,15 +109,24 @@ public class CadastroEmpresaScreen {
         String value = nome.get();
         IO.println("Nome: " + value);
 
-//        var dto = new CategoriaDto(value.trim(), System.currentTimeMillis());
-//
-//        try{
-//            var model = categoriaRepository.salvar(dto);
-//            categoriasObservable.add(model);
-//            IO.println("Categoria '" + model.nome + "' cadastrada com ID: " + model.id);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+        var model = new EmpresaModel();
+        model.id = 1L;
+        model.nome = nome.get();
+        model.cep = cep.get();
+        model.bairro = bairro.get();
+        model.rua = rua.get();
+        model.cidade = cidade.get();
+        model.localPagamento = localPagamento.get();
+        model.termoServico = textoResponsabilidade.get();
+        model.telefone = celular.get();
+        model.textoResponsabilidade = textoResponsabilidade.get();
+
+        try{
+            empresaRepository.atualizar(model);
+            IO.println("Empresa atualizada com sucesso!");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }
