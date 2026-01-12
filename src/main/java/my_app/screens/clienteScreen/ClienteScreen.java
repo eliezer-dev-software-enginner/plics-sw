@@ -93,8 +93,7 @@ public class ClienteScreen {
     Component form() {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20))
-                        .c_child(new Row(new RowProps().centerHorizontally())
-                                .r_child(new Text("Cadastro de Cliente", new TextProps().bold().variant(TextVariant.SUBTITLE))))
+                        .c_child(Components.FormTitle("Cadastrar cliente"))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Nome", nome))

@@ -10,7 +10,6 @@ import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
-import my_app.screens.produtoScreen.ProdutoScreen;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.entypo.Entypo;
@@ -19,6 +18,10 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class Components {
 
     static Theme theme = ThemeManager.theme();
+
+    public static Component FormTitle(String title){
+        return new Text(title, new TextProps().bold().variant(TextVariant.BODY));
+    }
 
     public static Component ButtonCadastro(State<String> textState, Runnable handleAdd){
         return new Button(textState, new ButtonProps().fillWidth().height(35).bgColor("#2563eb")

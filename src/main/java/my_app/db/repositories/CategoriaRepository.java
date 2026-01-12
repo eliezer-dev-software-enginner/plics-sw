@@ -8,11 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoriaRepository {
-
-    private Connection conn() throws SQLException {
-        return DB.getInstance().connection();
-    }
+public class CategoriaRepository extends BaseRepository<CategoriaDto, CategoriaModel> {
 
     // CREATE
     public CategoriaModel salvar(CategoriaDto dto) throws SQLException {
@@ -61,7 +57,7 @@ public class CategoriaRepository {
         }
     }
 
-    public void excluir(Long id) throws SQLException {
+    public void excluirById(Long id) throws SQLException {
         try (PreparedStatement ps =
                      conn().prepareStatement("DELETE FROM categoria WHERE id = ?")) {
             ps.setLong(1, id);
@@ -69,7 +65,8 @@ public class CategoriaRepository {
         }
     }
 
-    public CategoriaModel buscarPorId(Long id) throws SQLException {
+    @Override
+    protected CategoriaModel buscarById(Long id) throws SQLException {
         String sql = "SELECT * FROM categoria WHERE id = ?";
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setLong(1, id);

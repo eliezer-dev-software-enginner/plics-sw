@@ -57,7 +57,7 @@ public class ProdutoRepository {
         }
 
         CategoriaRepository categoriaRepo = new CategoriaRepository();
-        produto.categoria = categoriaRepo.buscarPorId(produto.categoriaId);
+        produto.categoria = categoriaRepo.buscarById(produto.categoriaId);
 
         return produto;
     }

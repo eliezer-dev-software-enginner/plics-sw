@@ -6,17 +6,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import megalodonte.State;
 import megalodonte.components.*;
-import megalodonte.components.inputs.Input;
 import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.styles.ColumnStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
-import megalodonte.utils.related.TextVariant;
 import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.screens.components.Components;
+
+import java.sql.SQLException;
 
 public class CategoriaScreen {
     private final Router router;
@@ -42,57 +42,50 @@ public class CategoriaScreen {
         }
     }
 
-    private Theme theme = ThemeManager.theme();
-
+    private final Theme theme = ThemeManager.theme();
 
 
     public Component render() {
-        return new Column(new ColumnProps().paddingAll(25), new ColumnStyler().bgColor(theme.colors().background()))
+        return new Column(new ColumnProps().paddingAll(5), new ColumnStyler().bgColor(theme.colors().background()))
                 .c_child(Components.commonCustomMenus(
-                        ()->{
-                            //new
-                            btnText.set("+ Adicionar");
-                            nome.set("");
-                        }
-                        ,()->{
-                    //edit
-                    btnText.set("Atualizar");
-                    nome.set(categoriaSelecionada.get().nome);
-                }, ()->{
-                    //delete
-                    Long id = categoriaSelecionada.get().id;
-                    CategoriaModel selecionada = categoriasObservable.stream()
-                            .filter(cat -> cat.id.equals(id))
-                            .findFirst()
-                            .orElse(null);
-                    if (selecionada != null) {
-                        categoriasObservable.remove(selecionada);
-                    }
-                }))
-                .c_child(new SpacerVertical(30))
-                .c_child(header())
-                .c_child(new SpacerVertical(20))
+                      this::handleClickMenuNew,this::handleClickMenuEdit, this::handleClickMenuDelete))
+                .c_child(new SpacerVertical(10))
                 .c_child(form())
                 .c_child(new SpacerVertical(20))
                 .c_child(table());
     }
 
-    Component header(){
-       return new Column()
-               .c_child(new Text("Gerenciamento de Categorias de Estoque", new TextProps().variant(TextVariant.SUBTITLE)));
+    private void handleClickMenuNew() {
+        btnText.set("+ Adicionar");
+        nome.set("");
+    }
+
+    private void handleClickMenuEdit() {
+        nome.set(categoriaSelecionada.get().nome);
+        btnText.set("+ Atualizar");
+    }
+
+    private void handleClickMenuDelete() {
+        if(categoriaSelecionada != null){
+            try{
+                Long id = categoriaSelecionada.get().id;
+                categoriaRepository.excluirById(id);
+                IO.println("categoria excluido com sucesso");
+                categoriasObservable.removeIf(categoriaModel -> categoriaModel.id.equals(id));
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     Component form(){
-
         return new Card(new Column()
-                .c_child(
-                        new Row()
-                                .r_child(new Text("Cadastrar Nova Categoria", new TextProps().bold().variant(TextVariant.SUBTITLE))))
+                .c_child(Components.FormTitle("Cadastrar Nova Categoria"))
                 .c_child(new SpacerVertical(20))
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                        .r_child(new Input(nome, new InputProps().height(45).fontSize(18).placeHolder("Ex: Eletrônicos")))
-                        .r_child(new Button(btnText, new ButtonProps().fillWidth().height(45).bgColor("#2563eb").fontSize(20).textColor("white")
-                                .onClick(this::handleAdd)))
+                        .r_child(
+                                Components.InputColumn("Ex: Eletrônicos", nome))
+                        .r_child(Components.ButtonCadastro(btnText,this::handleAdd))
                 ));
     }
 
