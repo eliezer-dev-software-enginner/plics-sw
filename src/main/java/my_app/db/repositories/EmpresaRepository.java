@@ -43,7 +43,8 @@ public class EmpresaRepository extends BaseRepository<EmpresaDto, EmpresaModel> 
             local_pagamento = ?,
             texto_responsabilidade = ?,
             texto_termo_de_servico = ?,
-            data_criacao = ?
+            data_criacao = ?,
+            logomarca = ?
         WHERE id = ?
     """;
 
@@ -61,7 +62,8 @@ public class EmpresaRepository extends BaseRepository<EmpresaDto, EmpresaModel> 
             ps.setString(9, empresaModel.textoResponsabilidade);
             ps.setString(10, empresaModel.termoServico);
             ps.setLong(11, dataCriacao);
-            ps.setLong(12, empresaModel.id);
+            ps.setString(12, empresaModel.logoMarca);
+            ps.setLong(13, empresaModel.id);
 
             int rows = ps.executeUpdate();
             if (rows == 0) {
