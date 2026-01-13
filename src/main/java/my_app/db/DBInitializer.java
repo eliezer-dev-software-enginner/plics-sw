@@ -92,6 +92,7 @@ public final class DBInitializer {
                         local_pagamento TEXT,
                         texto_responsabilidade TEXT,
                         texto_termo_de_servico TEXT,
+                        logomarca TEXT,
                         data_criacao INTEGER NOT NULL
                     )
                 """);

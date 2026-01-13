@@ -21,6 +21,15 @@ public class Components {
 
     static Theme theme = ThemeManager.theme();
 
+    public static Column ImageSelector(String title,State<String> imageState,
+                                       ImageProps props,
+                                       Runnable callback){
+        return new Column()
+                .c_child(new Image(imageState, props))
+                .c_child(new SpacerVertical(10))
+                .c_child(ButtonCadastro(title, callback));
+    }
+
     public static Component FormTitle(String title){
         return new Text(title, new TextProps().bold().variant(TextVariant.BODY));
     }

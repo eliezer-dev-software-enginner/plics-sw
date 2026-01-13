@@ -17,6 +17,7 @@ public class EmpresaModel {
     public String localPagamento;
     public String textoResponsabilidade;
     public String termoServico;
+    public String logoMarca;
     public Long dataCriacao;
 
     public EmpresaModel() {}
@@ -36,6 +37,7 @@ public class EmpresaModel {
         model.localPagamento = rs.getString("local_pagamento");
         model.textoResponsabilidade = rs.getString("texto_responsabilidade");
         model.termoServico = rs.getString("texto_termo_de_servico");
+        model.logoMarca = rs.getString("logomarca");
 
         model.dataCriacao = rs.getLong("data_criacao");
         return model;
