@@ -1,6 +1,5 @@
 package my_app.screens.components;
 
-import javafx.scene.control.DatePicker;
 import javafx.scene.paint.Color;
 import megalodonte.*;
 import megalodonte.components.*;
@@ -8,6 +7,7 @@ import megalodonte.components.inputs.Input;
 import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.props.*;
 import megalodonte.styles.ColumnStyler;
+import megalodonte.styles.DatePickerStyler;
 import megalodonte.styles.InputStyler;
 import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
@@ -20,18 +20,30 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 public class Components {
 
     static Theme theme = ThemeManager.theme();
 
-    public static Component DatePickerComponent(String label, String placeholder){
-        DatePicker dt = new DatePicker();
+    //TODO: adicionar campo editavel:false
+    public static Component DatePickerColumn(State<LocalDate> localDateState, String label, String placeholder) {
 
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
-                .c_child(Component.CreateFromJavaFxNode(dt));
+                .c_child(new DatePicker(localDateState,
+                                new DatePickerProps().fontSize(theme.typography().small()).height(35)
+                                        .placeHolder(placeholder)
+                                        .locale(new Locale("pt", "BR"))
+                                        .pattern("dd/MM/yyyy")
+                                        .editable(false)
+                                        .placeHolder("dd/MM/yyyy"),
+                                new DatePickerStyler().
+                                        borderWidth(theme.border().width())
+                                        .borderColor(theme.colors().primary())
+                        )
+                );
     }
 
     public static Column ImageSelector(String title,State<String> imageState,
@@ -61,19 +73,7 @@ public class Components {
                 .onClick(handleAdd));
     }
 
-    //TODO: adicionar campo editavel:false
-    public static Component FakeInputColumn(String label, String text, String placeholder) {
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
-                .c_child(new Input(State.of(text),
-                                new InputProps().fontSize(theme.typography().small()).height(35)
-                                        .placeHolder(placeholder),
-                                new InputStyler().
-                                        borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().primary())
-                        )
-                );
-    }
+
 
     public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display){
         return new Column()

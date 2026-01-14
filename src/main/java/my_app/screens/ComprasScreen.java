@@ -37,12 +37,12 @@ import java.util.Locale;
 public class ComprasScreen implements ScreenComponent {
     private final Router router;
 
-    State<String> dataCompra = State.of("");
-    State<String> fornecedorNameSelected = State.of("");
+    State<LocalDate> dataCompra = State.of(LocalDate.now());
     State<String> numeroNota = State.of("");
     State<String> btnText = State.of("+ Adicionar");
 
     ObservableList<CategoriaModel> categoriasObservable = FXCollections.observableArrayList();
+
 
     private CategoriaRepository categoriaRepository = new CategoriaRepository();
     State<String> codigo = State.of("");
@@ -95,6 +95,7 @@ IO.println("Erro on fetch data: " + e.getMessage());
 
         });
 
+        IO.println(dataCompra.get());
     }
 
     private final Theme theme = ThemeManager.theme();
@@ -111,36 +112,9 @@ IO.println("Erro on fetch data: " + e.getMessage());
 
 
     Component form(){
-        DatePicker dt = new DatePicker(LocalDate.now());
-        dt.setEditable(false);
-
-        Locale localeBR = new Locale("pt", "BR");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", localeBR);
-
-        dt.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(LocalDate date) {
-                return date != null ? formatter.format(date) : "";
-            }
-
-            @Override
-            public LocalDate fromString(String string) {
-                return (string != null && !string.isBlank())
-                        ? LocalDate.parse(string, formatter)
-                        : null;
-            }
-        });
-
-        dt.setPromptText("dd/MM/yyyy");
-
-
-        var datePickerColumn = new Column()
-                .c_child(new Text("Data de compra", new TextProps().fontSize(theme.typography().small())))
-                .c_child(Component.CreateFromJavaFxNode(dt));
-
         final var top = new Row(new RowProps().bottomVertically().spacingOf(10))
-                //.r_child(Components.InputColumn("Data de compra", codigo,"Ex: 01/12/2026"))
-                .r_child(datePickerColumn)
+//                .r_child(Components.InputColumn("Data de compra", codigo,"Ex: 01/12/2026"))
+                .r_child(Components.DatePickerColumn(dataCompra,"Data de compra 2", "dd/mm/yyyy"))
                 .r_child(Components.SelectColumn("Fornecedor", fornecedores, fornecedorSelected, f-> f.nome))
                 .r_child(Components.InputColumn("N NF/Pedido compra", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: 12345678920"));
 
@@ -169,6 +143,8 @@ IO.println("Erro on fetch data: " + e.getMessage());
 
     private void handleAdd(LocalDate localDate){
         //TODO: implementar
+
+        IO.println(dataCompra.get());
 
         String dataBR = localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
