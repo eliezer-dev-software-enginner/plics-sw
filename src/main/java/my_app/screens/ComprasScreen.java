@@ -50,10 +50,11 @@ public class ComprasScreen implements ScreenComponent {
     State<String> qtd = State.of("2");
     State<String> totalBruto = State.of("0");
     State<String> descontoPorcentagem = State.of("0");
+
+    State<String> descontoEmDinheiroRaw = State.of("0");
     State<String> descontoEmDinheiro = State.of("0");
 
-    //acho que é preço cadastrado de compra -> ver video
-    State<String> pcCompraRow = State.of("0");
+    // Preço de compra (armazena em centavos, ex: 123 = R$ 1,23)
     State<String> pcCompra = State.of("0");
 
 
@@ -143,8 +144,9 @@ IO.println("Erro on fetch data: " + e.getMessage());
                         .r_child(Components.InputColumn("Código", codigo,"xxxxxxxx"))
                         .r_child(Components.InputColumn("Descrição do produto",produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: Paraiso"))
                         //.r_child(Components.InputColumn("Pc. de compra", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: R$ 10,00"))
-                        .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra, pcCompraRow))
+                        .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
                         .r_child(Components.InputColumn("Quantidade", qtd,"Ex: 2"))
+                        .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
                         .r_child(Components.InputColumn("Tipo de unidade", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: rua das graças")))
                 .c_child(new SpacerVertical(10))
                 .c_child(valoresRow)

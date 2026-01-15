@@ -99,8 +99,7 @@ public class Components {
                 .r_child(new Text(valueState, new TextProps().fontSize(theme.typography().small())));
     }
 
-    //rawState é só pra visualização formatada
-    public static Component InputColumnCurrency(String label, State<String> inputState, State<String> rawState){
+    public static Component InputColumnCurrency(String label, State<String> inputState){
         var icon =  Entypo.CREDIT;
         var fonticon = FontIcon.of(icon, 15, Color.web("green"));
 
@@ -111,17 +110,13 @@ public class Components {
                 borderWidth(theme.border().width())
                 .borderColor(theme.colors().primary());
 
-        // Atualiza o state com o valor bruto (em centavos)
+        // inputState armazena valores brutos (em centavos), campo exibe formato BRL
         var input = new Input(inputState, inputProps, inputStyler)
                 .onChange(value -> {
                     String numeric = value.replaceAll("[^0-9]", "");
                     if (numeric.isEmpty()) {
-                        rawState.set("0");
                         return OnChangeResult.of("R$ 0,00", "0");
                     }
-
-                    // Atualiza o state com o valor bruto (em centavos)
-                    rawState.set(numeric);
 
                     BigDecimal raw = new BigDecimal(numeric).movePointLeft(2);
                     return OnChangeResult.of(BRL.format(raw), numeric);
