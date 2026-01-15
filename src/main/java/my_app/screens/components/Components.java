@@ -18,6 +18,8 @@ import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.entypo.Entypo;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +28,11 @@ import java.util.function.Function;
 public class Components {
 
     static Theme theme = ThemeManager.theme();
+
+    private static final NumberFormat BRL =
+            NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+
+
 
     //TODO: adicionar campo editavel:false
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label, String placeholder) {
@@ -89,6 +96,41 @@ public class Components {
         return new Row()
                 .r_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .r_child(new Text(valueState, new TextProps().fontSize(theme.typography().small())));
+    }
+
+    //rawState é só pra visualização formatada
+    public static Component InputColumnCurrency(String label, State<String> inputState, State<String> rawState){
+        var icon =  Entypo.CREDIT;
+        var fonticon = FontIcon.of(icon, 15, Color.web("green"));
+
+        var inputProps = new InputProps().fontSize(theme.typography().small()).height(35)
+                .placeHolder("R$ 0,00");
+
+        var inputStyler = new InputStyler().
+                borderWidth(theme.border().width())
+                .borderColor(theme.colors().primary());
+
+        // Atualiza o state com o valor bruto (em centavos)
+        var input = new Input(inputState, inputProps, inputStyler)
+                .onChange(value -> {
+                    String numeric = value.replaceAll("[^0-9]", "");
+                    if (numeric.isEmpty()) {
+                        numeric = "0";
+                        rawState.set("0");
+                        return "R$ 0,00";
+                    }
+
+                    // Atualiza o state com o valor bruto (em centavos)
+                    rawState.set(numeric);
+
+                    BigDecimal raw = new BigDecimal(numeric).movePointLeft(2);
+                    return BRL.format(raw);
+                })
+                .left(fonticon);
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(input);
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {

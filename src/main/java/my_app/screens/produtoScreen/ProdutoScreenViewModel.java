@@ -141,35 +141,5 @@ public class ProdutoScreenViewModel extends ViewModel {
     public void refreshProdutos() {
         loadProdutos();
     }
-
-    
-
-    private BigDecimal parseMonetarioRaw(String valorMonetario) {
-        if (valorMonetario == null || valorMonetario.trim().isEmpty()) {
-            return BigDecimal.ZERO;
-        }
-        
-        try {
-            // Remove todos os caracteres não numéricos exceto vírgula e ponto
-            String limpo = valorMonetario.replaceAll("[^0-9.,]", "");
-            
-            // Se tiver vírgula, remove pontos (milhar) e substitui vírgula por ponto (decimal)
-            if (limpo.contains(",")) {
-                limpo = limpo.replace(".", "").replace(",", ".");
-            }
-            
-            // Remove ponto decimal duplicado se houver
-            int lastDotIndex = limpo.lastIndexOf(".");
-            if (lastDotIndex > 0 && limpo.indexOf(".") != lastDotIndex) {
-                limpo = limpo.substring(0, lastDotIndex).replace(".", "") + limpo.substring(lastDotIndex);
-            }
-            
-            if (limpo.isEmpty()) return BigDecimal.ZERO;
-            
-            return new BigDecimal(limpo);
-        } catch (NumberFormatException e) {
-            return BigDecimal.ZERO;
-        }
-    }
 }
 

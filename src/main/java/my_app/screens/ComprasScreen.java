@@ -6,6 +6,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.util.StringConverter;
+import megalodonte.ComputedState;
 import megalodonte.Show;
 import megalodonte.State;
 import megalodonte.async.Async;
@@ -36,6 +37,7 @@ import java.util.Locale;
 
 public class ComprasScreen implements ScreenComponent {
     private final Router router;
+    private CategoriaRepository categoriaRepository = new CategoriaRepository();
 
     State<LocalDate> dataCompra = State.of(LocalDate.now());
     State<String> numeroNota = State.of("");
@@ -43,22 +45,29 @@ public class ComprasScreen implements ScreenComponent {
 
     ObservableList<CategoriaModel> categoriasObservable = FXCollections.observableArrayList();
 
-
-    private CategoriaRepository categoriaRepository = new CategoriaRepository();
     State<String> codigo = State.of("");
     State<ProdutoModel> produtoEncontrado = State.of(null);
-    State<String> qtd = State.of("0");
+    State<String> qtd = State.of("2");
     State<String> totalBruto = State.of("0");
     State<String> descontoPorcentagem = State.of("0");
     State<String> descontoEmDinheiro = State.of("0");
-    State<String> totalLiquido = State.of("0");
-    State<String> dataValidade = State.of("0");
 
     //acho que é preço cadastrado de compra -> ver video
-    private State<String> pcCompra = State.of("");
-    
-    State<Boolean> hasProdutoEncontrado = State.of(false);
-    State<Boolean> hasntProdutoEncontrado = State.of(true);
+    State<String> pcCompraRow = State.of("0");
+    State<String> pcCompra = State.of("0");
+
+
+    ComputedState<String> totalLiquido = ComputedState.of(()-> {
+        int qtdValue = Integer.parseInt(qtd.get());
+        IO.println("qtdValue: " + qtdValue);
+        double precoCompraValue = Double.parseDouble(pcCompra.get());
+        IO.println("precoCompraValue: " + precoCompraValue);
+
+        return String.valueOf(qtdValue * precoCompraValue);
+    }, descontoEmDinheiro, qtd, pcCompra);
+
+    //State<String> totalLiquido = State.of("0");
+    State<String> dataValidade = State.of("0");
 
     public final ObservableList<FornecedorModel> fornecedores = FXCollections.observableArrayList();
     public final State<FornecedorModel> fornecedorSelected = State.of(null);
@@ -84,7 +93,7 @@ public class ComprasScreen implements ScreenComponent {
                UI.runOnUi(()->{
                    if(!list.isEmpty()){
                        list.stream().filter(f-> f.id == 1L).findFirst()
-                               .ifPresent(fornecedorSelected::set);//está funcionando normalmente
+                               .ifPresent(fornecedorSelected::set);
                    }
 
                });
@@ -121,7 +130,7 @@ IO.println("Erro on fetch data: " + e.getMessage());
         final var valoresRow = new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.TextWithValue("Valor total:", codigo))
                 .r_child(Components.TextWithValue("Desconto:", produtoEncontrado.map(p-> p != null? p.descricao: "")))
-                .r_child(Components.TextWithValue("Total geral:", produtoEncontrado.map(p-> p != null? p.descricao: ""))
+                .r_child(Components.TextWithValue("Total geral:", totalLiquido)
                 );
 
 
@@ -133,7 +142,8 @@ IO.println("Erro on fetch data: " + e.getMessage());
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                         .r_child(Components.InputColumn("Código", codigo,"xxxxxxxx"))
                         .r_child(Components.InputColumn("Descrição do produto",produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: Paraiso"))
-                        .r_child(Components.InputColumn("Pc. de compra", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: R$ 10,00"))
+                        //.r_child(Components.InputColumn("Pc. de compra", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: R$ 10,00"))
+                        .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra, pcCompraRow))
                         .r_child(Components.InputColumn("Quantidade", qtd,"Ex: 2"))
                         .r_child(Components.InputColumn("Tipo de unidade", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: rua das graças")))
                 .c_child(new SpacerVertical(10))
@@ -147,6 +157,7 @@ IO.println("Erro on fetch data: " + e.getMessage());
         IO.println(dataCompra.get());
 
         String dataBR = localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        // p.precoCompra = new BigDecimal(precoCompraRaw.get()).movePointLeft(2);
 
     }
 
