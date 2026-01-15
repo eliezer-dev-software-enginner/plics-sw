@@ -64,7 +64,10 @@ public class ComprasScreen implements ScreenComponent {
         double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
         IO.println("precoCompraValue: " + precoCompraValue);
 
-        return String.valueOf(qtdValue * precoCompraValue);
+        double precoDescontoValue = Double.parseDouble(descontoEmDinheiro.get()) / 100.0;
+        IO.println("precoDescontoValue: " + precoCompraValue);
+
+        return String.valueOf(qtdValue * precoCompraValue - precoDescontoValue);
     }, descontoEmDinheiro, qtd, pcCompra);
 
     //State<String> totalLiquido = State.of("0");
@@ -93,10 +96,10 @@ public class ComprasScreen implements ScreenComponent {
 
                UI.runOnUi(()->{
                    if(!list.isEmpty()){
-                       list.stream().filter(f-> f.id == 1L).findFirst()
+                       list.stream().filter(f-> f.id == 1L)
+                               .findFirst()
                                .ifPresent(fornecedorSelected::set);
                    }
-
                });
 
             }catch (SQLException e){
@@ -147,7 +150,7 @@ IO.println("Erro on fetch data: " + e.getMessage());
                         .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
                         .r_child(Components.InputColumn("Quantidade", qtd,"Ex: 2"))
                         .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
-                        .r_child(Components.InputColumn("Tipo de unidade", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: rua das graças")))
+                )
                 .c_child(new SpacerVertical(10))
                 .c_child(valoresRow)
         );

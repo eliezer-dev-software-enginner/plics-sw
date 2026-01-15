@@ -121,6 +121,7 @@ public class Components {
                     BigDecimal raw = new BigDecimal(numeric).movePointLeft(2);
                     return OnChangeResult.of(BRL.format(raw), numeric);
                 })
+                .lockCursorToEnd()
                 .left(fonticon);
 
         return new Column()
