@@ -60,7 +60,7 @@ public class ComprasScreen implements ScreenComponent {
     ComputedState<String> totalLiquido = ComputedState.of(()-> {
         int qtdValue = Integer.parseInt(qtd.get());
         IO.println("qtdValue: " + qtdValue);
-        double precoCompraValue = Double.parseDouble(pcCompra.get());
+        double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
         IO.println("precoCompraValue: " + precoCompraValue);
 
         return String.valueOf(qtdValue * precoCompraValue);
