@@ -95,8 +95,8 @@ public class Components {
 
     public static Component TextWithValue(String label, ReadableState<String> valueState) {
         return new Row()
-                .r_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
-                .r_child(new Text(valueState, new TextProps().fontSize(theme.typography().small())));
+                .r_child(new Text(label, new TextProps().fontSize(theme.typography().body()).bold()))
+                .r_child(new Text(valueState, new TextProps().fontSize(theme.typography().body())));
     }
 
     public static Component InputColumnCurrency(String label, State<String> inputState){
