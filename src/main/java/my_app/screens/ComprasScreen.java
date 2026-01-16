@@ -2,6 +2,7 @@ package my_app.screens;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ScrollPane;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.Show;
@@ -78,16 +79,6 @@ public class ComprasScreen implements ScreenComponent {
         return (qtdValue * precoCompraValue - precoDescontoValue);
     }, descontoEmDinheiro, qtd, pcCompra);
 
-    ComputedState<String> totalLiquidoFormatted = ComputedState.of(()-> {
-        int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty()? "0": qtd.get());
-        double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
-
-        double precoDescontoValue = Double.parseDouble(descontoEmDinheiro.get()) / 100.0;
-
-        return Utils.toBRLCurrency(BigDecimal.valueOf(qtdValue * precoCompraValue - precoDescontoValue));
-    }, descontoEmDinheiro, qtd, pcCompra);
-
-
     //State<String> totalLiquido = State.of("0");
     State<String> dataValidade = State.of("0");
 
@@ -137,32 +128,33 @@ IO.println("Erro on fetch data: " + e.getMessage());
                 .c_child(Components.commonCustomMenus(
                       this::handleClickMenuNew,this::handleClickMenuEdit, this::handleClickMenuDelete))
                 .c_child(new SpacerVertical(10))
-                .c_child(form())
-                .c_child(new SpacerVertical(20));
+                .c_child(form());
     }
 
 
     Component form(){
         final var top = new Row(new RowProps().bottomVertically().spacingOf(10))
-//                .r_child(Components.InputColumn("Data de compra", codigo,"Ex: 01/12/2026"))
                 .r_child(Components.DatePickerColumn(dataCompra,"Data de compra 2", "dd/mm/yyyy"))
                 .r_child(Components.SelectColumn("Fornecedor", fornecedores, fornecedorSelected, f-> f.nome))
-                .r_child(Components.InputColumn("N NF/Pedido compra", numeroNota,"Ex: 12345678920"));
+                .r_child(Components.InputColumn("N NF/Pedido compra", numeroNota,"Ex: 12345678920"))
+                .r_child(Components.InputColumn("Código", codigo,"xxxxxxxx"));
 
         final var valoresRow = new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.TextWithValue("Valor total(bruto): ", totalBruto))
                 .r_child(Components.TextWithValue("Desconto: ", descontoEmDinheiro))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquidoFormatted)
+                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(it-> Utils.toBRLCurrency(BigDecimal.valueOf(it))))
                 );
 
+        var scroll = new ScrollPane();
+        scroll.setPrefHeight(600);
+        //scroll.setStyle("-fx-background-color:red;");
 
-        return new Card(new Column()
+        scroll.setContent(new Column(new ColumnProps().minWidth(800))
                 .c_child(Components.FormTitle("Cadastrar Nova Compra"))
                 .c_child(new SpacerVertical(20))
                 .c_child(top)
                 .c_child(new SpacerVertical(10))
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                        .r_child(Components.InputColumn("Código", codigo,"xxxxxxxx"))
                         .r_child(Components.InputColumn("Descrição do produto",produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: Paraiso"))
                         //.r_child(Components.InputColumn("Pc. de compra", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: R$ 10,00"))
                         .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
@@ -172,13 +164,14 @@ IO.println("Erro on fetch data: " + e.getMessage());
                 .c_child(new SpacerVertical(10))
                 .c_child(
                         new Row(new RowProps().spacingOf(10)).r_child(Components.SelectColumn("Tipo de pagamento",tiposPagamento, tipoPagamentoSeleced,it->it))
-                                        .r_child(Components.TextAreaColumn("Observação",observacao,""))
-                        )
+                                .r_child(Components.TextAreaColumn("Observação",observacao,""))
+                )
                 .c_child(new SpacerVertical(10))
                 .c_child(aPrazoForm())
                 .c_child(new SpacerVertical(10))
-                .c_child(valoresRow)
-        );
+                .c_child(valoresRow).getJavaFxNode());
+
+        return new Card(Component.CreateFromJavaFxNode(scroll));
     }
 
 
@@ -193,7 +186,7 @@ IO.println("Erro on fetch data: " + e.getMessage());
         ForEachState<Parcela, Component> parcelaComponentForEachState = ForEachState.of(parcelas, this::parcelaItem);
 
         return Show.when(tipoPagamentoSelectedIsAPrazo,
-                ()-> new Column()
+                ()-> new Column(new ColumnProps())
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())
                                 .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela", ""))
@@ -204,7 +197,7 @@ IO.println("Erro on fetch data: " + e.getMessage());
     }
 
     Component parcelaItem(Parcela parcela){
-        return new Row()
+        return new Row(new RowProps())
                 .r_child(Components.TextColumn("PARCELA",String.valueOf(parcela.numero())))
                 .r_child(Components.TextColumn("VENCIMENTO",parcela.dataVencimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
                 .r_child(Components.TextColumn("VALOR",String.format("R$ %.2f", parcela.valor())));
