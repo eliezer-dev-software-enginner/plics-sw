@@ -90,7 +90,7 @@ public class Components {
 
     public static void ShowAlertError(String message) {
         Alert alert = new Alert(Alert.AlertType.NONE);
-        alert.setTitle(message);
+        alert.setTitle("Erro");
 
         ButtonType okButton = new ButtonType("Fechar", ButtonBar.ButtonData.OK_DONE);
 
