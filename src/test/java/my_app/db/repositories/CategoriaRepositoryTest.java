@@ -25,7 +25,7 @@ class CategoriaRepositoryTest {
 
     @Test
     void salvar() throws SQLException {
-        var dto = new CategoriaDto("cat1", System.currentTimeMillis());
+        var dto = new CategoriaDto("cat1");
         var salvo = repo.salvar(dto);
 
         var encontrado = repo.buscarById(salvo.id);
@@ -44,8 +44,8 @@ class CategoriaRepositoryTest {
                     listaInicial.stream().anyMatch(p -> p.nome.equals("Geral"))
             );
 
-            var dto1 = new CategoriaDto("categ1", System.currentTimeMillis());
-            var dto2 = new CategoriaDto("categ2", System.currentTimeMillis());
+            var dto1 = new CategoriaDto("categ1");
+            var dto2 = new CategoriaDto("categ2");
 
             repo.salvar(dto1);
             repo.salvar(dto2);
@@ -91,7 +91,7 @@ class CategoriaRepositoryTest {
 
 
     private CategoriaDto categoriaDtoFake() {
-        return new CategoriaDto("cat1", System.currentTimeMillis());
+        return new CategoriaDto("cat1");
     }
 
     private CategoriaModel categoriaFake() {

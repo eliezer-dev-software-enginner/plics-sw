@@ -13,11 +13,11 @@ public class CategoriaRepository extends BaseRepository<CategoriaDto, CategoriaM
     // CREATE
     public CategoriaModel salvar(CategoriaDto dto) throws SQLException {
         String sql = """
-        INSERT INTO categoria 
+        INSERT INTO categoria
         (nome, data_criacao) VALUES (?,?)
         """;
 
-        long dataCriacao = dto.dataCriacao() != null ? dto.dataCriacao() : System.currentTimeMillis();
+        long dataCriacao =  System.currentTimeMillis();
 
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, dto.nome());

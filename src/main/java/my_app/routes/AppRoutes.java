@@ -28,7 +28,7 @@ public class AppRoutes {
                 new Router.Route("compras",router-> new ComprasScreen(router), new Router.RouteProps(1000, 650, "Compras de mercadorias", false)),
         new Router.Route("clientes",router-> new ClienteScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de clientes", false))
         );
-        return new Router(routes, "produtos", stage);
+        return new Router(routes, "categoria", stage);
     }
 }
 
