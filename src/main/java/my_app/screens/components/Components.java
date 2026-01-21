@@ -37,8 +37,6 @@ import java.util.function.Function;
 
 public class Components {
 
-    private static final NumberFormat BRL =
-            NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
     static Theme theme = ThemeManager.theme();
 
     public static void ShowPopup(Router router, String message) {
@@ -85,8 +83,6 @@ public class Components {
                 new CardProps().height(300).padding(20)
         );
     }
-
-    ;
 
     public static void ShowAlertError(String message) {
         Alert alert = new Alert(Alert.AlertType.NONE);
@@ -189,6 +185,9 @@ public class Components {
                 .r_child(new Text(valueState, new TextProps().fontSize(theme.typography().body())));
     }
 
+
+    private static final NumberFormat BRL =
+            NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
     public static Component InputColumnCurrency(String label, State<String> inputState) {
         var icon = Entypo.CREDIT;
         var fonticon = FontIcon.of(icon, 15, Color.web("green"));
@@ -202,6 +201,16 @@ public class Components {
 
         // inputState armazena valores brutos (em centavos), campo exibe formato BRL
         var input = new Input(inputState, inputProps, inputStyler)
+                .onInitialize(value -> {
+                    if (value.matches("\\d+")) {
+                        BigDecimal realValue = new BigDecimal(value).movePointLeft(2);
+                        return OnChangeResult.of(
+                                NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(realValue),
+                                value
+                        );
+                    }
+                    return OnChangeResult.of(value, value);
+                })
                 .onChange(value -> {
                     String numeric = value.replaceAll("[^0-9]", "");
                     if (numeric.isEmpty()) {
