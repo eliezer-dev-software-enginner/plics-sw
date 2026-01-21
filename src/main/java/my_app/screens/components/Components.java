@@ -204,10 +204,7 @@ public class Components {
                 .onInitialize(value -> {
                     if (value.matches("\\d+")) {
                         BigDecimal realValue = new BigDecimal(value).movePointLeft(2);
-                        return OnChangeResult.of(
-                                NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(realValue),
-                                value
-                        );
+                        return OnChangeResult.of(BRL.format(realValue), value);
                     }
                     return OnChangeResult.of(value, value);
                 })
