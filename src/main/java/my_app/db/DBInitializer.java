@@ -17,7 +17,7 @@ public final class DBInitializer {
             try (Statement st = conn.createStatement()) {
 
                 st.execute("""
-                    CREATE TABLE IF NOT EXISTS produto (
+                    CREATE TABLE IF NOT EXISTS produtos (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         codigo_barras TEXT UNIQUE NOT NULL,
                         descricao TEXT,
@@ -29,6 +29,10 @@ public final class DBInitializer {
                         estoque INTEGER,
                         observacoes TEXT,
                         imagem TEXT,
+                        marca TEXT,
+                        validade TEXT,
+                        comissao TEXT,
+                        garantia TEXT,
                         data_criacao INTEGER,
                         FOREIGN KEY (categoria_id) REFERENCES categoria(id)
                     )
