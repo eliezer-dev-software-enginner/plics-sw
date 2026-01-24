@@ -19,6 +19,7 @@ import my_app.db.models.CategoriaModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.screens.ContratoTelaCrud;
 import my_app.screens.components.Components;
+import my_app.utils.Utils;
 
 import java.sql.SQLException;
 
@@ -28,7 +29,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
     State<String> nome = State.of("");
     State<Boolean> modoEdicao = State.of(false);
 
-    ComputedState<String> btnText = ComputedState.of(()-> modoEdicao.get()?"Atualizar": "+ Adicionar", modoEdicao);
+    ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
     State<CategoriaModel> categoriaSelecionada = State.of(null);
     ObservableList<CategoriaModel> categoriasObservable = FXCollections.observableArrayList();
     private CategoriaRepository categoriaRepository = new CategoriaRepository();
@@ -54,43 +55,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
     }
 
     public Component render() {
-        return new Column(new ColumnProps().paddingAll(5), new ColumnStyler().bgColor(theme.colors().background()))
-                .c_child(commonCustomMenus())
-                .c_child(new SpacerVertical(10))
-                .c_child(form())
-                .c_child(new SpacerVertical(20))
-                .c_child(table());
-    }
-
-    @Override
-    public void handleClickMenuEdit() {
-        modoEdicao.set(true);
-        if(categoriaSelecionada.get() != null)
-            nome.set(categoriaSelecionada.get().nome);
-    }
-
-    @Override
-    public void handleClickMenuDelete() {
-        if (categoriaSelecionada != null) {
-            Async.Run(() -> {
-                try {
-                    Long id = categoriaSelecionada.get().id;
-                    categoriaRepository.excluirById(id);
-                    UI.runOnUi(() -> {
-                        Components.ShowPopup(router, "categoria excluida com sucesso");
-                        categoriasObservable.removeIf(categoriaModel -> categoriaModel.id.equals(id));
-                    });
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
-
-        }
-    }
-
-    @Override
-    public void handleClickMenuClone() {
-
+        return mainView();
     }
 
     @Override
@@ -102,21 +67,70 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
                         .r_child(
                                 Components.InputColumn("Nome", nome, "Ex: Eletrômicos"))
                         .r_child(Components.ButtonCadastro(btnText, this::handleAddOrUpdate))
-                ));
+                )
+                .c_child(new SpacerVertical(20))
+                .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
+        );
+
+    }
+
+
+    @Override
+    public void handleClickNew() {
+        modoEdicao.set(false);
+        clearForm();
+    }
+
+    @Override
+    public void handleClickMenuEdit() {
+        modoEdicao.set(true);
+        if (categoriaSelecionada.get() != null)
+            nome.set(categoriaSelecionada.get().nome);
+    }
+
+    @Override
+    public void handleClickMenuDelete() {
+        if (categoriaSelecionada != null) {
+            modoEdicao.set(false);
+
+            Async.Run(() -> {
+                try {
+                    Long id = categoriaSelecionada.get().id;
+                    categoriaRepository.excluirById(id);
+                    UI.runOnUi(() -> {
+                        Components.ShowPopup(router, "categoria excluida com sucesso");
+                        categoriasObservable.removeIf(categoriaModel -> categoriaModel.id.equals(id));
+                    });
+                } catch (SQLException e) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
+                }
+            });
+
+        }
+    }
+
+    @Override
+    public void handleClickMenuClone() {
+        modoEdicao.set(false);
+
+        final var data = categoriaSelecionada.get();
+        if (data != null) {
+            nome.set(data.nome);
+        }
     }
 
     @Override
     public void handleAddOrUpdate() {
         String value = nome.get().trim();
 
-        if(value.isEmpty()){
+        if (value.isEmpty()) {
             Components.ShowAlertError("Preencha o nome da categoria");
             return;
         }
 
-        if(modoEdicao.get() && categoriaSelecionada.get() == null)return;
+        if (modoEdicao.get() && categoriaSelecionada.get() == null) return;
 
-        if(modoEdicao.get()){
+        if (modoEdicao.get()) {
             Async.Run(() -> {
                 try {
                     final var model = categoriaSelecionada.get();
@@ -124,14 +138,14 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
                     categoriaRepository.atualizar(model);
                     loadCategorias();
                     UI.runOnUi(() -> {
-                        Components.ShowPopup(router,"Categoria atualizada com sucesso");
-                        nome.set("");
+                        Components.ShowPopup(router, "Categoria atualizada com sucesso");
+                        clearForm();
                     });
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
                 }
             });
-        }else{
+        } else {
             var dto = new CategoriaDto(value.trim());
 
             Async.Run(() -> {
@@ -139,7 +153,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
                     var model = categoriaRepository.salvar(dto);
                     UI.runOnUi(() -> {
                         categoriasObservable.add(model);
-                        Components.ShowPopup(router,"Categoria '" + model.nome + "' cadastrada com sucesso");
+                        Components.ShowPopup(router, "Categoria '" + model.nome + "' cadastrada com sucesso");
                         nome.set("");
                     });
                 } catch (Exception e) {
@@ -153,7 +167,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void clearForm() {
-
+        nome.set("");
     }
 
     @Override
@@ -185,11 +199,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
         TableColumn<CategoriaModel, String> colData = new TableColumn<>("Data criação");
         colData.setCellValueFactory(data -> {
             var millis = data.getValue().dataCriacao;
-            var dataFormatada = java.time.Instant.ofEpochMilli(millis)
-                    .atZone(java.time.ZoneId.systemDefault())
-                    .toLocalDate()
-                    .toString();
-            return new javafx.beans.property.SimpleStringProperty(dataFormatada);
+            return new javafx.beans.property.SimpleStringProperty(Utils.formatDateTime(millis));
         });
         colData.setPrefWidth(200);
 

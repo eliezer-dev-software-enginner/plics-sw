@@ -35,17 +35,24 @@ public class HomeScreen {
         var menuBar = new MenuBar();
         var menu = new Menu("Preferências");
         var menuCadastros = new Menu("Cadastros");
+        var menuGerencial = new Menu("Gerencial");
 
         MenuItem menuItemCadFornecedores = new MenuItem("Fornecedores",null);
         menuItemCadFornecedores.setOnAction(ev->  router.spawnWindow("fornecedores"));
         MenuItem menuItemClientes = new MenuItem("Clientes",null);
         menuItemClientes.setOnAction(ev-> router.spawnWindow("clientes"));
+        MenuItem menuItemCategorias = new MenuItem("Categorias",null);
+        menuItemCategorias.setOnAction(ev-> router.spawnWindow("categorias"));
 
-        menuCadastros.getItems().addAll(menuItemCadFornecedores, menuItemClientes);
+        menuCadastros.getItems().addAll(menuItemCadFornecedores, menuItemClientes, menuItemCategorias);
+        //------------Gerencial
+        MenuItem menuItemEmpresa = new MenuItem("Empresa",null);
+        menuItemEmpresa.setOnAction(ev-> router.spawnWindow("empresa"));
+        menuGerencial.getItems().addAll(menuItemEmpresa);
        // var itemPreferences = new MenuItem("Preferências");
        // menu.getItems().add(itemPreferences);
 
-        menuBar.getMenus().addAll(menu, menuCadastros);
+        menuBar.getMenus().addAll(menu, menuCadastros, menuGerencial);
         return menuBar;
     }
 

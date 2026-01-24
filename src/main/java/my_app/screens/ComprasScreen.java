@@ -34,7 +34,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComprasScreen implements ScreenComponent {
+//TODO: finalizar implementações
+public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
     private final Router router;
     private ComprasRepository comprasRepository = new ComprasRepository();
 
@@ -99,8 +100,6 @@ public class ComprasScreen implements ScreenComponent {
     }
 
     private void fetchData() {
-        //TODO: implementar
-
         Async.Run(()->{
             try{
                var list = new FornecedorRepository().listar();
@@ -115,7 +114,7 @@ public class ComprasScreen implements ScreenComponent {
                });
 
             }catch (SQLException e){
-                IO.println("Erro on fetch data: " + e.getMessage());
+              UI.runOnUi(()->  Components.ShowAlertError("Erro ao buscar compras"));
             }
 
         });
@@ -125,19 +124,12 @@ public class ComprasScreen implements ScreenComponent {
 
     private final Theme theme = ThemeManager.theme();
 
-
     public Component render() {
-        return new Column(new ColumnProps().paddingAll(5), new ColumnStyler().bgColor(theme.colors().background()))
-                .c_child(Components.commonCustomMenus(
-                      this::handleClickMenuNew,this::handleClickMenuEdit, this::handleClickMenuDelete,
-                        this::handleClickMenuCopy))
-                .c_child(new SpacerVertical(10))
-                .c_child(form());
+        return mainView();
     }
 
-
-    Component form(){
-
+    @Override
+    public Component form(){
         Runnable searchProductOnFocusChange = ()->{
             Async.Run(()->{
                 try {
@@ -206,27 +198,6 @@ public class ComprasScreen implements ScreenComponent {
         return new Card(Component.CreateFromJavaFxNode(scroll));
     }
 
-    void handleSaveOrUpdate(){
-        Async.Run(()->{
-            if(modoEdicao.get()){
-                //TODO: implementar
-                return;
-            }
-            try {
-                var dto = new CompraDto(codigo.get(), pcCompra.get(),fornecedorSelected.get().id,
-                        new BigDecimal(qtd.get()), descontoEmDinheiro.get(),
-                        tipoPagamentoSeleced.get(), observacao.get());
-               var compraSalva = comprasRepository.salvar(dto);
-               UI.runOnUi(()->{
-                   IO.println("compra foi salva!");
-               });
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-    }
-
     Component aPrazoForm() {
         var dtPrimeiraParcela = State.of(LocalDate.now().plusMonths(1).minusDays(1));
         var qtdParcelas = State.of("1");
@@ -256,6 +227,26 @@ public class ComprasScreen implements ScreenComponent {
     }
 
     record Parcela(int numero, LocalDate dataVencimento, double valor) {
+    }
+
+    void handleSaveOrUpdate(){
+        Async.Run(()->{
+            if(modoEdicao.get()){
+                //TODO: implementar
+                return;
+            }
+            try {
+                var dto = new CompraDto(codigo.get(), pcCompra.get(),fornecedorSelected.get().id,
+                        new BigDecimal(qtd.get()), descontoEmDinheiro.get(),
+                        tipoPagamentoSeleced.get(), observacao.get());
+                var compraSalva = comprasRepository.salvar(dto);
+                UI.runOnUi(()->{
+                    IO.println("compra foi salva!");
+                });
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void gerarParcelas(LocalDate dataPrimeiraParcela, int quantidadeParcelas, double valorTotalLiquido) {
@@ -299,13 +290,41 @@ public class ComprasScreen implements ScreenComponent {
         //nome.set("");
     }
 
-    private void handleClickMenuEdit() {
+    @Override
+    public void handleClickNew() {
+        modoEdicao.set(false);
+        clearForm();
+    }
+
+    @Override
+    public void handleClickMenuEdit() {
         //  nome.set(categoriaSelecionada.get().nome);
        modoEdicao.set(true);
     }
 
-    private void handleClickMenuDelete() {
+    @Override
+    public void handleClickMenuDelete() {
         //TODO: implementar
+    }
+
+    @Override
+    public void handleClickMenuClone() {
+
+    }
+
+    @Override
+    public void handleAddOrUpdate() {
+
+    }
+
+    @Override
+    public void clearForm() {
+
+    }
+
+    @Override
+    public Component table() {
+        return null;
     }
 
     private void handleClickMenuCopy(){

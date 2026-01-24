@@ -1,5 +1,6 @@
 package my_app.utils;
 
+import javafx.collections.ObservableList;
 import javafx.scene.control.TableView;
 import my_app.db.models.ModelBase;
 
@@ -177,5 +178,14 @@ public static BigDecimal deCentavosParaReal(String centavos){
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime()
                 .format(BR_FORMATTER);
+    }
+
+    public static <T> void updateItemOnObservableList(
+            ObservableList<T> observableList, T modelSelected, T modelAtualizada
+    ){
+        int index = observableList.indexOf(modelSelected);
+        if (index != -1) {
+            observableList.set(index, modelAtualizada);
+        }
     }
 }

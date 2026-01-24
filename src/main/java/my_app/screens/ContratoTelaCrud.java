@@ -11,9 +11,7 @@ import megalodonte.theme.ThemeManager;
 import my_app.screens.components.Components;
 
 public interface ContratoTelaCrud {
-    default void handleClickNew(){
-        this.clearForm();
-    }
+     void handleClickNew();
     void handleClickMenuEdit();
     void handleClickMenuDelete();
     void handleClickMenuClone();

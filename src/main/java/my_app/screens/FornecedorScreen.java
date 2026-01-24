@@ -74,23 +74,14 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                 final var list = fornecedorRepository.listar();
                 UI.runOnUi(()->  fornecedores.addAll(list));
             } catch (Exception e) {
-                UI.runOnUi(()->   Components.ShowAlertError("Erro ao carregar fornecedores: " + e.getMessage()));
+                UI.runOnUi(()-> Components.ShowAlertError("Erro ao carregar fornecedores: " + e.getMessage()));
 
             }
         });
     }
 
-
     public Component render() {
-        var mainContent = new Column()
-          .c_child(form())
-          .c_child(new SpacerVertical(30))
-          .c_child(table());
-
-        return new Column(new ColumnProps().paddingAll(10), new ColumnStyler().bgColor(theme.colors().background()))
-                .c_child(commonCustomMenus())
-                .c_child(new SpacerVertical(10))
-                .c_child(Components.ScrollPaneDefault(mainContent));
+        return mainView();
     }
 
 
@@ -120,8 +111,14 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(new SpacerVertical(20))
                         .c_child(new LineHorizontal())
                         .c_child(Components.TextAreaColumn("Observação", observacao,""))
-                        .c_child(Components.ButtonCadastro(btnText, this::handleAddOrUpdate))
-        );
+                        .c_child(new SpacerVertical(20))
+                        .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm)));
+    }
+
+    @Override
+    public void handleClickNew() {
+        editMode.set(false);
+        clearForm();
     }
 
     @Override
@@ -167,7 +164,22 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleClickMenuClone() {
+        editMode.set(false);
 
+        final var data = fornecedorSelected.get();
+        if(data != null){
+            nome.set(data.nome);
+            cnpj.set(data.cpfCnpj);
+            celular.set(data.celular);
+            inscricaoEstadual.set(data.inscricaoEstadual);
+            email.set(data.email);
+            ufSelected.set(data.ufSelected);
+            cidade.set(data.cidade);
+            bairro.set(data.bairro);
+            rua.set(data.rua);
+            numero.set(data.numero);
+            observacao.set(data.observacao);
+        }
     }
 
     @Override
@@ -239,18 +251,13 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                     fornecedorRepository.atualizar(modelAtualizada);
 
                     UI.runOnUi(() -> {
-                        // 3. Atualiza na ObservableList
-                        int index = fornecedores.indexOf(selecionado);
-                        if (index != -1) {
-                            fornecedores.set(index, modelAtualizada);
-                        }
-
+                        Utils.updateItemOnObservableList(fornecedores, selecionado, modelAtualizada);
                         Components.ShowPopup(router, "Fornecedor atualizado com sucesso");
                         clearForm();
                     });
 
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
                 }
             });
         }else{
@@ -277,15 +284,11 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                         Components.ShowPopup(router, "Fornecedor cadastrado com sucesso");
                         clearForm();
                     });
-
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
         }
-
-
-
     }
 
     @Override

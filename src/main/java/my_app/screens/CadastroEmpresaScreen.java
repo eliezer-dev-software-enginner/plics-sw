@@ -112,7 +112,7 @@ public class CadastroEmpresaScreen implements ScreenComponent {
     Row TopWithImage() {
         var left = new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(
-                        Components.InputColumn("Nome", nome, "Ex: Eletrômicos"))
+                        Components.InputColumn("Nome", nome, "Ex: Empresa ABC"))
                 .r_child(
                         Components.InputColumn("Telefone/Celular", celular, "(xx)xxxxx-yyyy"));
 

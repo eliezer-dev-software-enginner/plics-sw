@@ -16,6 +16,7 @@ import megalodonte.theme.ThemeManager;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
+import my_app.db.repositories.FornecedorRepository;
 import my_app.screens.ContratoTelaCrud;
 import my_app.screens.components.Components;
 import my_app.utils.Utils;
@@ -49,12 +50,15 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     }
 
     private void loadClientes() {
-        try {
-            clientes.clear();
-            clientes.addAll(clienteRepository.listar());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao carregar clientes", e);
-        }
+        Async.Run(()->{
+            try {
+                var list = clienteRepository.listar();
+                UI.runOnUi(()->  clientes.addAll(list));
+            } catch (Exception e) {
+                UI.runOnUi(()->  Components.ShowAlertError("Erro ao buscar clientes"));
+            }
+        });
+
     }
 
     public Component render() {
@@ -75,6 +79,12 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                         )
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm)));
+    }
+
+    @Override
+    public void handleClickNew() {
+        editMode.set(false);
+        clearForm();
     }
 
     @Override
@@ -177,7 +187,6 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                         Components.ShowPopup(router, "Cliente atualizado com sucesso");
                         clearForm();
                     });
-
                 } catch (Exception e) {
                     UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
                 }
