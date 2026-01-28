@@ -38,6 +38,7 @@ public class HomeScreen {
                         .item("Fornecedores", ()-> router.spawnWindow("fornecedores"))
                         .item("Clientes", ()-> router.spawnWindow("clientes"))
                         .item("Categorias", ()-> router.spawnWindow("categorias"))
+                        .item("Produtos", ()-> router.spawnWindow("produtos"))
                 )
                 .menu(new Menu("Gerencial")
                         .item("Empresa", ()-> router.spawnWindow("empresa"))

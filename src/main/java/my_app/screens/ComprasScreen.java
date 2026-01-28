@@ -29,6 +29,10 @@ import my_app.db.repositories.ComprasRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.screens.components.Components;
+import my_app.services.ContasPagarService;
+import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.util.List;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
@@ -594,6 +598,24 @@ var dto = new CompraDto(codigo.get(),
                     );
 
                     var compraSalva = comprasRepository.salvar(dto);
+
+                    // Gerar contas a pagar se for a prazo
+                    if ("A PRAZO".equals(tipoPagamentoSeleced.get()) && !parcelas.get().isEmpty()) {
+                        try {
+                            ContasPagarService contasPagarService = new ContasPagarService();
+                            List<ContasPagarService.Parcela> parcelasParaService = parcelas.get().stream()
+                                .map(p -> new ContasPagarService.Parcela(
+                                    p.numero(), 
+                                    p.dataVencimento().toEpochDay() * 86400000L, // Convert to milliseconds
+                                    BigDecimal.valueOf(p.valor())
+                                ))
+                                .toList();
+                            contasPagarService.gerarContasDeCompra(compraSalva, parcelasParaService);
+                        } catch (SQLException e) {
+                            UI.runOnUi(() -> Components.ShowAlertError("Erro ao gerar contas a pagar: " + e.getMessage()));
+                            return;
+                        }
+                    }
 
                     // Atualiza o estoque do produto
                     atualizarEstoqueProduto(dto.produtoCod(), dto.quantidade(), false, null);

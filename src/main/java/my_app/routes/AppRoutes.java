@@ -28,11 +28,12 @@ public class AppRoutes {
                 new Router.Route("fornecedores",router-> new FornecedorScreen(router), new Router.RouteProps(900, 650, "Gerenciamento de Fornecedores", false)),
                 //ok
                 new Router.Route("empresa",router-> new CadastroEmpresaScreen(router), new Router.RouteProps(900, 650, "Informações da empresa", false)),
+               //ok
                 new Router.Route("compras",router-> new ComprasScreen(router), new Router.RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
                 new Router.Route("clientes",router-> new ClienteScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de clientes", true))
         );
-        return new Router(routes, "compras", stage);
+        return new Router(routes, "auth", stage);
     }
 }
 
