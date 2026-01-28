@@ -25,8 +25,8 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             ps.setString(1, dto.produtoCod());
             ps.setLong(2, dto.fornecedorId());
             ps.setBigDecimal(3, dto.quantidade());
-            ps.setString(4, dto.precoCompra());
-            ps.setString(5, dto.descontoEmReais());
+            ps.setBigDecimal(4, dto.precoCompra());
+            ps.setBigDecimal(5, dto.descontoEmReais());
             ps.setString(6, dto.tipoPagamento());
             ps.setString(7, dto.observacao());
             ps.setString(8, null); // data_compra - will be handled in model
@@ -68,13 +68,17 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             ps.setString(1, model.produtoCod);
             ps.setLong(2, model.fornecedorId);
             ps.setBigDecimal(3, model.quantidade);
-            ps.setString(4, model.precoDeCompra);
-            ps.setString(5, model.descontoEmReais);
+            ps.setBigDecimal(4, model.precoDeCompra);
+            ps.setBigDecimal(5, model.descontoEmReais);
             ps.setString(6, model.tipoPagamento);
             ps.setString(7, model.observacao);
-            ps.setString(8, model.dataCompra != null ? model.dataCompra.toString() : null);
+            ps.setLong(8, model.dataCompra);
             ps.setString(9, model.numeroNota);
-            ps.setString(10, model.dataValidade != null ? model.dataValidade.toString() : null);
+            if (model.dataValidade != null) {
+                ps.setLong(10, model.dataValidade);
+            } else {
+                ps.setNull(10, java.sql.Types.BIGINT);
+            }
             ps.setLong(11, model.id);
             ps.executeUpdate();
         }

@@ -19,6 +19,7 @@ import megalodonte.styles.ColumnStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.dto.CompraDto;
+import my_app.db.dto.FornecedorDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.CompraModel;
 import my_app.db.models.FornecedorModel;
@@ -28,10 +29,12 @@ import my_app.db.repositories.ComprasRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.screens.components.Components;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -86,7 +89,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         return (qtdValue * precoCompraValue - precoDescontoValue);
     }, descontoEmDinheiro, qtd, pcCompra);
 
-    State<String> dataValidade = State.of("0");
+    State<LocalDate> dataValidade = State.of(null);
 
     ObservableList<FornecedorModel> fornecedores = FXCollections.observableArrayList();
     State<FornecedorModel> fornecedorSelected = State.of(null);
@@ -138,30 +141,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public Component form() {
-        Runnable searchProductOnFocusChange = () -> {
-            Async.Run(() -> {
-                try {
-                    var produto = new ProdutoRepository().buscarPorCodigoBarras(codigo.get());
-                    UI.runOnUi(() -> {
-                        if (!codigo.get().trim().isEmpty() && produto == null) {
-                            IO.println("Produto não encontrado para o codigo: " + codigo.get());
-                             Components.ShowAlertError("Produto não encontrado para o codigo: " + codigo.get());
-                            return;
-                        }
-                        IO.println("Produto encontrado");
-                        produtoEncontrado.set(produto);
-                        var valor = produtoEncontrado.get().precoCompra;
-                        BigDecimal semPonto = valor.setScale(0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
-                        pcCompra.set(String.valueOf(semPonto));
-                        // pcCompra.set(valor);
-                    });
-
-                } catch (SQLException e) {
-                    UI.runOnUi(()->Components.ShowAlertError("Erro ao buscar produto por código: " + e.getMessage()));
-                }
-            });
-
-        };
+        Runnable searchProductOnFocusChange = this::buscarProduto;
 
         final var top = new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.DatePickerColumn(dataCompra, "Data de compra 2", "dd/mm/yyyy"))
@@ -199,6 +179,30 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(valoresRow)
                         .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
         ));
+    }
+
+    private void buscarProduto() {
+        Async.Run(() -> {
+            try {
+                var produto = new ProdutoRepository().buscarPorCodigoBarras(codigo.get());
+                UI.runOnUi(() -> {
+                    if (!codigo.get().trim().isEmpty() && produto == null) {
+                        IO.println("Produto não encontrado para o codigo: " + codigo.get());
+                         Components.ShowAlertError("Produto não encontrado para o codigo: " + codigo.get());
+                        return;
+                    }
+                    IO.println("Produto encontrado");
+                    produtoEncontrado.set(produto);
+                    var valor = produtoEncontrado.get().precoCompra;
+                    BigDecimal semPonto = valor.setScale(0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
+                    pcCompra.set(String.valueOf(semPonto));
+                    // pcCompra.set(valor);
+                });
+
+            } catch (SQLException e) {
+                UI.runOnUi(()->Components.ShowAlertError("Erro ao buscar produto por código: " + e.getMessage()));
+            }
+        });
     }
 
     Component aPrazoForm() {
@@ -307,13 +311,28 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleClickMenuEdit() {
-        //  nome.set(categoriaSelecionada.get().nome);
         modoEdicao.set(true);
     }
 
     @Override
     public void handleClickMenuDelete() {
-        //TODO: implementar
+        modoEdicao.set(false);
+
+        final var data = compraSelected.get();
+        if (data != null) {
+            Async.Run(() -> {
+                try {
+                    Long id = data.id;
+                    comprasRepository.excluirById(id);
+                    UI.runOnUi(() -> {
+                        compras.removeIf(it-> it.id.equals(id));
+                    });
+
+                } catch (SQLException e) {
+                    UI.runOnUi(()->Components.ShowAlertError("Erro ao excluir compra: " + e.getMessage()));
+                }
+            });
+        }
     }
 
     @Override
@@ -322,16 +341,18 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
         final var data = compraSelected.get();
         if (data != null) {
-            dataCompra.set(LocalDate.parse(data.dataCompra));
+            dataCompra.set(DateUtils.millisParaLocalDate(data.dataCompra));
             numeroNota.set(data.numeroNota);
-            codigo.set(data.produtoCod);
-            //produtoEncontrado.set(null);
+
+            final var codProduto = data.produtoCod;
+            codigo.set(codProduto);
+
+            buscarProduto();
             qtd.set(data.quantidade.toString());
             observacao.set(data.observacao);
             tipoPagamentoSeleced.set(data.tipoPagamento);
-            //TODO: analisar esse preco de compra se vou ter que transformar em centavos pra UI
-            pcCompra.set(data.precoDeCompra);
-            dataValidade.set(data.dataValidade);
+            pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
+            dataValidade.set(DateUtils.millisParaLocalDate(data.dataValidade));
             fornecedorSelected.set(data.fornecedor);
         }
     }
@@ -340,20 +361,54 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
     public void handleAddOrUpdate() {
         Async.Run(() -> {
             if (modoEdicao.get()) {
-                //TODO: implementar
-                return;
-            }
-            try {
-                var dto = new CompraDto(codigo.get(), pcCompra.get(), fornecedorSelected.get().id,
-                        new BigDecimal(qtd.get()), descontoEmDinheiro.get(),
-                        tipoPagamentoSeleced.get(), observacao.get());
-                var compraSalva = comprasRepository.salvar(dto);
-                UI.runOnUi(() -> {
-                    IO.println("compra foi salva!");
-                    Components.ShowPopup(router, "Sua compra de mercadoria foi salva com sucesso!");
-                });
-            } catch (SQLException e) {
-             UI.runOnUi(()->Components.ShowAlertError("Erro ao salvar compra: " + e.getMessage()));
+                final var selecionado = compraSelected.get();
+                if(selecionado != null){
+                    CompraModel modelAtualizada = new CompraModel().fromIdAndDto(
+                            selecionado.id, new CompraDto(
+                                    codigo.get(),
+                                    Utils.deCentavosParaReal(pcCompra.get()),
+                                    fornecedorSelected.get().id,
+                                    new BigDecimal(qtd.get()),
+                                    Utils.deCentavosParaReal(descontoEmDinheiro.get()),
+                                    tipoPagamentoSeleced.get(),
+                                    observacao.get(),
+                                    DateUtils.localDateParaMillis(dataCompra.get()),
+                                    numeroNota.get(),
+                                    DateUtils.localDateParaMillis(dataValidade.get())
+                            ));
+                    try {
+                        comprasRepository.atualizar(modelAtualizada);
+                        Utils.updateItemOnObservableList(compras, selecionado, modelAtualizada);
+                    } catch (SQLException e) {
+                        UI.runOnUi(()->Components.ShowAlertError("Erro ao atualizar compra: " + e.getMessage()));
+                    }
+                }
+            }else{
+                try {
+                    final var dtValidade = dataValidade.get() != null?
+                            DateUtils.localDateParaMillis(dataValidade.get()) : null;
+
+                    var dto = new CompraDto(codigo.get(),
+                            Utils.deCentavosParaReal(pcCompra.get()),
+                            fornecedorSelected.get().id,
+                            new BigDecimal(qtd.get()),
+                             Utils.deCentavosParaReal(descontoEmDinheiro.get()),
+                            tipoPagamentoSeleced.get(), observacao.get(),
+                            DateUtils.localDateParaMillis(dataCompra.get()),
+                            numeroNota.get(),
+                            dtValidade
+                            );
+
+                    var compraSalva = comprasRepository.salvar(dto);
+
+                    UI.runOnUi(() -> {
+                        IO.println("compra foi salva!");
+                        compras.add(compraSalva);
+                        Components.ShowPopup(router, "Sua compra de mercadoria foi salva com sucesso!");
+                    });
+                } catch (SQLException e) {
+                    UI.runOnUi(()->Components.ShowAlertError("Erro ao salvar compra: " + e.getMessage()));
+                }
             }
         });
     }
@@ -369,35 +424,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         observacao.set("");
         tipoPagamentoSeleced.set(tiposPagamento.get(1));
         pcCompra.set("0");
-        dataValidade.set("0");
+        dataValidade.set(null);
         fornecedorSelected.set(null);
-    }
-
-
-    private void handleClickMenuCopy() {
-        modoEdicao.set(false);
-
-        final var compra = compraSelected.get();
-        if (compra != null) {
-            dataCompra.set(LocalDate.parse(compra.dataCompra));
-            numeroNota.set(compra.numeroNota);
-            codigo.set(compra.produtoCod);
-            //TODO: produtoEncontrado
-            qtd.set(String.valueOf(compra.quantidade));
-            observacao.set(compra.observacao);
-            tipoPagamentoSeleced.set(compra.tipoPagamento);
-            //TODO: parcelas
-            pcCompra.set(compra.precoDeCompra);
-            //TODO: totalBruto
-            dataValidade.set(compra.dataValidade);
-            fornecedorSelected.set(compra.fornecedor);
-        }
-
-
     }
 
     record Parcela(int numero, LocalDate dataVencimento, double valor) {
     }
-
-
 }

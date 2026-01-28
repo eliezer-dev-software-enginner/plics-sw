@@ -11,13 +11,13 @@ public class CompraModel extends ModelBase<CompraDto> {
     public String produtoCod;
     public Long fornecedorId;
     public BigDecimal quantidade;
-    public String descontoEmReais;
+    public BigDecimal descontoEmReais;
     public String tipoPagamento;
     public String observacao;
-    public String dataCompra;
+    public long dataCompra;
     public String numeroNota;
-    public String precoDeCompra;
-    public String dataValidade;
+    public BigDecimal precoDeCompra;
+    public Long dataValidade;
 
     public FornecedorModel fornecedor;
 
@@ -30,13 +30,16 @@ public class CompraModel extends ModelBase<CompraDto> {
         model.produtoCod = rs.getString("produto_cod");
         model.fornecedorId = rs.getLong("fornecedor_id");
         model.quantidade = rs.getBigDecimal("quantidade");
-        model.precoDeCompra = rs.getString("preco_compra");
-        model.descontoEmReais = rs.getString("desconto_em_reais");
+        model.precoDeCompra = rs.getBigDecimal("preco_compra");
+        model.descontoEmReais = rs.getBigDecimal("desconto_em_reais");
         model.tipoPagamento = rs.getString("tipo_pagamento");
         model.observacao = rs.getString("observacao");
-        model.dataCompra = rs.getString("data_compra");
+        model.dataCompra = rs.getLong("data_compra");
         model.numeroNota = rs.getString("numero_nota");
-        model.dataValidade = rs.getString("data_validade");
+        model.dataValidade = rs.getLong("data_validade");
+        if (rs.wasNull()) {
+            model.dataValidade = null;
+        }
         model.dataCriacao = rs.getLong("data_criacao");
         return model;
     }
@@ -52,6 +55,10 @@ public class CompraModel extends ModelBase<CompraDto> {
         model.descontoEmReais = compraDto.descontoEmReais();
         model.tipoPagamento = compraDto.tipoPagamento();
         model.observacao = compraDto.observacao();
+        model.dataCompra = compraDto.dataCompra();
+        model.numeroNota = compraDto.numeroNota();
+        model.dataValidade = compraDto.dataValidade();
+        //model.dataCriacao = compraDto.dataCriacao();
         return model;
     }
 

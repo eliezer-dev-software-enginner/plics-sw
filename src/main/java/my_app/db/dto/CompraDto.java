@@ -4,10 +4,15 @@ import java.math.BigDecimal;
 
 public record CompraDto(
         String produtoCod,
-        String precoCompra,
+        BigDecimal precoCompra,
         Long fornecedorId,
         BigDecimal quantidade,
-        String descontoEmReais,
+        BigDecimal descontoEmReais,
         String tipoPagamento,
-        String observacao) {
+        String observacao,
+        long dataCompra,
+        String numeroNota,
+        Long dataValidade
+//        long dataCriacao
+) {
 }
