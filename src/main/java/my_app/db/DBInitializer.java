@@ -106,6 +106,9 @@ public final class DBInitializer {
                         data_compra TEXT,
                         numero_nota TEXT,
                         data_validade TEXT,
+                        quantidade_anterior REAL DEFAULT 0,
+                        estoque_apos_compra REAL DEFAULT 0,
+                        refletir_estoque TEXT DEFAULT 'Não',
                         data_criacao INTEGER NOT NULL,
                         FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id)
                     )
@@ -130,6 +133,9 @@ public final class DBInitializer {
                 """);
 
             }
+            
+            // Adicionar colunas novas se não existirem (migração)
+            adicionarColunasNovas(conn);
             
             // Inserir dados padrão na primeira execução
             inserirDadosPadrao();
@@ -162,6 +168,30 @@ public final class DBInitializer {
 
         if(!existeClientePadrao(conn)){
             inserirClientePadrao(conn);
+        }
+    }
+    
+    private static void adicionarColunasNovas(Connection conn) throws SQLException {
+        // Adicionar colunas de estoque na tabela compras se não existirem
+        try (Statement st = conn.createStatement()) {
+            // Verificar se as colunas já existem e adicionar se necessário
+            try {
+                st.execute("ALTER TABLE compras ADD COLUMN quantidade_anterior REAL DEFAULT 0");
+            } catch (SQLException e) {
+                // Coluna já existe, ignorar
+            }
+            
+            try {
+                st.execute("ALTER TABLE compras ADD COLUMN estoque_apos_compra REAL DEFAULT 0");
+            } catch (SQLException e) {
+                // Coluna já existe, ignorar
+            }
+            
+            try {
+                st.execute("ALTER TABLE compras ADD COLUMN refletir_estoque TEXT DEFAULT 'Não'");
+            } catch (SQLException e) {
+                // Coluna já existe, ignorar
+            }
         }
     }
 

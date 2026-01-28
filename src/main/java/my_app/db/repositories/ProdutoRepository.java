@@ -3,6 +3,7 @@ package my_app.db.repositories;
 import my_app.db.dto.ProdutoDto;
 import my_app.db.models.ProdutoModel;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -124,6 +125,62 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
     @Override
     protected ProdutoModel buscarById(Long id) throws SQLException {
         return null;
+    }
+
+    /**
+     * Atualiza o estoque de um produto somando ou subtraindo a quantidade informada
+     * @param codigoBarras Código de barras do produto
+     * @param quantidade Quantidade a ser adicionada (positiva) ou subtraída (negativa)
+     * @throws SQLException Em caso de erro na operação
+     */
+    public void atualizarEstoque(String codigoBarras, BigDecimal quantidade) throws SQLException {
+        // Primeiro busca o produto para obter o estoque atual
+        ProdutoModel produto = buscarPorCodigoBarras(codigoBarras);
+        if (produto == null) {
+            throw new SQLException("Produto não encontrado: " + codigoBarras);
+        }
+
+        // Calcula novo estoque
+        BigDecimal novoEstoque = produto.estoque.add(quantidade);
+        
+        // Garante que estoque não fique negativo
+        if (novoEstoque.compareTo(BigDecimal.ZERO) < 0) {
+            throw new SQLException("Estoque não pode ficar negativo. Estoque atual: " + produto.estoque + ", Tentativa de subtrair: " + quantidade.abs());
+        }
+
+        String sql = "UPDATE produtos SET estoque = ? WHERE codigo_barras = ?";
+        try (PreparedStatement ps = conn().prepareStatement(sql)) {
+            ps.setBigDecimal(1, novoEstoque);
+            ps.setString(2, codigoBarras);
+            int rowsAffected = ps.executeUpdate();
+            
+            if (rowsAffected == 0) {
+                throw new SQLException("Falha ao atualizar estoque. Produto não encontrado: " + codigoBarras);
+            }
+        }
+    }
+
+    /**
+     * Define o estoque de um produto para um valor específico
+     * @param codigoBarras Código de barras do produto
+     * @param novoEstoque Novo valor do estoque
+     * @throws SQLException Em caso de erro na operação
+     */
+    public void definirEstoque(String codigoBarras, BigDecimal novoEstoque) throws SQLException {
+        if (novoEstoque.compareTo(BigDecimal.ZERO) < 0) {
+            throw new SQLException("Estoque não pode ser negativo: " + novoEstoque);
+        }
+
+        String sql = "UPDATE produtos SET estoque = ? WHERE codigo_barras = ?";
+        try (PreparedStatement ps = conn().prepareStatement(sql)) {
+            ps.setBigDecimal(1, novoEstoque);
+            ps.setString(2, codigoBarras);
+            int rowsAffected = ps.executeUpdate();
+            
+            if (rowsAffected == 0) {
+                throw new SQLException("Falha ao definir estoque. Produto não encontrado: " + codigoBarras);
+            }
+        }
     }
 }
 

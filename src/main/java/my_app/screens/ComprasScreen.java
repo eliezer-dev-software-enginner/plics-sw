@@ -70,7 +70,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
     State<String> descontoEmDinheiro = State.of("0");
 
     // Preço de compra (armazena em centavos, ex: 123 = R$ 1,23)
-    State<String> pcCompra = State.of("0");
+State<String> pcCompra = State.of("0");
 
     ComputedState<String> totalBruto = ComputedState.of(() -> {
         int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
@@ -95,11 +95,21 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
     State<LocalDate> dataValidade = State.of(null);
 
+    // Estados para controle visual do estoque
+    State<String> estoqueAnterior = State.of("0");
+    State<String> estoqueAtual = State.of("0");
+
     ObservableList<FornecedorModel> fornecedores = FXCollections.observableArrayList();
     State<FornecedorModel> fornecedorSelected = State.of(null);
 
     State<CompraModel> compraSelected = State.of(null);
     private ComprasRepository comprasRepository = new ComprasRepository();
+    private ProdutoRepository produtoRepository = new ProdutoRepository();
+    
+    // Setter para injeção de dependência em testes
+    void setProdutoRepository(ProdutoRepository produtoRepository) {
+        this.produtoRepository = produtoRepository;
+    }
     private final ObservableList<CompraModel> compras = FXCollections.observableArrayList();
 
     State<List<String>> opcoesDeControleDeEstoque = State.of(List.of("Sim", "Não"));
@@ -108,6 +118,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
     public ComprasScreen(Router router) {
         this.router = router;
+        
+        // Configura listeners para atualizar estoque visual
+        qtd.subscribe(novaQtd -> atualizarEstoqueVisual());
+        opcaoDeControleDeEstoqueSelected.subscribe(novaOpcao -> atualizarEstoqueVisual());
     }
 
     @Override
@@ -184,12 +198,17 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                                 .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
                                 .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
                         )
+.c_child(new SpacerVertical(10))
+                        .c_child(
+                                new Row(new RowProps().spacingOf(10)).r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
+                                        .r_child(Components.SelectColumn("Refletir no estoque?", opcoesDeControleDeEstoque, opcaoDeControleDeEstoqueSelected, it -> it))
+                                        .r_child(Components.TextAreaColumn("Observação", observacao, ""))
+                        )
                         .c_child(new SpacerVertical(10))
                         .c_child(
-                                new Row(new RowProps().spacingOf(10))
-                                        .r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
-                                        .r_child(Components.TextAreaColumn("Observação", observacao, ""))
-                                        .r_child(Components.SelectColumn("Refletir no estoque?", opcoesDeControleDeEstoque, opcaoDeControleDeEstoqueSelected, it -> it))
+                                new Row(new RowProps().spacingOf(15))
+                                        .r_child(Components.TextWithValue("Estoque anterior:", estoqueAnterior))
+                                        .r_child(Components.TextWithValue("Estoque após compra:", estoqueAtual))
                         )
                         .c_child(new SpacerVertical(10))
                         .c_child(aPrazoForm())
@@ -212,6 +231,23 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                     IO.println("Produto encontrado");
                     produtoEncontrado.set(produto);
                     pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
+                    
+                    // Atualiza os campos de estoque
+                    BigDecimal estoqueAtualValue = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
+                    estoqueAnterior.set(estoqueAtualValue.toString());
+                    
+                    // Calcula o estoque após a compra (se controle estiver ativo)
+                    if ("Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
+                        try {
+                            int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
+                            BigDecimal estoqueAposCompra = estoqueAtualValue.add(BigDecimal.valueOf(qtdValue));
+                            estoqueAtual.set(estoqueAposCompra.toString());
+                        } catch (NumberFormatException e) {
+                            estoqueAtual.set(estoqueAtualValue.toString());
+                        }
+                    } else {
+                        estoqueAtual.set(estoqueAtualValue.toString());
+                    }
 //                    var valor = produtoEncontrado.get().precoCompra;
 //                    BigDecimal semPonto = valor.setScale(0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
 //                    pcCompra.set(String.valueOf(semPonto));
@@ -397,6 +433,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                 try {
                     Long id = data.id;
                     comprasRepository.excluirById(id);
+                    
+                    // Remove do estoque a quantidade correspondente a esta compra
+                    removerEstoqueProduto(data.produtoCod, data.quantidade);
+                    
                     UI.runOnUi(() -> {
                         compras.removeIf(it-> it.id.equals(id));
                     });
@@ -463,6 +503,28 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
             if (modoEdicao.get()) {
                 final var selecionado = compraSelected.get();
                 if(selecionado != null){
+                    // Calcular estoque anterior e posterior para edição
+                    BigDecimal estoqueAntesEdicao = BigDecimal.ZERO;
+                    BigDecimal estoqueAposEdicao = BigDecimal.ZERO;
+                    String refletirEstoqueEdicao = opcaoDeControleDeEstoqueSelected.get();
+                    
+                    try {
+                        ProdutoModel produto = produtoRepository.buscarPorCodigoBarras(codigo.get());
+                        if (produto != null) {
+                            estoqueAntesEdicao = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
+                            if ("Sim".equals(refletirEstoqueEdicao)) {
+                                BigDecimal novaQtd = new BigDecimal(qtd.get());
+                                BigDecimal qtdAnterior = selecionado.quantidade;
+                                BigDecimal diferenca = novaQtd.subtract(qtdAnterior);
+                                estoqueAposEdicao = estoqueAntesEdicao.add(diferenca);
+                            } else {
+                                estoqueAposEdicao = estoqueAntesEdicao;
+                            }
+                        }
+                    } catch (SQLException e) {
+                        IO.println("Erro ao buscar produto para controle de estoque na edição: " + e.getMessage());
+                    }
+
                     CompraModel modelAtualizada = new CompraModel().fromIdAndDto(
                             selecionado.id, new CompraDto(
                                     codigo.get(),
@@ -474,11 +536,20 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                                     observacao.get(),
                                     DateUtils.localDateParaMillis(dataCompra.get()),
                                     numeroNota.get(),
-                                    dataValidade.get()!= null? DateUtils.localDateParaMillis(dataValidade.get()): null
+                                    dataValidade.get()!= null? DateUtils.localDateParaMillis(dataValidade.get()): null,
+                                    estoqueAntesEdicao,
+                                    estoqueAposEdicao,
+                                    refletirEstoqueEdicao
                             ));
                     try {
                         comprasRepository.atualizar(modelAtualizada);
                         Utils.updateItemOnObservableList(compras, selecionado, modelAtualizada);
+                        
+                        // Atualiza o estoque com base na diferença entre as quantidades
+                        BigDecimal novaQuantidade = modelAtualizada.quantidade;
+                        BigDecimal quantidadeAnterior = selecionado.quantidade;
+                        atualizarEstoqueProduto(modelAtualizada.produtoCod, novaQuantidade, true, quantidadeAnterior);
+                        
                         Components.ShowPopup(router, "Sua compra de mercadoria foi atualizada com sucesso!");
                     } catch (SQLException e) {
                         UI.runOnUi(()->Components.ShowAlertError("Erro ao atualizar compra: " + e.getMessage()));
@@ -489,18 +560,43 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                     final var dtValidade = dataValidade.get() != null?
                             DateUtils.localDateParaMillis(dataValidade.get()) : null;
 
-                    var dto = new CompraDto(codigo.get(),
+                    // Calcular valores de estoque para salvar
+                    BigDecimal estoqueAntes = BigDecimal.ZERO;
+                    BigDecimal estoqueApos = BigDecimal.ZERO;
+                    String refletirEstoqueSalv = opcaoDeControleDeEstoqueSelected.get();
+                    
+                    try {
+                        ProdutoModel produto = produtoRepository.buscarPorCodigoBarras(codigo.get());
+                        if (produto != null) {
+                            estoqueAntes = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
+                            if ("Sim".equals(refletirEstoqueSalv)) {
+                                estoqueApos = estoqueAntes.add(new BigDecimal(qtd.get()));
+                            } else {
+                                estoqueApos = estoqueAntes;
+                            }
+                        }
+                    } catch (SQLException e) {
+                        IO.println("Erro ao buscar produto para controle de estoque: " + e.getMessage());
+                    }
+
+var dto = new CompraDto(codigo.get(),
                             Utils.deCentavosParaReal(pcCompra.get()),
                             fornecedorSelected.get().id,
                             new BigDecimal(qtd.get()),
-                             Utils.deCentavosParaReal(descontoEmDinheiro.get()),
+                            Utils.deCentavosParaReal(descontoEmDinheiro.get()),
                             tipoPagamentoSeleced.get(), observacao.get(),
                             DateUtils.localDateParaMillis(dataCompra.get()),
                             numeroNota.get(),
-                            dtValidade
-                            );
+                            dtValidade,
+                            BigDecimal.ZERO, // quantidade_anterior (será calculado depois)
+                            BigDecimal.ZERO, // estoque_apos_compra (será calculado depois)
+                            opcaoDeControleDeEstoqueSelected.get()
+                    );
 
                     var compraSalva = comprasRepository.salvar(dto);
+
+                    // Atualiza o estoque do produto
+                    atualizarEstoqueProduto(dto.produtoCod(), dto.quantidade(), false, null);
 
                     UI.runOnUi(() -> {
                         IO.println("compra foi salva!");
@@ -527,6 +623,103 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         pcCompra.set("0");
         dataValidade.set(null);
         fornecedorSelected.set(null);
+        opcaoDeControleDeEstoqueSelected.set("Não"); // Reset para padrão seguro
+        estoqueAnterior.set("0");
+        estoqueAtual.set("0");
+    }
+
+    /**
+     * Atualiza o estoque do produto baseado na operação de compra
+     * @param codigoBarras Código de barras do produto
+     * @param quantidade Quantidade da compra
+     * @param isEdicao Se true, precisa calcular a diferença (nova quantidade - quantidade anterior)
+     * @param quantidadeAnterior Quantidade anterior da compra (usada apenas em edição)
+     */
+    void atualizarEstoqueProduto(String codigoBarras, BigDecimal quantidade, boolean isEdicao, BigDecimal quantidadeAnterior) {
+        if (!"Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
+            IO.println("Controle de estoque desativado para esta operação");
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                BigDecimal quantidadeParaAtualizar;
+                
+                if (isEdicao) {
+                    // Em edição, calcula a diferença: novo valor - valor anterior
+                    quantidadeParaAtualizar = quantidade.subtract(quantidadeAnterior);
+                    IO.println("Atualizando estoque (edição): " + codigoBarras + 
+                              " | Qtd anterior: " + quantidadeAnterior + 
+                              " | Nova qtd: " + quantidade + 
+                              " | Diferença: " + quantidadeParaAtualizar);
+                } else {
+                    // Em adição, usa a quantidade diretamente
+                    quantidadeParaAtualizar = quantidade;
+                    IO.println("Adicionando ao estoque: " + codigoBarras + " | Quantidade: " + quantidade);
+                }
+
+                if (quantidadeParaAtualizar.compareTo(BigDecimal.ZERO) != 0) {
+                    produtoRepository.atualizarEstoque(codigoBarras, quantidadeParaAtualizar);
+                    IO.println("Estoque atualizado com sucesso para o produto: " + codigoBarras);
+                } else {
+                    IO.println("Sem alteração de estoque necessária para o produto: " + codigoBarras);
+                }
+            } catch (SQLException e) {
+                IO.println("Erro ao atualizar estoque do produto " + codigoBarras + ": " + e.getMessage());
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar estoque: " + e.getMessage()));
+            }
+        });
+    }
+
+    /**
+     * Atualiza os campos visuais de estoque (anterior e atual)
+     */
+    void atualizarEstoqueVisual() {
+        if (produtoEncontrado.get() == null) {
+            estoqueAnterior.set("0");
+            estoqueAtual.set("0");
+            return;
+        }
+
+        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ? 
+                                produtoEncontrado.get().estoque : BigDecimal.ZERO;
+        estoqueAnterior.set(estoqueBase.toString());
+
+        if ("Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
+            try {
+                int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
+                BigDecimal estoqueAposCompra = estoqueBase.add(BigDecimal.valueOf(qtdValue));
+                estoqueAtual.set(estoqueAposCompra.toString());
+            } catch (NumberFormatException e) {
+                estoqueAtual.set(estoqueBase.toString());
+            }
+        } else {
+            estoqueAtual.set(estoqueBase.toString());
+        }
+    }
+
+    /**
+     * Remove do estoque a quantidade correspondente a uma compra excluída
+     * @param codigoBarras Código de barras do produto
+     * @param quantidade Quantidade da compra que está sendo excluída
+     */
+    void removerEstoqueProduto(String codigoBarras, BigDecimal quantidade) {
+        if (!"Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
+            IO.println("Controle de estoque desativado para esta operação");
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                // Remove a quantidade do estoque (valor negativo)
+                BigDecimal quantidadeParaRemover = quantidade.negate();
+                produtoRepository.atualizarEstoque(codigoBarras, quantidadeParaRemover);
+                IO.println("Estoque removido com sucesso para o produto: " + codigoBarras + " | Quantidade: " + quantidade);
+            } catch (SQLException e) {
+                IO.println("Erro ao remover estoque do produto " + codigoBarras + ": " + e.getMessage());
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao remover estoque: " + e.getMessage()));
+            }
+        });
     }
 
     record Parcela(int numero, LocalDate dataVencimento, double valor) {

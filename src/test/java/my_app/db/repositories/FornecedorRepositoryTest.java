@@ -29,7 +29,7 @@ class FornecedorRepositoryTest {
         var dto = fornecedorFake();
         var model = repo.salvar(dto);
 
-        var encontrado = repo.buscarPorId(model.id);
+        var encontrado = repo.buscarById(model.id);
 
         assertNotNull(encontrado);
         assertEquals("Fornecedor Teste", encontrado.nome);
@@ -74,7 +74,7 @@ class FornecedorRepositoryTest {
         model.nome = "forn2";
         repo.atualizar(model);
 
-        var atualizado = repo.buscarPorId(model.id);
+        var atualizado = repo.buscarById(model.id);
         assertEquals("forn2", atualizado.nome);
     }
 
@@ -83,29 +83,27 @@ class FornecedorRepositoryTest {
         var dto = fornecedorFake();
         var model = repo.salvar(dto);
 
-        repo.excluir(model.id);
+        repo.excluirById(model.id);
 
-        assertNull(repo.buscarPorId(model.id));
+        assertNull(repo.buscarById(model.id));
     }
 
     private FornecedorDto fornecedorFake(String nome) {
         var cpfCnpj = "12345678901";
-        var telefone = "5512345678910";
+        var celular = "5512345678910";
         var email = "teste@teste.com";
-        var endereco = "Rua x, bairro tal, cidade lá";
-        var dataCriacao = System.currentTimeMillis();
+        var inscricaoEstadual = "123456";
+        var ufSelected = "SP";
+        var cidade = "São Paulo";
+        var bairro = "Centro";
+        var rua = "Rua Principal";
+        var numero = "123";
+        var observacao = "Observação teste";
 
-        return new FornecedorDto(nome, cpfCnpj, telefone, email,  endereco, dataCriacao);
+        return new FornecedorDto(nome, cpfCnpj, celular, email, inscricaoEstadual, ufSelected, cidade, bairro, rua, numero, observacao);
     }
 
     private FornecedorDto fornecedorFake() {
-        var nome = "Fornecedor Teste";
-        var cpfCnpj = "12345678901";
-        var telefone = "5512345678910";
-        var email = "teste@teste.com";
-        var endereco = "Rua x, bairro tal, cidade lá";
-        var dataCriacao = System.currentTimeMillis();
-
-        return new FornecedorDto(nome, cpfCnpj, telefone, email,  endereco, dataCriacao);
+        return fornecedorFake("Fornecedor Teste");
     }
 }
