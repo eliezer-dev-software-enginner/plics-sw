@@ -348,12 +348,17 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
             final var codProduto = data.produtoCod;
             codigo.set(codProduto);
 
-            buscarProduto();
+            // Ao clonar, não precisamos buscar o produto async, já temos todos os dados
+            produtoEncontrado.set(null); // Limpa estado anterior
             qtd.set(data.quantidade.toString());
             observacao.set(data.observacao);
             tipoPagamentoSeleced.set(data.tipoPagamento);
-            //pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
-            dataValidade.set(DateUtils.millisParaLocalDate(data.dataValidade));
+            pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
+            if (data.dataValidade != null) {
+                dataValidade.set(DateUtils.millisParaLocalDate(data.dataValidade));
+            } else {
+                dataValidade.set(null);
+            }
             fornecedorSelected.set(data.fornecedor);
         }
     }
