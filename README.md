@@ -1,64 +1,54 @@
 # ERP Local v2
 
-Um sistema desktop completo para gestão de pequenas e médias empresas, desenvolvido com JavaFX e Megalodonte Router.
+Sistema desktop completo para gestão de pequenas e médias empresas, desenvolvido com JavaFX.
 
-## 🎯 Propósito
+## Propósito
 
 Sistema ERP completo para controle de:
 - Cadastros (Produtos, Categorias, Clientes, Fornecedores)
-- Compras com **controle inteligente de estoque**
+- Compras com controle inteligente de estoque
 - Gestão financeira básica
 - Relatórios e visualizações
 
-## 🚀 Características Principais
+## Características Principais
 
-### 💼 **Gestão de Cadastros**
+### Gestão de Cadastros
 - Produtos com controle de estoque
 - Categorias personalizáveis
 - Clientes com informações completas
 - Fornecedores com dados detalhados
 
-### 📦 **Controle de Estoque Inteligente**
-- **Controle por operação**: Opção de refletir no estoque individualmente
-- **Visualização em tempo real**: Campos mostram estoque anterior e posterior
-- **Validação automática**: Impede estoque negativo
-- **Migração automática**: Atualiza bancos existentes
+### Controle de Estoque Inteligente
+- Controle por operação: Opção de refletir no estoque individualmente
+- Visualização em tempo real: Campos mostram estoque anterior e posterior
+- Validação automática: Impede estoque negativo
+- Migração automática: Atualiza bancos existentes
 
-### 🛒 **Fluxo de Compras**
+### Fluxo de Compras
 - Cadastro completo de compras
 - Cálculo automático de totais
 - Controle financeiro integrado
 - Relatórios de compras por período
 
-### 💻 **Tecnologia**
-- **Java 17** com performance otimizada
-- **JavaFX 17** para interface moderna e responsiva
-- **SQLite** para banco local e offline
-- **Megalodonte Router** para navegação limpa e centralizada
+## Tecnologia
 
-## 📁 Estrutura Modular
+- Java 17 com performance otimizada
+- JavaFX 17 para interface moderna e responsiva
+- SQLite para banco local e offline
+- Megalodonte Router para navegação limpa e centralizada
 
-- **megalodonte-base**: Interfaces e utilitários
-- **megalodonte-components**: Componentes UI reutilizáveis
-- **megalodonte-reactivity**: Gerenciamento de estado
-- **megalodonte-router**: Sistema de navegação
-- **megalodonte-theme**: Padronização visual
+## Estrutura Modular
 
-## 🎨 Interface
+- megalodonte-base: Interfaces e utilitários
+- megalodonte-components: Componentes UI reutilizáveis
+- megalodonte-reactivity: Gerenciamento de estado
+- megalodonte-router: Sistema de navegação
 
-- Moderna e intuitiva
-- Layout responsivo para diferentes tamanhos de tela
-- Componentes customizados e otimizados
-- Navegação estruturada e contextual
+## Interface
 
-## 📊 Relatórios
+Moderna, intuitiva e responsiva com navegação estruturada e componentes otimizados.
 
-- Relatórios de compras e vendas
-- Análise de estoque
-- Relatórios financeiros
-- Exportação para CSV/PDF
-
-## 🔧 Instalação
+## Instalação
 
 ### Pré-requisitos
 - Java 17 ou superior
@@ -74,33 +64,25 @@ Sistema ERP completo para controle de:
 ./gradlew run
 ```
 
-## 📋 Versão
+## Versão
 
 **Versão:** 1.0.0  
-**Status:** ✅ Estável para Produção
+**Status:** Estável para Produção
 
-## 🎯 Benefícios
+## Benefícios
 
-- **Offline-first**: Funciona sem conexão com internet
-- **Desktop nativo**: Performance otimizada e integração com sistema operacional
-- **Modular**: Fácil manutenção e evolução
-- **Custo-benefício**: Reduz necessidade de sistemas ERP caros
+- Offline-first: Funciona sem conexão com internet
+- Desktop nativo: Performance otimizada e integração com sistema operacional
+- Modular: Fácil manutenção e evolução
+- Custo-benefício: Reduz necessidade de sistemas ERP caros
 
-## 📝 Melhorias Futuras
+## Suporte
 
-- [ ] Relatórios avançados
-- [ ] Integração com NFe
-- [ ] Módulo de vendas
-- [ ] Backup e restauração automático
-- [ ] Multi-empresa
-
-## 👥 Suporte
-
-**Para suporte e dúvidas:**
+Para suporte e dúvidas:
 - Verifique a documentação interna
 - Consulte os relatórios de sistema
 - Analise logs de aplicação
 
 ---
 
-**Desenvolvido com ❤️ usando tecnologias nacionais e internacionais**
+Desenvolvido com tecnologias nacionais e foco em simplicidade e performance.
