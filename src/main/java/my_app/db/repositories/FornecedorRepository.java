@@ -53,7 +53,7 @@ public class FornecedorRepository extends BaseRepository<FornecedorDto, Forneced
     }
 
     @Override
-    protected FornecedorModel buscarById(Long id) throws SQLException {
+    public FornecedorModel buscarById(Long id) throws SQLException {
         String sql = "SELECT * FROM fornecedores WHERE id = ?";
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setLong(1, id);

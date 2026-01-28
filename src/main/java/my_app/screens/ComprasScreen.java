@@ -121,6 +121,16 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                                 .findFirst()
                                 .ifPresent(fornecedorSelected::set);
                     }
+                    
+                    // Associar fornecedores às compras
+                    for (CompraModel compra : listCompras) {
+                        FornecedorModel fornecedor = fornecedorModelList.stream()
+                                .filter(f -> f.id.equals(compra.fornecedorId))
+                                .findFirst()
+                                .orElse(null);
+                        compra.fornecedor = fornecedor;
+                    }
+                    
                     compras.addAll(listCompras);
                 });
 
@@ -163,7 +173,6 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(new SpacerVertical(10))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Descrição do produto", produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso"))
-                                //.r_child(Components.InputColumn("Pc. de compra", produtoEncontrado.map(p-> p != null? p.descricao: ""),"Ex: R$ 10,00"))
                                 .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
                                 .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
                                 .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
@@ -257,8 +266,18 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
         TableColumn<CompraModel, String> qtdCol = new TableColumn<>("Qtd");
         qtdCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().quantidade.toString())
+                new javafx.beans.property.SimpleStringProperty(data.getValue().quantidade.toPlainString())
         );
+
+        TableColumn<CompraModel, String> fornecedorCol = new TableColumn<>("Fornecedor");
+        fornecedorCol.setCellValueFactory(data -> {
+            var fornecedor = data.getValue().fornecedor;
+            if (fornecedor != null) {
+                return new javafx.beans.property.SimpleStringProperty(fornecedor.nome);
+            } else {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+        });
 
         // Coluna Data Criação
         TableColumn<CompraModel, String> dataCol = new TableColumn<>("Data de Criação");
@@ -271,7 +290,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
             return new javafx.beans.property.SimpleStringProperty("");
         });
 
-        table.getColumns().addAll(idCol, numNotaCol,qtdCol, dataCol);
+        table.getColumns().addAll(idCol, numNotaCol,qtdCol, fornecedorCol, dataCol);
         table.setItems(compras);
 
         Utils.onItemTableSelectedChange(table, data-> compraSelected.set(data));
@@ -350,7 +369,30 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
             // Ao clonar, não precisamos buscar o produto async, já temos todos os dados
             produtoEncontrado.set(null); // Limpa estado anterior
-            qtd.set(data.quantidade.toString());
+
+            // Buscar fornecedor pelo ID para clonagem de forma assíncrona
+            // Garantir que a lista de fornecedores está carregada antes de selecionar
+            Async.Run(() -> {
+                try {
+                    // Se a lista estiver vazia, carregá-la primeiro
+                    if (fornecedores.isEmpty()) {
+                        var fornecedorModelList = new FornecedorRepository().listar();
+                        UI.runOnUi(() -> fornecedores.addAll(fornecedorModelList));
+                    }
+                    
+                    // Buscar o fornecedor específico
+                    var fornecedor = new FornecedorRepository().buscarById(data.fornecedorId);
+                    UI.runOnUi(() -> {
+                        fornecedorSelected.set(fornecedor);
+                        // Atualizar também o fornecedor no modelo da lista para refresh da tabela
+                        data.fornecedor = fornecedor;
+                    });
+                } catch (SQLException e) {
+                    IO.println("Erro ao buscar fornecedor: " + e.getMessage());
+                }
+            });
+
+            qtd.set(data.quantidade.stripTrailingZeros().toPlainString());
             observacao.set(data.observacao);
             tipoPagamentoSeleced.set(data.tipoPagamento);
             pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
@@ -359,7 +401,6 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
             } else {
                 dataValidade.set(null);
             }
-            fornecedorSelected.set(data.fornecedor);
         }
     }
 
