@@ -29,9 +29,13 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             ps.setBigDecimal(5, dto.descontoEmReais());
             ps.setString(6, dto.tipoPagamento());
             ps.setString(7, dto.observacao());
-            ps.setString(8, null); // data_compra - will be handled in model
-            ps.setString(9, null); // numero_nota - will be handled in model
-            ps.setString(10, null); // data_validade - will be handled in model
+            ps.setLong(8, dto.dataCompra());
+            ps.setString(9, dto.numeroNota());
+            if (dto.dataValidade() != null) {
+                ps.setLong(10, dto.dataValidade());
+            } else {
+                ps.setNull(10, java.sql.Types.BIGINT);
+            }
             ps.setLong(11, System.currentTimeMillis());
             ps.executeUpdate();
             

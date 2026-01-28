@@ -193,9 +193,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                     }
                     IO.println("Produto encontrado");
                     produtoEncontrado.set(produto);
-                    var valor = produtoEncontrado.get().precoCompra;
-                    BigDecimal semPonto = valor.setScale(0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
-                    pcCompra.set(String.valueOf(semPonto));
+                    pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
+//                    var valor = produtoEncontrado.get().precoCompra;
+//                    BigDecimal semPonto = valor.setScale(0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
+//                    pcCompra.set(String.valueOf(semPonto));
                     // pcCompra.set(valor);
                 });
 
@@ -249,13 +250,13 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         idCol.setMaxWidth(90);
 
         // Coluna Nome
-        TableColumn<CompraModel, String> nomeCol = new TableColumn<>("N Nota");
-        nomeCol.setCellValueFactory(data ->
+        TableColumn<CompraModel, String> numNotaCol = new TableColumn<>("N Nota");
+        numNotaCol.setCellValueFactory(data ->
                 new javafx.beans.property.SimpleStringProperty(data.getValue().numeroNota)
         );
 
         TableColumn<CompraModel, String> qtdCol = new TableColumn<>("Qtd");
-        nomeCol.setCellValueFactory(data ->
+        qtdCol.setCellValueFactory(data ->
                 new javafx.beans.property.SimpleStringProperty(data.getValue().quantidade.toString())
         );
 
@@ -270,7 +271,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
             return new javafx.beans.property.SimpleStringProperty("");
         });
 
-        table.getColumns().addAll(idCol, nomeCol,qtdCol, dataCol);
+        table.getColumns().addAll(idCol, numNotaCol,qtdCol, dataCol);
         table.setItems(compras);
 
         Utils.onItemTableSelectedChange(table, data-> compraSelected.set(data));
@@ -351,7 +352,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
             qtd.set(data.quantidade.toString());
             observacao.set(data.observacao);
             tipoPagamentoSeleced.set(data.tipoPagamento);
-            pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
+            //pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
             dataValidade.set(DateUtils.millisParaLocalDate(data.dataValidade));
             fornecedorSelected.set(data.fornecedor);
         }
