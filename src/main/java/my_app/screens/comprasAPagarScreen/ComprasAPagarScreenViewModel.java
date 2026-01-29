@@ -94,14 +94,20 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
                         conta.fornecedor = fornecedor;
                     }
                 }
-                
-                UI.runOnUi(() -> {
-                    contas.setAll(contasList);
-                    fornecedores.set(fornecedoresList);
-                    if (!fornecedoresList.isEmpty()) {
-                        fornecedorSelected.set(fornecedoresList.getFirst());
-                    }
-                });
+
+                contas.setAll(contasList);
+                fornecedores.set(fornecedoresList);
+                if (!fornecedoresList.isEmpty()) {
+                    fornecedorSelected.set(fornecedoresList.getFirst());
+                }
+
+//                UI.runOnUi(() -> {
+//                    contas.setAll(contasList);
+//                    fornecedores.set(fornecedoresList);
+//                    if (!fornecedoresList.isEmpty()) {
+//                        fornecedorSelected.set(fornecedoresList.getFirst());
+//                    }
+//                });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }

@@ -202,6 +202,21 @@ public class Components {
                 );
     }
 
+    public static <T> Component SelectColumn(String label, State<List<T>> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
+        var select = new Select<T>(new SelectProps().height(35))
+                .items(list)
+                .value(stateSelected)
+                .displayText(display);
+
+        if (compareById) {
+            select.compareById();
+        }
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(select);
+    }
+
     public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
         var select = new Select<T>(new SelectProps().height(35))
                 .items(list)

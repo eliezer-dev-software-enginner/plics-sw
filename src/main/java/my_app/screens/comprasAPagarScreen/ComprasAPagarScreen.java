@@ -250,7 +250,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                             Components.SelectColumn("Tipo Doc", vm.tipoDocumentoOptions, vm.tipoDocumento, tipo -> tipo))
                 )
                 .c_child(
-                    Components.SelectColumn("Fornecedor", vm.fornecedores.get(), vm.fornecedorSelected,
+                    Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected,
                         f -> f != null ? f.nome : "", true)
                 )
                 .c_child(Components.InputColumn("Número Doc", vm.numeroDocumento, "Número do documento"))
