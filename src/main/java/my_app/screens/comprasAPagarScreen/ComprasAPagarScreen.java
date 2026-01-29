@@ -306,7 +306,6 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
         descricaoCol.setCellValueFactory(data ->
             new javafx.beans.property.SimpleStringProperty(data.getValue().descricao)
         );
-        descricaoCol.setPrefWidth(200);
 
         // Fornecedor Column
         TableColumn<ContasPagarModel, String> fornecedorCol = new TableColumn<>("Fornecedor");
@@ -317,7 +316,6 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
             }
             return new javafx.beans.property.SimpleStringProperty("");
         });
-        fornecedorCol.setPrefWidth(150);
 
         // Valor Original Column
         TableColumn<ContasPagarModel, String> valorOriginalCol = new TableColumn<>("Valor Original");
