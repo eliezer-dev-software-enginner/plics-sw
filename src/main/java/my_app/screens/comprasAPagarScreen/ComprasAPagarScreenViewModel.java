@@ -71,10 +71,10 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
     }, descricao, valorOriginal, fornecedorSelected, dataVencimento);
     
     public final ComputedState<Boolean> pagamentoValido = ComputedState.of(() -> {
-        return contaSelected.get() != null && 
-               !valorPagamento.get().equals("0") &&
-               contaSelected.get().valorRestante.compareTo(Utils.deCentavosParaReal(valorPagamento.get())) >= 0;
-    }, contaSelected, valorPagamento);
+        // Para o botão "Pagar", só verifica se há conta selecionada
+        // A validação do valor acontece no momento do registro do pagamento
+        return contaSelected.get() != null;
+    }, contaSelected);
 
     
     // Business logic methods
@@ -227,12 +227,23 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
     }
     
     public void registrarPagamento(Router router) {
-        if (!pagamentoValido.get()) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta e informe um valor válido"));
+        if (contaSelected.get() == null) {
+            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar pagamento"));
             return;
         }
         
         BigDecimal valorPagamentoBig = Utils.deCentavosParaReal(valorPagamento.get());
+        
+        // Validar valor do pagamento
+        if (valorPagamentoBig.compareTo(BigDecimal.ZERO) <= 0) {
+            UI.runOnUi(() -> Components.ShowAlertError("Informe um valor de pagamento maior que zero"));
+            return;
+        }
+        
+        if (valorPagamentoBig.compareTo(contaSelected.get().valorRestante) > 0) {
+            UI.runOnUi(() -> Components.ShowAlertError("Valor do pagamento não pode ser maior que o valor restante"));
+            return;
+        }
         
         Async.Run(() -> {
             try {

@@ -33,9 +33,9 @@ public class AppRoutes {
                 new Router.Route("compras",router-> new ComprasScreen(router), new Router.RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
                 new Router.Route("clientes",router-> new ClienteScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de clientes", true)),
-                new Router.Route("contas-a-pagar",router-> new ComprasAPagarScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de clientes", true))
+                new Router.Route("contas-a-pagar",router-> new ComprasAPagarScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de contas a pagar", true))
         );
-        return new Router(routes, "compras", stage);
+        return new Router(routes, "contas-a-pagar", stage);
     }
 }
 

@@ -105,6 +105,8 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
         var mainContent = new Column()
             .c_child(form())
             .c_child(new SpacerVertical(30))
+            .c_child(paymentSection())
+            .c_child(new SpacerVertical(30))
             .c_child(table());
 
         return new Column(new ColumnProps().paddingAll(10), new ColumnStyler().bgColor(theme.colors().background()))
@@ -255,7 +257,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                 .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm))
                 .c_child(new Row(new RowProps().spacingOf(8))
                         .r_child(
-                            new Button(vm.btnPagamentoText.get(),
+                            new Button(vm.btnPagamentoText,
                                 new ButtonProps()
                                     .height(35)
                                     .fontSize(theme.typography().small())
