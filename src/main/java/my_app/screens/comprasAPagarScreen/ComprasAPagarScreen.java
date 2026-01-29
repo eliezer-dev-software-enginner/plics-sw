@@ -193,7 +193,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                                 new Column(new ColumnProps())
                                     .c_child(new Text("Valor do Pagamento:", new TextProps().variant(TextVariant.BODY)))
                                     .c_child(
-                                        Components.InputColumn("Valor", vm.valorPagamento, "R$ 0,00")
+                                        Components.InputColumnCurrency("Valor", vm.valorPagamento)
                                     )
                             )
                             .r_child(
@@ -226,6 +226,8 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
     }
 
     private Component formSection() {
+        ComputedState<Boolean> naoEhPagamento = ComputedState.of(()-> vm.modoPagamento.get() == false, vm.modoPagamento);
+
         return new Card(
             new Column(new ColumnProps().paddingAll(20).spacingOf(15))
                 .c_child(Components.FormTitle(vm.btnText.get()))
@@ -257,20 +259,20 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                 .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm))
                 .c_child(new Row(new RowProps().spacingOf(8))
                         .r_child(
-                            new Button(vm.btnPagamentoText,
-                                new ButtonProps()
-                                    .height(35)
-                                    .fontSize(theme.typography().small())
-                                    .bgColor("#10b981")
-                                    .textColor("white")
-                                    .fillWidth()
-                                    .onClick(() -> {
-                                        if (vm.modoPagamento.get()) {
-                                            vm.registrarPagamento(router);
-                                        } else {
-                                            vm.modoPagamento.set(true);
-                                        }
-                                    }))
+                                Show.when(naoEhPagamento, () -> new Button(vm.btnPagamentoText,
+                                        new ButtonProps()
+                                                .height(35)
+                                                .fontSize(theme.typography().small())
+                                                .bgColor("#10b981")
+                                                .textColor("white")
+                                                .fillWidth()
+                                                .onClick(() -> {
+                                                    if (vm.modoPagamento.get()) {
+                                                        vm.registrarPagamento(router);
+                                                    } else {
+                                                        vm.modoPagamento.set(true);
+                                                    }
+                                                })))
                         )
                         .r_child(
                             new Button("Quitar",

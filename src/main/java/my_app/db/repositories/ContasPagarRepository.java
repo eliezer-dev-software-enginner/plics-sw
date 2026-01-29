@@ -235,6 +235,14 @@ public class ContasPagarRepository extends BaseRepository<ContasPagarDto, Contas
         return contas;
     }
 
+    public void excluirPorCompra(Long compraId) throws SQLException {
+        String sql = "DELETE FROM contas_pagar WHERE compra_id = ?";
+        try (PreparedStatement ps = conn().prepareStatement(sql)) {
+            ps.setLong(1, compraId);
+            ps.executeUpdate();
+        }
+    }
+
     public void registrarPagamento(Long id, BigDecimal valorPago) throws SQLException {
         ContasPagarModel conta = buscarById(id);
         if (conta == null) {

@@ -26,6 +26,7 @@ import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.db.repositories.ComprasRepository;
+import my_app.db.repositories.ContasPagarRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.screens.components.Components;
@@ -436,6 +437,11 @@ State<String> pcCompra = State.of("0");
             Async.Run(() -> {
                 try {
                     Long id = data.id;
+                    
+                    // Primeiro exclui todas as contas a pagar vinculadas a esta compra
+                    new ContasPagarRepository().excluirPorCompra(id);
+                    
+                    // Depois exclui a compra
                     comprasRepository.excluirById(id);
                     
                     // Remove do estoque a quantidade correspondente a esta compra
@@ -443,6 +449,7 @@ State<String> pcCompra = State.of("0");
                     
                     UI.runOnUi(() -> {
                         compras.removeIf(it-> it.id.equals(id));
+                        Components.ShowPopup(router, "Compra e contas vinculadas excluídas com sucesso!");
                     });
 
                 } catch (SQLException e) {
