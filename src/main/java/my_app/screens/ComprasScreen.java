@@ -5,10 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import megalodonte.ComputedState;
-import megalodonte.ForEachState;
-import megalodonte.Show;
-import megalodonte.State;
+import megalodonte.*;
 import megalodonte.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
@@ -20,20 +17,20 @@ import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.dto.CompraDto;
 import my_app.db.dto.FornecedorDto;
-import my_app.db.models.CategoriaModel;
-import my_app.db.models.CompraModel;
-import my_app.db.models.FornecedorModel;
-import my_app.db.models.ProdutoModel;
+import my_app.db.models.*;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.db.repositories.ComprasRepository;
 import my_app.db.repositories.ContasPagarRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
+import my_app.domain.Parcela;
 import my_app.screens.components.Components;
 import my_app.services.ContasPagarService;
+
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.List;
+
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
@@ -51,40 +48,30 @@ import java.util.List;
 public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
     private final Router router;
     private final Theme theme = ThemeManager.theme();
+    private final ListState<CompraModel> compras = ListState.of(List.of());
     State<LocalDate> dataCompra = State.of(LocalDate.now());
     State<String> numeroNota = State.of("");
-
     State<Boolean> modoEdicao = State.of(false);
-
     ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
-
     State<String> codigo = State.of("");
     State<ProdutoModel> produtoEncontrado = State.of(null);
     State<String> qtd = State.of("0");
     State<String> observacao = State.of("");
-
     List<String> tiposPagamento = List.of("A VISTA", "CRÉDITO", "DÉBITO", "PIX", "A PRAZO");
     State<String> tipoPagamentoSeleced = State.of(tiposPagamento.get(1));
-
     ComputedState<Boolean> tipoPagamentoSelectedIsAPrazo = ComputedState.of(
             () -> tipoPagamentoSeleced.get().equals("A PRAZO"),
             tipoPagamentoSeleced);
-
     State<List<Parcela>> parcelas = State.of(List.of());
-
     State<String> descontoEmDinheiro = State.of("0");
-
     // Preço de compra (armazena em centavos, ex: 123 = R$ 1,23)
-State<String> pcCompra = State.of("0");
-
+    State<String> pcCompra = State.of("0");
     ComputedState<String> totalBruto = ComputedState.of(() -> {
         int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
         double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
 
         return Utils.toBRLCurrency(BigDecimal.valueOf(qtdValue * precoCompraValue));
     }, descontoEmDinheiro, qtd, pcCompra);
-
-
     ComputedState<Double> totalLiquido = ComputedState.of(() -> {
         int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
         double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
@@ -93,37 +80,22 @@ State<String> pcCompra = State.of("0");
 
         return (qtdValue * precoCompraValue - precoDescontoValue);
     }, descontoEmDinheiro, qtd, pcCompra);
-
     ComputedState<String> descontoComputed = ComputedState.of(() -> Utils.toBRLCurrency(Utils.deCentavosParaReal(descontoEmDinheiro.get())),
             descontoEmDinheiro);
-
-
     State<LocalDate> dataValidade = State.of(null);
-
     // Estados para controle visual do estoque
     State<String> estoqueAnterior = State.of("0");
     State<String> estoqueAtual = State.of("0");
-
     ObservableList<FornecedorModel> fornecedores = FXCollections.observableArrayList();
     State<FornecedorModel> fornecedorSelected = State.of(null);
-
     State<CompraModel> compraSelected = State.of(null);
-    private ComprasRepository comprasRepository = new ComprasRepository();
-    private ProdutoRepository produtoRepository = new ProdutoRepository();
-    
-    // Setter para injeção de dependência em testes
-    void setProdutoRepository(ProdutoRepository produtoRepository) {
-        this.produtoRepository = produtoRepository;
-    }
-    private final ObservableList<CompraModel> compras = FXCollections.observableArrayList();
-
     State<List<String>> opcoesDeControleDeEstoque = State.of(List.of("Sim", "Não"));
     State<String> opcaoDeControleDeEstoqueSelected = State.of(opcoesDeControleDeEstoque.get().getFirst());
-
-
+    private ComprasRepository comprasRepository = new ComprasRepository();
+    private ProdutoRepository produtoRepository = new ProdutoRepository();
     public ComprasScreen(Router router) {
         this.router = router;
-        
+
         // Configura listeners para atualizar estoque visual
         qtd.subscribe(novaQtd -> atualizarEstoqueVisual());
         opcaoDeControleDeEstoqueSelected.subscribe(novaOpcao -> atualizarEstoqueVisual());
@@ -147,7 +119,7 @@ State<String> pcCompra = State.of("0");
                                 .findFirst()
                                 .ifPresent(fornecedorSelected::set);
                     }
-                    
+
                     // Associar fornecedores às compras
                     for (CompraModel compra : listCompras) {
                         FornecedorModel fornecedor = fornecedorModelList.stream()
@@ -156,7 +128,7 @@ State<String> pcCompra = State.of("0");
                                 .orElse(null);
                         compra.fornecedor = fornecedor;
                     }
-                    
+
                     compras.addAll(listCompras);
                 });
 
@@ -203,7 +175,7 @@ State<String> pcCompra = State.of("0");
                                 .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
                                 .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
                         )
-.c_child(new SpacerVertical(10))
+                        .c_child(new SpacerVertical(10))
                         .c_child(
                                 new Row(new RowProps().spacingOf(10)).r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
                                         .r_child(Components.SelectColumn("Refletir no estoque?", opcoesDeControleDeEstoque, opcaoDeControleDeEstoqueSelected, it -> it))
@@ -216,7 +188,7 @@ State<String> pcCompra = State.of("0");
                                         .r_child(Components.TextWithValue("Estoque após compra:", estoqueAtual))
                         )
                         .c_child(new SpacerVertical(10))
-                        .c_child(aPrazoForm())
+                        .c_child(Components.aPrazoForm(parcelas, tipoPagamentoSelectedIsAPrazo, totalLiquido))
                         .c_child(new SpacerVertical(10))
                         .c_child(valoresRow)
                         .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
@@ -230,17 +202,17 @@ State<String> pcCompra = State.of("0");
                 UI.runOnUi(() -> {
                     if (!codigo.get().trim().isEmpty() && produto == null) {
                         IO.println("Produto não encontrado para o codigo: " + codigo.get());
-                         Components.ShowAlertError("Produto não encontrado para o codigo: " + codigo.get());
+                        Components.ShowAlertError("Produto não encontrado para o codigo: " + codigo.get());
                         return;
                     }
                     IO.println("Produto encontrado");
                     produtoEncontrado.set(produto);
                     pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
-                    
+
                     // Atualiza os campos de estoque
                     BigDecimal estoqueAtualValue = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
                     estoqueAnterior.set(estoqueAtualValue.toString());
-                    
+
                     // Calcula o estoque após a compra (se controle estiver ativo)
                     if ("Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
                         try {
@@ -260,117 +232,29 @@ State<String> pcCompra = State.of("0");
                 });
 
             } catch (SQLException e) {
-                UI.runOnUi(()->Components.ShowAlertError("Erro ao buscar produto por código: " + e.getMessage()));
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar produto por código: " + e.getMessage()));
             }
         });
     }
 
-    Component aPrazoForm() {
-        var dtPrimeiraParcela = State.of(LocalDate.now().plusMonths(1).minusDays(1));
-        var qtdParcelas = State.of("1");
 
-        Runnable handleGerarParcelas = () -> {
-            gerarParcelas(dtPrimeiraParcela.get(), Integer.parseInt(qtdParcelas.get()), totalLiquido.get());
-        };
-
-        ForEachState<Parcela, Component> parcelaComponentForEachState = ForEachState.of(parcelas, this::parcelaItem);
-
-        return Show.when(tipoPagamentoSelectedIsAPrazo,
-                () -> new Column(new ColumnProps())
-                        .c_child(
-                                new Row(new RowProps().spacingOf(10).bottomVertically())
-                                        .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela", ""))
-                                        .r_child(Components.InputColumn("Quantidade de parcelas", qtdParcelas, "Ex: 1"))
-                                        .r_child(Components.ButtonCadastro("Gerar parcelas", handleGerarParcelas)))
-                        .items(parcelaComponentForEachState)
-        );
-    }
-
-    Component parcelaItem(Parcela parcela) {
-        return new Row(new RowProps())
-                .r_child(Components.TextColumn("PARCELA", String.valueOf(parcela.numero())))
-                .r_child(Components.TextColumn("VENCIMENTO", parcela.dataVencimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
-                .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
-    }
-
-    //TODO: incluir mais campos
     @Override
     public Component table() {
-        TableView<CompraModel> table = new TableView<>();
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Coluna ID
-        TableColumn<CompraModel, String> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().id != null ? String.valueOf(data.getValue().id) : ""
-                )
-        );
-        idCol.setMaxWidth(90);
+        var simpleTable = new SimpleTable<CompraModel>();
+        simpleTable.fromData(compras)
+                .header()
+                .columns()
+                .column("ID", it-> it.id, (double) 90)
+                .column("Quantidade", it-> it.quantidade)
+                .column("N. Nota", it-> it.numeroNota)
+                .column("Fornecedor", it-> it.fornecedor == null? "": it.fornecedor.nome)
+                .column("Preço", it-> it.precoDeCompra)
+                .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
+                .build()
+                .onItemSelectChange(it-> compraSelected.set(it));
 
-        // Coluna Nome
-        TableColumn<CompraModel, String> numNotaCol = new TableColumn<>("N Nota");
-        numNotaCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().numeroNota)
-        );
-
-        TableColumn<CompraModel, String> qtdCol = new TableColumn<>("Qtd");
-        qtdCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().quantidade.toPlainString())
-        );
-
-        TableColumn<CompraModel, String> fornecedorCol = new TableColumn<>("Fornecedor");
-        fornecedorCol.setCellValueFactory(data -> {
-            var fornecedor = data.getValue().fornecedor;
-            if (fornecedor != null) {
-                return new javafx.beans.property.SimpleStringProperty(fornecedor.nome);
-            } else {
-                return new javafx.beans.property.SimpleStringProperty("");
-            }
-        });
-
-        // Coluna Data Criação
-        TableColumn<CompraModel, String> dataCol = new TableColumn<>("Data de Criação");
-        dataCol.setCellValueFactory(data -> {
-            if (data.getValue().dataCriacao != null) {
-                return new javafx.beans.property.SimpleStringProperty(
-                        Utils.formatDateTime(data.getValue().dataCriacao)
-                );
-            }
-            return new javafx.beans.property.SimpleStringProperty("");
-        });
-
-        table.getColumns().addAll(idCol, numNotaCol,qtdCol, fornecedorCol, dataCol);
-        table.setItems(compras);
-
-        Utils.onItemTableSelectedChange(table, data-> compraSelected.set(data));
-
-        return Component.CreateFromJavaFxNode(table);
-    }
-
-
-    private void gerarParcelas(LocalDate dataPrimeiraParcela, int quantidadeParcelas, double valorTotalLiquido) {
-        List<Parcela> novasParcelas = new ArrayList<>();
-        double valorParcela = valorTotalLiquido / quantidadeParcelas;
-        IO.println("=== GERANDO PARCELAS ===");
-        IO.println("Valor total para parcelar: R$ " + valorTotalLiquido);
-
-        for (int i = 0; i < quantidadeParcelas; i++) {
-            LocalDate dataVencimento = dataPrimeiraParcela.plusMonths(i);
-            Parcela parcela = new Parcela(i + 1, dataVencimento, valorParcela);
-            novasParcelas.add(parcela);
-        }
-
-        // Atualizar o state com as parcelas geradas
-        parcelas.set(novasParcelas);
-
-        IO.println("=== PARCELAS GERADAS ===");
-        for (Parcela parcela : novasParcelas) {
-            IO.println("Parcela " + parcela.numero() + ": " +
-                    parcela.dataVencimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-                    " - Valor: R$ " + String.format("%.2f", parcela.valor()));
-        }
-        IO.println("========================");
+        return simpleTable;
     }
 
     @Override
@@ -437,23 +321,23 @@ State<String> pcCompra = State.of("0");
             Async.Run(() -> {
                 try {
                     Long id = data.id;
-                    
+
                     // Primeiro exclui todas as contas a pagar vinculadas a esta compra
                     new ContasPagarRepository().excluirPorCompra(id);
-                    
+
                     // Depois exclui a compra
                     comprasRepository.excluirById(id);
-                    
+
                     // Remove do estoque a quantidade correspondente a esta compra
                     removerEstoqueProduto(data.produtoCod, data.quantidade);
-                    
+
                     UI.runOnUi(() -> {
-                        compras.removeIf(it-> it.id.equals(id));
+                        compras.removeIf(it -> it.id.equals(id));
                         Components.ShowPopup(router, "Compra e contas vinculadas excluídas com sucesso!");
                     });
 
                 } catch (SQLException e) {
-                    UI.runOnUi(()->Components.ShowAlertError("Erro ao excluir compra: " + e.getMessage()));
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir compra: " + e.getMessage()));
                 }
             });
         }
@@ -483,7 +367,7 @@ State<String> pcCompra = State.of("0");
                         var fornecedorModelList = new FornecedorRepository().listar();
                         UI.runOnUi(() -> fornecedores.addAll(fornecedorModelList));
                     }
-                    
+
                     // Buscar o fornecedor específico
                     var fornecedor = new FornecedorRepository().buscarById(data.fornecedorId);
                     UI.runOnUi(() -> {
@@ -513,28 +397,8 @@ State<String> pcCompra = State.of("0");
         Async.Run(() -> {
             if (modoEdicao.get()) {
                 final var selecionado = compraSelected.get();
-                if(selecionado != null){
-                    // Calcular estoque anterior e posterior para edição
-                    BigDecimal estoqueAntesEdicao = BigDecimal.ZERO;
-                    BigDecimal estoqueAposEdicao = BigDecimal.ZERO;
+                if (selecionado != null) {
                     String refletirEstoqueEdicao = opcaoDeControleDeEstoqueSelected.get();
-                    
-                    try {
-                        ProdutoModel produto = produtoRepository.buscarPorCodigoBarras(codigo.get());
-                        if (produto != null) {
-                            estoqueAntesEdicao = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
-                            if ("Sim".equals(refletirEstoqueEdicao)) {
-                                BigDecimal novaQtd = new BigDecimal(qtd.get());
-                                BigDecimal qtdAnterior = selecionado.quantidade;
-                                BigDecimal diferenca = novaQtd.subtract(qtdAnterior);
-                                estoqueAposEdicao = estoqueAntesEdicao.add(diferenca);
-                            } else {
-                                estoqueAposEdicao = estoqueAntesEdicao;
-                            }
-                        }
-                    } catch (SQLException e) {
-                        IO.println("Erro ao buscar produto para controle de estoque na edição: " + e.getMessage());
-                    }
 
                     CompraModel modelAtualizada = new CompraModel().fromIdAndDto(
                             selecionado.id, new CompraDto(
@@ -547,50 +411,29 @@ State<String> pcCompra = State.of("0");
                                     observacao.get(),
                                     DateUtils.localDateParaMillis(dataCompra.get()),
                                     numeroNota.get(),
-                                    dataValidade.get()!= null? DateUtils.localDateParaMillis(dataValidade.get()): null,
-                                    estoqueAntesEdicao,
-                                    estoqueAposEdicao,
+                                    dataValidade.get() != null ? DateUtils.localDateParaMillis(dataValidade.get()) : null,
                                     refletirEstoqueEdicao
                             ));
                     try {
                         comprasRepository.atualizar(modelAtualizada);
-                        Utils.updateItemOnObservableList(compras, selecionado, modelAtualizada);
-                        
+                        compras.updateIf(it-> it.id.equals(selecionado.id), it-> modelAtualizada);
+
                         // Atualiza o estoque com base na diferença entre as quantidades
                         BigDecimal novaQuantidade = modelAtualizada.quantidade;
                         BigDecimal quantidadeAnterior = selecionado.quantidade;
                         atualizarEstoqueProduto(modelAtualizada.produtoCod, novaQuantidade, true, quantidadeAnterior);
-                        
+
                         Components.ShowPopup(router, "Sua compra de mercadoria foi atualizada com sucesso!");
                     } catch (SQLException e) {
-                        UI.runOnUi(()->Components.ShowAlertError("Erro ao atualizar compra: " + e.getMessage()));
+                        UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar compra: " + e.getMessage()));
                     }
                 }
-            }else{
+            } else {
                 try {
-                    final var dtValidade = dataValidade.get() != null?
+                    final var dtValidade = dataValidade.get() != null ?
                             DateUtils.localDateParaMillis(dataValidade.get()) : null;
 
-                    // Calcular valores de estoque para salvar
-                    BigDecimal estoqueAntes = BigDecimal.ZERO;
-                    BigDecimal estoqueApos = BigDecimal.ZERO;
-                    String refletirEstoqueSalv = opcaoDeControleDeEstoqueSelected.get();
-                    
-                    try {
-                        ProdutoModel produto = produtoRepository.buscarPorCodigoBarras(codigo.get());
-                        if (produto != null) {
-                            estoqueAntes = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
-                            if ("Sim".equals(refletirEstoqueSalv)) {
-                                estoqueApos = estoqueAntes.add(new BigDecimal(qtd.get()));
-                            } else {
-                                estoqueApos = estoqueAntes;
-                            }
-                        }
-                    } catch (SQLException e) {
-                        IO.println("Erro ao buscar produto para controle de estoque: " + e.getMessage());
-                    }
-
-var dto = new CompraDto(codigo.get(),
+                    var dto = new CompraDto(codigo.get(),
                             Utils.deCentavosParaReal(pcCompra.get()),
                             fornecedorSelected.get().id,
                             new BigDecimal(qtd.get()),
@@ -599,8 +442,6 @@ var dto = new CompraDto(codigo.get(),
                             DateUtils.localDateParaMillis(dataCompra.get()),
                             numeroNota.get(),
                             dtValidade,
-                            BigDecimal.ZERO, // quantidade_anterior (será calculado depois)
-                            BigDecimal.ZERO, // estoque_apos_compra (será calculado depois)
                             opcaoDeControleDeEstoqueSelected.get()
                     );
 
@@ -610,13 +451,13 @@ var dto = new CompraDto(codigo.get(),
                     if ("A PRAZO".equals(tipoPagamentoSeleced.get()) && !parcelas.get().isEmpty()) {
                         try {
                             ContasPagarService contasPagarService = new ContasPagarService();
-                            List<ContasPagarService.Parcela> parcelasParaService = parcelas.get().stream()
-                                .map(p -> new ContasPagarService.Parcela(
-                                    p.numero(), 
-                                    DateUtils.localDateParaMillis(p.dataVencimento()), // Convert to milliseconds
-                                    BigDecimal.valueOf(p.valor())
-                                ))
-                                .toList();
+                            List<Parcela> parcelasParaService = parcelas.get().stream()
+                                    .map(p -> new Parcela(
+                                            p.numero(),
+                                            p.dataVencimento(), // Convert to milliseconds
+                                            p.valor()
+                                    ))
+                                    .toList();
                             contasPagarService.gerarContasDeCompra(compraSalva, parcelasParaService);
                         } catch (SQLException e) {
                             UI.runOnUi(() -> Components.ShowAlertError("Erro ao gerar contas a pagar: " + e.getMessage()));
@@ -634,7 +475,7 @@ var dto = new CompraDto(codigo.get(),
                     });
                 } catch (SQLException e) {
                     IO.println("Erro ao salvar compra: " + e.getMessage());
-                    UI.runOnUi(()->Components.ShowAlertError("Erro ao salvar compra: " + e.getMessage()));
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar compra: " + e.getMessage()));
                 }
             }
         });
@@ -660,9 +501,10 @@ var dto = new CompraDto(codigo.get(),
 
     /**
      * Atualiza o estoque do produto baseado na operação de compra
-     * @param codigoBarras Código de barras do produto
-     * @param quantidade Quantidade da compra
-     * @param isEdicao Se true, precisa calcular a diferença (nova quantidade - quantidade anterior)
+     *
+     * @param codigoBarras       Código de barras do produto
+     * @param quantidade         Quantidade da compra
+     * @param isEdicao           Se true, precisa calcular a diferença (nova quantidade - quantidade anterior)
      * @param quantidadeAnterior Quantidade anterior da compra (usada apenas em edição)
      */
     void atualizarEstoqueProduto(String codigoBarras, BigDecimal quantidade, boolean isEdicao, BigDecimal quantidadeAnterior) {
@@ -674,14 +516,14 @@ var dto = new CompraDto(codigo.get(),
         Async.Run(() -> {
             try {
                 BigDecimal quantidadeParaAtualizar;
-                
+
                 if (isEdicao) {
                     // Em edição, calcula a diferença: novo valor - valor anterior
                     quantidadeParaAtualizar = quantidade.subtract(quantidadeAnterior);
-                    IO.println("Atualizando estoque (edição): " + codigoBarras + 
-                              " | Qtd anterior: " + quantidadeAnterior + 
-                              " | Nova qtd: " + quantidade + 
-                              " | Diferença: " + quantidadeParaAtualizar);
+                    IO.println("Atualizando estoque (edição): " + codigoBarras +
+                            " | Qtd anterior: " + quantidadeAnterior +
+                            " | Nova qtd: " + quantidade +
+                            " | Diferença: " + quantidadeParaAtualizar);
                 } else {
                     // Em adição, usa a quantidade diretamente
                     quantidadeParaAtualizar = quantidade;
@@ -711,8 +553,8 @@ var dto = new CompraDto(codigo.get(),
             return;
         }
 
-        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ? 
-                                produtoEncontrado.get().estoque : BigDecimal.ZERO;
+        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ?
+                produtoEncontrado.get().estoque : BigDecimal.ZERO;
         estoqueAnterior.set(estoqueBase.toString());
 
         if ("Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
@@ -730,8 +572,9 @@ var dto = new CompraDto(codigo.get(),
 
     /**
      * Remove do estoque a quantidade correspondente a uma compra excluída
+     *
      * @param codigoBarras Código de barras do produto
-     * @param quantidade Quantidade da compra que está sendo excluída
+     * @param quantidade   Quantidade da compra que está sendo excluída
      */
     void removerEstoqueProduto(String codigoBarras, BigDecimal quantidade) {
         if (!"Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
@@ -752,6 +595,5 @@ var dto = new CompraDto(codigo.get(),
         });
     }
 
-    record Parcela(int numero, LocalDate dataVencimento, double valor) {
-    }
+
 }

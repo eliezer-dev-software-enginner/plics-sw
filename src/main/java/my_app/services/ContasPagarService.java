@@ -7,6 +7,8 @@ import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.ContasPagarRepository;
 import my_app.db.repositories.ComprasRepository;
 import my_app.db.repositories.FornecedorRepository;
+import my_app.domain.Parcela;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -141,21 +143,20 @@ public class ContasPagarService {
             throw new IllegalStateException("Parcelas não informadas");
         }
 
-        for (int i = 0; i < parcelas.size(); i++) {
-            Parcela parcela = parcelas.get(i);
+        for (Parcela parcela : parcelas) {
             ContasPagarDto dto = new ContasPagarDto(
-                "Parcela " + parcela.numero() + " - Compra #" + compra.id,
-                parcela.valor(),
-                BigDecimal.ZERO,
-                parcela.valor(),
-                parcela.dataVencimento(),
-                null,
-                "PENDENTE",
-                compra.fornecedorId,
-                compra.id,
-                "PARC/" + parcela.numero(),
-                "DUPLICATA",
-                "Gerado automaticamente da compra #" + compra.id
+                    "Parcela " + parcela.numero() + " - Compra #" + compra.id,
+                    parcela.valor(),
+                    BigDecimal.ZERO,
+                    parcela.valor(),
+                    parcela.dataVencimento(),
+                    null,
+                    "PENDENTE",
+                    compra.fornecedorId,
+                    compra.id,
+                    "PARC/" + parcela.numero(),
+                    "DUPLICATA",
+                    "Gerado automaticamente da compra #" + compra.id
             );
             repo.salvar(dto);
         }
@@ -236,6 +237,4 @@ public class ContasPagarService {
             throw new IllegalStateException("Valor restante não pode ser negativo");
         }
     }
-
-    public record Parcela(int numero, Long dataVencimento, BigDecimal valor) {}
 }

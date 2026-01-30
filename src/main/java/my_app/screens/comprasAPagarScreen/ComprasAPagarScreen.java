@@ -19,6 +19,7 @@ import my_app.db.models.ContasPagarModel;
 import my_app.db.models.FornecedorModel;
 import my_app.screens.ContratoTelaCrud;
 import my_app.screens.components.Components;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.text.NumberFormat;
@@ -344,7 +345,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
         dataVencimentoCol.setCellValueFactory(data ->
             new javafx.beans.property.SimpleStringProperty(
                 data.getValue().dataVencimento != null ?
-                    Utils.formatDateTime(data.getValue().dataVencimento) : ""
+                        DateUtils.millisToBrazilianDateTime(data.getValue().dataVencimento) : ""
             )
         );
         dataVencimentoCol.setMaxWidth(100);

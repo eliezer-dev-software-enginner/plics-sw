@@ -17,9 +17,8 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
         String sql = """
         INSERT INTO compras 
         (produto_cod, fornecedor_id, quantidade, preco_compra, desconto_em_reais, tipo_pagamento, 
-         observacao, data_criacao, data_compra, numero_nota, data_validade, quantidade_anterior, 
-         estoque_apos_compra, refletir_estoque) 
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+         observacao, data_criacao, data_compra, numero_nota, data_validade) 
+         VALUES (?,?,?,?,?,?,?,?,?,?,?)
         """;
 
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,9 +37,6 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             } else {
                 ps.setNull(11, java.sql.Types.BIGINT);
             }
-            ps.setBigDecimal(12, dto.quantidadeAnterior());
-            ps.setBigDecimal(13, dto.estoqueAposCompra());
-            ps.setString(14, dto.refletirEstoque());
             ps.executeUpdate();
             
             // Recupera o ID gerado e cria nova instância
@@ -68,8 +64,7 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
         String sql = """
         UPDATE compras SET produto_cod = ?, fornecedor_id = ?, quantidade = ?,
         preco_compra = ?, desconto_em_reais = ?, tipo_pagamento = ?, observacao = ?,
-        data_compra = ?, numero_nota = ?, data_validade = ?, quantidade_anterior = ?,
-        estoque_apos_compra = ?, refletir_estoque = ?
+        data_compra = ?, numero_nota = ?, data_validade = ?
         WHERE id = ?
         """;
 
@@ -88,10 +83,7 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             } else {
                 ps.setNull(10, java.sql.Types.BIGINT);
             }
-            ps.setBigDecimal(11, model.quantidadeAnterior);
-            ps.setBigDecimal(12, model.estoqueAposCompra);
-            ps.setString(13, model.refletirEstoque);
-            ps.setLong(14, model.id);
+            ps.setLong(11, model.id);
             ps.executeUpdate();
         }
     }

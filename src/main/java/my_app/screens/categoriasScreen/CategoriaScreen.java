@@ -19,6 +19,7 @@ import my_app.db.models.CategoriaModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.screens.ContratoTelaCrud;
 import my_app.screens.components.Components;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.sql.SQLException;
@@ -199,7 +200,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
         TableColumn<CategoriaModel, String> colData = new TableColumn<>("Data criação");
         colData.setCellValueFactory(data -> {
             var millis = data.getValue().dataCriacao;
-            return new javafx.beans.property.SimpleStringProperty(Utils.formatDateTime(millis));
+            return new javafx.beans.property.SimpleStringProperty(DateUtils.millisToBrazilianDateTime(millis));
         });
         colData.setPrefWidth(200);
 

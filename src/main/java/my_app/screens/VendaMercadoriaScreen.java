@@ -12,7 +12,9 @@ import megalodonte.theme.ThemeManager;
 import my_app.db.dto.VendaDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
+import my_app.domain.Parcela;
 import my_app.screens.components.Components;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.math.BigDecimal;
@@ -21,6 +23,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import static my_app.domain.Parcela.gerarParcelas;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud {
     public final ListState<VendaModel> vendas = ListState.of(List.of());
@@ -152,7 +156,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                                         .r_child(Components.TextAreaColumn("Observação", observacao, ""))
                         )
                         .c_child(new SpacerVertical(10))
-                        .c_child(aPrazoForm())
+                        .c_child(Components.aPrazoForm(parcelas, tipoPagamentoSelectedIsAPrazo, totalLiquido))
                         .c_child(new SpacerVertical(10))
                         .c_child(valoresRow)
                         .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
@@ -180,34 +184,6 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
         });
     }
 
-    Component aPrazoForm() {
-        var dtPrimeiraParcela = State.of(LocalDate.now().plusMonths(1).minusDays(1));
-        var qtdParcelas = State.of("1");
-
-        Runnable handleGerarParcelas = () -> {
-            gerarParcelas(dtPrimeiraParcela.get(), Integer.parseInt(qtdParcelas.get()), totalLiquido.get());
-        };
-
-        ForEachState<Parcela, Component> parcelaComponentForEachState = ForEachState.of(parcelas, this::parcelaItem);
-
-        return Show.when(tipoPagamentoSelectedIsAPrazo,
-                () -> new Column(new ColumnProps())
-                        .c_child(
-                                new Row(new RowProps().spacingOf(10).bottomVertically())
-                                        .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela", ""))
-                                        .r_child(Components.InputColumn("Quantidade de parcelas", qtdParcelas, "Ex: 1"))
-                                        .r_child(Components.ButtonCadastro("Gerar parcelas", handleGerarParcelas)))
-                        .items(parcelaComponentForEachState)
-        );
-    }
-
-    Component parcelaItem(Parcela parcela) {
-        return new Row(new RowProps())
-                .r_child(Components.TextColumn("PARCELA", String.valueOf(parcela.numero())))
-                .r_child(Components.TextColumn("VENCIMENTO", parcela.dataVencimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
-                .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
-    }
-
     @Override
     public Component table() {
         var simpleTable = new SimpleTable<VendaModel>();
@@ -217,34 +193,11 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                 .column("ID", it-> it.id)
                 .column("Quantidade", it-> it.quantidade)
                 .column("Preço", it-> it.precoUnitario)
-                .column("Data de criação", it-> Utils.formatDateTime(it.dataCriacao))
+                .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(it->   vendaSelected.set(it));
 
         return simpleTable;
-    }
-
-    private void gerarParcelas(LocalDate dataPrimeiraParcela, int quantidadeParcelas, double valorTotalLiquido) {
-        List<Parcela> novasParcelas = new ArrayList<>();
-        double valorParcela = valorTotalLiquido / quantidadeParcelas;
-        IO.println("=== GERANDO PARCELAS ===");
-        IO.println("Valor total para parcelar: R$ " + valorTotalLiquido);
-
-        for (int i = 0; i < quantidadeParcelas; i++) {
-            LocalDate dataVencimento = dataPrimeiraParcela.plusMonths(i);
-            Parcela parcela = new Parcela(i + 1, dataVencimento, valorParcela);
-            novasParcelas.add(parcela);
-        }
-
-        // Atualizar o state com as parcelas geradas
-        parcelas.set(novasParcelas);
-        IO.println("=== PARCELAS GERADAS ===");
-        for (Parcela parcela : novasParcelas) {
-            IO.println("Parcela " + parcela.numero() + ": " +
-                    parcela.dataVencimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-                    " - Valor: R$ " + String.format("%.2f", parcela.valor()));
-        }
-        IO.println("========================");
     }
 
     @Override
@@ -379,8 +332,5 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
      */
     void atualizarEstoqueVisual() {
 
-    }
-
-    record Parcela(int numero, LocalDate dataVencimento, double valor) {
     }
 }

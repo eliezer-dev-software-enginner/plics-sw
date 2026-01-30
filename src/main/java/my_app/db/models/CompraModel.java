@@ -18,11 +18,6 @@ public class CompraModel extends ModelBase<CompraDto> {
     public String numeroNota;
     public BigDecimal precoDeCompra;
     public Long dataValidade;
-    
-    // Novos campos para controle de estoque
-    public BigDecimal quantidadeAnterior;
-    public BigDecimal estoqueAposCompra;
-    public String refletirEstoque;
 
     public FornecedorModel fornecedor;
 
@@ -46,11 +41,6 @@ public class CompraModel extends ModelBase<CompraDto> {
             model.dataValidade = null;
         }
         
-        // Novos campos
-        model.quantidadeAnterior = rs.getBigDecimal("quantidade_anterior");
-        model.estoqueAposCompra = rs.getBigDecimal("estoque_apos_compra");
-        model.refletirEstoque = rs.getString("refletir_estoque");
-        
         model.dataCriacao = rs.getLong("data_criacao");
         return model;
     }
@@ -69,11 +59,6 @@ public class CompraModel extends ModelBase<CompraDto> {
         model.dataCompra = compraDto.dataCompra();
         model.numeroNota = compraDto.numeroNota();
         model.dataValidade = compraDto.dataValidade();
-        
-        // Novos campos
-        model.quantidadeAnterior = compraDto.quantidadeAnterior();
-        model.estoqueAposCompra = compraDto.estoqueAposCompra();
-        model.refletirEstoque = compraDto.refletirEstoque();
         
         //model.dataCriacao = compraDto.dataCriacao();
         return model;

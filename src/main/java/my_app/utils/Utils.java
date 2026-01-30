@@ -165,20 +165,6 @@ public static BigDecimal deCentavosParaReal(String centavos){
         return sb.toString();
     }
 
-    private static final DateTimeFormatter BR_FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-    /**
-     * Converte um timestamp Long para String formatada em dd/MM/yyyy HH:mm
-     */
-    public static String formatDateTime(Long timestamp) {
-        if (timestamp == null || timestamp == 0) return "";
-
-        return Instant.ofEpochMilli(timestamp)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime()
-                .format(BR_FORMATTER);
-    }
 
     public static <T> void updateItemOnObservableList(
             ObservableList<T> observableList, T modelSelected, T modelAtualizada

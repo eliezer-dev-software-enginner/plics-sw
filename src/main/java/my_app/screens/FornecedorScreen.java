@@ -18,6 +18,7 @@ import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.screens.components.Components;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.util.List;
@@ -336,7 +337,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
         dataCol.setCellValueFactory(data -> {
             if (data.getValue().dataCriacao != null) {
                 return new javafx.beans.property.SimpleStringProperty(
-                        Utils.formatDateTime(data.getValue().dataCriacao)
+                        DateUtils.millisToBrazilianDateTime(data.getValue().dataCriacao)
                 );
             }
             return new javafx.beans.property.SimpleStringProperty("");

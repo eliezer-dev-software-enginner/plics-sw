@@ -22,6 +22,9 @@ import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import my_app.db.models.ClienteModel;
+import my_app.domain.Parcela;
+import my_app.screens.ComprasScreen;
+import my_app.utils.DateUtils;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.entypo.Entypo;
@@ -30,6 +33,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -40,6 +44,38 @@ import static my_app.utils.Utils.formatPhone;
 public class Components {
 
     static Theme theme = ThemeManager.theme();
+
+    public static Component aPrazoForm(
+            State<List<Parcela>> parcelas,
+            ComputedState<Boolean> tipoPagamentoSelectedIsAPrazo,
+            ComputedState<Double> totalLiquido) {
+        var dtPrimeiraParcela = State.of(LocalDate.now().plusMonths(1).minusDays(1));
+        var qtdParcelas = State.of("1");
+
+        Runnable handleGerarParcelas = () -> {
+            var list = Parcela.gerarParcelas(dtPrimeiraParcela.get(), Integer.parseInt(qtdParcelas.get()), totalLiquido.get());
+            parcelas.set(list);
+        };
+
+        ForEachState<Parcela, Component> parcelaComponentForEachState = ForEachState.of(parcelas, Components::parcelaItem);
+
+        return Show.when(tipoPagamentoSelectedIsAPrazo,
+                () -> new Column(new ColumnProps())
+                        .c_child(
+                                new Row(new RowProps().spacingOf(10).bottomVertically())
+                                        .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela", ""))
+                                        .r_child(Components.InputColumn("Quantidade de parcelas", qtdParcelas, "Ex: 1"))
+                                        .r_child(Components.ButtonCadastro("Gerar parcelas", handleGerarParcelas)))
+                        .items(parcelaComponentForEachState)
+        );
+    }
+
+    public static Component parcelaItem(Parcela parcela) {
+        return new Row(new RowProps())
+                .r_child(Components.TextColumn("PARCELA", String.valueOf(parcela.numero())))
+                .r_child(Components.TextColumn("VENCIMENTO", DateUtils.millisToBrazilianDateTime(parcela.dataVencimento())))
+                .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
+    }
 
     public static Component actionButtons(ComputedState<String> btnText, Runnable onClick, Runnable onClearForm) {
         return new Row(new RowProps().spacingOf(10))

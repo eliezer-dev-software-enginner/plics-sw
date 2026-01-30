@@ -14,6 +14,7 @@ import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
 import my_app.screens.components.Components;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.util.List;
@@ -229,7 +230,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                     .column("ID", it-> it.id)
                     .column("Nome", it-> it.nome)
                     .column("CPF/CNPJ", it-> it.cpfCnpj)
-                    .column("Data de criação", it-> Utils.formatDateTime(it.dataCriacao))
+                    .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(it->   clienteSelecionado.set(it));
 
