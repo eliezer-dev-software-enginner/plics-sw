@@ -390,17 +390,25 @@ public class Components {
                 );
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
+        InputProps props = new InputProps().fontSize(theme.typography().small()).height(35)
+                .placeHolder(placeholder);
+
+        if(disableInput) props.disable();
+
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
-                                new InputProps().fontSize(theme.typography().small()).height(35)
-                                        .placeHolder(placeholder),
+                        props,
                                 new InputStyler().
                                         borderWidth(theme.border().width())
                                         .borderColor(theme.colors().primary())
                         )
                 );
+    }
+
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {
+      return InputColumn(label, inputState, placeholder, false);
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder) {
