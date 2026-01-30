@@ -1,10 +1,7 @@
-package my_app.screens.clienteScreen;
+package my_app.screens;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import megalodonte.ComputedState;
+import megalodonte.ListState;
 import megalodonte.State;
 import megalodonte.async.Async;
 import megalodonte.base.UI;
@@ -16,10 +13,10 @@ import megalodonte.theme.ThemeManager;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
-import my_app.db.repositories.FornecedorRepository;
-import my_app.screens.ContratoTelaCrud;
 import my_app.screens.components.Components;
 import my_app.utils.Utils;
+
+import java.util.List;
 
 import static my_app.utils.Utils.*;
 
@@ -27,8 +24,8 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     private final Router router;
     private final Theme theme = ThemeManager.theme();
     private final ClienteRepository clienteRepository = new ClienteRepository();
-
-    private final ObservableList<ClienteModel> clientes = FXCollections.observableArrayList();
+    
+    ListState<ClienteModel> clientes = ListState.of(List.of());
     State<ClienteModel> clienteSelecionado = State.of(null);
 
     private final State<String> nome = new State<>("");
@@ -53,7 +50,9 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
         Async.Run(()->{
             try {
                 var list = clienteRepository.listar();
-                UI.runOnUi(()->  clientes.addAll(list));
+                UI.runOnUi(()-> {
+                    clientes.addAll(list);
+                });
             } catch (Exception e) {
                 UI.runOnUi(()->  Components.ShowAlertError("Erro ao buscar clientes"));
             }
@@ -164,6 +163,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
         }
 
         if(editMode.get() && clienteSelecionado.get() == null) return;
+        var id = clienteSelecionado.get().id;
 
         if(editMode.get()){
             Async.Run(()->{
@@ -178,11 +178,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                     clienteRepository.atualizar(modelAtualizada);
 
                     UI.runOnUi(() -> {
-                        // 3. Atualiza na ObservableList
-                        int index = clientes.indexOf(selecionado);
-                        if (index != -1) {
-                            clientes.set(index, modelAtualizada);
-                        }
+                        clientes.updateIf(it-> it.id.equals(id), it-> modelAtualizada);
 
                         Components.ShowPopup(router, "Cliente atualizado com sucesso");
                         clearForm();
@@ -224,56 +220,68 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
         email.set("");
     }
 
-
     @Override
     public Component  table() {
-        TableView<ClienteModel> table = new TableView<>();
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        var simpleTable = new SimpleTable<ClienteModel>();
+        simpleTable.fromData(clientes)
+                .header()
+                .columns()
+                    .column("ID", it-> it.id)
+                    .column("Nome", it-> it.nome)
+                    .column("CPF/CNPJ", it-> it.cpfCnpj)
+                    .column("Data de criação", it-> Utils.formatDateTime(it.dataCriacao))
+                .build()
+                .onItemSelectChange(it->   clienteSelecionado.set(it));
 
-        // Coluna ID
-        TableColumn<ClienteModel, String> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(
-                    data.getValue().id != null ? String.valueOf(data.getValue().id) : ""
-                )
-        );
-        idCol.setMinWidth(60);
-        idCol.setMaxWidth(60);
+        return simpleTable;
 
-        // Coluna Nome
-        TableColumn<ClienteModel, String> nomeCol = new TableColumn<>("Nome");
-        nomeCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().nome)
-        );
-        //nomeCol.setPrefWidth(100);
+//        TableView<ClienteModel> table = new TableView<>();
+//        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+//
+//        // Coluna ID
+//        TableColumn<ClienteModel, String> idCol = new TableColumn<>("ID");
+//        idCol.setCellValueFactory(data ->
+//                new javafx.beans.property.SimpleStringProperty(
+//                    data.getValue().id != null ? String.valueOf(data.getValue().id) : ""
+//                )
+//        );
+//        idCol.setMinWidth(60);
+//        idCol.setMaxWidth(60);
+//
+//        // Coluna Nome
+//        TableColumn<ClienteModel, String> nomeCol = new TableColumn<>("Nome");
+//        nomeCol.setCellValueFactory(data ->
+//                new javafx.beans.property.SimpleStringProperty(data.getValue().nome)
+//        );
+//        //nomeCol.setPrefWidth(100);
+//
+//        // Coluna CNPJ
+//        TableColumn<ClienteModel, String> cnpjCol = new TableColumn<>("CNPJ");
+//        cnpjCol.setCellValueFactory(data ->
+//                new javafx.beans.property.SimpleStringProperty(data.getValue().cpfCnpj)
+//        );
+//
+//        // Coluna Data Criação
+//        TableColumn<ClienteModel, String> dataCol = new TableColumn<>("Data Criação");
+//        dataCol.setCellValueFactory(data -> {
+//            if (data.getValue().dataCriacao != null) {
+//                return new javafx.beans.property.SimpleStringProperty(
+//                    Utils.formatDateTime(data.getValue().dataCriacao));
+//            }
+//            return new javafx.beans.property.SimpleStringProperty("");
+//        });
+//
+//        table.getColumns().addAll(idCol, nomeCol, cnpjCol, dataCol);
+//        table.setItems(clientes);
+//
+//        table.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
+//            if (newSelection != null) {
+//                IO.println("ID selecionado: " + newSelection.id);
+//                clienteSelecionado.set(newSelection);
+//            }
+//        });
 
-        // Coluna CNPJ
-        TableColumn<ClienteModel, String> cnpjCol = new TableColumn<>("CNPJ");
-        cnpjCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().cpfCnpj)
-        );
 
-        // Coluna Data Criação
-        TableColumn<ClienteModel, String> dataCol = new TableColumn<>("Data Criação");
-        dataCol.setCellValueFactory(data -> {
-            if (data.getValue().dataCriacao != null) {
-                return new javafx.beans.property.SimpleStringProperty(
-                    Utils.formatDateTime(data.getValue().dataCriacao));
-            }
-            return new javafx.beans.property.SimpleStringProperty("");
-        });
-
-        table.getColumns().addAll(idCol, nomeCol, cnpjCol, dataCol);
-        table.setItems(clientes);
-
-        table.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
-            if (newSelection != null) {
-                IO.println("ID selecionado: " + newSelection.id);
-                clienteSelecionado.set(newSelection);
-            }
-        });
-
-
-        return Component.CreateFromJavaFxNode(table);
+       // return Component.CreateFromJavaFxNode(table);
     }
 }

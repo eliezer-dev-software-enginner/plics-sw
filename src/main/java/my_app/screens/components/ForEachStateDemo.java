@@ -1,5 +1,6 @@
 package my_app.screens.components;
 
+import megalodonte.ListState;
 import megalodonte.State;
 import megalodonte.ForEachState;
 import megalodonte.components.*;
@@ -18,7 +19,7 @@ public class ForEachStateDemo {
     
     public static Component create() {
         // Estado com lista de produtos
-        State<List<Produto>> produtosState = State.of(Arrays.asList(
+        ListState<Produto> produtosState = ListState.of(Arrays.asList(
             new Produto("Café", 15.00),
             new Produto("Pão", 8.00)
         ));

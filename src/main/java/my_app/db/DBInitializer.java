@@ -153,6 +153,23 @@ public final class DBInitializer {
                     )
                 """);
 
+                st.execute("""
+                    CREATE TABLE IF NOT EXISTS vendas (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        produto_id INTEGER NOT NULL,
+                        cliente_id INTEGER NOT NULL,
+                        quantidade REAL NOT NULL,
+                        preco_unitario REAL NOT NULL,
+                        desconto REAL DEFAULT 0,
+                        valor_total REAL NOT NULL,
+                        forma_pagamento TEXT,
+                        observacao TEXT,
+                        data_criacao INTEGER NOT NULL,
+                        FOREIGN KEY (produto_id) REFERENCES produtos(id),
+                        FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+                    )
+                """);
+
             }
             
             // Adicionar colunas novas se não existirem (migração)

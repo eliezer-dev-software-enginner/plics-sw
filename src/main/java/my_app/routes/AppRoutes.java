@@ -2,14 +2,10 @@ package my_app.routes;
 
 import javafx.stage.Stage;
 import megalodonte.router.Router;
-import my_app.screens.CadastroEmpresaScreen;
-import my_app.screens.ComprasScreen;
+import my_app.screens.*;
 import my_app.screens.authScreen.AccessScreen;
 import my_app.screens.authScreen.AutenticacaoScreen;
-import my_app.screens.HomeScreen;
 import my_app.screens.categoriasScreen.CategoriaScreen;
-import my_app.screens.clienteScreen.ClienteScreen;
-import my_app.screens.FornecedorScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;
 
@@ -33,9 +29,11 @@ public class AppRoutes {
                 new Router.Route("compras",router-> new ComprasScreen(router), new Router.RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
                 new Router.Route("clientes",router-> new ClienteScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de clientes", true)),
-                new Router.Route("contas-a-pagar",router-> new ComprasAPagarScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de contas a pagar", true))
+                //ok
+                new Router.Route("contas-a-pagar",router-> new ComprasAPagarScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de contas a pagar", true)),
+                new Router.Route("vendas",router-> new VendaMercadoriaScreen(router), new Router.RouteProps(1000, 650, "Gerencie sua venda de mercadorias", true))
         );
-        return new Router(routes, "contas-a-pagar", stage);
+        return new Router(routes, "vendas", stage);
     }
 }
 

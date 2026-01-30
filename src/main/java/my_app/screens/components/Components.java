@@ -21,6 +21,7 @@ import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
+import my_app.db.models.ClienteModel;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.entypo.Entypo;
@@ -128,7 +129,23 @@ public class Components {
         alert.showAndWait();
     }
 
+    public static Component DatePickerColumn(State<LocalDate> localDateState, String label) {
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(new DatePicker(localDateState,
+                                new DatePickerProps().fontSize(theme.typography().small()).height(35)
+                                        .placeHolder("dd/mm/yyyy")
+                                        .locale(new Locale("pt", "BR"))
+                                        .pattern("dd/MM/yyyy")
+                                        .editable(false),
+                                new DatePickerStyler().
+                                        borderWidth(theme.border().width())
+                                        .borderColor(theme.colors().primary())
+                        )
+                );
+    }
     //TODO: adicionar campo editavel:false
+    @Deprecated
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label, String placeholder) {
 
         return new Column()
@@ -227,6 +244,21 @@ public class Components {
             select.compareById();
         }
         
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(select);
+    }
+
+    public static <T> Component SelectColumn(String label, ListState<T> list, State<T> stateSelected,Function<T, String> display, boolean compareById) {
+        var select = new Select<T>(new SelectProps().height(35))
+                .items(list)
+                .value(stateSelected)
+                .displayText(display);
+
+        if (compareById) {
+            select.compareById();
+        }
+
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
@@ -556,6 +588,8 @@ public class Components {
             IO.println("Error: " + e.getMessage());
         }
     }
+
+
 
 
     public enum AlertType {ERRO, SUCESSO}
