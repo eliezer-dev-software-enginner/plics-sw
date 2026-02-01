@@ -107,6 +107,7 @@ public final class DBInitializer {
                         numero_nota TEXT,
                         data_validade TEXT,
                         refletir_estoque TEXT DEFAULT 'Não',
+                        total_liquido REAL NOT NULL,
                         data_criacao INTEGER NOT NULL,
                         FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id)
                     )

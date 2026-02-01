@@ -13,7 +13,8 @@ public record CompraDto(
         long dataCompra,
         String numeroNota,
         Long dataValidade,
-        String refletirEstoque
+        String refletirEstoque,
+        BigDecimal totalLiquido
 //        long dataCriacao
 ) {
 }

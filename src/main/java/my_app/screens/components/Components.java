@@ -48,12 +48,12 @@ public class Components {
     public static Component aPrazoForm(
             State<List<Parcela>> parcelas,
             ComputedState<Boolean> tipoPagamentoSelectedIsAPrazo,
-            ComputedState<Double> totalLiquido) {
+            ComputedState<String> totalLiquido) {
         var dtPrimeiraParcela = State.of(LocalDate.now().plusMonths(1).minusDays(1));
         var qtdParcelas = State.of("1");
 
         Runnable handleGerarParcelas = () -> {
-            var list = Parcela.gerarParcelas(dtPrimeiraParcela.get(), Integer.parseInt(qtdParcelas.get()), totalLiquido.get());
+            var list = Parcela.gerarParcelas(dtPrimeiraParcela.get(), Integer.parseInt(qtdParcelas.get()), Double.parseDouble(totalLiquido.get()));
             parcelas.set(list);
         };
 

@@ -15,6 +15,7 @@ import megalodonte.utils.related.TextVariant;
 import my_app.db.models.ProdutoModel;
 import my_app.screens.ContratoTelaCrud;
 import my_app.screens.components.Components;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 
@@ -129,7 +130,22 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public Component table() {
-        return null;
+        var simpleTable = new SimpleTable<ProdutoModel>();
+        simpleTable.fromData(vm.produtos)
+                .header()
+                .columns()
+                .column("ID", it-> it.id)
+                .column("Código", it-> it.codigoBarras)
+                .column("Estoque", it-> it.estoque)
+                .column("Descrição", it-> it.descricao)
+                .column("Preço de compra", it-> Utils.toBRLCurrency(it.precoCompra))
+                .column("Preço de venda", it-> Utils.toBRLCurrency(it.precoVenda))
+                .column("Categoria", it ->   it.categoria != null ? it.categoria.nome : "")
+                .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
+                .build()
+                .onItemSelectChange(vm.produtoSelected::set);
+
+        return simpleTable;
     }
 
     @Override
@@ -177,7 +193,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                                         new TextProps().fontSize(20).bold()))
                         )
                         .c_child(new SpacerVertical(15))
-                        .c_child(ProdutosTable(vm.produtos, vm)),
+                        .c_child(table()),
                 new CardProps()
                         .padding(0)
                         .radius(12)

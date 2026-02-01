@@ -17,6 +17,7 @@ public class CompraModel extends ModelBase<CompraDto> {
     public long dataCompra;
     public String numeroNota;
     public BigDecimal precoDeCompra;
+    public BigDecimal totalLiquido;
     public Long dataValidade;
 
     public FornecedorModel fornecedor;
@@ -31,6 +32,7 @@ public class CompraModel extends ModelBase<CompraDto> {
         model.fornecedorId = rs.getLong("fornecedor_id");
         model.quantidade = rs.getBigDecimal("quantidade");
         model.precoDeCompra = rs.getBigDecimal("preco_compra");
+        model.totalLiquido = rs.getBigDecimal("total_liquido");
         model.descontoEmReais = rs.getBigDecimal("desconto_em_reais");
         model.tipoPagamento = rs.getString("tipo_pagamento");
         model.observacao = rs.getString("observacao");
@@ -53,6 +55,7 @@ public class CompraModel extends ModelBase<CompraDto> {
         model.fornecedorId = compraDto.fornecedorId();
         model.quantidade = compraDto.quantidade();
         model.precoDeCompra = compraDto.precoCompra();
+        model.totalLiquido = compraDto.totalLiquido();
         model.descontoEmReais = compraDto.descontoEmReais();
         model.tipoPagamento = compraDto.tipoPagamento();
         model.observacao = compraDto.observacao();

@@ -3,6 +3,7 @@ package my_app.screens.produtoScreen;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import megalodonte.ComputedState;
+import megalodonte.ListState;
 import megalodonte.State;
 import megalodonte.async.Async;
 import megalodonte.base.UI;
@@ -25,7 +26,7 @@ public class ProdutoScreenViewModel extends ViewModel {
 
     private final ProdutoService service = new ProdutoService();
     private final ProdutoRepository produtoRepository = new ProdutoRepository();
-    public final ObservableList<ProdutoModel> produtos = FXCollections.observableArrayList();
+    public final ListState<ProdutoModel> produtos = ListState.of(List.of());
     public final State<String> codigoBarras = new State<>("");
     public final State<String> descricao = new State<>("");
     public final State<String> precoCompra = new State<>("0");
@@ -86,7 +87,7 @@ public class ProdutoScreenViewModel extends ViewModel {
                     service.atualizar(new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
                     var produtos = produtoRepository.listar();
                     UI.runOnUi(() -> {
-                        this.produtos.setAll(produtos);
+                        this.produtos.addAll(produtos);
                         Components.ShowPopup(router, "Produto atualizado com sucesso!");
                     });
                 } catch (Exception e) {
@@ -142,7 +143,7 @@ public class ProdutoScreenViewModel extends ViewModel {
                 var categorias = new CategoriaRepository().listar();
 
                 UI.runOnUi(() -> {
-                    this.produtos.setAll(produtos);
+                    this.produtos.addAll(produtos);
 
                     this.categorias.set(categorias);
                     this.categoriaSelected.set(categorias.isEmpty() ? null : categorias.getFirst());

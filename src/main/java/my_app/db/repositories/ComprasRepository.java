@@ -17,8 +17,8 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
         String sql = """
         INSERT INTO compras 
         (produto_cod, fornecedor_id, quantidade, preco_compra, desconto_em_reais, tipo_pagamento, 
-         observacao, data_criacao, data_compra, numero_nota, data_validade) 
-         VALUES (?,?,?,?,?,?,?,?,?,?,?)
+         observacao, data_criacao, data_compra, numero_nota, data_validade, total_liquido) 
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
         """;
 
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,7 +38,7 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
                 ps.setNull(11, java.sql.Types.BIGINT);
             }
             ps.executeUpdate();
-            
+            ps.setBigDecimal(12, dto.totalLiquido());
             // Recupera o ID gerado e cria nova instância
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
@@ -64,7 +64,7 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
         String sql = """
         UPDATE compras SET produto_cod = ?, fornecedor_id = ?, quantidade = ?,
         preco_compra = ?, desconto_em_reais = ?, tipo_pagamento = ?, observacao = ?,
-        data_compra = ?, numero_nota = ?, data_validade = ?
+        data_compra = ?, numero_nota = ?, data_validade = ?, total_liquido = ?
         WHERE id = ?
         """;
 
@@ -84,6 +84,8 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
                 ps.setNull(10, java.sql.Types.BIGINT);
             }
             ps.setLong(11, model.id);
+            ps.setBigDecimal(12, model.totalLiquido);
+
             ps.executeUpdate();
         }
     }

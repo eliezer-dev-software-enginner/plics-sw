@@ -56,12 +56,12 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
         return Utils.toBRLCurrency(BigDecimal.valueOf(qtdValue * precoCompraValue));
     }, descontoEmDinheiro, qtd, pcCompra);
 
-    ComputedState<Double> totalLiquido = ComputedState.of(() -> {
+    ComputedState<String> totalLiquido = ComputedState.of(() -> {
         int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
         double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
 
         double precoDescontoValue = Double.parseDouble(descontoEmDinheiro.get()) / 100.0;
-        return (qtdValue * precoCompraValue - precoDescontoValue);
+        return String.valueOf(qtdValue * precoCompraValue - precoDescontoValue);
     }, descontoEmDinheiro, qtd, pcCompra);
 
     ComputedState<String> descontoComputed = ComputedState.of(() -> Utils.toBRLCurrency(Utils.deCentavosParaReal(descontoEmDinheiro.get())),
@@ -134,7 +134,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
         final var valoresRow = new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.TextWithValue("Valor total(bruto): ", totalBruto))
                 .r_child(Components.TextWithValue("Desconto: ", descontoComputed))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(it -> Utils.toBRLCurrency(BigDecimal.valueOf(it))))
+                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(Utils::toBRLCurrency))
                 );
 
         return new Card(new Scroll(

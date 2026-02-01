@@ -21,6 +21,13 @@ public class Utils {
 
     }
 
+    public static String toBRLCurrency(String value){
+        final NumberFormat BRL =
+                NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return BRL.format(new BigDecimal(value));
+    }
+
+
     public static <T> void onItemTableSelectedChange(TableView<T> table, Consumer<T> eventHandler){
         table.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
             if (newSelection != null) {

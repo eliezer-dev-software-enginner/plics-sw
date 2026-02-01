@@ -72,14 +72,17 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
         return Utils.toBRLCurrency(BigDecimal.valueOf(qtdValue * precoCompraValue));
     }, descontoEmDinheiro, qtd, pcCompra);
-    ComputedState<Double> totalLiquido = ComputedState.of(() -> {
+
+    //TODO: no futuro deve ser tratado como String
+    ComputedState<String> totalLiquido = ComputedState.of(() -> {
         int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
         double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
 
         double precoDescontoValue = Double.parseDouble(descontoEmDinheiro.get()) / 100.0;
 
-        return (qtdValue * precoCompraValue - precoDescontoValue);
+        return String.valueOf (qtdValue * precoCompraValue - precoDescontoValue);
     }, descontoEmDinheiro, qtd, pcCompra);
+
     ComputedState<String> descontoComputed = ComputedState.of(() -> Utils.toBRLCurrency(Utils.deCentavosParaReal(descontoEmDinheiro.get())),
             descontoEmDinheiro);
     State<LocalDate> dataValidade = State.of(null);
@@ -93,6 +96,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
     State<String> opcaoDeControleDeEstoqueSelected = State.of(opcoesDeControleDeEstoque.get().getFirst());
     private ComprasRepository comprasRepository = new ComprasRepository();
     private ProdutoRepository produtoRepository = new ProdutoRepository();
+
     public ComprasScreen(Router router) {
         this.router = router;
 
@@ -160,7 +164,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         final var valoresRow = new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.TextWithValue("Valor total(bruto): ", totalBruto))
                 .r_child(Components.TextWithValue("Desconto: ", descontoComputed))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(it -> Utils.toBRLCurrency(BigDecimal.valueOf(it))))
+                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(Utils::toBRLCurrency))
                 );
 
         return new Card(new Scroll(
@@ -245,14 +249,14 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         simpleTable.fromData(compras)
                 .header()
                 .columns()
-                .column("ID", it-> it.id, (double) 90)
-                .column("Quantidade", it-> it.quantidade)
-                .column("N. Nota", it-> it.numeroNota)
-                .column("Fornecedor", it-> it.fornecedor == null? "": it.fornecedor.nome)
-                .column("Preço", it-> it.precoDeCompra)
-                .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
+                .column("ID", it -> it.id, (double) 90)
+                .column("Quantidade", it -> it.quantidade)
+                .column("N. Nota", it -> it.numeroNota)
+                .column("Fornecedor", it -> it.fornecedor == null ? "" : it.fornecedor.nome)
+                .column("Total liq. de compra", it -> Utils.toBRLCurrency(it.totalLiquido))
+                .column("Data de criação", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
-                .onItemSelectChange(it-> compraSelected.set(it));
+                .onItemSelectChange(it -> compraSelected.set(it));
 
         return simpleTable;
     }
@@ -394,59 +398,43 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleAddOrUpdate() {
+        final var dtValidade = dataValidade.get() != null ?
+                DateUtils.localDateParaMillis(dataValidade.get()) : null;
+
+        final var dto = new CompraDto(codigo.get(),
+                Utils.deCentavosParaReal(pcCompra.get()),
+                fornecedorSelected.get().id,
+                new BigDecimal(qtd.get()),
+                Utils.deCentavosParaReal(descontoEmDinheiro.get()),
+                tipoPagamentoSeleced.get(), observacao.get(),
+                DateUtils.localDateParaMillis(dataCompra.get()),
+                numeroNota.get(),
+                dtValidade,
+                opcaoDeControleDeEstoqueSelected.get(),
+                new BigDecimal(totalLiquido.get())
+        );
+
         Async.Run(() -> {
             if (modoEdicao.get()) {
                 final var selecionado = compraSelected.get();
                 if (selecionado != null) {
-                    String refletirEstoqueEdicao = opcaoDeControleDeEstoqueSelected.get();
-
-                    CompraModel modelAtualizada = new CompraModel().fromIdAndDto(
-                            selecionado.id, new CompraDto(
-                                    codigo.get(),
-                                    Utils.deCentavosParaReal(pcCompra.get()),
-                                    fornecedorSelected.get().id,
-                                    new BigDecimal(qtd.get()),
-                                    Utils.deCentavosParaReal(descontoEmDinheiro.get()),
-                                    tipoPagamentoSeleced.get(),
-                                    observacao.get(),
-                                    DateUtils.localDateParaMillis(dataCompra.get()),
-                                    numeroNota.get(),
-                                    dataValidade.get() != null ? DateUtils.localDateParaMillis(dataValidade.get()) : null,
-                                    refletirEstoqueEdicao
-                            ));
+                    CompraModel modelAtualizada = new CompraModel().fromIdAndDto(selecionado.id, dto);
                     try {
                         comprasRepository.atualizar(modelAtualizada);
-                        compras.updateIf(it-> it.id.equals(selecionado.id), it-> modelAtualizada);
+                        compras.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
 
                         // Atualiza o estoque com base na diferença entre as quantidades
                         BigDecimal novaQuantidade = modelAtualizada.quantidade;
                         BigDecimal quantidadeAnterior = selecionado.quantidade;
                         atualizarEstoqueProduto(modelAtualizada.produtoCod, novaQuantidade, true, quantidadeAnterior);
-
-                        Components.ShowPopup(router, "Sua compra de mercadoria foi atualizada com sucesso!");
+                        UI.runOnUi(()->  Components.ShowPopup(router, "Sua compra de mercadoria foi atualizada com sucesso!"));
                     } catch (SQLException e) {
                         UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar compra: " + e.getMessage()));
                     }
                 }
             } else {
                 try {
-                    final var dtValidade = dataValidade.get() != null ?
-                            DateUtils.localDateParaMillis(dataValidade.get()) : null;
-
-                    var dto = new CompraDto(codigo.get(),
-                            Utils.deCentavosParaReal(pcCompra.get()),
-                            fornecedorSelected.get().id,
-                            new BigDecimal(qtd.get()),
-                            Utils.deCentavosParaReal(descontoEmDinheiro.get()),
-                            tipoPagamentoSeleced.get(), observacao.get(),
-                            DateUtils.localDateParaMillis(dataCompra.get()),
-                            numeroNota.get(),
-                            dtValidade,
-                            opcaoDeControleDeEstoqueSelected.get()
-                    );
-
                     var compraSalva = comprasRepository.salvar(dto);
-
                     // Gerar contas a pagar se for a prazo
                     if ("A PRAZO".equals(tipoPagamentoSeleced.get()) && !parcelas.get().isEmpty()) {
                         try {
