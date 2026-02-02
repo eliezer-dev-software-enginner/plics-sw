@@ -20,6 +20,8 @@ import my_app.screens.components.Components;
 import my_app.services.ProdutoService;
 import my_app.utils.Utils;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -52,7 +54,7 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final State<FornecedorModel> fornecedorSelected = new State<>(null);
 
     public final State<String> observacoes = new State<>("");
-    public final State<String> estoque = new State<>("");
+    public final State<String> estoque = new State<>("0");
     public final State<String> validade = new State<>("");
     public final State<LocalDate> dtCriacao = State.of(null);
 
@@ -67,13 +69,13 @@ public class ProdutoScreenViewModel extends ViewModel {
         p.codigoBarras = codigoBarras.get();
         p.descricao = descricao.get();
 
-        // Converte de centavos para reais
         p.precoCompra = Utils.deCentavosParaReal(precoCompra.get());
         p.precoVenda = Utils.deCentavosParaReal(precoVenda.get());
         p.unidade = unidadeSelected.get();
         p.categoriaId = categoriaSelected.get() == null ? 1L : categoriaSelected.get().id;
         p.fornecedorId = fornecedorSelected.get() == null ? 1L : fornecedorSelected.get().id;
-        p.estoque = Utils.deCentavosParaReal(estoque.get());
+        var estoqueField = estoque.get();
+        p.estoque = estoqueField == null || estoqueField.trim().isEmpty()? BigDecimal.ZERO: new BigDecimal(estoqueField);
         p.observacoes = observacoes.get();
         p.imagem = imagem.get();
         p.marca = marca.get();
@@ -87,9 +89,9 @@ public class ProdutoScreenViewModel extends ViewModel {
             Async.Run(() -> {
                 try {
                     service.atualizar(new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
-                    var produtos = produtoRepository.listar();
+                    var produtosList = produtoRepository.listar();
                     UI.runOnUi(() -> {
-                        this.produtos.addAll(produtos);
+                        this.produtos.addAll(produtosList);
                         Components.ShowPopup(router, "Produto atualizado com sucesso!");
                     });
                 } catch (Exception e) {
@@ -100,8 +102,11 @@ public class ProdutoScreenViewModel extends ViewModel {
             Async.Run(() -> {
                 try {
                     var produtoModel = service.salvar(dto);
-                    produtos.add(produtoModel);
+                    produtoModel.dataCriacao = System.currentTimeMillis();
+                    produtoModel.categoria = categoriaSelected.get();
+
                     UI.runOnUi(() -> {
+                        produtos.add(produtoModel);
                         Components.ShowPopup(router, "Produto cadastrado com sucesso");
                         limparFormulario();
                     });
@@ -130,7 +135,6 @@ public class ProdutoScreenViewModel extends ViewModel {
         imagem.set("/assets/produto-generico.png");
     }
 
-
     public void excluir() throws Exception {
         Long id = produtoSelected.get().id;
         service.excluir(id);
@@ -146,7 +150,6 @@ public class ProdutoScreenViewModel extends ViewModel {
 
                 UI.runOnUi(() -> {
                     this.produtos.addAll(produtosList);
-
                     this.categorias.set(categorias);
                     this.categoriaSelected.set(categorias.isEmpty() ? null : categorias.getFirst());
 
@@ -155,7 +158,7 @@ public class ProdutoScreenViewModel extends ViewModel {
 
                     for(var p :produtosList){
                         var categoria = categorias.stream()
-                                .filter(it-> it.id.equals(p.id))
+                                .filter(it-> it.id.equals(p.categoriaId))
                                 .findFirst()
                                 .orElse(null);
 

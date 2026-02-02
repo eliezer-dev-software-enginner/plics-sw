@@ -86,43 +86,26 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                                 .r_child(ProdutoComponents.ContainerLeft(vm))
                                 .r_child(Components.CardImageSelector(vm.imagem, handleChangeImage)))
                         .c_child(new SpacerVertical(25))
-                        .c_child(Components.actionButtons(vm.btnText,()->vm.salvarOuAtualizar(router), this::clearForm)),
+                        .c_child(Components.actionButtons(vm.btnText,this::handleAddOrUpdate, this::clearForm)),
                 new CardProps()
                         .padding(0)
                         .radius(12)
         );
     }
 
-
-    @Override
-    public void handleClickNew() {
-        vm.limparFormulario();
-        IO.println("Formulário limpo para novo produto");
-    }
-
-    @Override
-    public void handleClickMenuEdit() {
-
-    }
-
-    @Override
-    public void handleClickMenuDelete() {
-
-    }
-
-    @Override
-    public void handleClickMenuClone() {
-
-    }
-
-    @Override
-    public void handleAddOrUpdate() {
-
-    }
-
-    @Override
-    public void clearForm() {
-        this.vm.limparFormulario();
+    private Component createTableSection() {
+        return new Card(
+                new Column(new ColumnProps().paddingAll(25))
+                        .c_child(new Row(new RowProps().spacingOf(10))
+                                .r_child(new Text("Produtos Cadastrados",
+                                        new TextProps().fontSize(20).bold()))
+                        )
+                        .c_child(new SpacerVertical(15))
+                        .c_child(table()),
+                new CardProps()
+                        .padding(0)
+                        .radius(12)
+        );
     }
 
     @Override
@@ -150,19 +133,25 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         return null;
     }
 
-    void handleClickEdit() {
-        var produtoSelected = vm.produtoSelected.get();
-        if (produtoSelected == null) return;
 
-        vm.modoEdicao.set(true);
-        if (vm.modoEdicao.get()) {
-            fillInputs(vm.produtoSelected.get());
-        }
+    @Override
+    public void handleClickNew() {
+        vm.modoEdicao.set(false);
+        vm.limparFormulario();
     }
 
-    void handleClickDelete() {
+    @Override
+    public void handleClickMenuEdit() {
+        handleClickMenuClone();
+        vm.modoEdicao.set(true);
+    }
+
+    @Override
+    public void handleClickMenuDelete() {
+        vm.modoEdicao.set(false);
+
+        if (vm.produtoSelected.isNull()) return;
         var produtoSelected = vm.produtoSelected.get();
-        if (produtoSelected == null) return;
 
         var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoSelected.descricao, produtoSelected.codigoBarras);
         Components.ShowAlertAdvice(bodyMessage, () -> {
@@ -182,22 +171,13 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         });
     }
 
-    private Component createTableSection() {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(25))
-                        .c_child(new Row(new RowProps().spacingOf(10))
-                                .r_child(new Text("Produtos Cadastrados",
-                                        new TextProps().fontSize(20).bold()))
-                        )
-                        .c_child(new SpacerVertical(15))
-                        .c_child(table()),
-                new CardProps()
-                        .padding(0)
-                        .radius(12)
-        );
-    }
+    @Override
+    public void handleClickMenuClone() {
+        vm.modoEdicao.set(false);
 
-    private void fillInputs(ProdutoModel model) {
+        if(vm.produtoSelected.get() == null) return;
+        final var model = vm.produtoSelected.get();
+
         vm.codigoBarras.set(model.codigoBarras);
         vm.descricao.set(model.descricao);
         vm.precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
@@ -208,15 +188,20 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         vm.garantia.set(model.garantia);
         vm.marca.set(model.marca);
         vm.unidadeSelected.set(model.unidade);
-        vm.estoque.set(Utils.deRealParaCentavos(model.estoque));
+        vm.estoque.set(Utils.quantidadeTratada(model.estoque));
         vm.validade.set(model.validade);
         vm.observacoes.set(model.observacoes);
         vm.imagem.set(model.imagem);
     }
 
-
-    @FunctionalInterface
-    interface Action {
-        void run() throws Exception;
+    @Override
+    public void handleAddOrUpdate() {
+        vm.salvarOuAtualizar(router);
     }
+
+    @Override
+    public void clearForm() {
+        this.vm.limparFormulario();
+    }
+
 }
