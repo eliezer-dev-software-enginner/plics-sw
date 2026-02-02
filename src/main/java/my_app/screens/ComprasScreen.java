@@ -150,7 +150,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         Runnable searchProductOnFocusChange = this::buscarProduto;
 
         final var top = new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.DatePickerColumn(dataCompra, "Data de compra 2", "dd/mm/yyyy"))
+                .r_child(Components.DatePickerColumn(dataCompra, "Data de compra", "dd/mm/yyyy"))
                 .r_child(Components.SelectColumn("Fornecedor", fornecedores, fornecedorSelected, f -> f.nome, true))
                 .r_child(Components.InputColumn("N NF/Pedido compra", numeroNota, "Ex: 12345678920"))
                 .r_child(Components.InputColumnComFocusHandler("Código", codigo, "xxxxxxxx", searchProductOnFocusChange));
@@ -206,29 +206,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                     IO.println("Produto encontrado");
                     produtoEncontrado.set(produto);
                     pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
-
                     // Atualiza os campos de estoque
                     BigDecimal estoqueAtualValue = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
                     estoqueAnterior.set(estoqueAtualValue.toString());
-
-                    // Calcula o estoque após a compra (se controle estiver ativo)
-                    if ("Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
-                        try {
-                            int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-                            BigDecimal estoqueAposCompra = estoqueAtualValue.add(BigDecimal.valueOf(qtdValue));
-                            estoqueAtual.set(estoqueAposCompra.toString());
-                        } catch (NumberFormatException e) {
-                            estoqueAtual.set(estoqueAtualValue.toString());
-                        }
-                    } else {
-                        estoqueAtual.set(estoqueAtualValue.toString());
-                    }
-//                    var valor = produtoEncontrado.get().precoCompra;
-//                    BigDecimal semPonto = valor.setScale(0, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100));
-//                    pcCompra.set(String.valueOf(semPonto));
-                    // pcCompra.set(valor);
                 });
-
             } catch (SQLException e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar produto por código: " + e.getMessage()));
             }

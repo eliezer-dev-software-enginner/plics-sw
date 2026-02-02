@@ -70,6 +70,13 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
     State<ClienteModel> clienteSelected = State.of(null);
     State<VendaModel> vendaSelected = State.of(null);
 
+    State<List<String>> opcoesDeControleDeEstoque = State.of(List.of("Sim", "Não"));
+    State<String> opcaoDeControleDeEstoqueSelected = State.of(opcoesDeControleDeEstoque.get().getFirst());
+
+    // Estados para controle visual do estoque
+    State<String> estoqueAnterior = State.of("0");
+    State<String> estoqueAtual = State.of("0");
+
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
 
@@ -79,6 +86,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
         this.router = router;
         // Configura listeners para atualizar estoque visual
         qtd.subscribe(novaQtd -> atualizarEstoqueVisual());
+        opcaoDeControleDeEstoqueSelected.subscribe(novaOpcao -> atualizarEstoqueVisual());
+
         produtoRepository = new ProdutoRepository();
         vendaRepository = new VendaRepository();
         vendaService = new VendaMercadoriaService(vendaRepository, produtoRepository);
@@ -157,7 +166,14 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                         .c_child(new SpacerVertical(10))
                         .c_child(
                                 new Row(new RowProps().spacingOf(10)).r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
+                                        .r_child(Components.SelectColumn("Refletir no estoque?", opcoesDeControleDeEstoque, opcaoDeControleDeEstoqueSelected, it -> it))
                                         .r_child(Components.TextAreaColumn("Observação", observacao, ""))
+                        )
+                        .c_child(new SpacerVertical(10))
+                        .c_child(
+                                new Row(new RowProps().spacingOf(15))
+                                        .r_child(Components.TextWithValue("Estoque anterior:", estoqueAnterior))
+                                        .r_child(Components.TextWithValue("Estoque após compra:", estoqueAtual))
                         )
                         .c_child(new SpacerVertical(10))
                         .c_child(Components.aPrazoForm(parcelas, tipoPagamentoSelectedIsAPrazo, totalLiquido))
@@ -180,8 +196,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                     IO.println("Produto encontrado");
                     produtoEncontrado.set(produto);
                     pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
+                    estoqueAnterior.set(produto.estoque.toString());
                 });
-
             } catch (SQLException e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar produto por código: " + e.getMessage()));
             }
@@ -326,6 +342,26 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
      * Atualiza os campos visuais de estoque (anterior e atual)
      */
     void atualizarEstoqueVisual() {
+        if (produtoEncontrado.get() == null) {
+            estoqueAnterior.set("0");
+            estoqueAtual.set("0");
+            return;
+        }
 
+        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ?
+                produtoEncontrado.get().estoque : BigDecimal.ZERO;
+        estoqueAnterior.set(estoqueBase.toString());
+
+        if ("Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
+            try {
+                int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
+                BigDecimal estoqueAposCompra = estoqueBase.subtract(BigDecimal.valueOf(qtdValue));
+                estoqueAtual.set(estoqueAposCompra.toString());
+            } catch (NumberFormatException e) {
+                estoqueAtual.set(estoqueBase.toString());
+            }
+        } else {
+            estoqueAtual.set(estoqueBase.toString());
+        }
     }
 }
