@@ -106,7 +106,6 @@ public final class DBInitializer {
                         data_compra TEXT,
                         numero_nota TEXT,
                         data_validade TEXT,
-                        refletir_estoque TEXT DEFAULT 'Não',
                         total_liquido REAL NOT NULL,
                         data_criacao INTEGER NOT NULL,
                         FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id)
@@ -155,17 +154,17 @@ public final class DBInitializer {
                 st.execute("""
                     CREATE TABLE IF NOT EXISTS vendas (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        produto_id INTEGER NOT NULL,
                         cliente_id INTEGER NOT NULL,
+                        produto_cod TEXT NOT NULL,
                         quantidade REAL NOT NULL,
                         preco_unitario REAL NOT NULL,
                         total_liquido REAL NOT NULL,
                         desconto REAL DEFAULT 0,
-                        valor_total REAL NOT NULL,
-                        forma_pagamento TEXT,
+                        tipo_pagamento TEXT,
                         observacao TEXT,
                         data_criacao INTEGER NOT NULL,
-                        FOREIGN KEY (produto_id) REFERENCES produtos(id),
+                        data_venda REAL,
+                        numero_nota TEXT,
                         FOREIGN KEY (cliente_id) REFERENCES clientes(id)
                     )
                 """);
@@ -173,6 +172,8 @@ public final class DBInitializer {
                 st.execute("""
                     CREATE TABLE IF NOT EXISTS contas_a_receber (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        cliente_id INTEGER,
+                        venda_id INTEGER,
                         descricao TEXT,
                         valor_original REAL,
                         valor_recebido REAL DEFAULT 0,
@@ -180,8 +181,6 @@ public final class DBInitializer {
                         data_vencimento INTEGER,
                         data_recebimento INTEGER,
                         status TEXT DEFAULT 'PENDENTE',
-                        cliente_id INTEGER,
-                        venda_id INTEGER,
                         numero_documento TEXT,
                         tipo_documento TEXT,
                         observacao TEXT,

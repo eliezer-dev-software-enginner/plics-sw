@@ -15,13 +15,13 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
     public VendaModel salvar(VendaDto dto) throws SQLException {
         String sql = """
                 INSERT INTO vendas 
-                (produto_id, cliente_id, quantidade, preco_unitario, desconto, 
-                 valor_total, forma_pagamento, observacao, data_criacao, total_liquido)
+                (produto_cod, cliente_id, quantidade, preco_unitario, desconto, 
+                 valor_total, tipo_pagamento, observacao, data_criacao, total_liquido)
                 VALUES (?,?,?,?,?,?,?,?,?,?)
                 """;
 
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setLong(1, dto.produtoId());
+            ps.setString(1, dto.produtoCod());
             ps.setLong(2, dto.clienteId());
             ps.setBigDecimal(3, dto.quantidade());
             ps.setBigDecimal(4, dto.precoUnitario());
@@ -68,9 +68,9 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
                 VendaModel venda = new VendaModel().fromResultSet(rs);
                 
                 // Carregar produto
-                if (venda.produtoId != null) {
+                if (venda.produtoCod != null) {
                     ProdutoRepository produtoRepo = new ProdutoRepository();
-                    venda.produto = produtoRepo.buscarById(venda.produtoId);
+                    venda.produto = produtoRepo.buscarPorCodigoBarras(venda.produtoCod);
                 }
                 
                 // Carregar cliente
@@ -113,7 +113,7 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
         String sql = """
                     UPDATE vendas SET
                       quantidade = ?, preco_unitario = ?, desconto = ?,
-                      valor_total = ?, forma_pagamento = ?, observacao = ?, total_liquido = ?
+                      tipo_pagamento = ?, observacao = ?, total_liquido = ?
                     WHERE id = ?
                 """;
 
@@ -121,11 +121,10 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
             ps.setBigDecimal(1, model.quantidade);
             ps.setBigDecimal(2, model.precoUnitario);
             ps.setBigDecimal(3, model.desconto);
-            ps.setBigDecimal(4, model.valorTotal);
-            ps.setString(5, model.formaPagamento);
-            ps.setString(6, model.observacao);
-            ps.setLong(7, model.id);
-            ps.setBigDecimal(8, model.totalLiquido);
+            ps.setString(4, model.tipoPagamento);
+            ps.setString(5, model.observacao);
+            ps.setLong(6, model.id);
+            ps.setBigDecimal(7, model.totalLiquido);
             ps.executeUpdate();
         }
     }
@@ -152,9 +151,9 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
         if (venda == null) return null;
 
         // Carregar produto
-        if (venda.produtoId != null) {
+        if (venda.produtoCod != null) {
             ProdutoRepository produtoRepo = new ProdutoRepository();
-            venda.produto = produtoRepo.buscarById(venda.produtoId);
+            venda.produto = produtoRepo.buscarPorCodigoBarras(venda.produtoCod);
         }
 
         // Carregar cliente

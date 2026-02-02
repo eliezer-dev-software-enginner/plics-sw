@@ -235,7 +235,7 @@ public class ContasPagarRepository extends BaseRepository<ContasPagarDto, Contas
         return contas;
     }
 
-    public void excluirPorCompra(Long compraId) throws SQLException {
+    public void excluirPorCompraId(Long compraId) throws SQLException {
         String sql = "DELETE FROM contas_pagar WHERE compra_id = ?";
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setLong(1, compraId);

@@ -211,25 +211,25 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
         }
     }
 
-    public void decrementarEstoque(Long prodId, BigDecimal quantidade) throws SQLException {
+    public void decrementarEstoque(String prodCod, BigDecimal quantidade) throws SQLException {
         if (quantidade.compareTo(BigDecimal.ZERO) < 0) {
             throw new SQLException("Estoque não pode ser negativo: " + quantidade);
         }
 
-        var produto = this.buscarById(prodId);
-        if(produto == null) throw new NullPointerException("Produto não encontrado para o ID: " + prodId.doubleValue());
+        var produto = this.buscarPorCodigoBarras(prodCod);
+        if(produto == null) throw new NullPointerException("Produto não encontrado para o código: " + prodCod);
 
         var estoqueAtual = produto.estoque;
         var novoEstoque = estoqueAtual.subtract(quantidade);
 
-        String sql = "UPDATE produtos SET estoque = ? WHERE id = ?";
+        String sql = "UPDATE produtos SET estoque = ? WHERE codigo_barras = ?";
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setBigDecimal(1, novoEstoque);
-            ps.setLong(2, prodId);
+            ps.setString(2, prodCod);
             int rowsAffected = ps.executeUpdate();
 
             if (rowsAffected == 0) {
-                throw new SQLException("Falha ao definir estoque. Produto não encontrado: " + prodId.doubleValue());
+                throw new SQLException("Falha ao definir estoque. Produto não encontrado: " + prodCod);
             }
         }
     }

@@ -1,6 +1,7 @@
 package my_app.db.models;
 
 import my_app.db.dto.CompraDto;
+import my_app.domain.ForeignKey;
 import my_app.domain.ModelBase;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 
 public class CompraModel extends ModelBase<CompraDto> {
     public String produtoCod;
+    @ForeignKey
     public Long fornecedorId;
     public BigDecimal quantidade;
     public BigDecimal descontoEmReais;
@@ -28,7 +30,7 @@ public class CompraModel extends ModelBase<CompraDto> {
     public CompraModel fromResultSet(ResultSet rs) throws SQLException {
         var model = new CompraModel();
         model.id = rs.getLong("id");
-        model.produtoCod = rs.getString("produto_cod");
+        model.produtoCod = rs.getString("codigo_barras");
         model.fornecedorId = rs.getLong("fornecedor_id");
         model.quantidade = rs.getBigDecimal("quantidade");
         model.precoDeCompra = rs.getBigDecimal("preco_compra");
@@ -36,14 +38,13 @@ public class CompraModel extends ModelBase<CompraDto> {
         model.descontoEmReais = rs.getBigDecimal("desconto_em_reais");
         model.tipoPagamento = rs.getString("tipo_pagamento");
         model.observacao = rs.getString("observacao");
+        model.dataCriacao = rs.getLong("data_criacao");
         model.dataCompra = rs.getLong("data_compra");
         model.numeroNota = rs.getString("numero_nota");
         model.dataValidade = rs.getLong("data_validade");
         if (rs.wasNull()) {
             model.dataValidade = null;
         }
-        
-        model.dataCriacao = rs.getLong("data_criacao");
         return model;
     }
 

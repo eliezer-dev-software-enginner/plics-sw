@@ -21,6 +21,7 @@ import my_app.domain.ContratoTelaCrud;
 import my_app.domain.Parcela;
 import my_app.screens.components.Components;
 import my_app.services.CompraMercadoriaService;
+import my_app.services.ContasAReceberService;
 import my_app.services.ContasPagarService;
 
 import java.math.BigDecimal;
@@ -240,51 +241,8 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleClickMenuEdit() {
+        handleClickMenuClone();
         modoEdicao.set(true);
-
-        final var data = compraSelected.get();
-        if (data != null) {
-            dataCompra.set(DateUtils.millisParaLocalDate(data.dataCompra));
-            numeroNota.set(data.numeroNota);
-
-            final var codProduto = data.produtoCod;
-            codigo.set(codProduto);
-
-            // Ao clonar, não precisamos buscar o produto async, já temos todos os dados
-            produtoEncontrado.set(null); // Limpa estado anterior
-
-            // Buscar fornecedor pelo ID para clonagem de forma assíncrona
-            // Garantir que a lista de fornecedores está carregada antes de selecionar
-            Async.Run(() -> {
-                try {
-                    // Se a lista estiver vazia, carregá-la primeiro
-                    if (fornecedores.isEmpty()) {
-                        var fornecedorModelList = new FornecedorRepository().listar();
-                        UI.runOnUi(() -> fornecedores.addAll(fornecedorModelList));
-                    }
-
-                    // Buscar o fornecedor específico
-                    var fornecedor = new FornecedorRepository().buscarById(data.fornecedorId);
-                    UI.runOnUi(() -> {
-                        fornecedorSelected.set(fornecedor);
-                        // Atualizar também o fornecedor no modelo da lista para refresh da tabela
-                        data.fornecedor = fornecedor;
-                    });
-                } catch (SQLException e) {
-                    IO.println("Erro ao buscar fornecedor: " + e.getMessage());
-                }
-            });
-
-            qtd.set(data.quantidade.stripTrailingZeros().toPlainString());
-            observacao.set(data.observacao);
-            tipoPagamentoSeleced.set(data.tipoPagamento);
-            pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
-            if (data.dataValidade != null) {
-                dataValidade.set(DateUtils.millisParaLocalDate(data.dataValidade));
-            } else {
-                dataValidade.set(null);
-            }
-        }
     }
 
     @Override
@@ -295,19 +253,20 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         if (data != null) {
             Async.Run(() -> {
                 try {
-                    Long id = data.id;
+                    Long compraId = data.id;
 
+                    //TODO: mover esse trecho pra dentro da ContasPagarService
                     // Primeiro exclui todas as contas a pagar vinculadas a esta compra
-                    new ContasPagarRepository().excluirPorCompra(id);
+                    new ContasPagarRepository().excluirPorCompraId(compraId);
 
                     // Depois exclui a compra
-                    comprasRepository.excluirById(id);
+                    comprasRepository.excluirById(compraId);
 
                     // Remove do estoque a quantidade correspondente a esta compra
                     removerEstoqueProduto(data.produtoCod, data.quantidade);
 
                     UI.runOnUi(() -> {
-                        compras.removeIf(it -> it.id.equals(id));
+                        compras.removeIf(it -> it.id.equals(compraId));
                         Components.ShowPopup(router, "Compra e contas vinculadas excluídas com sucesso!");
                     });
 
@@ -335,27 +294,27 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
             // Buscar fornecedor pelo ID para clonagem de forma assíncrona
             // Garantir que a lista de fornecedores está carregada antes de selecionar
-            Async.Run(() -> {
-                try {
-                    // Se a lista estiver vazia, carregá-la primeiro
-                    if (fornecedores.isEmpty()) {
-                        var fornecedorModelList = new FornecedorRepository().listar();
-                        UI.runOnUi(() -> fornecedores.addAll(fornecedorModelList));
-                    }
+//            Async.Run(() -> {
+//                try {
+//                    // Se a lista estiver vazia, carregá-la primeiro
+//                    if (fornecedores.isEmpty()) {
+//                        var fornecedorModelList = new FornecedorRepository().listar();
+//                        UI.runOnUi(() -> fornecedores.addAll(fornecedorModelList));
+//                    }
+//
+//                    // Buscar o fornecedor específico
+//                    var fornecedor = new FornecedorRepository().buscarById(data.fornecedorId);
+//                    UI.runOnUi(() -> {
+//                        fornecedorSelected.set(fornecedor);
+//                        // Atualizar também o fornecedor no modelo da lista para refresh da tabela
+//                        data.fornecedor = fornecedor;
+//                    });
+//                } catch (SQLException e) {
+//                    IO.println("Erro ao buscar fornecedor: " + e.getMessage());
+//                }
+//            });
 
-                    // Buscar o fornecedor específico
-                    var fornecedor = new FornecedorRepository().buscarById(data.fornecedorId);
-                    UI.runOnUi(() -> {
-                        fornecedorSelected.set(fornecedor);
-                        // Atualizar também o fornecedor no modelo da lista para refresh da tabela
-                        data.fornecedor = fornecedor;
-                    });
-                } catch (SQLException e) {
-                    IO.println("Erro ao buscar fornecedor: " + e.getMessage());
-                }
-            });
-
-            qtd.set(data.quantidade.stripTrailingZeros().toPlainString());
+            qtd.set(Utils.quantidadeTratada(data.quantidade));
             observacao.set(data.observacao);
             tipoPagamentoSeleced.set(data.tipoPagamento);
             pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
@@ -424,6 +383,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                     IO.println("compra foi salva!");
                     compras.add(compraSalva);
                     Components.ShowPopup(router, "Sua compra de mercadoria foi salva com sucesso!");
+                    estoqueAnterior.set(estoqueAtual.get());
                 });
             }
         });
@@ -441,7 +401,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
         tipoPagamentoSeleced.set(tiposPagamento.get(1));
         pcCompra.set("0");
         dataValidade.set(null);
-        fornecedorSelected.set(null);
+        fornecedorSelected.set(fornecedores.getFirst());
         opcaoDeControleDeEstoqueSelected.set("Não"); // Reset para padrão seguro
         estoqueAnterior.set("0");
         estoqueAtual.set("0");

@@ -24,6 +24,8 @@ public class Utils {
     }
 
 
+
+    @Deprecated(forRemoval = true)
     public static <T> void onItemTableSelectedChange(TableView<T> table, Consumer<T> eventHandler){
         table.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
             if (newSelection != null) {
@@ -169,6 +171,7 @@ public static BigDecimal deCentavosParaReal(String centavos){
     }
 
 
+    @Deprecated(forRemoval = true)
     public static <T> void updateItemOnObservableList(
             ObservableList<T> observableList, T modelSelected, T modelAtualizada
     ){
@@ -176,5 +179,9 @@ public static BigDecimal deCentavosParaReal(String centavos){
         if (index != -1) {
             observableList.set(index, modelAtualizada);
         }
+    }
+
+    public static String quantidadeTratada(BigDecimal quantidade){
+        return quantidade.stripTrailingZeros().toPlainString();
     }
 }

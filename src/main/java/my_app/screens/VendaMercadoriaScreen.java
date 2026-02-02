@@ -16,7 +16,6 @@ import my_app.domain.ContratoTelaCrud;
 import my_app.domain.Parcela;
 import my_app.screens.components.Components;
 import my_app.services.ContasAReceberService;
-import my_app.services.ContasPagarService;
 import my_app.services.VendaMercadoriaService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -232,12 +231,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
     @Override
     public void handleClickMenuEdit() {
+        handleClickMenuClone();
         modoEdicao.set(true);
-
-        final var data = vendaSelected.get();
-        if (data != null) {
-            //TODO: implementar
-        }
     }
 
     @Override
@@ -246,29 +241,47 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
         final var data = vendaSelected.get();
         if (data != null) {
-//            Async.Run(() -> {
-//                try {
-//                    Long id = data.id;
-//
-//                    // Primeiro exclui todas as contas a pagar vinculadas a esta compra
-//                    new ContasPagarRepository().excluirPorCompra(id);
-//
-//                    // Depois exclui a compra
-//                    VendaRepository.excluirById(id);
-//
-//                    // Remove do estoque a quantidade correspondente a esta compra
-//                    removerEstoqueProduto(data.produtoCod, data.quantidade);
-//
-//                    UI.runOnUi(() -> {
-//                        compras.removeIf(it -> it.id.equals(id));
-//                        Components.ShowPopup(router, "Compra e contas vinculadas excluídas com sucesso!");
-//                    });
-//
-//                } catch (SQLException e) {
-//                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir compra: " + e.getMessage()));
-//                }
-//            });
+            Async.Run(() -> {
+                try {
+                    Long vendaId = data.id;
+
+                    //TODO: mover esse trecho pra dentro da ContasAreceberService
+                    // Primeiro exclui todas as contas a receber vinculadas a esta compra
+                    new ContasAReceberRepository().excluirPorVendaId(vendaId);
+                    // Depois exclui a venda
+                    vendaRepository.excluirById(vendaId);
+
+                    // Devolve ao estoque a quantidade correspondente a esta compra
+                    devolverEstoqueProduto(data.produtoCod, data.quantidade);
+
+                    UI.runOnUi(() -> {
+                        vendas.removeIf(it -> it.id.equals(vendaId));
+                        Components.ShowPopup(router, "Venda e contas vinculadas excluídas com sucesso!");
+                    });
+
+                } catch (SQLException e) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir compra: " + e.getMessage()));
+                }
+            });
         }
+    }
+
+    private void devolverEstoqueProduto(String codigoBarras, BigDecimal quantidade) {
+        if (!"Sim".equals(opcaoDeControleDeEstoqueSelected.get())) {
+            IO.println("Controle de estoque desativado para esta operação");
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                // Remove a quantidade do estoque (valor negativo)
+                produtoRepository.atualizarEstoque(codigoBarras, quantidade);
+                IO.println("Estoque acrescentado com sucesso para o produto: " + codigoBarras + " | Quantidade: " + quantidade);
+            } catch (SQLException e) {
+                IO.println("Erro ao devolver estoque do produto " + codigoBarras + ": " + e.getMessage());
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao remover estoque: " + e.getMessage()));
+            }
+        });
     }
 
     @Override
@@ -277,14 +290,24 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
         final var data = vendaSelected.get();
         if (data != null) {
-//            dataVenda.set(DateUtils.millisParaLocalDate(data.dataCriacao));
-//            numeroNota.set(data.numeroNota);
-//
-//            final var codProduto = data.produtoCod;
-//            codigo.set(codProduto);
-//
+            dataVenda.set(DateUtils.millisParaLocalDate(data.dataVenda));
+            numeroNota.set(data.numeroNota);
+
+            final var codProduto = data.produtoCod;
+            codigo.set(codProduto);
+
 //            // Ao clonar, não precisamos buscar o produto async, já temos todos os dados
-//            produtoEncontrado.set(null); // Limpa estado anterior
+           produtoEncontrado.set(null); // Limpa estado anterior
+
+            qtd.set(Utils.quantidadeTratada(data.quantidade));
+            observacao.set(data.observacao);
+            tipoPagamentoSeleced.set(data.tipoPagamento);
+            pcCompra.set(Utils.deRealParaCentavos(data.precoUnitario));
+            if (data.dataValidade != null) {
+                dataValidade.set(DateUtils.millisParaLocalDate(data.dataValidade));
+            } else {
+                dataValidade.set(null);
+            }
         }
     }
 
@@ -296,7 +319,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
         }
 
         var dto = new VendaDto(
-                produtoEncontrado.get().id,
+                produtoEncontrado.get().codigoBarras,
                 clienteSelected.get().id,
                 new BigDecimal(qtd.get()),
                 Utils.deCentavosParaReal(pcCompra.get()),
@@ -359,7 +382,10 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
         tipoPagamentoSeleced.set(tiposPagamento.get(1));
         pcCompra.set("0");
         dataValidade.set(null);
-        clienteSelected.set(null);
+        clienteSelected.set(clientes.get(0));
+        opcaoDeControleDeEstoqueSelected.set("Não"); // Reset para padrão seguro
+        estoqueAnterior.set("0");
+        estoqueAtual.set("0");
     }
 
     /**

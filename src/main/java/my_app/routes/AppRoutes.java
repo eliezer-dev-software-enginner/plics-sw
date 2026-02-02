@@ -33,7 +33,7 @@ public class AppRoutes {
                 new Router.Route("contas-a-pagar",router-> new ComprasAPagarScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de contas a pagar", true)),
                 new Router.Route("vendas",router-> new VendaMercadoriaScreen(router), new Router.RouteProps(1000, 650, "Gerencie sua venda de mercadorias", true))
         );
-        return new Router(routes, "vendas", stage);
+        return new Router(routes, "home", stage);
     }
 }
 
