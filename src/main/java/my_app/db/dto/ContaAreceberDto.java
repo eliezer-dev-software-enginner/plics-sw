@@ -1,17 +1,19 @@
-package my_app.db.models;
+package my_app.db.dto;
+
+import my_app.domain.ForeignKey;
 
 import java.math.BigDecimal;
 
-public record ContasPagarDto(
+public record ContaAreceberDto(
     String descricao,
     BigDecimal valorOriginal,
-    BigDecimal valorPago,
+    BigDecimal valorRecebido,
     BigDecimal valorRestante,
     Long dataVencimento,
-    Long dataPagamento,
+    Long dataRecebimento,
     String status,
-    Long fornecedorId,
-    Long compraId,
+    @ForeignKey Long clienteId,
+    @ForeignKey Long vendaId,
     String numeroDocumento,
     String tipoDocumento,
     String observacao

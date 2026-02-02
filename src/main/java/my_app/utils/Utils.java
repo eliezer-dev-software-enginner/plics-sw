@@ -2,13 +2,9 @@ package my_app.utils;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableView;
-import my_app.db.models.ModelBase;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Consumer;

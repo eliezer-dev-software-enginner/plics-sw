@@ -2,6 +2,7 @@ package my_app.db.models;
 
 import my_app.db.dto.ProdutoDto;
 import my_app.domain.ForeignKey;
+import my_app.domain.ModelBase;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

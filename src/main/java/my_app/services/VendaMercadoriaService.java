@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 public final class VendaMercadoriaService {
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
+    public boolean deveAtualizarEstoque;
 
     public VendaMercadoriaService(VendaRepository vendaRepository, ProdutoRepository produtoRepository){
         this.vendaRepository = vendaRepository;

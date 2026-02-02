@@ -1,11 +1,11 @@
 package my_app.db.models;
 
 import my_app.db.dto.CompraDto;
+import my_app.domain.ModelBase;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 
 public class CompraModel extends ModelBase<CompraDto> {
     public String produtoCod;

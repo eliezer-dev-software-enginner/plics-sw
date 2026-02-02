@@ -1,21 +1,25 @@
 package my_app.db.models;
 
+import my_app.db.dto.ContaAreceberDto;
+import my_app.domain.ForeignKey;
 import my_app.domain.ModelBase;
-import my_app.db.dto.ContasPagarDto;
+
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.math.BigDecimal;
 
-public class ContasPagarModel extends ModelBase<ContasPagarDto> {
+public class ContaAreceberModel extends ModelBase<ContaAreceberDto> {
     public String descricao;
     public BigDecimal valorOriginal;
-    public BigDecimal valorPago;
+    public BigDecimal valorRecebido;
     public BigDecimal valorRestante;
     public Long dataVencimento;
-    public Long dataPagamento;
+    public Long dataRecebimento;
     public String status;
-    public Long fornecedorId;
-    public Long compraId;
+    @ForeignKey
+    public Long clienteId;
+    @ForeignKey
+    public Long vendaId;
     public String numeroDocumento;
     public String tipoDocumento;
     public String observacao;
@@ -25,21 +29,21 @@ public class ContasPagarModel extends ModelBase<ContasPagarDto> {
     public CompraModel compra;
 
     @Override
-    public ContasPagarModel fromResultSet(ResultSet rs) throws SQLException {
-        ContasPagarModel model = new ContasPagarModel();
+    public ContaAreceberModel fromResultSet(ResultSet rs) throws SQLException {
+        ContaAreceberModel model = new ContaAreceberModel();
         model.id = rs.getLong("id");
         model.descricao = rs.getString("descricao");
         model.valorOriginal = rs.getBigDecimal("valor_original");
-        model.valorPago = rs.getBigDecimal("valor_pago");
+        model.valorRecebido = rs.getBigDecimal("valor_recebido");
         model.valorRestante = rs.getBigDecimal("valor_restante");
         model.dataVencimento = rs.getLong("data_vencimento");
-        model.dataPagamento = rs.getLong("data_pagamento");
-        if (rs.wasNull()) model.dataPagamento = null;
+        model.dataRecebimento = rs.getLong("data_recebimento");
+        if (rs.wasNull()) model.dataRecebimento = null;
         model.status = rs.getString("status");
-        model.fornecedorId = rs.getLong("fornecedor_id");
-        if (rs.wasNull()) model.fornecedorId = null;
-        model.compraId = rs.getLong("compra_id");
-        if (rs.wasNull()) model.compraId = null;
+        model.clienteId = rs.getLong("fornecedor_id");
+        if (rs.wasNull()) model.clienteId = null;
+        model.vendaId = rs.getLong("compra_id");
+        if (rs.wasNull()) model.vendaId = null;
         model.numeroDocumento = rs.getString("numero_documento");
         model.tipoDocumento = rs.getString("tipo_documento");
         model.observacao = rs.getString("observacao");
@@ -48,18 +52,18 @@ public class ContasPagarModel extends ModelBase<ContasPagarDto> {
     }
 
     @Override
-    public ContasPagarModel fromIdAndDto(Long id, ContasPagarDto dto) {
-        ContasPagarModel model = new ContasPagarModel();
+    public ContaAreceberModel fromIdAndDto(Long id, ContaAreceberDto dto) {
+        ContaAreceberModel model = new ContaAreceberModel();
         model.id = id;
         model.descricao = dto.descricao();
         model.valorOriginal = dto.valorOriginal();
-        model.valorPago = dto.valorPago();
+        model.valorRecebido = dto.valorRecebido();
         model.valorRestante = dto.valorRestante();
         model.dataVencimento = dto.dataVencimento();
-        model.dataPagamento = dto.dataPagamento();
+        model.dataRecebimento = dto.dataRecebimento();
         model.status = dto.status();
-        model.fornecedorId = dto.fornecedorId();
-        model.compraId = dto.compraId();
+        model.clienteId = dto.clienteId();
+        model.vendaId = dto.vendaId();
         model.numeroDocumento = dto.numeroDocumento();
         model.tipoDocumento = dto.tipoDocumento();
         model.observacao = dto.observacao();
@@ -72,7 +76,7 @@ public class ContasPagarModel extends ModelBase<ContasPagarDto> {
     }
 
     public boolean isVencido() {
-        if (dataPagamento != null) return false;
+        if (dataRecebimento != null) return false;
         return System.currentTimeMillis() > dataVencimento;
     }
 
@@ -93,7 +97,7 @@ public class ContasPagarModel extends ModelBase<ContasPagarDto> {
                 ", valorRestante=" + valorRestante +
                 ", dataVencimento=" + dataVencimento +
                 ", status='" + status + '\'' +
-                ", fornecedorId=" + fornecedorId +
+                ", clienteId=" + clienteId +
                 '}';
     }
 }

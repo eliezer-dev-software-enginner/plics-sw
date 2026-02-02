@@ -1,6 +1,7 @@
 package my_app.db.models;
 
 import my_app.db.dto.FornecedorDto;
+import my_app.domain.ModelBase;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

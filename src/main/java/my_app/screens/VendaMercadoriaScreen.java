@@ -15,6 +15,8 @@ import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
 import my_app.domain.Parcela;
 import my_app.screens.components.Components;
+import my_app.services.ContasAReceberService;
+import my_app.services.ContasPagarService;
 import my_app.services.VendaMercadoriaService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -79,6 +81,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
+    private final ClienteRepository clienteRepository;
 
     private final VendaMercadoriaService vendaService;
 
@@ -90,6 +93,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
         produtoRepository = new ProdutoRepository();
         vendaRepository = new VendaRepository();
+        clienteRepository = new ClienteRepository();
         vendaService = new VendaMercadoriaService(vendaRepository, produtoRepository);
     }
 
@@ -101,11 +105,11 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
     private void fetchData() {
         Async.Run(() -> {
             try {
-                var clienteList = new ClienteRepository().listar();
+                var clienteList = clienteRepository.listar();
                 var vendaList = vendaRepository.listar();
 
                 UI.runOnUi(() -> {
-                    clientes.addAll(clienteList);//meu select fica preenchido
+                    clientes.addAll(clienteList);
                     if (!clienteList.isEmpty()) {
                         clienteList.stream().filter(f -> f.id == 1L)
                                 .findFirst()
@@ -159,7 +163,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Descrição do produto", produtoEncontrado.map(p -> p != null ? p.descricao : ""),
                                         "Ex: Paraiso", true))
-                                .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
+                                .r_child(Components.InputColumnCurrency("Pc. de venda", pcCompra))
                                 .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
                                 .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
                         )
@@ -303,6 +307,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                 new BigDecimal(totalLiquido.get())
         );
 
+        vendaService.deveAtualizarEstoque = opcaoDeControleDeEstoqueSelected.get().equalsIgnoreCase("Sim");
 
         Async.Run(() -> {
             if (modoEdicao.get()) {
@@ -312,12 +317,31 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                 var modelAtualizada = new VendaModel().fromIdAndDto(selecionado.id, dto);
                 vendaService.atualizarOrThrow(modelAtualizada, message -> UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar venda: " + message)));
                 vendas.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
+
                 Components.ShowPopup(router, "Sua venda de mercadoria foi atualizada com sucesso!");
             } else {
                 var venda = vendaService.salvarOrThrow(dto, message -> UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar venda: " + message)));
+                // Gerar contas a pagar se for a prazo
+                if ("A PRAZO".equals(tipoPagamentoSeleced.get()) && !parcelas.get().isEmpty()) {
+                    try {
+                        final var contasPagarService = new ContasAReceberService(vendaRepository, clienteRepository);
+                        List<Parcela> parcelasParaService = parcelas.get().stream()
+                                .map(p -> new Parcela(
+                                        p.numero(),
+                                        p.dataVencimento(),
+                                        p.valor()
+                                ))
+                                .toList();
+                        contasPagarService.gerarContasDeVenda(venda, parcelasParaService);
+                    } catch (SQLException e) {
+                        UI.runOnUi(() -> Components.ShowAlertError("Erro ao gerar contas a pagar: " + e.getMessage()));
+                        return;
+                    }
+                }
                 UI.runOnUi(() -> {
                     vendas.add(venda);
                     Components.ShowPopup(router, "Sua venda de mercadoria foi salva com sucesso!");
+                    estoqueAnterior.set(estoqueAtual.get());
                 });
             }
         });

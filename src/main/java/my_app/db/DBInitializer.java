@@ -170,14 +170,30 @@ public final class DBInitializer {
                     )
                 """);
 
+                st.execute("""
+                    CREATE TABLE IF NOT EXISTS contas_a_receber (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        descricao TEXT,
+                        valor_original REAL,
+                        valor_recebido REAL DEFAULT 0,
+                        valor_restante REAL,
+                        data_vencimento INTEGER,
+                        data_recebimento INTEGER,
+                        status TEXT DEFAULT 'PENDENTE',
+                        cliente_id INTEGER,
+                        venda_id INTEGER,
+                        numero_documento TEXT,
+                        tipo_documento TEXT,
+                        observacao TEXT,
+                        data_criacao INTEGER NOT NULL,
+                        FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+                        FOREIGN KEY (venda_id) REFERENCES vendas(id)
+                    )
+                """);
             }
-            
-            // Adicionar colunas novas se não existirem (migração)
-            adicionarColunasNovas(conn);
             
             // Inserir dados padrão na primeira execução
             inserirDadosPadrao();
-            
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao inicializar banco", e);
         }
@@ -206,30 +222,6 @@ public final class DBInitializer {
 
         if(!existeClientePadrao(conn)){
             inserirClientePadrao(conn);
-        }
-    }
-    
-    private static void adicionarColunasNovas(Connection conn) throws SQLException {
-        // Adicionar colunas de estoque na tabela compras se não existirem
-        try (Statement st = conn.createStatement()) {
-            // Verificar se as colunas já existem e adicionar se necessário
-            try {
-                st.execute("ALTER TABLE compras ADD COLUMN quantidade_anterior REAL DEFAULT 0");
-            } catch (SQLException e) {
-                // Coluna já existe, ignorar
-            }
-            
-            try {
-                st.execute("ALTER TABLE compras ADD COLUMN estoque_apos_compra REAL DEFAULT 0");
-            } catch (SQLException e) {
-                // Coluna já existe, ignorar
-            }
-            
-            try {
-                st.execute("ALTER TABLE compras ADD COLUMN refletir_estoque TEXT DEFAULT 'Não'");
-            } catch (SQLException e) {
-                // Coluna já existe, ignorar
-            }
         }
     }
 
