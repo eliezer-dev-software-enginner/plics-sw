@@ -54,7 +54,7 @@ public class HomeScreen {
             new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes","clientes"),
             new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber",null),
             new CardItem("/assets/pdv.png", "PDV","Meu PDV",null),
-            new CardItem("/assets/despesas.png", "Venda (F3)","Tela de vendas",null),
+            new CardItem("/assets/despesas.png", "Venda (F3)","Tela de vendas","vendas"),
             new CardItem("/assets/compras.png", "Compras de mercadorias (F5)","Tela de compras","compras"),
             new CardItem("/assets/abertura.png", "Venda (F3)","Tela de vendas",null),
             new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
