@@ -86,7 +86,42 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public Component table() {
-        return contasTable();
+        return new SimpleTable<ContaAreceberModel>()
+                .fromData(vm.contas)
+                .header()
+                .columns()
+                .column("ID", it-> it.id, (double) 60)
+                .column("Descrição", it-> it.descricao)
+                .column("Cliente", it-> it.cliente != null? it.cliente.nome: "")
+                .column("Valor Original", it-> Utils.toBRLCurrency(it.valorOriginal), (double) 120)
+                .column("Valor Restante", it-> Utils.toBRLCurrency(it.valorRestante), (double) 120L)
+                .column("Vencimento", it-> it.dataVencimento != null? DateUtils.millisToBrazilianDateTime(it.dataVencimento) : "", (double)100L)
+                .column("Status", it-> {
+                    String status = it.status;
+                    return switch (status) {
+                        case "PAGO" -> "✅ " + status;
+                        case "ATRASADO" -> "⚠️ " + status;
+                        case "PARCIAL" -> "📊 " + status;
+                        case null, default -> "⏳ " + status;
+                    };
+                }, (double)120L)
+                .build()
+                .onItemSelectChange(vm.contaSelected::set);
+
+        // Style table
+//        table.setStyle(String.format(
+//            "-fx-font-size: %spx; " +
+//            "-fx-background-color: white; " +
+//            "-fx-control-inner-background: %s; " +
+//            "-fx-table-cell-border-color: #e9ecef; " +
+//            "-fx-table-header-border-color: #dee2e6; " +
+//            "-fx-selection-bar: %s; " +
+//            "-fx-selection-bar-non-focused: %s;",
+//            theme.typography().body(),
+//            theme.colors().surface(),
+//            theme.colors().primary(),
+//            "#93c5fd"
+//        ));
     }
 
     @Override
@@ -283,42 +318,4 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
         );
     }
 
-    private Component contasTable() {
-        return new SimpleTable<ContaAreceberModel>()
-                .fromData(vm.contas)
-                .header()
-                .columns()
-                .column("ID", it-> it.id, (double) 60)
-                .column("Descrição", it-> it.descricao)
-                .column("Fornecedor", it-> it.cliente != null? it.cliente.nome: "")
-                .column("Valor Original", it-> Utils.toBRLCurrency(it.valorOriginal), (double) 120)
-                .column("Valor Restante", it-> Utils.toBRLCurrency(it.valorRestante), (double) 120L)
-                .column("Vencimento", it-> it.dataVencimento != null? DateUtils.millisToBrazilianDateTime(it.dataVencimento) : "", (double)100L)
-                .column("Status", it-> {
-                    String status = it.status;
-                    return switch (status) {
-                        case "PAGO" -> "✅ " + status;
-                        case "ATRASADO" -> "⚠️ " + status;
-                        case "PARCIAL" -> "📊 " + status;
-                        case null, default -> "⏳ " + status;
-                    };
-                }, (double)120L)
-                .build()
-                .onItemSelectChange(vm.contaSelected::set);
-        
-        // Style table
-//        table.setStyle(String.format(
-//            "-fx-font-size: %spx; " +
-//            "-fx-background-color: white; " +
-//            "-fx-control-inner-background: %s; " +
-//            "-fx-table-cell-border-color: #e9ecef; " +
-//            "-fx-table-header-border-color: #dee2e6; " +
-//            "-fx-selection-bar: %s; " +
-//            "-fx-selection-bar-non-focused: %s;",
-//            theme.typography().body(),
-//            theme.colors().surface(),
-//            theme.colors().primary(),
-//            "#93c5fd"
-//        ));
-    }
 }
