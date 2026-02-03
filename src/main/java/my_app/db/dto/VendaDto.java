@@ -10,9 +10,10 @@ public record VendaDto(
     BigDecimal quantidade,
     BigDecimal precoUnitario,
     BigDecimal desconto,
-    BigDecimal valorTotal,
+    //BigDecimal valorTotal,
     String formaPagamento,
     String observacao,
-    BigDecimal totalLiquido
+    BigDecimal totalLiquido,
+    Long dataValidade
 ) {
 }

@@ -18,6 +18,13 @@ public final class VendaMercadoriaService {
         this.produtoRepository = produtoRepository;
     }
 
+    public VendaModel salvar(VendaDto vendaDto) throws SQLException {
+            var venda = vendaRepository.salvar(vendaDto);
+            produtoRepository.decrementarEstoque(vendaDto.produtoCod(), vendaDto.quantidade());
+            return venda;
+    }
+
+
     public VendaModel salvarOrThrow(VendaDto vendaDto, Consumer<String> handleErrorMessage) throws RuntimeException{
         try {
             var venda = vendaRepository.salvar(vendaDto);

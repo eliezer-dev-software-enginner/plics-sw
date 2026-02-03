@@ -105,7 +105,7 @@ public final class DBInitializer {
                         observacao TEXT,
                         data_compra TEXT,
                         numero_nota TEXT,
-                        data_validade TEXT,
+                        data_validade REAL,
                         total_liquido REAL NOT NULL,
                         data_criacao INTEGER NOT NULL,
                         FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id)
@@ -146,6 +146,7 @@ public final class DBInitializer {
                         tipo_documento TEXT,
                         observacao TEXT,
                         data_criacao INTEGER NOT NULL,
+                        data_validade TEXT,
                         FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id),
                         FOREIGN KEY (compra_id) REFERENCES compras(id)
                     )
@@ -164,6 +165,7 @@ public final class DBInitializer {
                         observacao TEXT,
                         data_criacao INTEGER NOT NULL,
                         data_venda REAL,
+                        data_validade REAL,
                         numero_nota TEXT,
                         FOREIGN KEY (cliente_id) REFERENCES clientes(id)
                     )

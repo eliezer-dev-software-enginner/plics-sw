@@ -16,7 +16,7 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
         String sql = """
                 INSERT INTO vendas 
                 (produto_cod, cliente_id, quantidade, preco_unitario, desconto, 
-                 valor_total, tipo_pagamento, observacao, data_criacao, total_liquido)
+                tipo_pagamento, observacao, data_criacao, total_liquido, data_validade)
                 VALUES (?,?,?,?,?,?,?,?,?,?)
                 """;
 
@@ -26,11 +26,17 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
             ps.setBigDecimal(3, dto.quantidade());
             ps.setBigDecimal(4, dto.precoUnitario());
             ps.setBigDecimal(5, dto.desconto());
-            ps.setBigDecimal(6, dto.valorTotal());
-            ps.setString(7, dto.formaPagamento());
-            ps.setString(8, dto.observacao());
-            ps.setLong(9, System.currentTimeMillis());
-            ps.setBigDecimal(10, dto.totalLiquido());
+            ps.setString(6, dto.formaPagamento());
+            ps.setString(7, dto.observacao());
+            ps.setLong(8, System.currentTimeMillis());
+            ps.setBigDecimal(9, dto.totalLiquido());
+
+            if (dto.dataValidade() != null) {
+                ps.setLong(10, dto.dataValidade());
+            } else {
+                ps.setNull(10, java.sql.Types.BIGINT);
+            }
+
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {

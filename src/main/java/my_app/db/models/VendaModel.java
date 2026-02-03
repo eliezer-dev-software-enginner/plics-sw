@@ -34,7 +34,7 @@ public class VendaModel extends ModelBase<VendaDto> {
         v.clienteId = rs.getLong("cliente_id");
         v.quantidade = rs.getBigDecimal("quantidade");
         v.precoUnitario = rs.getBigDecimal("preco_unitario");
-        v.totalLiquido = rs.getBigDecimal("totalLiquido");
+        v.totalLiquido = rs.getBigDecimal("total_liquido");
         v.desconto = rs.getBigDecimal("desconto");
         v.tipoPagamento = rs.getString("tipo_pagamento");
         v.observacao = rs.getString("observacao");

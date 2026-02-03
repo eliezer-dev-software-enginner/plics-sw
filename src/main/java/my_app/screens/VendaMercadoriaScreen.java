@@ -47,21 +47,21 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
     State<List<Parcela>> parcelas = State.of(List.of());
     State<String> descontoEmDinheiro = State.of("0");
     // Preço de compra (armazena em centavos, ex: 123 = R$ 1,23)
-    State<String> pcCompra = State.of("0");
+    State<String> pcVenda = State.of("0");
 
     ComputedState<String> totalBruto = ComputedState.of(() -> {
         int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-        double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
+        double precoCompraValue = Double.parseDouble(pcVenda.get()) / 100.0;
         return Utils.toBRLCurrency(BigDecimal.valueOf(qtdValue * precoCompraValue));
-    }, descontoEmDinheiro, qtd, pcCompra);
+    }, descontoEmDinheiro, qtd, pcVenda);
 
     ComputedState<String> totalLiquido = ComputedState.of(() -> {
         int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-        double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
+        double precoCompraValue = Double.parseDouble(pcVenda.get()) / 100.0;
 
         double precoDescontoValue = Double.parseDouble(descontoEmDinheiro.get()) / 100.0;
         return String.valueOf(qtdValue * precoCompraValue - precoDescontoValue);
-    }, descontoEmDinheiro, qtd, pcCompra);
+    }, descontoEmDinheiro, qtd, pcVenda);
 
     ComputedState<String> descontoComputed = ComputedState.of(() -> Utils.toBRLCurrency(Utils.deCentavosParaReal(descontoEmDinheiro.get())),
             descontoEmDinheiro);
@@ -162,7 +162,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Descrição do produto", produtoEncontrado.map(p -> p != null ? p.descricao : ""),
                                         "Ex: Paraiso", true))
-                                .r_child(Components.InputColumnCurrency("Pc. de venda", pcCompra))
+                                .r_child(Components.InputColumnCurrency("Pc. de venda", pcVenda))
                                 .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
                                 .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
                         )
@@ -198,7 +198,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                     }
                     IO.println("Produto encontrado");
                     produtoEncontrado.set(produto);
-                    pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
+                    pcVenda.set(Utils.deRealParaCentavos(produto.precoVenda));
                     estoqueAnterior.set(produto.estoque.toString());
                 });
             } catch (SQLException e) {
@@ -215,7 +215,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                 .columns()
                 .column("ID", it-> it.id)
                 .column("Quantidade", it-> it.quantidade)
-                .column("Preço", it-> it.precoUnitario)
+//                .column("Preço", it-> it.precoUnitario)
+                .column("Total líquido", it-> Utils.toBRLCurrency(it.totalLiquido))
                 .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(it->   vendaSelected.set(it));
@@ -302,7 +303,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
             qtd.set(Utils.quantidadeTratada(data.quantidade));
             observacao.set(data.observacao);
             tipoPagamentoSeleced.set(data.tipoPagamento);
-            pcCompra.set(Utils.deRealParaCentavos(data.precoUnitario));
+            pcVenda.set(Utils.deRealParaCentavos(data.precoUnitario));
             if (data.dataValidade != null) {
                 dataValidade.set(DateUtils.millisParaLocalDate(data.dataValidade));
             } else {
@@ -322,12 +323,12 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                 produtoEncontrado.get().codigoBarras,
                 clienteSelected.get().id,
                 new BigDecimal(qtd.get()),
-                Utils.deCentavosParaReal(pcCompra.get()),
+                Utils.deCentavosParaReal(pcVenda.get()),
                 Utils.deCentavosParaReal(descontoEmDinheiro.get()),
-                Utils.deCentavosParaReal(String.valueOf(totalLiquido.get())),
                 tipoPagamentoSeleced.get(),
                 observacao.get(),
-                new BigDecimal(totalLiquido.get())
+                new BigDecimal(totalLiquido.get()),
+                dataValidade.isNull()? null: DateUtils.localDateParaMillis(dataValidade.get())
         );
 
         vendaService.deveAtualizarEstoque = opcaoDeControleDeEstoqueSelected.get().equalsIgnoreCase("Sim");
@@ -343,7 +344,15 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
                 Components.ShowPopup(router, "Sua venda de mercadoria foi atualizada com sucesso!");
             } else {
-                var venda = vendaService.salvarOrThrow(dto, message -> UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar venda: " + message)));
+
+                VendaModel venda = null;
+                try {
+                    venda = vendaService.salvar(dto);
+                } catch (SQLException e) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar venda: " + e.getMessage()));
+                    return;
+                }
+
                 // Gerar contas a pagar se for a prazo
                 if ("A PRAZO".equals(tipoPagamentoSeleced.get()) && !parcelas.get().isEmpty()) {
                     try {
@@ -361,10 +370,12 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                         return;
                     }
                 }
+
+                VendaModel finalVenda = venda;
                 UI.runOnUi(() -> {
-                    vendas.add(venda);
+                    vendas.add(finalVenda);
                     Components.ShowPopup(router, "Sua venda de mercadoria foi salva com sucesso!");
-                    estoqueAnterior.set(estoqueAtual.get());
+                    clearForm();
                 });
             }
         });
@@ -380,7 +391,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
         qtd.set("");
         observacao.set("");
         tipoPagamentoSeleced.set(tiposPagamento.get(1));
-        pcCompra.set("0");
+        pcVenda.set("0");
         dataValidade.set(null);
         clienteSelected.set(clientes.get(0));
         opcaoDeControleDeEstoqueSelected.set("Não"); // Reset para padrão seguro

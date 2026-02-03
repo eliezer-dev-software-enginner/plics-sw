@@ -52,9 +52,9 @@ public class HomeScreen {
             new CardItem("/assets/ordem_servico.png", "Ordem de serviço (F5)","Tela de ordem de serviço",null),
             new CardItem("/assets/produtos.png", "Produtos (F3)","Gerencie seus produtos","produtos"),
             new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes","clientes"),
-            new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber",null),
+            new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber","contas-a-receber"),
             new CardItem("/assets/pdv.png", "PDV","Meu PDV",null),
-            new CardItem("/assets/despesas.png", "Venda (F3)","Tela de vendas","vendas"),
+            new CardItem("/assets/despesas.png", "Contas a pagar","Tela de contas a pagar","contas-a-pagar"),
             new CardItem("/assets/compras.png", "Compras de mercadorias (F5)","Tela de compras","compras"),
             new CardItem("/assets/abertura.png", "Venda (F3)","Tela de vendas",null),
             new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)

@@ -36,7 +36,7 @@ public class AppRoutes {
                 //ok
                 new Router.Route("vendas",router-> new VendaMercadoriaScreen(router), new Router.RouteProps(1000, 650, "Gerencie sua venda de mercadorias", true))
         );
-        return new Router(routes, "contas-a-receber", stage);
+        return new Router(routes, "home", stage);
     }
 }
 
