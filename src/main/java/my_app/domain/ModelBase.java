@@ -11,10 +11,6 @@ public abstract class ModelBase<Dto> {
 
     private Map<String,Map<String,String>> mapSqlFieldDtoField;
 
-    public Map<String, Map<String,String>> correlacionarFieldSqlComFielEmModel(){
-       throw new RuntimeException("Not implemented");
-    }
-
    // abstract public ModelBase<?> fromResultSet(ResultSet queryResultSet) throws SQLException;
     @Deprecated
     //TODO: marcar como protected
@@ -35,13 +31,12 @@ public abstract class ModelBase<Dto> {
             mapSqlFieldDtoField.put("id", Map.of("id", "long"));
             mapSqlFieldDtoField.put("data_criacao",Map.of("dataCriacao","long"));
         }
-
         return mapSqlFieldDtoField;
     }
 
     protected void setField(String fieldName, Object value) {
         try {
-            var field = this.getClass().getField(fieldName);
+            var field = this.getClass().getField(fieldName);//para private, só trocar pra getDeclaredField.
             field.set(this, value);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao setar campo: " + fieldName, e);
@@ -77,4 +72,22 @@ public abstract class ModelBase<Dto> {
 
         return this;
     }
+
+    protected Map<String, Map<String, String>> correlacionarFieldSqlComFielEmModel() {
+        var map = getMapSqlFieldModelFieldBase();
+        var fields = this.getClass().getFields(); // públicos
+
+        for (var field : fields) {
+            var annotation = field.getAnnotation(SqlField.class);
+
+            if (annotation != null) {
+                map.put(
+                        annotation.name(),
+                        Map.of(field.getName(), annotation.type())
+                );
+            }
+        }
+        return map;
+    }
+
 }
