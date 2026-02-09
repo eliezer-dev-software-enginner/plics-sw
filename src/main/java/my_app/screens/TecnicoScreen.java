@@ -1,9 +1,5 @@
 package my_app.screens;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import megalodonte.ComputedState;
 import megalodonte.ListState;
 import megalodonte.State;
@@ -26,14 +22,18 @@ import java.util.List;
 
 public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
     private final Router router;
-    private final Theme theme = ThemeManager.theme();
+    private final TecnicoRepository tecnicoRepository;
+
     State<String> nome = State.of("");
     State<Boolean> modoEdicao = State.of(false);
 
     ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Cadastrar", modoEdicao);
     State<TecnicoModel> tecnicoSelecionada = State.of(null);
     ListState<TecnicoModel> tecnicos = ListState.of(List.of());
-    private final TecnicoRepository tecnicoRepository;
+
+//    List<String> status = List.of("Aberto", "Aguardando peça", "Autorizado", "Cancelado", "Em andamento", "Faturado", "Finalizado", "Orçamento");
+//    State<String> statusSelecionado = State.of(status.getFirst());
+
 
     public TecnicoScreen(Router router) {
         this.router = router;
@@ -67,6 +67,8 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                         .r_child(
                                 Components.InputColumn("Nome", nome, "Ex: Matias"))
+//                        .r_child(
+//                                Components.SelectColumn("Status", status, statusSelecionado, it-> it))
                 )
                 .c_child(new SpacerVertical(20))
                 .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
@@ -110,7 +112,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                     Long id = tecnicoSelecionada.get().id;
                     tecnicoRepository.excluirById(id);
                     UI.runOnUi(() -> {
-                        Components.ShowPopup(router, "tecnico excluida com sucesso");
+                        Components.ShowPopup(router, "técnico excluido com sucesso");
                         tecnicos.removeIf(tecnicoModel -> tecnicoModel.id.equals(id));
                     });
                 } catch (SQLException e) {

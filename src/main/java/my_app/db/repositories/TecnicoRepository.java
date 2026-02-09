@@ -39,7 +39,7 @@ public class TecnicoRepository extends BaseRepository<TecnicoDto, TecnicoModel> 
         List<TecnicoModel> lista = new ArrayList<>();
         try (Statement st = conn().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM tecnicos");
-            while (rs.next()) lista.add(new TecnicoModel().fromResultSet(rs));
+            while (rs.next()) lista.add((TecnicoModel) new TecnicoModel().fromResultSet(rs));
         }
         return lista;
     }
@@ -71,7 +71,7 @@ public class TecnicoRepository extends BaseRepository<TecnicoDto, TecnicoModel> 
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            return rs.next() ? new TecnicoModel().fromResultSet(rs) : null;
+            return rs.next() ? (TecnicoModel) new TecnicoModel().fromResultSet(rs) : null;
         }
     }
 }
