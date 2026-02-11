@@ -12,6 +12,7 @@ public record OrdemServicoDto(
         Long data_escolhida,
         String tipoPagamento,
         String status,
-        BigDecimal totalLiquido
+        BigDecimal totalLiquido,
+        Long numeroOs
 ) {
 }

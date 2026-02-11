@@ -48,7 +48,7 @@ public class HomeScreen {
     record CardItem(String img, String title, String desc, String destination){}
     List<CardItem> cardItemList = List.of(
             new CardItem("/assets/venda.png", "Venda (F3)","Tela de vendas","cad-produto"),
-            //new CardItem("/assets/ordem_servico.png", "Ordem de serviço (F5)","Tela de ordem de serviço",null),
+            new CardItem("/assets/ordem_servico.png", "Ordem de serviço (F5)","Tela de ordem de serviço","ordem-de-servico"),
             new CardItem("/assets/produtos.png", "Produtos (F3)","Gerencie seus produtos","produtos"),
             new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes","clientes"),
             new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber","contas-a-receber"),

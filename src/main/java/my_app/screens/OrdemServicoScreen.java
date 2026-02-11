@@ -131,10 +131,10 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
         final var top = new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.DatePickerColumn(dataVisita, "Data de visita"))
                 .r_child(Components.SelectColumn("Cliente", clientes, clienteSelected, f -> f.nome, true))
-                .r_child(Components.SelectColumn("Técnico", tecnicos, tecnicoSelected, it -> it.nome, true))
+                .r_child(Components.SelectColumnWithButton("Técnico", tecnicos, tecnicoSelected, it -> it.nome, true,
+                        "Criar", ()-> router.spawnWindow("tecnicos")))
                 .r_child(Components.InputColumn("Equipamento", equipamento, "Marca, Modelo ou Serial"))
-                .r_child(Components.InputColumnCurrency("Mão de obra (R$)", maoDeObra))
-                .r_child(Components.InputColumnCurrency("Peças (R$)", pecasValor));
+                .r_child(Components.InputColumnCurrency("Mão de obra (R$)", maoDeObra));
 
         return new Card(new Scroll(
                 new Column(new ColumnProps().minWidth(800))
@@ -143,8 +143,11 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(top)
                         .c_child(new SpacerVertical(10))
                         .c_child(
-                                new Row(new RowProps().spacingOf(10)).r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
+                                new Row(new RowProps().spacingOf(10))
+                                        .r_child(Components.InputColumnCurrency("Peças (R$)", pecasValor))
+                                        .r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
                                         .r_child(Components.TextAreaColumn("Checklist / Relatório do Serviço", checklistRelatorio, "Descreva o que foi feito..."))
+
                         )
                         .c_child(new SpacerVertical(10))
                         .c_child((Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(Utils::toBRLCurrency))))
@@ -228,8 +231,10 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleAddOrUpdate() {
+        if(tecnicoSelected.isNull()) Components.ShowAlertError("Técnico não foi selecionado");
+
         final var dto = new OrdemServicoDto(
-               clienteSelected.get().id,
+                clienteSelected.get().id,
                 tecnicoSelected.get().id,
                 equipamento.get(),
                 Utils.deCentavosParaReal(maoDeObra.get()),
@@ -238,7 +243,8 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                 DateUtils.localDateParaMillis(dataVisita.get()),
                 tipoPagamentoSeleced.get(),
                 statusSelecionado.get(),
-                new BigDecimal(totalLiquido.get())
+                new BigDecimal(totalLiquido.get()),
+                null
         );
 
         Async.Run(() -> {

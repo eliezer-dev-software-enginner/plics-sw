@@ -300,6 +300,22 @@ public class Components {
                 .c_child(select);
     }
 
+    public static <T> Component SelectColumnWithButton(
+            String label, ListState<T> list, State<T> stateSelected,
+            Function<T, String> display, boolean compareById,
+            String btnText, Runnable handleClick) {
+
+        var rowProps = new RowProps().spacingOf(10);
+
+        return new Row(rowProps)
+                .r_child(new Row(new RowProps().bottomVertically())
+                        .r_child(Components.SelectColumn(  label,  list,  stateSelected, display,compareById))
+                        .r_child(new Button(btnText, new ButtonProps().height(37)
+                                .textColor("#FFF")
+                                .onClick(handleClick)))
+                );
+    }
+
     public static Column TextColumn(String label, String value) {
         return new Column(new ColumnProps(), new ColumnStyler()
                 .borderColor(theme.colors().primary())

@@ -43,6 +43,9 @@ public class OrdemServicoModel extends ModelBase<OrdemServicoDto> {
     @SqlField(name = "total_liquido", type = "big-decimal")
     public BigDecimal totalLiquido;
 
+    @SqlField(name = "numero_os", type = "long")
+    public long numeroOs;
+
     public ClienteModel cliente;
     public TecnicoModel tecnico;
 
@@ -61,6 +64,7 @@ public class OrdemServicoModel extends ModelBase<OrdemServicoDto> {
         model.dataEscolhida = dto.data_escolhida();
         model.totalLiquido = dto.totalLiquido();
         model.status = dto.status();
+        model.numeroOs = dto.numeroOs();
         return model;
     }
 
