@@ -17,8 +17,7 @@ public class TelegramNotifier {
         try {
             return crypto.decrypt(ENCRYPTED_BOT_TOKEN);
         } catch (Exception e) {
-            System.err.println("Erro ao descriptografar token: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Erro ao descriptografar token: " + e.getMessage());
         }
     }
     
@@ -26,8 +25,7 @@ public class TelegramNotifier {
         try {
             return crypto.decrypt(ENCRYPTED_CHAT_ID);
         } catch (Exception e) {
-            System.err.println("Erro ao descriptografar chat ID: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Erro ao descriptografar chat ID: " + e.getMessage());
         }
     }
 
@@ -36,8 +34,7 @@ public class TelegramNotifier {
         String chatId = getChatId();
         
         if (botToken == null || chatId == null) {
-            System.err.println("❌ Erro de configuração do Telegram");
-            return;
+            throw new RuntimeException("❌ Erro de configuração do Telegram");
         }
         
         String telegramUrl = String.format(
@@ -64,10 +61,10 @@ public class TelegramNotifier {
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 System.out.printf("✅ Notificação enviada com sucesso%n");
             } else {
-                System.out.printf("❌ Erro HTTP %d: %s%n", response.statusCode(), response.body());
+                throw new RuntimeException("❌ Erro HTTP %d: %s%n".formatted(response.statusCode(), response.body()));
             }
         } catch (Exception e) {
-            System.out.printf("❌ Erro ao enviar: %s%n", e.getMessage());
+            throw new RuntimeException("❌ Erro ao enviar: "+ e.getMessage());
         }
     }
 }

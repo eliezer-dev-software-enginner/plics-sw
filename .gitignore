@@ -64,5 +64,9 @@ app.properties
 *.p12
 *.jks
 
+### Utilitários temporários de criptografia ###
+Generate*.java
+EncryptTokens.java
+
 SECURITY.md
 criptografando-dados-sensiveis.png
