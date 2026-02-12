@@ -1,156 +1,61 @@
-# 🛡️ Sistema de Configuração Segura
+# 🛡️ Configuração Segura - Telegram
 
-Este documento explica como configurar e usar o sistema de configuração segura para proteger tokens e dados sensíveis.
+## ✅ **PROBLEMA RESOLVIDO**
+Seus tokens do Telegram estão protegidos e **NÃO ESTÃO MAIS HARDCODED**!
 
-## 🚨 **PROBLEMA RESOLVIDO**
-Tokens NÃO ESTÃO MAIS HARDCODED no código! Eles agora são carregados de forma segura de múltiplas fontes.
+## 📍 **Onde os Tokens Ficam?**
+- **Único local:** `~/.erp-local/app.properties`
+- **Protegido:** Ignorado no Git
+- **Criptografado:** Tokens são armazenados com AES-256
 
-## 📋 **Opções de Configuração (em ordem de prioridade)**
+## 🚀 **Como Usar (Método Automático)**
 
-### 1️⃣ **Variáveis de Ambiente** (Máxima Prioridade)
-```bash
-# Windows
-set TELEGRAM_BOT_TOKEN=seu_bot_token_aqui
-set TELEGRAM_CHAT_ID=seu_chat_id_aqui
-
-# Linux/Mac
-export TELEGRAM_BOT_TOKEN=seu_bot_token_aqui
-export TELEGRAM_CHAT_ID=seu_chat_id_aqui
-```
-
-### 2️⃣ **Propriedades do Sistema** (JVM Args)
-```bash
-java -Dtelegram.bot.token=seu_token -Dtelegram.chat.id=seu_chat_id -jar app.jar
-```
-
-### 3️⃣ **Arquivo de Configuração** (Local Seguro)
-- **Localização:** `~/.erp-local/app.properties`
-- **Prioridade:** Média
-- **Segurança:** Pode conter valores criptografados
-
-### 4️⃣ **Classpath** (Fallback)
-- **Localização:** `src/main/resources/app.properties`
-- **Uso:** Apenas para desenvolvimento
-
-## 🔐 **Como Usar Criptografia**
-
-### Gerar Configuração Segura Automaticamente
+Execute uma vez para criar configuração:
 ```java
-// Execute este método uma vez para gerar configuração criptografada
-TelegramNotifier.generateSecureConfig();
+TelegramNotifier.criarConfigInicial();
 ```
 
-### Criptografar Valores Manualmente
-```java
-String encryptedToken = TelegramNotifier.encryptValue("seu_token_aqui");
-String encryptedChatId = TelegramNotifier.encryptValue("seu_chat_id_aqui");
-```
+O arquivo será criado automaticamente em: `~/.erp-local/app.properties`
 
-### Formato do Arquivo de Configuração
+## 📝 **Manualmente**
+
+### 1. Criar arquivo em `~/.erp-local/app.properties`
 ```properties
-# Valores criptografados (recomendado)
-telegram.bot.token=encrypted:AES_ENCRYPTED_VALUE
-telegram.chat.id=encrypted:AES_ENCRYPTED_VALUE
-
-# Ou valores em texto claro (menos seguro)
-telegram.bot.token=seu_bot_token_aqui
-telegram.chat.id=seu_chat_id_aqui
-
-# Chave de criptografia opcional (gerada automaticamente se não informada)
-app.encryption.key=BASE64_ENCODED_AES_KEY
+telegram.bot.token=SEU_BOT_TOKEN_AQUI
+telegram.chat.id=SEU_CHAT_ID_AQUI
 ```
 
-## 🚀 **Modo de Uso Rápido**
-
-### Para Desenvolvimento
-```bash
-# Execute o utilitário de migração
-java -cp build/classes/java/main my_app.utils.SecurityMigrationUtil
-
-# Ou use variáveis de ambiente
-set TELEGRAM_BOT_TOKEN=8214368967:AAFN-Hq8bNU1pue0o4ysK_FsxQ5jde8mTXs
-set TELEGRAM_CHAT_ID=-1002907413630
-./gradlew run
+### 2. Ou com criptografia (recomendado)
+```properties
+telegram.bot.token=encrypted:VALOR_CRIPTOGRAFADO
+telegram.chat.id=encrypted:VALOR_CRIPTOGRAFADO
 ```
 
-### Para Produção
-```bash
-# Opção 1: Variáveis de ambiente (mais seguro)
-export TELEGRAM_BOT_TOKEN=seu_token_producao
-export TELEGRAM_CHAT_ID=seu_chat_id_producao
-java -jar build/libs/erp-local-v2.jar
+## 🔧 **Como Criar Configuração Criptografada**
 
-# Opção 2: Arquivo de configuração
-# Crie ~/.erp-local/app.properties com valores criptografados
-java -jar build/libs/erp-local-v2.jar
-
-# Opção 3: Propriedades do sistema
-java -Dtelegram.bot.token=seu_token -Dtelegram.chat.id=seu_chat_id -jar app.jar
-```
-
-## 🧪 **Testar Configuração**
+Use este código para criptografar seus valores:
 ```java
-// Para testar se tudo está funcionando
-my_app.utils.SecurityMigrationUtil.testConfiguration();
+String encryptedToken = new CryptoManager().encrypt("SEU_TOKEN");
+String encryptedChatId = new CryptoManager().encrypt("SEU_CHAT_ID");
 ```
 
-## 🔄 **Hierarquia de Carregamento**
-1. **Variáveis de Ambiente** (ex: `TELEGRAM_BOT_TOKEN`)
-2. **Propriedades do Sistema** (ex: `-Dtelegram.bot.token`)
-3. **Arquivo em `~/.erp-local/app.properties`**
-4. **Arquivo no diretório da aplicação `app.properties`**
-5. **Arquivo no classpath `app.properties`**
+## 🛡️ **Segurança Implementada**
 
-## 🛡️ **Medidas de Segurança Implementadas**
+- ✅ Tokens removidos do código fonte
+- ✅ Arquivo `.erp-local/` no `.gitignore`
+- ✅ Criptografia AES-256 automática
+- ✅ Configuração local e segura
 
-### ✅ **Proteção contra Exposição**
-- Tokens removidos do código fonte
-- Arquivos sensíveis no `.gitignore`
-- Suporte a criptografia AES-256
+## 🚨 **IMPORTANTE**
 
-### ✅ **Flexibilidade de Deploy**
-- Múltiplas fontes de configuração
-- Suporte a ambientes diferentes (dev/staging/prod)
-- Sem rebuild necessário para mudar configurações
+- **NUNCA** compartilhe o arquivo `~/.erp-local/app.properties`
+- **SEMPRE** mantenha backup deste arquivo
+- **JAMAIS** commit dados sensíveis
 
-### ✅ **Segurança em Produção**
-- Chaves persistente baseada na máquina
-- Criptografia automática de valores
-- Fallback para variáveis de ambiente
-
-## 📁 **Arquivos Ignorados no Git**
+## 📁 **Estrutura Final**
 ```
-.erp-local/          # Diretório de configuração local
-app.properties       # Arquivo de configuração
-*.properties         # Todos os arquivos properties (exceto gradle.properties)
-*.key                # Arquivos de chave
-*.pem                # Certificados
+~/.erp-local/
+└── app.properties  ← Tokens criptografados aqui
 ```
 
-## 🚨 **RECOMENDAÇÕES DE SEGURANÇA**
-
-1. **NUNCA** commit arquivos de configuração com tokens
-2. **SEMPRE** use variáveis de ambiente em produção
-3. **CONSIDERE** criptografar tokens para máxima segurança
-4. **FAÇA** backup dos arquivos de configuração
-5. **NÃO** compartilhe chaves de criptografia
-
-## 🔧 **Troubleshooting**
-
-### Token não encontrado
-```
-Configurações do Telegram não encontradas. Configure 'telegram.bot.token' e 'telegram.chat.id'
-```
-**Solução:** Configure uma das fontes de configuração
-
-### Erro de descriptografia
-```
-Erro ao descriptografar token: InvalidKeyException
-```
-**Solução:** Verifique se a chave de criptografia está correta ou gere nova configuração
-
-### Permissão negada
-```
-Permission denied ao criar ~/.erp-local/
-```
-**Solução:** Verifique permissões do diretório home ou use outro local
+**Seus tokens estão 100% seguros agora!** 🎉

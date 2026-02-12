@@ -11,47 +11,15 @@ import java.util.Base64;
 public class CryptoManager {
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
-    private static final String KEY_PROPERTY = "app.encryption.key";
-    
     private SecretKey secretKey;
 
     public CryptoManager() {
-        initializeKey();
+        this.secretKey = generateKey();
     }
 
-    private void initializeKey() {
-        // 1. Tentar obter chave de variável de ambiente
-        String keyString = System.getenv("APP_ENCRYPTION_KEY");
-        
-        if (keyString != null && !keyString.trim().isEmpty()) {
-            try {
-                byte[] keyBytes = Base64.getDecoder().decode(keyString);
-                this.secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
-                return;
-            } catch (Exception e) {
-                System.err.println("Chave de criptografia da variável de ambiente inválida");
-            }
-        }
-        
-        // 2. Tentar obter chave do sistema de propriedades
-        keyString = System.getProperty(KEY_PROPERTY);
-        if (keyString != null && !keyString.trim().isEmpty()) {
-            try {
-                byte[] keyBytes = Base64.getDecoder().decode(keyString);
-                this.secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
-                return;
-            } catch (Exception e) {
-                System.err.println("Chave de criptografia do sistema inválida");
-            }
-        }
-        
-        // 3. Gerar chave persistente baseada no hardware/máquina
-        this.secretKey = generatePersistentKey();
-    }
-
-    private SecretKey generatePersistentKey() {
+    private SecretKey generateKey() {
         try {
-            // Gerar chave baseada em informações da máquina
+            // Gera chave persistente baseada na máquina
             String machineId = System.getProperty("user.name") + 
                              System.getProperty("os.name") + 
                              System.getProperty("os.arch");
@@ -84,21 +52,6 @@ public class CryptoManager {
             return new String(decryptedBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao descriptografar texto", e);
-        }
-    }
-
-    public String getEncodedKey() {
-        return Base64.getEncoder().encodeToString(secretKey.getEncoded());
-    }
-
-    public static String generateNewKey() {
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
-            keyGenerator.init(256);
-            SecretKey secretKey = keyGenerator.generateKey();
-            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao gerar nova chave", e);
         }
     }
 }
