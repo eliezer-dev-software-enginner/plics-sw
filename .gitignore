@@ -47,3 +47,19 @@ java_fx_modules
 build.gradle-funcionando_gera_fatjar.kts-draft
 *.txt
 *.db
+
+### Configurações de segurança ###
+# Arquivos de configuração com dados sensíveis
+app.properties
+*.properties
+!.gradle.properties
+
+### Diretório de configuração local ###
+.erp-local/
+
+### Chaves e certificados ###
+*.key
+*.pem
+*.crt
+*.p12
+*.jks
