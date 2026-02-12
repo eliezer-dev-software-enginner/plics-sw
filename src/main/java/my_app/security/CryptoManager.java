@@ -1,36 +1,26 @@
 package my_app.security;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.Base64;
 
 public class CryptoManager {
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
-    private SecretKey secretKey;
+    // Chave fixa base64 - mesma para todas as máquinas
+    private static final String FIXED_KEY_BASE64 = "sWsxxjCjv2rcoBtCU1/2hlJgK79NjKW8ERGN6P1b95Y=";
+    
+    private final SecretKey secretKey;
 
     public CryptoManager() {
-        this.secretKey = generateKey();
+        this.secretKey = createKeyFromBase64();
     }
 
-    private SecretKey generateKey() {
-        try {
-            // Gera chave persistente baseada na máquina
-            String machineId = System.getProperty("user.name") + 
-                             System.getProperty("os.name") + 
-                             System.getProperty("os.arch");
-            
-            SecureRandom random = new SecureRandom(machineId.getBytes(StandardCharsets.UTF_8));
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
-            keyGenerator.init(256, random);
-            return keyGenerator.generateKey();
-        } catch (Exception e) {
-            throw new RuntimeException("Falha ao gerar chave de criptografia", e);
-        }
+    private SecretKey createKeyFromBase64() {
+        byte[] keyBytes = Base64.getDecoder().decode(FIXED_KEY_BASE64);
+        return new SecretKeySpec(keyBytes, ALGORITHM);
     }
 
     public String encrypt(String plainText) {

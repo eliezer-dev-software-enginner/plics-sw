@@ -9,8 +9,8 @@ import java.net.http.HttpResponse;
 
 public class TelegramNotifier {
     
-    private static final String ENCRYPTED_BOT_TOKEN = "+812cuwU78oafnEIvx81O6P3aog8Xr27Nq+3jpn89zSLCKCYQroJxhe3IfMoYrxy";
-    private static final String ENCRYPTED_CHAT_ID = "b1VGXhC7pw7U+trCojYM2w==";
+    private static final String ENCRYPTED_BOT_TOKEN = "vaX0WwsmLkQBGRIYzErQV/gWJ+zTkgOe/8LlmUsbDDD7kY0P5ak7leAEaZLqkiMp";
+    private static final String ENCRYPTED_CHAT_ID = "Mr2RW3MuNEYypIwfMSE3pg==";
     private static CryptoManager crypto = new CryptoManager();
     
     private static String getBotToken() {
