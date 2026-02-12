@@ -41,6 +41,10 @@ public class HomeScreen {
                 )
                 .menu(new Menu("Gerencial")
                         .item("Empresa", ()-> router.spawnWindow("empresa"))
+                )
+                .menu(new Menu("Suporte")
+                        .item("Relatar erro", ()-> router.spawnWindow("relatar-erro"))
+                        .item("Sugerir melhoria/funcionalidade", ()-> router.spawnWindow("sugerir-melhoria"))
                 );
     }
 

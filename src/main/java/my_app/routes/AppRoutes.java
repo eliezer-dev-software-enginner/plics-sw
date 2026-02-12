@@ -37,11 +37,15 @@ public class AppRoutes {
 
                 new Router.Route("ordem-de-servico",router-> new OrdemServicoScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de ordens de serviço", true)),
 
+                new Router.Route("relatar-erro",router-> new RelatarErroScreen(router), new Router.RouteProps(1000, 650, "Relatar erros", true)),
+
+                new Router.Route("sugerir-melhoria",router-> new SugerirMelhoriaScreen(router), new Router.RouteProps(1000, 650, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
+
                 new Router.Route("contas-a-receber",router-> new ContasAReceberScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de contas a receber", true)),
                 //ok
                 new Router.Route("vendas",router-> new VendaMercadoriaScreen(router), new Router.RouteProps(1000, 650, "Gerencie sua venda de mercadorias", true))
         );
-        return new Router(routes, "produtos", stage);
+        return new Router(routes, "sugerir-melhoria", stage);
     }
 }
 

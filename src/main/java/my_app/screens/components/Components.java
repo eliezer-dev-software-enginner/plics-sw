@@ -485,12 +485,16 @@ public class Components {
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder) {
+        return TextAreaColumn(label,inputState,placeholder,100);
+    }
+
+    public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int height) {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new TextAreaInput(inputState,
                                 new InputProps().fontSize(theme.typography().small()).height(35)
                                         .placeHolder(placeholder)
-                                        .height(100),
+                                        .height(height),
                                 new InputStyler().
                                         borderWidth(theme.border().width())
                                         .borderColor(theme.colors().primary())
