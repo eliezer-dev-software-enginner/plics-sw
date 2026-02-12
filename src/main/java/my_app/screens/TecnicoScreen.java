@@ -14,6 +14,8 @@ import my_app.db.dto.TecnicoDto;
 import my_app.db.models.TecnicoModel;
 import my_app.db.repositories.TecnicoRepository;
 import my_app.domain.ContratoTelaCrud;
+import my_app.events.EventBus;
+import my_app.events.TecnicoCriadoEvent;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 
@@ -166,6 +168,8 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                         tecnicos.add(model);
                         Components.ShowPopup(router, "Técnico '" + model.nome + "' cadastrado com sucesso");
                         clearForm();
+                        // Publicar evento de técnico criado
+                        EventBus.getInstance().publish(new TecnicoCriadoEvent(model));
                     });
                 } catch (Exception e) {
                     throw new RuntimeException(e);

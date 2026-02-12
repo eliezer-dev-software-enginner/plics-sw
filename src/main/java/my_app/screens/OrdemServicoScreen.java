@@ -19,6 +19,8 @@ import my_app.db.dto.OrdemServicoDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
+import my_app.events.EventBus;
+import my_app.events.TecnicoCriadoEvent;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -76,6 +78,20 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
         clienteRepository = new ClienteRepository();
         tecnicoRepository = new TecnicoRepository();
         ordemServicoRepository = new OrdemServicoRepository();
+        
+        // Inscrever para receber eventos de criação de técnicos
+        EventBus.getInstance().subscribe(event -> {
+            if (event instanceof TecnicoCriadoEvent) {
+                TecnicoModel novoTecnico = ((TecnicoCriadoEvent) event).getTecnico();
+                UI.runOnUi(() -> {
+                    tecnicos.add(novoTecnico);
+                    // Se for o primeiro técnico, selecioná-lo automaticamente
+                    if (tecnicos.size() == 1) {
+                        tecnicoSelected.set(novoTecnico);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -96,7 +112,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                             .orElse(null);
 
                     var tecnico = listTecnicos.stream()
-                            .filter(f -> f.id.equals(os.clienteId))
+                            .filter(f -> f.id.equals(os.tecnicoId))
                             .findFirst()
                             .orElse(null);
                     os.cliente = cliente;
@@ -120,6 +136,10 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
         });
     }
 
+    private void openTecnicoWindow() {
+        router.spawnWindow("tecnicos");
+    }
+
     @Override
     public Component render() {
         return mainView();
@@ -131,7 +151,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                 .r_child(Components.DatePickerColumn(dataVisita, "Data de visita"))
                 .r_child(Components.SelectColumn("Cliente", clientes, clienteSelected, f -> f.nome, true))
                 .r_child(Components.SelectColumnWithButton("Técnico", tecnicos, tecnicoSelected, it -> it.nome, true,
-                        "Criar", ()-> router.spawnWindow("tecnicos")))
+                        "Criar", this::openTecnicoWindow))
                 .r_child(Components.InputColumn("Equipamento", equipamento, "Marca, Modelo ou Serial"))
                 .r_child(Components.InputColumnCurrency("Mão de obra (R$)", maoDeObra));
 
