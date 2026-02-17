@@ -16,14 +16,29 @@ public class HomeScreen {
     }
 
     public Component render (){
-        GridFlow items = new GridFlow(new GridFlowProps().tileSize(200, 220)
-                .centerHorizontally().spacingOf(16))
-                .items(cardItemList, this::CardColumn);
-
+//        GridFlow items = new GridFlow(new GridFlowProps().tileSize(200, 220)
+//                .centerHorizontally().spacingOf(16))
+//                .items(cardItemList, this::CardColumn);
 
         return new Column(new ColumnProps().bgColor("#fff"))
-                .c_child(menuBar())
-                .c_child(new Scroll(items)
+                .c_childs(
+                        menuBar(),
+                        new Column(new ColumnProps().centerHorizontally()).c_childs(
+                                new Row()
+                                        .r_childs(
+                                                CardColumn(cardItemList.get(0)),
+                                                CardColumn(cardItemList.get(1)),
+                                                CardColumn(cardItemList.get(2)),
+                                                CardColumn(cardItemList.get(3))
+                                        ),
+                                new Row()
+                                        .r_childs(
+                                                CardColumn(cardItemList.get(4)),
+                                                CardColumn(cardItemList.get(5)),
+                                                CardColumn(cardItemList.get(6))
+                                        )
+                        )
+
                 );
     }
 
@@ -62,13 +77,12 @@ public class HomeScreen {
     Component CardColumn(CardItem cardItem){
        return new Clickable(
                new Card(
-                new Column(new ColumnProps().centerHorizontally())
+                new Column(new ColumnProps().centerHorizontally().paddingAll(20))
                         .c_child(new Image(cardItem.img, new ImageProps().size(60)))
                         .c_child(new Text(cardItem.title, (TextProps) new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new Text(cardItem.desc,  new TextProps().variant(TextVariant.SMALL))),
-                       new CardProps().padding(10).borderColor("#fff").bgColor("red").borderWidth(10)),
+                       new CardProps().padding(0).height(220).width(200).borderRadius(20)),
                ()-> router.spawnWindow(cardItem.destination)
        );
-
     }
 }

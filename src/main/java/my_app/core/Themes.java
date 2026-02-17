@@ -88,7 +88,7 @@ return new ThemeColors(
 
         @Override
         public ThemeBorder border() {
-            return new ThemeBorder(1);
+            return new ThemeBorder(0);
         }
     };
 }

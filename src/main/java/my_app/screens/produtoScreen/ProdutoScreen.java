@@ -53,7 +53,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                                 (TextProps) new TextProps().variant(TextVariant.BODY).color("#6b7280"))),
                 new CardProps()
                         .padding(0)
-                        .radius(12)
+                        .borderRadius(12)
         );
     }
 
@@ -91,7 +91,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(Components.actionButtons(vm.btnText,this::handleAddOrUpdate, this::clearForm)),
                 new CardProps()
                         .padding(0)
-                        .radius(12)
+                        .borderRadius(12)
         );
     }
 

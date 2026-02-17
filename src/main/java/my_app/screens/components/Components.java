@@ -495,7 +495,6 @@ public class Components {
                 .c_child(new Text(message, (TextProps) new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
     }
 
-
     public static Row commonCustomMenus(Runnable onClickNew, Runnable onEdit, Runnable onDelete, Runnable onClone) {
         return new Row(new RowProps().spacingOf(20))
                 .r_child(MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", () -> executar(onClickNew::run)))
@@ -508,7 +507,6 @@ public class Components {
     }
 
     public static Component MenuItem(String title, Ikon ikon, String color, Runnable onClick) {
-
         var icon = Component.CreateFromJavaFxNode(FontIcon.of(ikon, 25, Color.web(color)));
 
         return new Clickable(new Card(
@@ -516,8 +514,7 @@ public class Components {
                         .c_child(icon)
                         .c_child(new SpacerVertical(6))
                         .c_child(new Text(title, new TextProps().variant(TextVariant.SMALL)))
-        ), onClick
-        );
+        ), onClick);
     }
 
     public static Component searchInput(State<String> stateInput, String placeholder) {
