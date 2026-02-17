@@ -9,6 +9,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.Router;
+import megalodonte.styles.ButtonStyler;
 import megalodonte.styles.ColumnStyler;
 import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
@@ -113,73 +114,6 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
             .c_child(Components.ScrollPaneDefault(mainContent));
     }
 
-    private Component filtersSection() {
-        vm.statusOptionSelected.subscribe(status->{
-            vm.loadPorStatus(status);
-        });
-
-        return new Card(
-            new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                .c_child(new Text("Filtros", new TextProps().variant(TextVariant.SUBTITLE)))
-                .c_child(
-                    new Row(new RowProps().spacingOf(8).bottomVertically())
-                        .r_child(
-                                Components.SelectColumn("Status",
-                                        vm.statusOptions,
-                                        vm.statusOptionSelected,
-                                        s->s
-                                        )
-                        )
-                        .r_child(
-                            new Button("Vencidas",
-                                new ButtonProps()
-                                    .height(35)
-                                    .fontSize(theme.typography().small())
-                                    .bgColor("#ff6b6b")
-                                    .textColor("white")
-                                    .onClick(() -> vm.loadVencidas()))
-                        )
-                        .r_child(
-                            new Button("Todas",
-                                new ButtonProps()
-                                    .height(35)
-                                    .fontSize(theme.typography().small())
-                                    .bgColor("#6c757d")
-                                    .textColor("white")
-                                    .onClick(() -> vm.loadInicial()))
-                        )
-                    )
-        );
-    }
-
-    private Component summarySection() {
-        return new Card(
-            new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                .c_child(new Text("Resumo Financeiro", new TextProps().variant(TextVariant.SUBTITLE)))
-                .c_child(
-                    new Row(new RowProps().spacingOf(16))
-                        .r_child(
-                            new Column(new ColumnProps())
-                                .c_child(new Text("Em Aberto", new TextProps().variant(TextVariant.BODY)))
-                                .c_child(
-                                    new Text(Utils.toBRLCurrency(vm.getTotalEmAberto()), 
-                                        new TextProps().variant(TextVariant.BODY), 
-                                        new TextStyler().color("#ff6b6b"))
-                                )
-                        )
-                        .r_child(
-                            new Column(new ColumnProps())
-                                .c_child(new Text("Vencidas", new TextProps().variant(TextVariant.BODY)))
-                                .c_child(
-                                    new Text(Utils.toBRLCurrency(vm.getTotalVencidas()), 
-                                        new TextProps().variant(TextVariant.BODY), 
-                                        new TextStyler().color("#dc3545"))
-                                )
-                        )
-                    )
-        );
-    }
-
     private Component paymentSection() {
         return Show.when(vm.modoPagamento,()->
             new Card(
@@ -198,24 +132,26 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                                 new Row(new RowProps().spacingOf(8))
                                     .r_child(
                                         new Button("Registrar",
-                                            new ButtonProps()
+                                                (ButtonProps) new ButtonProps()
                                                 .height(35)
-                                                .fontSize(theme.typography().small())
+                                                .fontSize(theme.typography().small()),
+                                                new ButtonStyler()
                                                 .bgColor("#10b981")
-                                                .textColor("white")
-                                                .onClick(() -> vm.registrarPagamento(router)))
+                                                .textColor("white"))
+                                                .onClick(() -> vm.registrarPagamento(router))
                                     )
                                     .r_child(
                                         new Button("Cancelar",
-                                            new ButtonProps()
-                                                .height(35)
-                                                .fontSize(theme.typography().small())
-                                                .bgColor("#6c757d")
-                                                .textColor("white")
-                                                .onClick(() -> {
+                                                (ButtonProps) new ButtonProps()
+                                                    .height(35)
+                                                    .fontSize(theme.typography().small()),
+                                                new ButtonStyler()
+                                                        .bgColor("#6c757d")
+                                                        .textColor("white")
+                                        ).onClick(() -> {
                                                     vm.modoPagamento.set(false);
                                                     vm.valorPagamento.set("0");
-                                                }))
+                                                })
                                     )
                             )
                         )
@@ -257,29 +193,31 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                 .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm))
                 .c_child(new Row(new RowProps().spacingOf(8))
                         .r_child(
-                                Show.when(naoEhPagamento, () -> new Button(vm.btnPagamentoText,
-                                        new ButtonProps()
+                                Show.when(naoEhPagamento, () -> new Button(
+                                        vm.btnPagamentoText,
+                                        (ButtonProps) new ButtonProps()
                                                 .height(35)
-                                                .fontSize(theme.typography().small())
+                                                .fontSize(theme.typography().small()),
+                                                new ButtonStyler()
                                                 .bgColor("#10b981")
                                                 .textColor("white")
-                                                .fillWidth()
-                                                .onClick(() -> {
-                                                    if (vm.modoPagamento.get()) {
-                                                        vm.registrarPagamento(router);
-                                                    } else {
-                                                        vm.modoPagamento.set(true);
-                                                    }
-                                                })))
+                                                //.fillWidth()
+                                              ) .onClick(() -> {
+                                    if (vm.modoPagamento.get()) {
+                                        vm.registrarPagamento(router);
+                                    } else {
+                                        vm.modoPagamento.set(true);
+                                    }
+                                }))
                         )
                         .r_child(
                             new Button("Quitar",
-                                new ButtonProps()
+                                    (ButtonProps) new ButtonProps()
                                     .height(35)
-                                    .fontSize(theme.typography().small())
+                                    .fontSize(theme.typography().small()),
+                                    new ButtonStyler()
                                     .bgColor("#007bff")
-                                    .textColor("white")
-                                    .onClick(() -> vm.quitarConta(router)))
+                                    .textColor("white")).onClick(() -> vm.quitarConta(router))
                         )
                 )
         );

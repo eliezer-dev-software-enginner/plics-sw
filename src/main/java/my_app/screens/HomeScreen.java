@@ -70,7 +70,7 @@ public class HomeScreen {
                                 .borderWidth(0)
                                 .borderColor("#fff"))
                         .c_child(new Image(cardItem.img, new ImageProps().size(60)))
-                        .c_child(new Text(cardItem.title, new TextProps().variant(TextVariant.BODY).bold()))
+                        .c_child(new Text(cardItem.title, (TextProps) new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new Text(cardItem.desc,  new TextProps().variant(TextVariant.SMALL))),
                        new CardProps().padding(10), new CardStyler().borderColor("#fff")),
                ()-> router.spawnWindow(cardItem.destination));

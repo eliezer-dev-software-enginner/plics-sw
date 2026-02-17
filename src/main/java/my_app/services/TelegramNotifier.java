@@ -11,7 +11,7 @@ public class TelegramNotifier {
     
     private static final String ENCRYPTED_BOT_TOKEN = "vaX0WwsmLkQBGRIYzErQV/gWJ+zTkgOe/8LlmUsbDDD7kY0P5ak7leAEaZLqkiMp";
     private static final String ENCRYPTED_CHAT_ID = "Mr2RW3MuNEYypIwfMSE3pg==";
-    private static CryptoManager crypto = new CryptoManager();
+    private static final CryptoManager crypto = new CryptoManager();
     
     private static String getBotToken() {
         try {

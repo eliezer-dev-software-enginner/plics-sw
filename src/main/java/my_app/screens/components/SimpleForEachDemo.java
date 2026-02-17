@@ -33,7 +33,7 @@ public class SimpleForEachDemo {
         Column coluna = new Column();
         
         // Título
-        coluna.c_child(new Text("Lista de Itens", new TextProps().fontSize(20).bold()));
+        coluna.c_child(new Text("Lista de Itens", (TextProps) new TextProps().fontSize(20).bold()));
         
         // Adiciona os botões do ForEachState
         List<Button> botoes = forEachState.getComponents();

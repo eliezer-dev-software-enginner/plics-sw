@@ -15,11 +15,11 @@ import java.util.Set;
 public class AppRoutes {
     public Router defineRoutes(Stage stage) throws ReflectiveOperationException {
         var routes = Set.of(
-                new Router.Route("auth", router -> new AutenticacaoScreen(router), new Router.RouteProps(900, 550,null, false)),
+                new Router.Route("auth", router -> new AutenticacaoScreen(router), new Router.RouteProps(600, 370,null, false)),
                 new Router.Route("access", router -> new AccessScreen(router), new Router.RouteProps(900, 550,null, false)),
                 new Router.Route("home", router -> new HomeScreen(router), new Router.RouteProps(1050, 550,null, true)),
                 //new Router.Route("cad-produtos/${id}",router-> new ProdutoScreen(router), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
-                new Router.Route("produtos",router-> new ProdutoScreen(router), new Router.RouteProps(970, 650,"Cadastro de produtos", true)),
+                new Router.Route("produtos",router-> new ProdutoScreen(router), new Router.RouteProps(1000, 650,"Cadastro de produtos", true)),
                 //ok
                 new Router.Route("categorias",router-> new CategoriaScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de categorias", false)),
                 //ok
@@ -45,7 +45,7 @@ public class AppRoutes {
                 //ok
                 new Router.Route("vendas",router-> new VendaMercadoriaScreen(router), new Router.RouteProps(1000, 650, "Gerencie sua venda de mercadorias", true))
         );
-        return new Router(routes, "sugerir-melhoria", stage);
+        return new Router(routes, "produtos", stage);
     }
 }
 

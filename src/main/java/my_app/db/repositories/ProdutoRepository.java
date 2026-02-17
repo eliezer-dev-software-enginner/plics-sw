@@ -35,15 +35,14 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
         return produto;
     }
 
-
     @Override
     public ProdutoModel salvar(ProdutoDto p) throws SQLException {
         String sql = """
                 INSERT INTO produtos 
                 (codigo_barras, descricao, preco_compra, preco_venda,
                  unidade, categoria_id, fornecedor_id, estoque, observacoes, 
-                 imagem, data_criacao, marca, validade, comissao, garantia)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                 imagem, data_criacao, marca, validade, comissao, garantia, total_liquido)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """;
 
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -67,6 +66,7 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
             }
             ps.setString(14, p.comissao);
             ps.setString(15, p.garantia);
+            ps.setBigDecimal(16, p.totalLiquido);
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -96,7 +96,7 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
                       unidade = ?, categoria_id = ?, fornecedor_id = ?,
                       estoque = ?, observacoes = ?, imagem = ?,
                       marca = ?, validade = ?,
-                      comissao = ?, garantia = ?
+                      comissao = ?, garantia = ?, total_liquido = ?
                     WHERE codigo_barras = ?
                 """;
 
@@ -119,6 +119,7 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
             ps.setString(12, p.comissao);
             ps.setString(13, p.garantia);
             ps.setString(14, p.codigoBarras);
+            ps.setBigDecimal(15, p.totalLiquido);
             ps.executeUpdate();
         }
     }

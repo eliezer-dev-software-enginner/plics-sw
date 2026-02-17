@@ -8,6 +8,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.Router;
+import megalodonte.styles.ButtonStyler;
 import megalodonte.styles.ColumnStyler;
 import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
@@ -144,45 +145,6 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
             .c_child(Components.ScrollPaneDefault(mainContent));
     }
 
-    private Component filtersSection() {
-        vm.statusOptionSelected.subscribe(status->{
-            vm.loadPorStatus(status);
-        });
-
-        return new Card(
-            new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                .c_child(new Text("Filtros", new TextProps().variant(TextVariant.SUBTITLE)))
-                .c_child(
-                    new Row(new RowProps().spacingOf(8).bottomVertically())
-                        .r_child(
-                                Components.SelectColumn("Status",
-                                        vm.statusOptions,
-                                        vm.statusOptionSelected,
-                                        s->s
-                                        )
-                        )
-                        .r_child(
-                            new Button("Vencidas",
-                                new ButtonProps()
-                                    .height(35)
-                                    .fontSize(theme.typography().small())
-                                    .bgColor("#ff6b6b")
-                                    .textColor("white")
-                                    .onClick(() -> vm.loadVencidas()))
-                        )
-                        .r_child(
-                            new Button("Todas",
-                                new ButtonProps()
-                                    .height(35)
-                                    .fontSize(theme.typography().small())
-                                    .bgColor("#6c757d")
-                                    .textColor("white")
-                                    .onClick(() -> vm.loadInicial()))
-                        )
-                    )
-        );
-    }
-
     private Component summarySection() {
         return new Card(
             new Column(new ColumnProps().paddingAll(16).spacingOf(12))
@@ -228,25 +190,27 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
                             .r_child(
                                 new Row(new RowProps().spacingOf(8))
                                     .r_child(
-                                        new Button("Registrar",
-                                            new ButtonProps()
-                                                .height(35)
-                                                .fontSize(theme.typography().small())
-                                                .bgColor("#10b981")
-                                                .textColor("white")
-                                                .onClick(() -> vm.registrarRecebimento(router)))
+                                            new Button("Registrar",
+                                                    (ButtonProps) new ButtonProps()
+                                                            .height(35)
+                                                            .fontSize(theme.typography().small()),
+                                                    new ButtonStyler()
+                                                            .bgColor("#10b981")
+                                                            .textColor("white"))
+                                                    .onClick(() -> vm.registrarRecebimento(router))
                                     )
                                     .r_child(
-                                        new Button("Cancelar",
-                                            new ButtonProps()
-                                                .height(35)
-                                                .fontSize(theme.typography().small())
-                                                .bgColor("#6c757d")
-                                                .textColor("white")
-                                                .onClick(() -> {
-                                                    vm.modoRecebimento.set(false);
-                                                    vm.valorRecebimento.set("0");
-                                                }))
+                                            new Button("Cancelar",
+                                                    (ButtonProps) new ButtonProps()
+                                                            .height(35)
+                                                            .fontSize(theme.typography().small()),
+                                                    new ButtonStyler()
+                                                            .bgColor("#6c757d")
+                                                            .textColor("white")
+                                            ).onClick(() -> {
+                                                vm.modoRecebimento.set(false);
+                                                vm.valorRecebimento.set("0");
+                                            })
                                     )
                             )
                         )
@@ -288,31 +252,31 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
                 .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm))
                 .c_child(new Row(new RowProps().spacingOf(8))
                         .r_child(
-                                Show.when(naoEhRecebimento,
-                                        () -> new Button(vm.btnRecebimentoText,
-                                                new ButtonProps()
-                                                        .height(35)
-                                                        .fontSize(theme.typography().small())
-                                                        .bgColor("#10b981")
-                                                        .textColor("white")
-                                                        .fillWidth()
-                                                        .onClick(() -> {
-                                                            if (vm.modoRecebimento.get()) {
-                                                                vm.registrarRecebimento(router);
-                                                            } else {
-                                                                vm.modoRecebimento.set(true);
-                                                            }
-                                                        }))
-                                )
+                                Show.when(naoEhRecebimento, () -> new Button(
+                                        vm.btnRecebimentoText,
+                                        (ButtonProps) new ButtonProps()
+                                                .height(35)
+                                                .fontSize(theme.typography().small()),
+                                        new ButtonStyler()
+                                                .bgColor("#10b981")
+                                                .textColor("white")
+                                        //.fillWidth()
+                                ) .onClick(() -> {
+                                    if (vm.modoRecebimento.get()) {
+                                        vm.registrarRecebimento(router);
+                                    } else {
+                                        vm.modoRecebimento.set(true);
+                                    }
+                                }))
                         )
                         .r_child(
-                            new Button("Quitar",
-                                new ButtonProps()
-                                    .height(35)
-                                    .fontSize(theme.typography().small())
-                                    .bgColor("#007bff")
-                                    .textColor("white")
-                                    .onClick(() -> vm.quitarConta(router)))
+                                new Button("Quitar",
+                                        (ButtonProps) new ButtonProps()
+                                                .height(35)
+                                                .fontSize(theme.typography().small()),
+                                        new ButtonStyler()
+                                                .bgColor("#007bff")
+                                                .textColor("white")).onClick(() -> vm.quitarConta(router))
                         )
                 )
         );

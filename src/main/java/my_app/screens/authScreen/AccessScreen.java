@@ -7,6 +7,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.Router;
+import megalodonte.styles.ButtonStyler;
 import megalodonte.styles.RowStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
@@ -31,12 +32,10 @@ public class AccessScreen {
                         .c_child(textRow()))
                 .c_child(new SpacerVertical(20))
                 .c_child(new Button("Entrar no sistema",
-                        new ButtonProps()
-                                .bgColor(theme.colors().primary())
-                                .textColor("#fff")
-                                .fontSize(theme.typography().body())
-                                .onClick(()-> handleClick())))
-                ;
+                        (ButtonProps) new ButtonProps()
+                                .fontSize(theme.typography().body()),
+                        new ButtonStyler().textColor("#fff").bgColor(theme.colors().primary()))
+                        .onClick(this::handleClick));
     }
 
     private void handleClick(){
@@ -46,11 +45,11 @@ public class AccessScreen {
 
     public Component textRow(){
         return new Row(new RowProps().width(200).maxWidth(300).centerHorizontally(), new RowStyler().bgColor("yellow"))
-                .r_child(new Text("usuário", new TextProps().variant(TextVariant.BODY)))
-                .r_child(new Text(" admin", new TextProps().variant(TextVariant.BODY).bold()))
-                .r_child(new Text(" e senha", new TextProps().variant(TextVariant.BODY)))
-                .r_child(new Text(" 1234", new TextProps().variant(TextVariant.BODY).bold()))
-
-                ;
+                .r_childs(
+                        new Text("usuário", new TextProps().variant(TextVariant.BODY)),
+                        new Text(" admin", (TextProps) new TextProps().variant(TextVariant.BODY).bold()),
+                        new Text(" e senha", new TextProps().variant(TextVariant.BODY)),
+                        new Text(" 1234", (TextProps) new TextProps().variant(TextVariant.BODY).bold())
+                );
     }
 }

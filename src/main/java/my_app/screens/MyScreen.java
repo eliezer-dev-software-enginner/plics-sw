@@ -28,7 +28,7 @@ public class MyScreen {
 
         return new Column(new ColumnProps(), new ColumnStyler().bgColor("#fff"))
                 .c_child(new Text(name))
-                .c_child(new Button("Toggle name", new ButtonProps().onClick(handleBtnClick)));
+                .c_child(new Button("Toggle name", new ButtonProps()).onClick(handleBtnClick));
     }
 
 }

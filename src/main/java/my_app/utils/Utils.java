@@ -18,12 +18,8 @@ public class Utils {
     }
 
     public static String toBRLCurrency(String value){
-        final NumberFormat BRL =
-                NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-        return BRL.format(new BigDecimal(value));
+        return toBRLCurrency(new BigDecimal(value));
     }
-
-
 
     @Deprecated(forRemoval = true)
     public static <T> void onItemTableSelectedChange(TableView<T> table, Consumer<T> eventHandler){

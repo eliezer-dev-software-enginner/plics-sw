@@ -16,6 +16,8 @@ public class ProdutoModel extends ModelBase<ProdutoDto> {
     public String descricao;
     public BigDecimal precoCompra;
     public BigDecimal precoVenda;
+
+    public BigDecimal totalLiquido;
     public String unidade;
     public String marca;
     //TODO: MOVER MARGEM PARA UMA TABELA PROPRIA
@@ -31,6 +33,7 @@ public class ProdutoModel extends ModelBase<ProdutoDto> {
 
     // composição (domínio)
     public CategoriaModel categoria;
+    public FornecedorModel fornecedor;
 
     public BigDecimal estoque;
     public String observacoes;
@@ -58,6 +61,7 @@ public class ProdutoModel extends ModelBase<ProdutoDto> {
         p.imagem = rs.getString("imagem");
         p.marca = rs.getString("marca");
         p.validade = rs.getLong("validade");
+        p.totalLiquido = rs.getBigDecimal("total_liquido");
 
         if (rs.wasNull()) {
             p.validade = null;
@@ -93,6 +97,7 @@ public class ProdutoModel extends ModelBase<ProdutoDto> {
         p.validade = dto.validade;
         p.comissao = dto.comissao;
         p.garantia = dto.garantia;
+        p.totalLiquido = dto.totalLiquido;
 
         // campo derivado (runtime)
         if (p.precoCompra != null && p.precoVenda != null) {

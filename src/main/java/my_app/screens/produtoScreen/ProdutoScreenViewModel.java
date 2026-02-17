@@ -57,7 +57,6 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final State<String> observacoes = new State<>("");
     public final State<String> estoque = new State<>("0");
     public final State<LocalDate> validade = State.of(null);
-    public final State<LocalDate> dtCriacao = State.of(null);
 
     public final State<String> imagem = new State<>("/assets/produto-generico.png");
 
@@ -84,6 +83,8 @@ public class ProdutoScreenViewModel extends ViewModel {
         p.marca = marca.get();
 
         p.validade = validade.isNull()? null: DateUtils.localDateParaMillis(validade.get());
+        p.garantia = garantia.get();
+        p.totalLiquido = p.precoVenda.subtract(p.precoCompra);
         return p;
     }
 
@@ -116,6 +117,7 @@ public class ProdutoScreenViewModel extends ViewModel {
                     var produtoModel = service.salvar(dto);
                     produtoModel.dataCriacao = System.currentTimeMillis();
                     produtoModel.categoria = categoriaSelected.get();
+                    produtoModel.fornecedor = fornecedorSelected.get();
 
                     UI.runOnUi(() -> {
                         produtos.add(produtoModel);
@@ -157,7 +159,7 @@ public class ProdutoScreenViewModel extends ViewModel {
         Async.Run(() -> {
             try {
                 var produtosList = produtoRepository.listar();
-                var fornecedores = new FornecedorRepository().listar();
+                var fornecedorModelList = new FornecedorRepository().listar();
                 var categorias = new CategoriaRepository().listar();
 
                 UI.runOnUi(() -> {
@@ -165,8 +167,8 @@ public class ProdutoScreenViewModel extends ViewModel {
                     this.categorias.set(categorias);
                     this.categoriaSelected.set(categorias.isEmpty() ? null : categorias.getFirst());
 
-                    this.fornecedores.set(fornecedores);
-                    this.fornecedorSelected.set(fornecedores.isEmpty() ? null : fornecedores.getFirst());
+                    this.fornecedores.set(fornecedorModelList);
+                    this.fornecedorSelected.set(fornecedorModelList.isEmpty() ? null : fornecedorModelList.getFirst());
 
                     for(var p :produtosList){
                         var categoria = categorias.stream()
@@ -174,7 +176,13 @@ public class ProdutoScreenViewModel extends ViewModel {
                                 .findFirst()
                                 .orElse(null);
 
+                        var fornecedor = fornecedorModelList.stream()
+                                .filter(it-> it.id.equals(p.fornecedorId))
+                                .findFirst()
+                                .orElse(null);
+
                         p.categoria = categoria;
+                        p.fornecedor = fornecedor;
                     }
                 });
             } catch (Exception e) {

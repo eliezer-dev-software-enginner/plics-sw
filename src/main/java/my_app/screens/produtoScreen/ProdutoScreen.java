@@ -9,11 +9,13 @@ import megalodonte.components.*;
 import megalodonte.components.Component;
 import megalodonte.props.*;
 import megalodonte.router.Router;
+import megalodonte.styles.ButtonStyler;
 import megalodonte.styles.ColumnStyler;
 import megalodonte.styles.TextStyler;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
+import my_app.db.models.OrdemServicoModel;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.ContratoTelaCrud;
 import my_app.screens.components.Components;
@@ -84,7 +86,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         return new Card(
                 new Column(new ColumnProps().paddingAll(5))
                         .c_child(new Text("Dados do Produto",
-                                new TextProps().variant(TextVariant.BODY).bold()))
+                                (TextProps) new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row()
                                 .r_child(ContainerLeft(vm))
@@ -112,7 +114,11 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                 .column("Categoria", it ->   it.categoria != null ? it.categoria.nome : "")
                 .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
-                .onItemSelectChange(vm.produtoSelected::set);
+                .onItemSelectChange(vm.produtoSelected::set)
+                .onItemDoubleClick(it-> {
+                    IO.println("ok");
+                    Components.ShowModal( ItemDetails(it), router);
+                });
 
         return simpleTable;
     }
@@ -133,9 +139,10 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         new Row(rowProps)
                                 .r_child(new Row(new RowProps().bottomVertically())
                                         .r_child(Components.InputColumn("SKU(Código de barras)", vm.codigoBarras, ""))
-                                        .r_child(new Button("Gerar", new ButtonProps().height(37)
-                                                .textColor("#FFF")
-                                                .onClick(handleGerarCodigoBarras)))
+                                        .r_child(new Button("Gerar", new ButtonProps().height(37),
+                                                new ButtonStyler().textColor("#FFF"))
+                                                .onClick(handleGerarCodigoBarras)
+                                        )
                                 )
                                 .r_child(Components.InputColumn("Descrição curta", vm.descricao, ""))
                                 .r_child(Components.SelectColumn("Unidade", vm.unidades, vm.unidadeSelected, it -> it))
@@ -167,6 +174,28 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         return null;
     }
 
+
+    Component ItemDetails(ProdutoModel model){
+        var validade = model.validade!= null?  DateUtils.millisToBrazilianDateTime(model.dataCriacao): "Sem validade";
+        return new Column(new ColumnProps().paddingAll(20))
+                .c_child(new Text("Detalhes do produto", new TextProps().variant(TextVariant.SUBTITLE)))
+                .c_child(new SpacerVertical(20))
+                .c_child(Components.TextWithDetails("ID: ", model.id))
+                .c_child(Components.TextWithDetails("Código: ", model.codigoBarras))
+                .c_child(Components.TextWithDetails("Descrição: ", model.descricao))
+                .c_child(Components.TextWithDetails("Fornecedor: ", model.fornecedor.nome))
+                .c_child(Components.TextWithDetails("Categoria: ", model.categoria.nome))
+                .c_child(Components.TextWithDetails("Tipo de unidade: ", model.unidade))
+                .c_child(Components.TextWithDetails("Marca: ", model.marca))
+                .c_child(Components.TextWithDetails("Estoque: ", model.estoque))
+                .c_child(Components.TextWithDetails("Preço de compra (R$): ", Utils.toBRLCurrency(model.precoCompra)))
+                .c_child(Components.TextWithDetails("Preço de venda (R$): ", Utils.toBRLCurrency(model.precoVenda)))
+                .c_child(Components.TextWithDetails("Total líquido (R$): ", Utils.toBRLCurrency(model.totalLiquido)))
+                .c_child(Components.TextWithDetails("Garantia: ", model.garantia))
+                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.millisToBrazilianDateTime(model.dataCriacao)))
+                .c_child(Components.TextWithDetails("Validade: ", validade))
+                .c_child(Components.TextWithDetails("Observação: ", model.observacoes));
+    }
 
     @Override
     public void handleClickNew() {

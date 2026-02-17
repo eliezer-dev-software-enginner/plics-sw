@@ -19,4 +19,5 @@ public class ProdutoDto {
     public Long validade;
     public String comissao;
     public String garantia;
+    public BigDecimal totalLiquido;
 }

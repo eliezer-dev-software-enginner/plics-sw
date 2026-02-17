@@ -34,6 +34,7 @@ public final class DBInitializer {
                         comissao TEXT,
                         garantia TEXT,
                         data_criacao INTEGER,
+                        total_liquido REAL NOT NULL,
                         FOREIGN KEY (categoria_id) REFERENCES categoria(id)
                     )
                 """);

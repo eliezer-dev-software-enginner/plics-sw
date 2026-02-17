@@ -91,7 +91,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20))
                         .c_child(new Row(new RowProps().centerHorizontally())
-                                .r_child(new Text("Cadastro de Fornecedor", new TextProps().bold().variant(TextVariant.SUBTITLE))))
+                                .r_child(new Text("Cadastro de Fornecedor", (TextProps) new TextProps().variant(TextVariant.SUBTITLE).bold())))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Nome Fantasia", nome,"Ex: Empresa 123"))
