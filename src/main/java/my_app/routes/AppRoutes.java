@@ -12,7 +12,7 @@ import my_app.screens.produtoScreen.ProdutoScreen;
 import java.util.Set;
 
 public class AppRoutes {
-    public Router defineRoutes(Stage stage, boolean askCredentials) throws ReflectiveOperationException {
+    public Router defineRoutes(Stage stage, boolean askCredentials, boolean forceAccessRoute) throws ReflectiveOperationException {
         var routes = Set.of(
                 new Router.Route("access", router -> new AccessScreen(router), new Router.RouteProps(900, 550,null, false)),
                 new Router.Route("home", router -> new HomeScreen(router), new Router.RouteProps(1050, 550,null, true)),
@@ -48,9 +48,20 @@ public class AppRoutes {
                         new Router.RouteProps(650, 500, "Seja muito bem vindo", false))
 
         );
-        //return new Router(routes, "entrar-com-credenciais", stage);
-        return new Router(routes, "home", stage);
-        //return new Router(routes,askCredentials? "entrar-com-credenciais": "home", stage);
+
+        String rotaInicial;
+        if (forceAccessRoute) {
+            rotaInicial = "access";
+        } else if (askCredentials) {
+            rotaInicial = "entrar-com-credenciais";
+        } else {
+            rotaInicial = "home";
+        }
+
+        //TODO: remover
+        rotaInicial = "access";
+
+        return new Router(routes, rotaInicial, stage);
     }
 }
 

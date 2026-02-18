@@ -13,6 +13,8 @@ public class PreferenciasModel extends ModelBase<PreferenciasDto> {
     public String senha;
     @SqlField(name = "credenciais_habilitadas", type = "int")
     public Integer credenciaisHabilitadas;
+    @SqlField(name = "primeiro_acesso", type = "int")
+    public Integer primeiroAcesso;
 
     @Override
     public PreferenciasModel fromIdAndDtoAndMillis(Long id, PreferenciasDto dto, long millis) {
@@ -21,6 +23,7 @@ public class PreferenciasModel extends ModelBase<PreferenciasDto> {
         model.login = dto.login();
         model.senha = dto.senha();
         model.credenciaisHabilitadas = dto.credentiaisHabilitadas();
+        model.primeiroAcesso = dto.primeiroAcesso();
         return model;
     }
 }

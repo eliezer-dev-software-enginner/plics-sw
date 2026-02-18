@@ -23,7 +23,9 @@ public class Main extends Application {
     HotReload hotReload;
     boolean devMode = true;
 
+    static boolean firstOpening = true;
     static boolean askCredentials = false;
+    static boolean forceAccessRoute = false;
 
     static void main(String[] args) {
         launch(args);
@@ -34,16 +36,18 @@ public class Main extends Application {
         super.init();
 
         DBInitializer.init();
-            try {
-                var prefs = new PreferenciasRepository().listar();
-                if(!prefs.isEmpty()){
-                    var pref = prefs.getFirst();
-                    //ThemeManager.setTheme(pref.tema.equals("Claro")? Themes.LIGHT: Themes.DARK);
-                    askCredentials = pref.credenciaisHabilitadas == 1;
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+
+        try {
+            var prefs = new PreferenciasRepository().listar();
+            if(!prefs.isEmpty()){
+                var pref = prefs.getFirst();
+                //ThemeManager.setTheme(pref.tema.equals("Claro")? Themes.LIGHT: Themes.DARK);
+                askCredentials = pref.credenciaisHabilitadas == 1;
+                forceAccessRoute = pref.primeiroAcesso != null && pref.primeiroAcesso == 1;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -64,7 +68,7 @@ public class Main extends Application {
 
 //        ThemeManager.setTheme(Themes.LIGHT);
 
-        final var router = new AppRoutes().defineRoutes(stage, askCredentials);
+        final var router = new AppRoutes().defineRoutes(stage, askCredentials, forceAccessRoute);
 
         final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
 

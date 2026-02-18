@@ -38,8 +38,8 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             } else {
                 ps.setNull(11, java.sql.Types.BIGINT);
             }
-            ps.executeUpdate();
             ps.setBigDecimal(12, dto.totalLiquido());
+            ps.executeUpdate();
             // Recupera o ID gerado e cria nova instância
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {

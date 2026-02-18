@@ -4,5 +4,6 @@ public record PreferenciasDto(
         String tema,
         String login,
         String senha,
-        int credentiaisHabilitadas
+        int credentiaisHabilitadas,
+        int primeiroAcesso
 ){}

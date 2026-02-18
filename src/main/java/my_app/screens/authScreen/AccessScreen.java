@@ -2,15 +2,13 @@ package my_app.screens.authScreen;
 
 
 import megalodonte.components.*;
-import megalodonte.props.ButtonProps;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.props.TextProps;
+import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
-import my_app.db.DBInitializer;
+import my_app.db.models.PreferenciasModel;
+import my_app.db.repositories.PreferenciasRepository;
 
 public class AccessScreen {
     Router router;
@@ -25,18 +23,34 @@ public class AccessScreen {
         return new Column(new ColumnProps().centerHorizontally()).c_child(
                 new Column(new ColumnProps().centerHorizontally().width(400)
                         .maxWidth(400).paddingTop(100).spacingOf(10))
-                        .c_child(new Text("Pliqs", new TextProps().variant(TextVariant.TITLE)))
-                        .c_child(new Text("Acesso padrão configurado como", new TextProps().variant(TextVariant.BODY)))
-                        .c_child(textRow()))
-                .c_child(new SpacerVertical(20))
-                .c_child(new Button("Entrar no sistema",
-                        (ButtonProps) new ButtonProps()
-                                .fontSize(theme.typography().body()).textColor("#fff").bgColor(theme.colors().primary()))
-                        .onClick(this::handleClick));
+                        .c_childs(
+                                new Image("logo_256x256.png", new ImageProps().size(100)),
+                                new Text("Plics SW", (TextProps) new TextProps().variant(TextVariant.TITLE).bold()),
+                                new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
+                                        new TextProps().variant(TextVariant.SUBTITLE)),
+                                new LineHorizontal(),
+                                new Text("Acesso padrão configurado como", new TextProps().variant(TextVariant.BODY)),
+                                textRow(),
+                                new SpacerVertical(20),
+                                new Button("Entrar no sistema",
+                                        new ButtonProps()
+                                                .fontSize(theme.typography().body()).textColor("#fff").bgColor(theme.colors().primary()))
+                                        .onClick(this::handleClick)
+                        )
+        );
     }
 
     private void handleClick(){
-        DBInitializer.init();
+        try {
+            var prefs = new PreferenciasRepository().listar();
+            if (!prefs.isEmpty()) {
+                var pref = prefs.getFirst();
+                pref.primeiroAcesso = 0;
+                new PreferenciasRepository().atualizar(pref);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         router.navigateTo("home");
     }
 

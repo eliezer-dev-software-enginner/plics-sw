@@ -228,6 +228,7 @@ public final class DBInitializer {
                         tema TEXT NOT NULL,
                         login TEXT,
                         senha TEXT,
+                        primeiro_acesso INTEGER NOT NULL DEFAULT 1,
                         data_criacao REAL NOT NULL
                     )
                 """);
@@ -383,11 +384,12 @@ public final class DBInitializer {
     }
 
     private static void inserirPreferenciasPadrao(Connection conn) throws SQLException {
-        String sql = "INSERT INTO preferencias (tema, credenciais_habilitadas,data_criacao) VALUES (?,?,?)";
+        String sql = "INSERT INTO preferencias (tema, credenciais_habilitadas, primeiro_acesso, data_criacao) VALUES (?,?,?,?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "Claro");
             ps.setInt(2, 0);
-            ps.setLong(3, System.currentTimeMillis());
+            ps.setInt(3, 1);
+            ps.setLong(4, System.currentTimeMillis());
             ps.executeUpdate();
         }
     }

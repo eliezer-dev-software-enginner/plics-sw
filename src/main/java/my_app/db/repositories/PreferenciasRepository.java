@@ -26,14 +26,15 @@ public class PreferenciasRepository extends BaseRepository<PreferenciasDto, Pref
     }
 
     public void atualizar(PreferenciasModel model) throws SQLException {
-        String sql = "UPDATE preferencias SET tema = ?, login = ?, senha = ?, credenciais_habilitadas = ? WHERE id = ?";
+        String sql = "UPDATE preferencias SET tema = ?, login = ?, senha = ?, credenciais_habilitadas = ?, primeiro_acesso = ? WHERE id = ?";
 
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setString(1, model.tema);
             ps.setString(2, model.login);
             ps.setString(3, model.senha);
             ps.setInt(4, model.credenciaisHabilitadas);
-            ps.setInt(5, 1);
+            ps.setInt(5, model.primeiroAcesso);
+            ps.setInt(6, 1);
             ps.executeUpdate();
         }
     }
