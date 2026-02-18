@@ -5,6 +5,8 @@ import megalodonte.async.Async;
 import megalodonte.base.UI;
 import my_app.db.repositories.ContasAReceberRepository;
 import my_app.db.repositories.ContasPagarRepository;
+import my_app.db.repositories.ComprasRepository;
+import my_app.db.repositories.VendaRepository;
 import my_app.lifecycle.viewmodel.component.ViewModel;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -18,6 +20,8 @@ public class HomeScreenViewModel extends ViewModel {
 
     private final ContasAReceberRepository receitasRepo = new ContasAReceberRepository();
     private final ContasPagarRepository despesasRepo = new ContasPagarRepository();
+    private final VendaRepository vendaRepo = new VendaRepository();
+    private final ComprasRepository comprasRepo = new ComprasRepository();
 
     public final State<String> receitas = new State<>("R$ 0,00");
     public final State<String> despesas = new State<>("R$ 0,00");
@@ -38,8 +42,14 @@ public class HomeScreenViewModel extends ViewModel {
                 long inicioMillis = DateUtils.localDateParaMillis(primeiroDia);
                 long fimMillis = DateUtils.localDateParaMillis(ultimoDia) + 86399999L;
 
-                BigDecimal totalReceitas = receitasRepo.somarReceitasPorPeriodo(inicioMillis, fimMillis);
-                BigDecimal totalDespesas = despesasRepo.somarDespesasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal receitasContas = receitasRepo.somarReceitasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal receitasVendas = vendaRepo.somarVendasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal totalReceitas = receitasContas.add(receitasVendas);
+
+                BigDecimal despesasContas = despesasRepo.somarDespesasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal despesasCompras = comprasRepo.somarComprasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal totalDespesas = despesasContas.add(despesasCompras);
+
                 BigDecimal lucro = totalReceitas.subtract(totalDespesas);
 
                 String mesFormatado = now.getMonth().getValue() + "/" + now.getYear();

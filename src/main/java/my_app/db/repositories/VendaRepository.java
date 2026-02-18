@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
 
@@ -169,5 +170,24 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
         }
 
         return venda;
+    }
+    
+    public BigDecimal somarVendasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        String sql = """
+            SELECT COALESCE(SUM(total_liquido), 0) as total 
+            FROM vendas 
+            WHERE data_criacao BETWEEN ? AND ?
+            AND tipo_pagamento != 'A PRAZO'
+            """;
+        try (PreparedStatement ps = conn().prepareStatement(sql)) {
+            ps.setLong(1, dataInicio);
+            ps.setLong(2, dataFim);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal("total");
+                }
+            }
+        }
+        return BigDecimal.ZERO;
     }
 }

@@ -19,10 +19,6 @@ public class HomeScreen implements ScreenComponent {
     private final Router router;
     private final HomeScreenViewModel viewModel;
 
-    State<String> receita = State.of("R$ 0,00");
-    State<String> despesa = State.of("R$ 0,00");
-    State<String> lucro = State.of("R$ 0,00");
-
     public HomeScreen(Router router) {
         this.router = router;
         this.viewModel = new HomeScreenViewModel();
@@ -31,9 +27,6 @@ public class HomeScreen implements ScreenComponent {
     @Override
     public void onMount() {
         viewModel.calcularFinanceiroMesAtual();
-        viewModel.receitas.subscribe(this.receita::set);
-        viewModel.despesas.subscribe(this.despesa::set);
-        viewModel.lucroLiquido.subscribe(this.lucro::set);
     }
 
     public Component render (){
@@ -42,9 +35,9 @@ public class HomeScreen implements ScreenComponent {
                         menuBar(),
                         new Row().r_childs(
                                 new Column().c_childs(
-                                        financeCard("Receitas", AntDesignIconsOutlined.RISE, "do mês", receita),
-                                        financeCard("Despesas", AntDesignIconsOutlined.FALL, "do mês", despesa),
-                                        financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, "do mês", lucro)
+                                        financeCard("Receitas", AntDesignIconsOutlined.RISE, "do mês", viewModel.receitas),
+                                        financeCard("Despesas", AntDesignIconsOutlined.FALL, "do mês", viewModel.despesas),
+                                        financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, "do mês", viewModel.lucroLiquido)
                                 ),
                                 new Column(new ColumnProps().centerHorizontally()).c_childs(
                                         new Row()
