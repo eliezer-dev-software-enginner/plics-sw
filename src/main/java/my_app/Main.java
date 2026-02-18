@@ -3,9 +3,6 @@ package my_app;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import megalodonte.async.Async;
-import megalodonte.theme.ThemeManager;
-import my_app.core.Themes;
 import my_app.db.DBInitializer;
 import my_app.db.repositories.PreferenciasRepository;
 import my_app.hotreload.CoesionApp;
@@ -21,9 +18,8 @@ import java.util.Set;
 public class Main extends Application {
     public static Stage stage;
     HotReload hotReload;
-    boolean devMode = true;
+    boolean devMode = false;
 
-    static boolean firstOpening = true;
     static boolean askCredentials = false;
     static boolean forceAccessRoute = false;
 
@@ -80,12 +76,12 @@ public class Main extends Application {
     }
 
     private void initHotReload(Stage primaryStage){
+        if(devMode){
         Set<String> exclusions = new HashSet<>();
         exclusions.add("my_app.hotreload.CoesionApp");
         exclusions.add("my_app.hotreload.Reloader");
 
-        if(devMode){
-            this.hotReload = new HotReload(
+        this.hotReload = new HotReload(
                     "src/main/java/my_app",
                     "build/classes/java/main",
                     "build/resources/main",

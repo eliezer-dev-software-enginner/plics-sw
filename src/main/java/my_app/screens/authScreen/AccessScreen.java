@@ -13,13 +13,13 @@ import my_app.db.models.PreferenciasModel;
 import my_app.db.repositories.PreferenciasRepository;
 
 public class AccessScreen {
-    Router router;
+    private final Router router;
 
     public AccessScreen(Router router) {
         this.router = router;
     }
 
-    private Theme theme = ThemeManager.theme();
+    private final Theme theme = ThemeManager.theme();
 
     public Component render (){
         return new Column(new ColumnProps().centerHorizontally()).c_child(

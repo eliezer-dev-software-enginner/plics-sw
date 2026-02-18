@@ -1,1 +1,1 @@
-rootProject.name = "erp-local-v2"
+rootProject.name = "plics-sw"
