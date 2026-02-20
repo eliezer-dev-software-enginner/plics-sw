@@ -1,7 +1,7 @@
 package my_app.screens;
 
 import megalodonte.State;
-import megalodonte.async.Async;
+import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import my_app.db.repositories.ContasAReceberRepository;
 import my_app.db.repositories.ContasPagarRepository;

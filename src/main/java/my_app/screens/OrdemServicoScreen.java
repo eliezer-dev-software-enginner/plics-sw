@@ -1,13 +1,9 @@
 package my_app.screens;
 
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import megalodonte.ComputedState;
 import megalodonte.ListState;
 import megalodonte.State;
-import megalodonte.async.Async;
+import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.props.ColumnProps;

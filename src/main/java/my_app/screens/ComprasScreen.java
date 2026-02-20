@@ -3,7 +3,7 @@ package my_app.screens;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import megalodonte.*;
-import megalodonte.async.Async;
+import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.props.ColumnProps;

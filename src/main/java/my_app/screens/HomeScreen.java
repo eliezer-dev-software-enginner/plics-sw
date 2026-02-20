@@ -1,8 +1,6 @@
 package my_app.screens;
 
 import megalodonte.State;
-import megalodonte.async.Async;
-import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.props.*;
 import megalodonte.router.Router;
@@ -11,7 +9,6 @@ import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class HomeScreen implements ScreenComponent {

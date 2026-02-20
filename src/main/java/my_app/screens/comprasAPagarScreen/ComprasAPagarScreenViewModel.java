@@ -4,7 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import megalodonte.ComputedState;
 import megalodonte.State;
-import megalodonte.async.Async;
+import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.router.Router;
 import my_app.db.dto.ContasPagarDto;

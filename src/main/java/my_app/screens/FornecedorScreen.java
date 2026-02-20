@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import megalodonte.*;
-import megalodonte.async.Async;
+import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.props.*;

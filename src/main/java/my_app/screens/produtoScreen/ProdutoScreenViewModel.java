@@ -1,11 +1,9 @@
 package my_app.screens.produtoScreen;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import megalodonte.ComputedState;
 import megalodonte.ListState;
 import megalodonte.State;
-import megalodonte.async.Async;
+import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.router.Router;
 import my_app.db.dto.ProdutoDto;
@@ -22,7 +20,6 @@ import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 

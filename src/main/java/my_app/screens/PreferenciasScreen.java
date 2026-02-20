@@ -1,21 +1,16 @@
 package my_app.screens;
 
 import megalodonte.ComputedState;
-import megalodonte.ListenerManager;
 import megalodonte.Show;
 import megalodonte.State;
-import megalodonte.async.Async;
+import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
 import megalodonte.router.Router;
-import megalodonte.theme.ThemeManager;
-import my_app.core.Themes;
 import my_app.db.models.PreferenciasModel;
 import my_app.db.repositories.PreferenciasRepository;
 import my_app.screens.components.Components;
-import my_app.services.TelegramNotifier;
 
 import java.sql.SQLException;
 import java.util.List;
