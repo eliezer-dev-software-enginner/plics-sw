@@ -72,6 +72,8 @@ public class Main extends Application {
             stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream(image))));
         }
 
+        stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("/assets/app_ico.png"))));
+
         System.out.println("[App] Scene re-initialized.");
     }
 

@@ -46,10 +46,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // Mockito
-    testImplementation("org.mockito:mockito-core:5.10.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.10.0")
-
     implementation("megalodonte:megalodonte-base:1.0.0-beta")
     implementation("megalodonte:megalodonte-components:1.0.0-beta")
     implementation("megalodonte:megalodonte-reactivity:1.0.0-beta")
@@ -104,9 +100,6 @@ val copyDeps = tasks.register<Copy>("copyDependencies") {
 }
 
 
-tasks.register<Exec>("chmodInstallerScript") {
-    commandLine("chmod", "+x", "scripts/linux/create-installer-using-gradlew-optimized.sh")
-}
 
 tasks.register<Exec>("createInstallerLinux") {
     group = "distribution"
@@ -118,19 +111,15 @@ tasks.register<Exec>("createInstallerLinux") {
     workingDir = projectDir
 
     // Comando para rodar o script
-    commandLine("./scripts/linux/create-installer-using-gradlew.sh")
+    commandLine("bash", "./scripts/linux/create-installer-using-gradlew.sh")
 }
 
-tasks.register<Exec>("createInstallerLinuxOptimized") {
+tasks.register<Exec>("runInstallerLinux") {
     group = "distribution"
-    description = "Gera o instalador .deb otimizado usando o script shell."
-
-    dependsOn("jar", "copyDependencies")
-
-    workingDir = projectDir
-
-//    commandLine("./scripts/linux/create-installer-using-gradlew-optimized.sh")
-    commandLine("bash", "./scripts/linux/create-installer-using-gradlew-optimized.sh")
+    description = "Executa a aplicação a partir da app-image gerada (sem precisar instalar)."
+    
+    val appName = props.getProperty("appName")
+    commandLine("build/app-image/$appName/bin/$appName")
 }
 
 tasks.register<Exec>("createInstallerWindows") {
