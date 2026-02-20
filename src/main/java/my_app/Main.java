@@ -16,6 +16,15 @@ import java.util.Set;
 
 @CoesionApp
 public class Main extends Application {
+//    static {
+//        // Isso ajuda o GTK/Zorin a identificar o processo
+//        System.setProperty("javafx.embed.singleThread", "true");
+//        // Tente forçar o nome que o jpackage usa
+//        System.setProperty("jdk.gtk.version", "3");
+//        System.setProperty("com.sun.javafx.application.controls.id", "plics-sw");
+//        System.setProperty("com.sun.javafx.application.controls.name", "plics-sw");
+//    }
+
     public static Stage stage;
     HotReload hotReload;
     boolean devMode = false;
@@ -64,7 +73,7 @@ public class Main extends Application {
 
 //        ThemeManager.setTheme(Themes.LIGHT);
 
-        final var router = new AppRoutes().defineRoutes(stage, askCredentials, forceAccessRoute);
+        new AppRoutes().defineRoutes(stage, askCredentials, forceAccessRoute);
 
         final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
 
@@ -72,7 +81,7 @@ public class Main extends Application {
             stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream(image))));
         }
 
-        stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("/assets/app_ico.png"))));
+        //stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("/assets/app_ico.png"))));
 
         System.out.println("[App] Scene re-initialized.");
     }
