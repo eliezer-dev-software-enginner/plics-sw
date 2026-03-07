@@ -15,6 +15,7 @@ import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
+import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.domain.ContratoTelaCrud;
 import my_app.screens.components.Components;
@@ -30,7 +31,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
     private final Theme theme = ThemeManager.theme();
     private final FornecedorRepository fornecedorRepository = new FornecedorRepository();
 
-    private final ObservableList<FornecedorModel> fornecedores = FXCollections.observableArrayList();
+    private final ListState<FornecedorModel> fornecedores = ListState.of(List.of());
 
     State<Boolean> editMode = State.of(false);
     ComputedState<String> btnText = ComputedState.of(()-> editMode.get()? "Atualizar" : "Adicionar", editMode);
@@ -76,7 +77,6 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                 UI.runOnUi(()->  fornecedores.addAll(list));
             } catch (Exception e) {
                 UI.runOnUi(()-> Components.ShowAlertError("Erro ao carregar fornecedores: " + e.getMessage()));
-
             }
         });
     }
@@ -201,17 +201,17 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleAddOrUpdate() {
-        String nomeValue = nome.get().trim();
-        String cnpjValue = cnpj.get().trim();
-        String celularValue = celular.get().trim();
-        String emailValue = email.get().trim();
-        String inscricaoValue = inscricaoEstadual.get().trim();
-        String ufValue = ufSelected.get().trim();
-        String cidadeValue = cidade.get().trim();
-        String bairroValue = bairro.get().trim();
-        String ruaValue = rua.get().trim();
-        String numeroValue = numero.get().trim();
-        String observacaoValue = observacao.get().trim();
+        String nomeValue = nome.getOrDefault("").trim();
+        String cnpjValue = cnpj.getOrDefault("").trim();
+        String celularValue = celular.getOrDefault("").trim();
+        String emailValue = email.getOrDefault("").trim();
+        String inscricaoValue = inscricaoEstadual.getOrDefault("").trim();
+        String ufValue = ufSelected.getOrDefault("").trim();
+        String cidadeValue = cidade.getOrDefault("").trim();
+        String bairroValue = bairro.getOrDefault("").trim();
+        String ruaValue = rua.getOrDefault("").trim();
+        String numeroValue = numero.getOrDefault("").trim();
+        String observacaoValue = observacao.getOrDefault("").trim();
 
         if (nomeValue.isEmpty()) {
             Components.ShowAlertError("Nome é obrigatório");
@@ -242,17 +242,18 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                 try {
                     // 1. Criamos a Model com os novos dados mantendo o ID e Data de Criação originais
                     FornecedorModel selecionado = fornecedorSelected.get();
-                    FornecedorModel modelAtualizada = new FornecedorModel().fromIdAndDto(selecionado.id, new FornecedorDto(
+                    FornecedorModel modelAtualizada = (FornecedorModel) new FornecedorModel().fromIdAndDtoAndMillis(selecionado.id, new FornecedorDto(
                             nomeValue, cnpjValue, celularValue, emailValue,
                             inscricaoValue, ufValue, cidadeValue, bairroValue,
                             ruaValue, numeroValue, observacaoValue
-                    ));
+                    ), selecionado.dataCriacao);
 
                     // 2. Atualiza no Banco de Dados
                     fornecedorRepository.atualizar(modelAtualizada);
 
                     UI.runOnUi(() -> {
-                        Utils.updateItemOnObservableList(fornecedores, selecionado, modelAtualizada);
+                        fornecedores.updateIf(fornecedorModel -> fornecedorModel.id.equals(modelAtualizada.id),
+                                fornecedorModel -> modelAtualizada);
                         Components.ShowPopup(router, "Fornecedor atualizado com sucesso");
                         clearForm();
                     });
@@ -294,59 +295,39 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public Component table() {
-        TableView<FornecedorModel> table = new TableView<>();
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        return new SimpleTable<FornecedorModel>()
+                .fromData(fornecedores)
+                .header().columns()
+                    .column("ID", it-> it.id)
+                    .column("Nome", it->it.nome)
+                    .column("Telefone", it->it.celular)
+                    .column("CNPJ", it->it.cpfCnpj)
+                    .column("Email", it->it.email)
+                    .column("Data de Criação", it->DateUtils.millisToBrazilianDateTime(it.dataCriacao))
+                    .end()
+                .build()
+                .onItemSelectChange(fornecedorSelected::set)
+                .onItemDoubleClick(it-> {
+                    Components.ShowModal( ItemDetails(it), router, 550);
+                });
+    }
 
-        // Coluna ID
-        TableColumn<FornecedorModel, String> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(
-                    data.getValue().id != null ? String.valueOf(data.getValue().id) : ""
-                )
-        );
-        idCol.setMaxWidth(40);
-
-        // Coluna Nome
-        TableColumn<FornecedorModel, String> nomeCol = new TableColumn<>("Nome");
-        nomeCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().nome)
-        );
-        nomeCol.setMaxWidth(100);
-
-        // Coluna CNPJ
-        TableColumn<FornecedorModel, String> cnpjCol = new TableColumn<>("CNPJ");
-        cnpjCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().cpfCnpj)
-        );
-
-        TableColumn<FornecedorModel, String> emailCol = new TableColumn<>("Email");
-        emailCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(data.getValue().email)
-        );
-
-        TableColumn<FornecedorModel, String> telefoneCol = new TableColumn<>("Telefone");
-        telefoneCol.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleStringProperty(Utils.formatPhone(data.getValue().celular))
-        );
-
-        //cnpjCol.setMaxWidth(100);
-
-        // Coluna Data Criação
-        TableColumn<FornecedorModel, String> dataCol = new TableColumn<>("Data de Criação");
-        dataCol.setCellValueFactory(data -> {
-            if (data.getValue().dataCriacao != null) {
-                return new javafx.beans.property.SimpleStringProperty(
-                        DateUtils.millisToBrazilianDateTime(data.getValue().dataCriacao)
-                );
-            }
-            return new javafx.beans.property.SimpleStringProperty("");
-        });
-
-        table.getColumns().addAll(idCol, nomeCol, emailCol, telefoneCol, cnpjCol, dataCol);
-        table.setItems(fornecedores);
-
-        Utils.onItemTableSelectedChange(table, data-> fornecedorSelected.set(data));
-
-        return Component.CreateFromJavaFxNode(table);
+    Component ItemDetails(FornecedorModel model){
+        return new Column(new ColumnProps().paddingAll(20))
+                .c_child(new Text("Detalhes do fornecedor", new TextProps().variant(TextVariant.SUBTITLE)))
+                .c_child(new SpacerVertical(20))
+                .c_child(Components.TextWithDetails("ID: ", model.id))
+                .c_child(Components.TextWithDetails("Nome: ", model.nome))
+                .c_child(Components.TextWithDetails("CNPJ: ", model.cpfCnpj))
+                .c_child(Components.TextWithDetails("Telefone: ", model.celular))
+                .c_child(Components.TextWithDetails("Inscrição estadual: ", model.inscricaoEstadual))
+                .c_child(Components.TextWithDetails("Email: ", model.email))
+                .c_child(Components.TextWithDetails("UF: ", model.ufSelected))
+                .c_child(Components.TextWithDetails("Cidade: ", model.cidade))
+                .c_child(Components.TextWithDetails("Bairro: ", model.bairro))
+                .c_child(Components.TextWithDetails("Rua: ", model.rua))
+                .c_child(Components.TextWithDetails("Número: ", model.numero))
+                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.millisToBrazilianDateTime(model.dataCriacao)))
+                .c_child(Components.TextWithDetails("Observação: ", model.observacao,true));
     }
 }

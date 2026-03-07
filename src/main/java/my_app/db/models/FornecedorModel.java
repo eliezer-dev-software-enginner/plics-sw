@@ -2,49 +2,49 @@ package my_app.db.models;
 
 import my_app.db.dto.FornecedorDto;
 import my_app.domain.ModelBase;
+import my_app.domain.SqlField;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class FornecedorModel extends ModelBase<FornecedorDto> {
-    public Long id;
+    @SqlField(name = "nome", type = "string")
     public String nome;
+
+    @SqlField(name = "cpf_cnpj", type = "string")
     public String cpfCnpj;
-    public Long dataCriacao;
+
+    @SqlField(name = "celular", type = "string")
     public String celular;
+
+    @SqlField(name = "inscricao_estadual", type = "string")
     public String inscricaoEstadual;
+
+    @SqlField(name = "email", type = "string")
     public String email;
+
+    @SqlField(name = "uf_selected", type = "string")
     public String ufSelected;
+
+    @SqlField(name = "cidade", type = "string")
     public String cidade;
+
+    @SqlField(name = "bairro", type = "string")
     public String bairro;
+
+    @SqlField(name = "rua", type = "string")
     public String rua;
+
+    @SqlField(name = "numero", type = "string")
     public String numero;
+
+    @SqlField(name = "observacao", type = "string")
     public String observacao;
 
-    public FornecedorModel() {}
-
-    public FornecedorModel fromResultSet(ResultSet rs) throws SQLException {
-        var model = new FornecedorModel();
-        model.id = rs.getLong("id");
-        model.nome = rs.getString("nome");
-        model.cpfCnpj = rs.getString("cpf_cnpj");
-        model.dataCriacao = rs.getLong("data_criacao");
-        model.celular = rs.getString("celular");
-        model.inscricaoEstadual = rs.getString("inscricao_estadual");
-        model.email = rs.getString("email");
-        model.ufSelected = rs.getString("uf_selected");
-        model.cidade = rs.getString("cidade");
-        model.bairro = rs.getString("bairro");
-        model.rua = rs.getString("rua");
-        model.numero = rs.getString("numero");
-        model.observacao = rs.getString("observacao");
-        return model;
-    }
 
     @Override
-    public FornecedorModel fromIdAndDto(Long id, FornecedorDto dto) {
-        var model = new FornecedorModel();
-        model.id = id;
+    public FornecedorModel fromIdAndDtoAndMillis(Long id, FornecedorDto dto, long millis) {
+        var model = (FornecedorModel) super.fromIdAndDtoAndMillis(id, dto, millis);
         model.nome = dto.nome();
         model.cpfCnpj = dto.cpfCnpj();
         model.celular = dto.celular();

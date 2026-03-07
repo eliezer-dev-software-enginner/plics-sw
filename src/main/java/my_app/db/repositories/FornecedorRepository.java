@@ -17,6 +17,8 @@ public class FornecedorRepository extends BaseRepository<FornecedorDto, Forneced
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """;
 
+        long dataCriacao =  System.currentTimeMillis();
+
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, dto.nome());
             ps.setString(2, dto.cpfCnpj()); // Corrigido de dto.cnpj() para dto.cpfCnpj()
@@ -29,14 +31,14 @@ public class FornecedorRepository extends BaseRepository<FornecedorDto, Forneced
             ps.setString(9, dto.rua());
             ps.setString(10, dto.numero());
             ps.setString(11, dto.observacao());
-            ps.setLong(12, System.currentTimeMillis());
+            ps.setLong(12, dataCriacao);
 
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long idGerado = generatedKeys.getLong(1);
-                    return new FornecedorModel().fromIdAndDto(idGerado, dto);
+                    return new FornecedorModel().fromIdAndDtoAndMillis(idGerado, dto, dataCriacao);
                 }
             }
         }
@@ -58,7 +60,7 @@ public class FornecedorRepository extends BaseRepository<FornecedorDto, Forneced
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            return rs.next() ? new FornecedorModel().fromResultSet(rs) : null;
+            return rs.next() ? (FornecedorModel) new FornecedorModel().fromResultSet(rs) : null;
         }
     }
 
@@ -67,7 +69,7 @@ public class FornecedorRepository extends BaseRepository<FornecedorDto, Forneced
         List<FornecedorModel> lista = new ArrayList<>();
         try (Statement st = conn().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM fornecedores");
-            while (rs.next()) lista.add(new FornecedorModel().fromResultSet(rs));
+            while (rs.next()) lista.add((FornecedorModel) new FornecedorModel().fromResultSet(rs));
         }
         return lista;
     }

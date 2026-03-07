@@ -44,13 +44,13 @@ public class Components {
 
     public static Row TextWithDetails(String label, Object value, boolean wrapText) {
         var comp = new Text(value == null? "" : value.toString(),
-                (TextProps) new TextProps().fontSize(theme.typography().body()));
+                new TextProps().fontSize(theme.typography().body()));
 
         var textValueComponent = wrapText?  new TextFlow(comp) :comp;
 
         return new Row()
                 .children(
-                        new Text(label, (TextProps) new TextProps().fontSize(theme.typography().body()).bold()),
+                        new Text(label, new TextProps().fontSize(theme.typography().body()).bold()),
                         textValueComponent
                 );
     }
@@ -100,7 +100,7 @@ public class Components {
                                 .textColor("white").bgColor("#10b981")
                 )  .onClick(onClick))
                 .r_child(new Button("Limpar",
-                        (ButtonProps)  new ButtonProps()
+                          new ButtonProps()
                                 .fillWidth()
                                 .height(31).fontSize(16).textColor("white").bgColor("#6b7280")
                                ).onClick(onClearForm)
@@ -162,11 +162,11 @@ public class Components {
     public static Card CardImageSelector(State<String> imagemState, Runnable handleChangeImage) {
         return new Card(
                 new Column(new ColumnProps().centerHorizontally().spacingOf(15))
-                        .c_child(new Text("Foto do produto", (TextProps) new TextProps().variant(TextVariant.BODY).bold()))
+                        .c_child(new Text("Foto do produto",  new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new Image(imagemState, new ImageProps().size(120)))
                         .c_child(new SpacerVertical().fill())
                         .c_child(new Button("Inserir imagem",
-                                (ButtonProps) new ButtonProps().fontSize(theme.typography().small()).bgColor("#A6B1E1"))
+                                new ButtonProps().fontSize(theme.typography().small()).bgColor("#A6B1E1"))
                                 .onClick(handleChangeImage)
                         ),
                 new CardProps().height(300).padding(20)
@@ -187,7 +187,7 @@ public class Components {
 
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label) {
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new DatePicker(localDateState,
                                 new DatePickerProps().fontSize(theme.typography().small()).height(31)
                                         .placeHolder("dd/mm/yyyy")
@@ -205,7 +205,7 @@ public class Components {
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label, String placeholder) {
 
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new DatePicker(localDateState,
                                 new DatePickerProps().fontSize(theme.typography().small()).height(31)
                                         .placeHolder(placeholder)
@@ -230,10 +230,10 @@ public class Components {
     }
 
     public static Component FormTitle(String title) {
-        return new Text(title, (TextProps) new TextProps().variant(TextVariant.BODY).bold());
+        return new Text(title,  new TextProps().variant(TextVariant.BODY).bold());
     }
 
-    static ButtonProps propsBtnCadastro = (ButtonProps) new ButtonProps().fillWidth().height(31)
+    static ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
                 .fontSize(theme.typography().small()).textColor("white").bgColor("#2563eb");
 
     public static Component ButtonCadastro(String textState, Runnable handleAdd) {
@@ -257,7 +257,7 @@ public class Components {
 
     public static <T> Component SelectColumn(String label, State<List<T>> listState, State<T> stateSelected, Function<T, String> display) {
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Select<T>(selectProps)
                         .items(listState)
                         .value(stateSelected)
@@ -267,7 +267,7 @@ public class Components {
 
     public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display) {
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Select<T>(selectProps)
                         .items(list)
                         .value(stateSelected)
@@ -286,7 +286,7 @@ public class Components {
         }
 
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
     }
 
@@ -301,7 +301,7 @@ public class Components {
         }
         
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
     }
 
@@ -316,7 +316,7 @@ public class Components {
         }
 
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
     }
 
@@ -330,28 +330,27 @@ public class Components {
 
         return new Row(rowProps)
                         .r_child(Components.SelectColumn(  label,  list,  stateSelected, display,compareById))
-                        .r_child(new Button(btnText, (ButtonProps) new ButtonProps().height(31)
-                                .textColor("#FFF")
-                                .marginBottom(2)).onClick(handleClick)
-                        );
+                        .r_child(new Button(btnText,  new ButtonProps().height(31)
+                                .textColor("#FFF")).onClick(handleClick)
+                        ).r_child(new SpacerVertical(2));
     }
 
     public static Column TextColumn(String label, String value) {
         return new Column(new ColumnProps()
                 .borderColor(theme.colors().primary())
                 .borderWidth(theme.border().width()))
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().body()).bold()))
-                .c_child(new Text(value, (TextProps) new TextProps().fontSize(theme.typography().body())));
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().body()).bold()))
+                .c_child(new Text(value,  new TextProps().fontSize(theme.typography().body())));
     }
 
     public static Component TextWithValue(String label, ReadableState<String> valueState) {
         return new Row()
-                .r_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().body()).bold()))
-                .r_child(new Text(valueState, (TextProps) new TextProps().fontSize(theme.typography().body())));
+                .r_child(new Text(label,  new TextProps().fontSize(theme.typography().body()).bold()))
+                .r_child(new Text(valueState,  new TextProps().fontSize(theme.typography().body())));
     }
 
     public static Component InputColumnPhone(String label, State<String> inputState) {
-        var inputProps = (InputProps) new InputProps()
+        var inputProps =  new InputProps()
                 .height(31).placeHolder("(00) 00000-0000")
                 .fontSize(theme.typography().small())
                 .borderWidth(theme.border().width())
@@ -377,12 +376,11 @@ public class Components {
                 .lockCursorToEnd();
 
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
 
-
-
+    
     public static Component InputColumnNumeric(String label, State<String> inputState,  String placeholder) {
         var inputProps = getInputProps(placeholder).
                 borderWidth(theme.border().width())
@@ -399,7 +397,7 @@ public class Components {
                 .lockCursorToEnd();
 
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
 
@@ -435,7 +433,7 @@ public class Components {
                 .left(fonticon);
 
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
 
@@ -444,13 +442,13 @@ public class Components {
     }
 
     static InputProps getInputProps(String placeholder, int height){
-        return  (InputProps) new InputProps().height(height)
+        return   new InputProps().height(height)
                 .placeHolder(placeholder).fontSize(theme.typography().small());
     }
 
     public static Component InputColumnComFocusHandler(String label, ReadableState<String> inputState, String placeholder, Runnable focusChangeHandler) {
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
                         getInputProps(placeholder).borderWidth(theme.border().width())
                                         .borderColor(theme.colors().primary())
@@ -465,7 +463,7 @@ public class Components {
         if(disableInput) props.disable();
 
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
                         props.borderWidth(theme.border().width()).borderColor(theme.colors().primary())
                         )
@@ -482,7 +480,7 @@ public class Components {
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int height) {
         return new Column()
-                .c_child(new Text(label, (TextProps) new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new TextAreaInput(inputState,
                   getInputProps(placeholder, height).borderWidth(theme.border().width())
                                         .borderColor(theme.colors().primary())
@@ -492,7 +490,7 @@ public class Components {
 
     public static Component errorText(String message) {
         return new Column(new ColumnProps().bgColor("white")).c_child(new SpacerVertical(5))
-                .c_child(new Text(message, (TextProps) new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
+                .c_child(new Text(message,  new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
     }
 
     public static Row commonCustomMenus(Runnable onClickNew, Runnable onEdit, Runnable onDelete, Runnable onClone) {

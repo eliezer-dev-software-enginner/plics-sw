@@ -112,7 +112,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
                 .onItemDoubleClick(it-> {
-                    IO.println("ok");
                     Components.ShowModal( ItemDetails(it), router, 550);
                 });
 

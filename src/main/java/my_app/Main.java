@@ -30,7 +30,7 @@ public class Main extends Application {
 
     public static Stage stage;
     HotReload hotReload;
-    boolean devMode = false;
+    boolean devMode = System.getenv("DEV_MODE") != null && System.getenv("DEV_MODE").equals("true");
 
     static boolean askCredentials = false;
     static boolean forceAccessRoute = false;

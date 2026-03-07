@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="[Windows]" type="Application" factoryName="Application">
+    <envs>
+      <env name="DEV_MODE" value="true" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="my_app.Main" />
     <module name="plics-sw.main" />
     <option name="VM_PARAMETERS" value="--module-path ./java_fx_modules/windows-25.0.1/lib --add-modules javafx.controls,javafx.graphics -Dprism.verbose=true --enable-native-access=javafx.graphics" />

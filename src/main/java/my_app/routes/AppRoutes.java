@@ -21,7 +21,7 @@ public class AppRoutes {
                 //ok
                 new Router.Route("categorias",router-> new CategoriaScreen(router), new Router.RouteProps(1000, 650, "Gerenciamento de categorias", false)),
                 //ok
-                new Router.Route("fornecedores",router-> new FornecedorScreen(router), new Router.RouteProps(900, 650, "Gerenciamento de Fornecedores", false)),
+                new Router.Route("fornecedores",router-> new FornecedorScreen(router), new Router.RouteProps(900, 650, "Gerenciamento de Fornecedores", true)),
                 //ok
                 new Router.Route("empresa",router-> new CadastroEmpresaScreen(router), new Router.RouteProps(900, 650, "Informações da empresa", false)),
                //ok
