@@ -2,6 +2,9 @@ package my_app.screens;
 
 import megalodonte.State;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.utils.related.TextVariant;
@@ -27,7 +30,7 @@ public class HomeScreen implements ScreenComponent {
     }
 
     public Component render (){
-        return new Column(new ColumnProps().bgColor("#fff"))
+        return new Container(new ContainerProps().bgColor("#fff"))
                 .children(
                         menuBar(),
                         new Row().children(

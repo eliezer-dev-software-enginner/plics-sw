@@ -6,6 +6,7 @@ import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.Router;
 import my_app.db.models.PreferenciasModel;

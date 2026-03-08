@@ -1,13 +1,11 @@
 package my_app.screens;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import megalodonte.*;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;
@@ -15,12 +13,10 @@ import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
-import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.domain.ContratoTelaCrud;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
-import my_app.utils.Utils;
 
 import java.util.List;
 
@@ -28,8 +24,7 @@ import static my_app.utils.Utils.*;
 
 public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
     private final Router router;
-    private final Theme theme = ThemeManager.theme();
-    private final FornecedorRepository fornecedorRepository = new FornecedorRepository();
+    private final FornecedorRepository fornecedorRepository;
 
     private final ListState<FornecedorModel> fornecedores = ListState.of(List.of());
 
@@ -62,6 +57,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
 
     public FornecedorScreen(Router router) {
         this.router = router;
+        fornecedorRepository = new FornecedorRepository();
     }
 
     public void onMount(){

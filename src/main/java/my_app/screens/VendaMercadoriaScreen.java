@@ -4,6 +4,8 @@ import megalodonte.*;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.router.Router;

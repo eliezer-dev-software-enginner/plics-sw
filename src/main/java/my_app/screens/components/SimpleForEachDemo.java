@@ -3,6 +3,7 @@ package my_app.screens.components;
 import megalodonte.State;
 import megalodonte.ForEachState;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
 import megalodonte.props.TextProps;
 
 import java.util.Arrays;

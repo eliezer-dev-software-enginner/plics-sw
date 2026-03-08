@@ -2,6 +2,8 @@ package my_app.screens;
 
 import megalodonte.State;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
 import megalodonte.props.*;
 import megalodonte.router.Router;
 
@@ -22,7 +24,7 @@ public class MyScreen {
             name.set(nameIsEliezer.get()? name.get(): "Megalodonte");
         };
 
-        return new Column(new ColumnProps().bgColor("#fff"))
+        return new Container(new ContainerProps().bgColor("#fff"))
                 .c_child(new Text(name))
                 .c_child(new Button("Toggle name", new ButtonProps()).onClick(handleBtnClick));
     }

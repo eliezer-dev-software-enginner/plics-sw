@@ -5,7 +5,11 @@ import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
+import megalodonte.props.ContainerProps;
 import megalodonte.props.ImageProps;
 import megalodonte.props.RowProps;
 import megalodonte.router.Router;
@@ -72,7 +76,7 @@ public class CadastroEmpresaScreen implements ScreenComponent {
     private final Theme theme = ThemeManager.theme();
 
     public Component render() {
-        return new Column(new ColumnProps().paddingAll(5).bgColor(theme.colors().background()))
+        return new Container(new ContainerProps().paddingAll(5).bgColor(theme.colors().background()))
                 .c_child(new SpacerVertical(10))
                 .c_child(form());
     }

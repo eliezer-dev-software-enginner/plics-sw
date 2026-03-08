@@ -45,9 +45,11 @@ public class AppRoutes {
                 new Router.Route("preferencias",router-> new PreferenciasScreen(router),
                         new Router.RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
                 new Router.Route("entrar-com-credenciais",router-> new AuthScreen(router),
-                        new Router.RouteProps(650, 500, "Seja muito bem vindo", false))
+                        new Router.RouteProps(550, 400, "Seja muito bem vindo", false))
 
         );
+
+        //String rotaInicial = "entrar-com-credenciais";
 
         String rotaInicial;
         if (forceAccessRoute) {
@@ -57,6 +59,8 @@ public class AppRoutes {
         } else {
             rotaInicial = "home";
         }
+
+
 
         return new Router(routes, rotaInicial, stage);
     }

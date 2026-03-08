@@ -5,8 +5,12 @@ import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.components.*;
-import megalodonte.props.ColumnProps;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import megalodonte.router.Router;
+import megalodonte.utils.related.TextVariant;
 import my_app.db.models.PreferenciasModel;
 import my_app.db.repositories.PreferenciasRepository;
 import my_app.screens.components.Components;
@@ -46,13 +50,32 @@ public class AuthScreen implements ScreenComponent {
     }
 
     public Component render() {
-        return new Column(new ColumnProps().paddingAll(20)).children(
-                new Text("Realiza já seu login na Plics SW"),
-                Show.when(showLicensaState,  ()-> Components.InputColumn("Licensa", licensaState, "")),
-                        Components.InputColumn("Login", loginState, ""),
-                        Components.InputColumn("Senha", passwordState, ""),
-                new SpacerVertical(10),
-                Components.ButtonCadastro("Entrar", this::entrar)
+        return new Container(new ContainerProps().paddingAll(20).bgImage("/assets/bgAuth.jpg")).children(
+                new Row(new RowProps()).children(new Text("Plics - SW", new TextProps().color("white").bold())),
+                new SpacerVertical(20),
+                new Row().children(
+                        new Column().children(
+                                new Text("Realiza já seu login na Plics SW", new TextProps().color("white").fontSize(14)),
+                                Show.when(showLicensaState, () -> Components.InputColumn("Licença", licensaState, "")),
+                                Components.InputColumn("Login", loginState, ""),
+                                Components.InputColumn("Senha", passwordState, ""),
+                                new SpacerVertical(10),
+                                Components.ButtonCadastro("Entrar", this::entrar)
+                        ),
+                        new Row(new RowProps().fillWidth()),
+                        //qrCode
+                        new Column(new ColumnProps().maxWidth(170)).children(
+                                new Column(new ColumnProps().centerHorizontally()).children(
+                                        new Image("/assets/qrcode_suporte.jpg", new ImageProps().size(140)),
+                                        new Text("Plics - SW", new TextProps().color("white").bold())
+                                ),
+                                new SpacerVertical(10),
+                                new TextFlow(new Text("Scaneie o QRCode para ir para o suporte no WhatsApp.",
+                                        new TextProps().textColor("#fff").fontSize(13)))
+                        )
+                ),
+                new Column(new ColumnProps().fillHeight()),
+               Components.imageWithTextRow("/assets/whatsapp.png","(96) 99167-8306 - Suporte garantido." )
         );
     }
 
@@ -61,7 +84,7 @@ public class AuthScreen implements ScreenComponent {
         var licensaBase = "984e2bb76c7b627641b6b7dc080f8e23";
 
         if(showLicensaState.get() && (licensaValue.isEmpty() || !licensaValue.equals(licensaBase))){
-            Components.ShowAlertError("Licensa inválida");
+            Components.ShowAlertError("Licença inválida");
             return;
         }
 

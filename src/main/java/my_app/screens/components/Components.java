@@ -16,6 +16,9 @@ import megalodonte.components.DatePicker;
 import megalodonte.components.inputs.Input;
 import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.components.inputs.OnChangeResult;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;
@@ -41,6 +44,14 @@ import static my_app.utils.Utils.formatPhone;
 public class Components {
 
     static Theme theme = ThemeManager.theme();
+
+    public static Component imageWithTextRow(String imgPath, String text){
+        return new Row().children(
+                new Image(imgPath, new ImageProps().size(25)),
+                new SpacerHorizontal(5),
+                new Text(text, new TextProps().color("white").fontSize(14))
+        );
+    }
 
     public static Row TextWithDetails(String label, Object value, boolean wrapText) {
         var comp = new Text(value == null? "" : value.toString(),
@@ -462,8 +473,12 @@ public class Components {
        var props =  getInputProps(placeholder);
         if(disableInput) props.disable();
 
+        TextProps textProps = new TextProps().fontSize(theme.typography().small());
+        if(label.equals("Login") || label.equals("Senha") || label.equals("Licença")){
+            textProps.textColor("#fff");
+        }
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, textProps))
                 .c_child(new Input((State<String>) inputState,
                         props.borderWidth(theme.border().width()).borderColor(theme.colors().primary())
                         )
@@ -489,7 +504,7 @@ public class Components {
     }
 
     public static Component errorText(String message) {
-        return new Column(new ColumnProps().bgColor("white")).c_child(new SpacerVertical(5))
+        return new Container(new ContainerProps().bgColor("white")).c_child(new SpacerVertical(5))
                 .c_child(new Text(message,  new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
     }
 

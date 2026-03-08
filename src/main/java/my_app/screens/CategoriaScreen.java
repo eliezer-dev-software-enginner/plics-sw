@@ -9,6 +9,8 @@ import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;

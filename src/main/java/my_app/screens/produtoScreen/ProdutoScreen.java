@@ -7,6 +7,9 @@ import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.components.Component;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;
@@ -36,7 +39,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
     }
 
     public Component render() {
-        return new Column(new ColumnProps().paddingAll(15).bgColor(theme.colors().background()))
+        return new Container(new ContainerProps().paddingAll(15).bgColor(theme.colors().background()))
                 .c_child(commonCustomMenus())
                 .c_child(new SpacerVertical(20))
                 .c_child(createHeaderSection())

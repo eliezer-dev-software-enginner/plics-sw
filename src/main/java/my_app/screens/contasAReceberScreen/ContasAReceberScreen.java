@@ -3,10 +3,10 @@ package my_app.screens.contasAReceberScreen;
 import megalodonte.ComputedState;
 import megalodonte.Show;
 import megalodonte.components.*;
-import megalodonte.props.ButtonProps;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.props.TextProps;
+import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import megalodonte.router.Router;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
@@ -138,7 +138,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
             .c_child(new SpacerVertical(30))
             .c_child(table());
 
-        return new Column(new ColumnProps().paddingAll(10).bgColor(theme.colors().background()))
+        return new Container(new ContainerProps().paddingAll(10).bgColor(theme.colors().background()))
             .c_child(commonCustomMenus())
             .c_child(new SpacerVertical(10))
             .c_child(Components.ScrollPaneDefault(mainContent));
