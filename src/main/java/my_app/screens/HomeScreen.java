@@ -1,12 +1,14 @@
 package my_app.screens;
 
 import megalodonte.State;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
@@ -16,11 +18,12 @@ import java.util.List;
 
 public class HomeScreen implements ScreenComponent {
 
-    private final Router router;
     private final HomeScreenViewModel viewModel;
 
-    public HomeScreen(Router router) {
-        this.router = router;
+    private final ScreenContext ctx;
+
+    public HomeScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         this.viewModel = new HomeScreenViewModel();
     }
 
@@ -72,19 +75,19 @@ public class HomeScreen implements ScreenComponent {
 
     private Component menuBar(){
         return new MenuBar()
-                .menu(new Menu("Preferências").item("Abrir tela", ()-> router.spawnWindow("preferencias")))
+                .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow("preferencias",e->{})))
                 .menu(new Menu("Cadastros")
-                        .item("Fornecedores", ()-> router.spawnWindow("fornecedores"))
-                        .item("Clientes", ()-> router.spawnWindow("clientes"))
-                        .item("Categorias", ()-> router.spawnWindow("categorias"))
-                        .item("Produtos", ()-> router.spawnWindow("produtos"))
+                        .item("Fornecedores", ()-> ctx.router().spawnWindow("fornecedores",e->{}))
+                        .item("Clientes", ()-> ctx.router().spawnWindow("clientes",e->{}))
+                        .item("Categorias", ()-> ctx.router().spawnWindow("categorias",e->{}))
+                        .item("Produtos", ()-> ctx.router().spawnWindow("produtos",e->{}))
                 )
                 .menu(new Menu("Gerencial")
-                        .item("Empresa", ()-> router.spawnWindow("empresa"))
+                        .item("Empresa", ()-> ctx.router().spawnWindow("empresa",e->{}))
                 )
                 .menu(new Menu("Suporte")
-                        .item("Relatar erro", ()-> router.spawnWindow("relatar-erro"))
-                        .item("Sugerir melhoria/funcionalidade", ()-> router.spawnWindow("sugerir-melhoria"))
+                        .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
+                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
                 );
     }
 
@@ -110,7 +113,7 @@ public class HomeScreen implements ScreenComponent {
                         .c_child(new Text(cardItem.title, (TextProps) new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new Text(cardItem.desc,  new TextProps().variant(TextVariant.SMALL))),
                        new CardProps().padding(0).height(220).width(200).borderRadius(20)),
-               ()-> router.spawnWindow(cardItem.destination)
+               ()-> ctx.router().spawnWindow(cardItem.destination,e->{})
        );
     }
 }

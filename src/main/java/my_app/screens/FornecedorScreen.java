@@ -1,29 +1,35 @@
 package my_app.screens;
 
-import megalodonte.*;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
-import megalodonte.router.Router;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
-import megalodonte.utils.related.TextVariant;
+import megalodonte.props.ColumnProps;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.domain.ContratoTelaCrud;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
 
 import java.util.List;
 
+
 import static my_app.utils.Utils.*;
 
 public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
+    private final ScreenContext ctx;
     private final FornecedorRepository fornecedorRepository;
 
     private final ListState<FornecedorModel> fornecedores = ListState.of(List.of());
@@ -55,8 +61,8 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
 
     State<FornecedorModel> fornecedorSelected = State.of(null);
 
-    public FornecedorScreen(Router router) {
-        this.router = router;
+    public FornecedorScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         fornecedorRepository = new FornecedorRepository();
     }
 
@@ -149,7 +155,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                         fornecedorRepository.excluirById(forn.id);
                         UI.runOnUi(()->{
                             fornecedores.removeIf(it-> it.id.equals(forn.id));
-                            Components.ShowPopup(router, "Fornecedor excluido com sucesso");
+                            Components.ShowPopup(ctx, "Fornecedor excluido com sucesso");
                         });
                     }catch (Exception e){
                         UI.runOnUi(()->Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
@@ -250,7 +256,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                     UI.runOnUi(() -> {
                         fornecedores.updateIf(fornecedorModel -> fornecedorModel.id.equals(modelAtualizada.id),
                                 fornecedorModel -> modelAtualizada);
-                        Components.ShowPopup(router, "Fornecedor atualizado com sucesso");
+                        Components.ShowPopup(ctx, "Fornecedor atualizado com sucesso");
                         clearForm();
                     });
 
@@ -279,7 +285,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
 
                     UI.runOnUi(()-> {
                         fornecedores.add(model);
-                        Components.ShowPopup(router, "Fornecedor cadastrado com sucesso");
+                        Components.ShowPopup(ctx, "Fornecedor cadastrado com sucesso");
                         clearForm();
                     });
                 } catch (Exception e) {
@@ -304,7 +310,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrud {
                 .build()
                 .onItemSelectChange(fornecedorSelected::set)
                 .onItemDoubleClick(it-> {
-                    Components.ShowModal( ItemDetails(it), router, 550);
+                    Components.ShowModal( ItemDetails(it), ctx, 550);
                 });
     }
 

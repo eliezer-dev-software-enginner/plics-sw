@@ -6,7 +6,7 @@ import megalodonte.ComputedState;
 import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ContasPagarDto;
 import my_app.db.models.ContasPagarModel;
 import my_app.db.models.FornecedorModel;
@@ -190,7 +190,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
         );
     }
     
-    public void salvarOuAtualizar(Router router) {
+    public void salvarOuAtualizar(ScreenContext ctx) {
         if (!formValido.get()) {
             UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
             return;
@@ -210,7 +210,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
                         if (index >= 0) {
                             contas.set(index, modelAtualizada);
                         }
-                        Components.ShowPopup(router, "Conta atualizada com sucesso!");
+                        Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                         limparFormulario();
                     });
                 } catch (Exception e) {
@@ -224,7 +224,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
                     var contaSalva = repository.salvar(dto);
                     UI.runOnUi(() -> {
                         contas.add(contaSalva);
-                        Components.ShowPopup(router, "Conta cadastrada com sucesso!");
+                        Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
                         limparFormulario();
                     });
                 } catch (Exception e) {
@@ -234,7 +234,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
         }
     }
     
-    public void registrarPagamento(Router router) {
+    public void registrarPagamento(ScreenContext ctx) {
         if (contaSelected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar pagamento"));
             return;
@@ -264,7 +264,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
                         if (index >= 0) {
                             contas.set(index, contaAtualizada);
                         }
-                        Components.ShowPopup(router, "Pagamento registrado com sucesso!");
+                        Components.ShowPopup(ctx, "Pagamento registrado com sucesso!");
                         valorPagamento.set("0");
                         modoPagamento.set(false);
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
@@ -278,7 +278,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
         });
     }
     
-    public void quitarConta(Router router) {
+    public void quitarConta(ScreenContext ctx) {
         if (contaSelected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
             return;
@@ -295,7 +295,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
                         if (index >= 0) {
                             contas.set(index, contaAtualizada);
                         }
-                        Components.ShowPopup(router, "Conta quitada com sucesso!");
+                        Components.ShowPopup(ctx, "Conta quitada com sucesso!");
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     } catch (Exception ex) {
                         Components.ShowAlertError("Erro ao atualizar lista: " + ex.getMessage());
@@ -307,7 +307,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
         });
     }
     
-    public void excluir(Router router) {
+    public void excluir(ScreenContext ctx) {
         if (contaSelected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para excluir"));
             return;
@@ -318,7 +318,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
                 service.excluir(contaSelected.get().id);
                 UI.runOnUi(() -> {
                     contas.remove(contaSelected.get());
-                    Components.ShowPopup(router, "Conta excluída com sucesso!");
+                    Components.ShowPopup(ctx, "Conta excluída com sucesso!");
                     limparFormulario();
                 });
             } catch (Exception e) {

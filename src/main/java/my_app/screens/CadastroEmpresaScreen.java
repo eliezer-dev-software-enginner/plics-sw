@@ -1,28 +1,33 @@
 package my_app.screens;
 
 import javafx.stage.FileChooser;
-import megalodonte.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.ColumnProps;
 import megalodonte.props.ContainerProps;
-import megalodonte.props.ImageProps;
-import megalodonte.props.RowProps;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.models.EmpresaModel;
 import my_app.db.repositories.EmpresaRepository;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+
 
 import java.io.File;
 
 public class CadastroEmpresaScreen implements ScreenComponent {
-    private final Router router;
+    private final ScreenContext ctx;
 
     State<String> nome = State.of("");
     State<String> celular = State.of("");
@@ -38,8 +43,8 @@ public class CadastroEmpresaScreen implements ScreenComponent {
 
     private EmpresaRepository empresaRepository = new EmpresaRepository();
 
-    public CadastroEmpresaScreen(Router router) {
-        this.router = router;
+    public CadastroEmpresaScreen(ScreenContext ctx) {
+        this.ctx = ctx;
     }
 
     public void onMount(){
@@ -132,7 +137,7 @@ public class CadastroEmpresaScreen implements ScreenComponent {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Text files", "*.png","*.jpg","*.jpeg"));
 
-        File arquivo = fileChooser.showOpenDialog(this.router.getCurrentActiveStage());
+        File arquivo = fileChooser.showOpenDialog(this.ctx.selfStage());
         if(arquivo != null){
             IO.println("abs: " + arquivo.getAbsolutePath());
             String imagePath = arquivo.toURI().toString();

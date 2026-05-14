@@ -1,18 +1,14 @@
 package my_app.screens;
 
-import megalodonte.ComputedState;
-import megalodonte.ListState;
-import megalodonte.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.props.TextProps;
-import megalodonte.router.Router;
-import megalodonte.utils.related.TextVariant;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.OrdemServicoDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
@@ -20,6 +16,13 @@ import my_app.domain.ContratoTelaCrud;
 import my_app.events.EventBus;
 import my_app.events.TecnicoCriadoEvent;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
@@ -29,7 +32,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
+    private final ScreenContext ctx;
     private final ListState<ClienteModel> clientes = ListState.of(List.of());
     private final ListState<TecnicoModel> tecnicos = ListState.of(List.of());
 
@@ -70,8 +73,8 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
     private final ClienteRepository clienteRepository;
     private final TecnicoRepository tecnicoRepository;
 
-    public OrdemServicoScreen(Router router) {
-        this.router = router;
+    public OrdemServicoScreen(ScreenContext ctx) {
+        this.ctx = ctx;
 
         clienteRepository = new ClienteRepository();
         tecnicoRepository = new TecnicoRepository();
@@ -135,7 +138,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
     }
 
     private void openTecnicoWindow() {
-        router.spawnWindow("tecnicos");
+        ctx.router().spawnWindow("tecnicos",e->{});
     }
 
     @Override
@@ -190,7 +193,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                 .column("Data de criação da OS", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(it -> osSelected.set(it))
-                .onItemDoubleClick(it-> Components.ShowModal( ItemDetails(it), router));
+                .onItemDoubleClick(it-> Components.ShowModal( ItemDetails(it), ctx));
     }
 
     Component ItemDetails(OrdemServicoModel model){
@@ -236,7 +239,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                     ordemServicoRepository.excluirById(osId);
                     UI.runOnUi(() -> {
                         ordensDeServicoList.removeIf(it -> it.id.equals(osId));
-                        Components.ShowPopup(router, "Ordem de serviço excluída com sucesso!");
+                        Components.ShowPopup(ctx, "Ordem de serviço excluída com sucesso!");
                     });
                 } catch (SQLException e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir ordem de serviço: " + e.getMessage()));
@@ -294,7 +297,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                     ordemServicoRepository.atualizar(modelAtualizada);
 
                     UI.runOnUi(()-> {
-                        Components.ShowPopup(router, "Sua ordem de serviço foi atualizada com sucesso!");
+                        Components.ShowPopup(ctx, "Sua ordem de serviço foi atualizada com sucesso!");
                         ordensDeServicoList.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
                     });
                 } catch (SQLException e) {
@@ -308,7 +311,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
 
                     UI.runOnUi(()-> {
                         ordensDeServicoList.add(model);
-                        Components.ShowPopup(router, "Sua ordem de serviço foi salva com sucesso!");
+                        Components.ShowPopup(ctx, "Sua ordem de serviço foi salva com sucesso!");
                     });
                 } catch (SQLException e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar ordem de serviço: " + e.getMessage()));

@@ -2,19 +2,20 @@ package my_app.screens.produtoScreen;
 
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
-import megalodonte.Show;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
-import megalodonte.components.Component;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.ContratoTelaCrud;
 import my_app.screens.components.Components;
@@ -24,12 +25,12 @@ import my_app.utils.Utils;
 import java.util.List;
 
 public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
     private final ProdutoScreenViewModel vm;
     private final Theme theme = ThemeManager.theme();
+    private final ScreenContext ctx;
 
-    public ProdutoScreen(Router router) {
-        this.router = router;
+    public ProdutoScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         this.vm = new ProdutoScreenViewModel();
     }
 
@@ -68,7 +69,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
 
     private Component createFormSection() {
         Runnable handleChangeImage = () -> {
-            var stage = this.router.getCurrentActiveStage();
+            var stage = this.ctx.selfStage();
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Escolha a imagem");
@@ -115,7 +116,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
                 .onItemDoubleClick(it-> {
-                    Components.ShowModal( ItemDetails(it), router, 550);
+                    Components.ShowModal( ItemDetails(it), ctx, 550);
                 });
 
         return simpleTable;
@@ -221,7 +222,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                     //vm.refreshProdutos();
                     UI.runOnUi(() -> {
                         vm.limparFormulario();
-                        Components.ShowPopup(router, "Produto excluído com sucesso");
+                        Components.ShowPopup(ctx, "Produto excluído com sucesso");
                     });
 
                 } catch (Exception e) {
@@ -256,7 +257,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleAddOrUpdate() {
-        vm.salvarOuAtualizar(router);
+        vm.salvarOuAtualizar(ctx);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package my_app.domain;
 
+import megalodonte.base.components.Component;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.Component;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;

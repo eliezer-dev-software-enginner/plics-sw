@@ -2,6 +2,7 @@ package my_app.screens.components;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+//import javafx.scene.control.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -10,20 +11,23 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import megalodonte.*;
+import megalodonte.application.Context;
+import megalodonte.base.components.Component;
 import megalodonte.components.*;
 import megalodonte.components.Button;
 import megalodonte.components.DatePicker;
 import megalodonte.components.inputs.Input;
-import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.components.inputs.OnChangeResult;
+import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.Show;
 import my_app.domain.Parcela;
 import my_app.utils.DateUtils;
 import org.kordamp.ikonli.Ikon;
@@ -128,7 +132,7 @@ public class Components {
         return Component.CreateFromJavaFxNode(scroll);
     }
 
-    public static void ShowPopup(Router router, String message) {
+    public static void ShowPopup(ScreenContext context, String message) {
         Popup popup = new Popup();
 
         Label label = new Label(message);
@@ -141,20 +145,20 @@ public class Components {
 
         popup.getContent().add(label);
         popup.setAutoHide(true);
-        popup.show(router.getCurrentActiveStage());
+        popup.show(context.selfStage());
     }
 
-    public static void ShowModal(Component ui, Router router, int height){
+    public static void ShowModal(Component ui, ScreenContext context, int height){
         Stage stage = new Stage();
         stage.setScene(new Scene((Parent) ui.getJavaFxNode(), 700, height));
         stage.setTitle("Detalhes");
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(router.getCurrentActiveStage());
+        stage.initOwner(context.selfStage());
         stage.show();
     }
 
-    public static void ShowModal(Component ui, Router router){
-        ShowModal(ui, router, 500);
+    public static void ShowModal(Component ui, ScreenContext context){
+        ShowModal(ui, context, 500);
     }
 
     public static void ShowAlertAdvice(String bodyMessage, Runnable handleSuccessEvent) {

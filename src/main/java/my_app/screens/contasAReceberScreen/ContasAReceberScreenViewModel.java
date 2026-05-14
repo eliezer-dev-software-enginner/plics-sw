@@ -5,7 +5,7 @@ import megalodonte.ListState;
 import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ContaAreceberDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.ContaAreceberModel;
@@ -184,7 +184,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
         );
     }
     
-    public void salvarOuAtualizar(Router router) {
+    public void salvarOuAtualizar(ScreenContext ctx) {
         if (!formValido.get()) {
             UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
             return;
@@ -204,7 +204,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
                         if (index >= 0) {
                             contas.set(index, modelAtualizada);
                         }
-                        Components.ShowPopup(router, "Conta atualizada com sucesso!");
+                        Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                         limparFormulario();
                     });
                 } catch (Exception e) {
@@ -218,7 +218,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
                     var contaSalva = repository.salvar(dto);
                 UI.runOnUi(() -> {
                     contas.add(contaSalva);
-                    Components.ShowPopup(router, "Conta cadastrada com sucesso!");
+                    Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
                     limparFormulario();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
@@ -229,7 +229,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
         }
     }
     
-    public void registrarRecebimento(Router router) {
+    public void registrarRecebimento(ScreenContext ctx) {
         if (contaSelected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar recebimento"));
             return;
@@ -259,7 +259,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
                         if (index >= 0) {
                             contas.set(index, contaAtualizada);
                         }
-                        Components.ShowPopup(router, "Recebimento registrado com sucesso!");
+                        Components.ShowPopup(ctx, "Recebimento registrado com sucesso!");
                         valorRecebimento.set("0");
                         modoRecebimento.set(false);
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
@@ -273,7 +273,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
         });
     }
     
-    public void quitarConta(Router router) {
+    public void quitarConta(ScreenContext ctx) {
         if (contaSelected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
             return;
@@ -290,7 +290,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
                         if (index >= 0) {
                             contas.set(index, contaAtualizada);
                         }
-                        Components.ShowPopup(router, "Conta quitada com sucesso!");
+                        Components.ShowPopup(ctx, "Conta quitada com sucesso!");
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     } catch (Exception ex) {
                         Components.ShowAlertError("Erro ao atualizar lista: " + ex.getMessage());
@@ -302,7 +302,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
         });
     }
     
-    public void excluir(Router router) {
+    public void excluir(ScreenContext ctx) {
         if (contaSelected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para excluir"));
             return;
@@ -313,7 +313,7 @@ public class ContasAReceberScreenViewModel extends ViewModel {
                 service.excluir(contaSelected.get().id);
                 UI.runOnUi(() -> {
                     contas.remove(contaSelected.get());
-                    Components.ShowPopup(router, "Conta excluída com sucesso!");
+                    Components.ShowPopup(ctx, "Conta excluída com sucesso!");
                     limparFormulario();
                 });
             } catch (Exception e) {

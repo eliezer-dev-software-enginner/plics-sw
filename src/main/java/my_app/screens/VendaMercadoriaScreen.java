@@ -1,24 +1,30 @@
 package my_app.screens;
 
-import megalodonte.*;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.dto.VendaDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
-import my_app.domain.Parcela;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+import my_app.domain.Parcela;
 import my_app.services.ContasAReceberService;
 import my_app.services.VendaMercadoriaService;
 import my_app.utils.DateUtils;
@@ -31,7 +37,7 @@ import java.util.List;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud {
     public final ListState<VendaModel> vendas = ListState.of(List.of());
-    private final Router router;
+    private final ScreenContext ctx;
     private final Theme theme = ThemeManager.theme();
 
     State<LocalDate> dataVenda = State.of(LocalDate.now());
@@ -88,8 +94,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
     private final VendaMercadoriaService vendaService;
 
-    public VendaMercadoriaScreen(Router router) {
-        this.router = router;
+    public VendaMercadoriaScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         // Configura listeners para atualizar estoque visual
         qtd.subscribe(novaQtd -> atualizarEstoqueVisual());
         opcaoDeControleDeEstoqueSelected.subscribe(novaOpcao -> atualizarEstoqueVisual());
@@ -261,7 +267,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
 
                     UI.runOnUi(() -> {
                         vendas.removeIf(it -> it.id.equals(vendaId));
-                        Components.ShowPopup(router, "Venda e contas vinculadas excluídas com sucesso!");
+                        Components.ShowPopup(ctx, "Venda e contas vinculadas excluídas com sucesso!");
                     });
 
                 } catch (SQLException e) {
@@ -346,7 +352,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                 vendaService.atualizarOrThrow(modelAtualizada, message -> UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar venda: " + message)));
                 vendas.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
 
-                Components.ShowPopup(router, "Sua venda de mercadoria foi atualizada com sucesso!");
+                Components.ShowPopup(ctx, "Sua venda de mercadoria foi atualizada com sucesso!");
             } else {
 
                 VendaModel venda = null;
@@ -378,7 +384,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrud 
                 VendaModel finalVenda = venda;
                 UI.runOnUi(() -> {
                     vendas.add(finalVenda);
-                    Components.ShowPopup(router, "Sua venda de mercadoria foi salva com sucesso!");
+                    Components.ShowPopup(ctx, "Sua venda de mercadoria foi salva com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });

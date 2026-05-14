@@ -1,31 +1,39 @@
 package my_app.screens.contasAReceberScreen;
 
-import megalodonte.ComputedState;
-import megalodonte.Show;
-import megalodonte.components.*;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.ContainerProps;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
-import megalodonte.utils.related.TextVariant;
-import my_app.db.models.ContaAreceberModel;
+import megalodonte.v2.Show;
+import my_app.db.models.*;
+import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
-import my_app.events.DadosFinanceirosAtualizadosEvent;
-import my_app.events.EventBus;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.Button;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
+    private final ScreenContext ctx;
     private final ContasAReceberScreenViewModel vm;
     private final Theme theme = ThemeManager.theme();
 
-    public ContasAReceberScreen(Router router) {
-        this.router = router;
+    public ContasAReceberScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         this.vm = new ContasAReceberScreenViewModel();
     }
 
@@ -58,7 +66,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
         final var selected = vm.contaSelected.get();
         if (selected != null) {
             Components.ShowAlertAdvice("Deseja excluir \"" + selected.descricao + "\"?", () -> {
-                vm.excluir(router);
+                vm.excluir(ctx);
             });
         }
     }
@@ -76,7 +84,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleAddOrUpdate() {
-        vm.salvarOuAtualizar(router);
+        vm.salvarOuAtualizar(ctx);
     }
 
     @Override
@@ -193,7 +201,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
                                                             .fontSize(theme.typography().small())
                                                             .bgColor("#10b981")
                                                             .textColor("white"))
-                                                    .onClick(() -> vm.registrarRecebimento(router))
+                                                    .onClick(() -> vm.registrarRecebimento(ctx))
                                     )
                                     .r_child(
                                             new Button("Cancelar",
@@ -255,7 +263,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
                                         //.fillWidth()
                                 ) .onClick(() -> {
                                     if (vm.modoRecebimento.get()) {
-                                        vm.registrarRecebimento(router);
+                                        vm.registrarRecebimento(ctx);
                                     } else {
                                         vm.modoRecebimento.set(true);
                                     }
@@ -267,7 +275,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrud {
                                                 .height(35)
                                                 .fontSize(theme.typography().small())
                                                 .bgColor("#007bff")
-                                                .textColor("white")).onClick(() -> vm.quitarConta(router))
+                                                .textColor("white")).onClick(() -> vm.quitarConta(ctx))
                         )
                 )
         );

@@ -1,15 +1,14 @@
 package my_app.screens;
 
-import megalodonte.ComputedState;
-import megalodonte.ListState;
-import megalodonte.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.props.ColumnProps;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.dto.ClienteDto;
@@ -17,6 +16,12 @@ import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
 import my_app.domain.ContratoTelaCrud;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import my_app.utils.DateUtils;
 
 import java.util.List;
@@ -24,7 +29,7 @@ import java.util.List;
 import static my_app.utils.Utils.*;
 
 public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
+    private final ScreenContext ctx;
     private final Theme theme = ThemeManager.theme();
     private final ClienteRepository clienteRepository = new ClienteRepository();
     
@@ -40,8 +45,8 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
 
     ComputedState<String> btnText = ComputedState.of( ()-> editMode.get()? "Atualizar": "+ Adicionar", editMode);
 
-    public ClienteScreen(Router router) {
-        this.router = router;
+    public ClienteScreen(ScreenContext ctx) {
+        this.ctx = ctx;
     }
 
     @Override
@@ -113,7 +118,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                         clienteRepository.excluirById(forn.id);
                         UI.runOnUi(()->{
                             clientes.removeIf(it-> it.id.equals(forn.id));
-                            Components.ShowPopup(router, "Cliente excluido com sucesso");
+                            Components.ShowPopup(ctx, "Cliente excluido com sucesso");
                         });
                     }catch (Exception e){
                         UI.runOnUi(()->Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
@@ -166,14 +171,16 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
         }
 
         if(editMode.get() && clienteSelecionado.get() == null) return;
-        var id = clienteSelecionado.get().id;
 
         if(editMode.get()){
+            var selecionado = clienteSelecionado.get();
+            var id = selecionado.id;
+
             Async.Run(()->{
                 try {
                     // 1. Criamos a Model com os novos dados mantendo o ID e Data de Criação originais
-                    var selecionado = clienteSelecionado.get();
-                    var modelAtualizada = new ClienteModel().fromIdAndDto(selecionado.id, new ClienteDto(
+
+                    var modelAtualizada = new ClienteModel().fromIdAndDto(id, new ClienteDto(
                             nomeValue, cnpjValue, celularValue, emailValue
                     ));
 
@@ -182,8 +189,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
 
                     UI.runOnUi(() -> {
                         clientes.updateIf(it-> it.id.equals(id), it-> modelAtualizada);
-
-                        Components.ShowPopup(router, "Cliente atualizado com sucesso");
+                        Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                         clearForm();
                     });
                 } catch (Exception e) {
@@ -204,7 +210,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
 
                     UI.runOnUi(()-> {
                         clientes.add(model);
-                        Components.ShowPopup(router, "Cliente cadastrado com sucesso");
+                        Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
                         clearForm();
                     });
 

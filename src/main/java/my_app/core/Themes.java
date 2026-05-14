@@ -1,7 +1,8 @@
 package my_app.core;
 
 
-import megalodonte.theme.*;
+import megalodonte.base.theme.*;
+import megalodonte.theme.Theme;
 
 public class Themes {
     public static final Theme DARK = new Theme() {

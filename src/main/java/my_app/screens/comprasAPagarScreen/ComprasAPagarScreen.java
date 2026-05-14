@@ -1,21 +1,29 @@
 package my_app.screens.comprasAPagarScreen;
 
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import megalodonte.ComputedState;
-import megalodonte.Show;
-import megalodonte.components.*;
+
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.ContainerProps;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
-import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.Show;
 import my_app.db.models.ContasPagarModel;
 import my_app.domain.ContratoTelaCrud;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.Button;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
@@ -23,12 +31,12 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
     private final ComprasAPagarScreenViewModel vm;
     private final Theme theme = ThemeManager.theme();
+    private final ScreenContext ctx;
 
-    public ComprasAPagarScreen(Router router) {
-        this.router = router;
+    public ComprasAPagarScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         this.vm = new ComprasAPagarScreenViewModel();
     }
 
@@ -61,7 +69,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
         final var selected = vm.contaSelected.get();
         if (selected != null) {
             Components.ShowAlertAdvice("Deseja excluir \"" + selected.descricao + "\"?", () -> {
-                vm.excluir(router);
+                vm.excluir(ctx);
             });
         }
     }
@@ -79,7 +87,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleAddOrUpdate() {
-        vm.salvarOuAtualizar(router);
+        vm.salvarOuAtualizar(ctx);
     }
 
     @Override
@@ -135,7 +143,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                                                 .fontSize(theme.typography().small())
                                                 .bgColor("#10b981")
                                                 .textColor("white"))
-                                                .onClick(() -> vm.registrarPagamento(router))
+                                                .onClick(() -> vm.registrarPagamento(ctx))
                                     )
                                     .r_child(
                                         new Button("Cancelar",
@@ -199,7 +207,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                                                 //.fillWidth()
                                               ) .onClick(() -> {
                                     if (vm.modoPagamento.get()) {
-                                        vm.registrarPagamento(router);
+                                        vm.registrarPagamento(ctx);
                                     } else {
                                         vm.modoPagamento.set(true);
                                     }
@@ -211,7 +219,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                                     .height(35)
                                     .fontSize(theme.typography().small())
                                     .bgColor("#007bff")
-                                    .textColor("white")).onClick(() -> vm.quitarConta(router))
+                                    .textColor("white")).onClick(() -> vm.quitarConta(ctx))
                         )
                 )
         );

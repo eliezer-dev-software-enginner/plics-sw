@@ -1,23 +1,28 @@
 package my_app.screens;
 
-import megalodonte.ComputedState;
-import megalodonte.Show;
-import megalodonte.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
-import megalodonte.router.Router;
-import my_app.db.models.PreferenciasModel;
-import my_app.db.repositories.PreferenciasRepository;
+import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.Show;
+import my_app.db.models.*;
+import my_app.db.repositories.*;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.props.*;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class PreferenciasScreen implements ScreenComponent {
-    private final Router router;
+    private final ScreenContext ctx;
     private final PreferenciasRepository preferenciasRepository;
 
 //    State<String> temaSelected = State.of("Claro");
@@ -27,8 +32,8 @@ public class PreferenciasScreen implements ScreenComponent {
 
     PreferenciasModel prefLoaded;
 
-    public PreferenciasScreen(Router router) {
-        this.router = router;
+    public PreferenciasScreen(ScreenContext ctx) {
+        this.ctx = ctx;
 
 //        temaSelected.subscribe(theme->{
 //            ThemeManager.setTheme(theme.equals("Claro")? Themes.LIGHT: Themes.DARK);
@@ -85,7 +90,7 @@ public class PreferenciasScreen implements ScreenComponent {
                 //model.tema = temaSelected.get();
 
                 preferenciasRepository.atualizar(prefLoaded);
-                UI.runOnUi(()-> Components.ShowPopup(router, "Preferências foram salvas com sucesso!"));
+                UI.runOnUi(()-> Components.ShowPopup(ctx, "Preferências foram salvas com sucesso!"));
             } catch (Exception e) {
                UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
             }

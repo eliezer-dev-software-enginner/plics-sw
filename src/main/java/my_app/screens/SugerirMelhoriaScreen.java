@@ -1,20 +1,28 @@
 package my_app.screens;
 
-import megalodonte.ComputedState;
-import megalodonte.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
+import my_app.db.models.*;
+import my_app.db.repositories.*;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+
 import my_app.services.TelegramNotifier;
 
 public class SugerirMelhoriaScreen implements ScreenComponent {
-    private final Router router;
+    private final ScreenContext ctx;
 
     State<Boolean> isSending = State.of(false);
     ComputedState<String> btnText = ComputedState.of(()-> getBtnText(isSending.get()), isSending);
@@ -25,8 +33,8 @@ public class SugerirMelhoriaScreen implements ScreenComponent {
         return s.equals(true)? "Enviando":"Enviar";
     }
 
-    public SugerirMelhoriaScreen(Router router) {
-        this.router = router;
+    public SugerirMelhoriaScreen(ScreenContext ctx) {
+        this.ctx = ctx;
     }
 
     public Component render() {
@@ -39,7 +47,7 @@ public class SugerirMelhoriaScreen implements ScreenComponent {
                 try{
                     TelegramNotifier.enviarMensagemParaTelegram(content.get());
                     UI.runOnUi(()->{
-                        Components.ShowPopup(router, "Enviado com sucesso");
+                        Components.ShowPopup(ctx, "Enviado com sucesso");
                         content.set("");
                     });
                 } catch (Exception e) {

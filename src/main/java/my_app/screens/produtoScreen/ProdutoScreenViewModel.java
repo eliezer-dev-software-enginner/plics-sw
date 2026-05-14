@@ -6,6 +6,7 @@ import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ProdutoDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.FornecedorModel;
@@ -86,7 +87,7 @@ public class ProdutoScreenViewModel extends ViewModel {
     }
 
 
-    public void salvarOuAtualizar(Router router) {
+    public void salvarOuAtualizar(ScreenContext ctx) {
         var dto = toProduto();
 
         if(perecivelSelected.get().equals("Sim") && validade.isNull()) {
@@ -102,7 +103,7 @@ public class ProdutoScreenViewModel extends ViewModel {
                     UI.runOnUi(() -> {
                         this.produtos.clear();
                         this.produtos.addAll(produtosList);
-                        Components.ShowPopup(router, "Produto atualizado com sucesso!");
+                        Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
                     });
                 } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -118,7 +119,7 @@ public class ProdutoScreenViewModel extends ViewModel {
 
                     UI.runOnUi(() -> {
                         produtos.add(produtoModel);
-                        Components.ShowPopup(router, "Produto cadastrado com sucesso");
+                        Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
                         limparFormulario();
                     });
                 } catch (Exception e) {

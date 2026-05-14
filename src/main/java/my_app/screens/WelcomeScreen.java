@@ -3,21 +3,23 @@ package my_app.screens;
 
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
+import megalodonte.base.components.Component;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
-import my_app.db.repositories.PreferenciasRepository;
+
+//import javafx.scene.control.*;
 
 public class WelcomeScreen {
-    private final Router router;
+    private final ScreenContext ctx;
 
-    public WelcomeScreen(Router router) {
-        this.router = router;
+    public WelcomeScreen(ScreenContext ctx) {
+        this.ctx = ctx;
     }
 
     private final Theme theme = ThemeManager.theme();
@@ -63,7 +65,9 @@ public class WelcomeScreen {
 //            e.printStackTrace();
 //        }
         //router.navigateTo("home");
-        router.navigateTo("entrar-com-credenciais");
+        //router.navigateTo("entrar-com-credenciais");
+
+        ctx.navigate("entrar-com-credenciais");
     }
 
     public Component textRow(){

@@ -1,24 +1,30 @@
 package my_app.screens;
 
-import megalodonte.Show;
-import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.components.*;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.ContainerProps;
+import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.Show;
+import my_app.db.models.*;
+import my_app.db.repositories.*;
+import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.Router;
-import megalodonte.utils.related.TextVariant;
-import my_app.db.models.PreferenciasModel;
-import my_app.db.repositories.PreferenciasRepository;
-import my_app.screens.components.Components;
 
 import java.sql.SQLException;
 
 public class AuthScreen implements ScreenComponent {
-    private final Router router;
+    private final ScreenContext ctx;
     private final PreferenciasRepository preferenciasRepository;
 
     State<Boolean> showLicensaState = State.of(true);
@@ -29,8 +35,8 @@ public class AuthScreen implements ScreenComponent {
 
     PreferenciasModel prefRecuperada;
 
-    public AuthScreen(Router router) {
-        this.router = router;
+    public AuthScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         preferenciasRepository = new PreferenciasRepository();
     }
 
@@ -96,7 +102,7 @@ public class AuthScreen implements ScreenComponent {
             return;
         }
 
-        Components.ShowPopup(router, "Login efetuado com sucesso!");
+        Components.ShowPopup(ctx, "Login efetuado com sucesso!");
             try {
                 var prefs = new PreferenciasRepository().listar();
                 if (!prefs.isEmpty()) {
@@ -104,7 +110,8 @@ public class AuthScreen implements ScreenComponent {
                     pref.primeiroAcesso = 0;
                     pref.credenciaisHabilitadas = 1;
                     new PreferenciasRepository().atualizar(pref);
-                    router.navigateTo("home");
+                    //router.navigateTo("home");
+                    ctx.navigate("home");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

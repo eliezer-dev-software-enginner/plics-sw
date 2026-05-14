@@ -2,45 +2,44 @@ package my_app.screens;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import megalodonte.*;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.components.*;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
-import my_app.db.dto.CompraDto;
+import my_app.db.dto.*;
 import my_app.db.models.*;
-import my_app.db.repositories.ComprasRepository;
-import my_app.db.repositories.ContasPagarRepository;
-import my_app.db.repositories.FornecedorRepository;
-import my_app.db.repositories.ProdutoRepository;
+import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
-import my_app.domain.Parcela;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.screens.components.Components;
-import my_app.services.CompraMercadoriaService;
-import my_app.services.ContasAReceberService;
-import my_app.services.ContasPagarService;
-
-import java.math.BigDecimal;
-import java.util.List;
-
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
+import my_app.domain.Parcela;
+import my_app.services.*;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 //TODO: finalizar implementações
 //TODO: lista de compras para exibir na tabela
 public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
+    private final ScreenContext ctx;
     private final Theme theme = ThemeManager.theme();
     private final ListState<CompraModel> compras = ListState.of(List.of());
     State<LocalDate> dataCompra = State.of(LocalDate.now());
@@ -92,8 +91,8 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
     private final ProdutoRepository produtoRepository;
     private CompraMercadoriaService compraMercadoriaService;
 
-    public ComprasScreen(Router router) {
-        this.router = router;
+    public ComprasScreen(ScreenContext ctx) {
+        this.ctx = ctx;
 
         // Configura listeners para atualizar estoque visual
         qtd.subscribe(novaQtd -> atualizarEstoqueVisual());
@@ -271,7 +270,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
                     UI.runOnUi(() -> {
                         compras.removeIf(it -> it.id.equals(compraId));
-                        Components.ShowPopup(router, "Compra e contas vinculadas excluídas com sucesso!");
+                        Components.ShowPopup(ctx, "Compra e contas vinculadas excluídas com sucesso!");
                     });
 
                 } catch (SQLException e) {
@@ -360,7 +359,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                 compraMercadoriaService.atualizarOrThrow(modelAtualizada, message->   UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar compra: " + message)));
 
                 UI.runOnUi(()-> {
-                    Components.ShowPopup(router, "Sua compra de mercadoria foi atualizada com sucesso!");
+                    Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
                     compras.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
                 });
             } else {
@@ -386,7 +385,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                 UI.runOnUi(() -> {
                     IO.println("compra foi salva!");
                     compras.add(compraSalva);
-                    Components.ShowPopup(router, "Sua compra de mercadoria foi salva com sucesso!");
+                    Components.ShowPopup(ctx, "Sua compra de mercadoria foi salva com sucesso!");
                     estoqueAnterior.set(estoqueAtual.get());
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });

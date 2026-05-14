@@ -1,31 +1,33 @@
 package my_app.screens;
 
-import megalodonte.ComputedState;
-import megalodonte.ListState;
-import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.components.*;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Card;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.RowProps;
-import megalodonte.router.Router;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.TecnicoDto;
-import my_app.db.models.TecnicoModel;
-import my_app.db.repositories.TecnicoRepository;
+import my_app.db.models.*;
+import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
 import my_app.events.EventBus;
 import my_app.events.TecnicoCriadoEvent;
 import my_app.screens.components.Components;
+//import javafx.scene.control.*;
+import javafx.scene.control.*;
+import megalodonte.*;
+import megalodonte.components.*;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import my_app.utils.DateUtils;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
+    private final ScreenContext ctx;
     private final TecnicoRepository tecnicoRepository;
 
     State<String> nome = State.of("");
@@ -35,8 +37,8 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
     State<TecnicoModel> tecnicoSelecionada = State.of(null);
     ListState<TecnicoModel> tecnicos = ListState.of(List.of());
 
-    public TecnicoScreen(Router router) {
-        this.router = router;
+    public TecnicoScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         tecnicoRepository = new TecnicoRepository();
     }
 
@@ -112,7 +114,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                     Long id = tecnicoSelecionada.get().id;
                     tecnicoRepository.excluirById(id);
                     UI.runOnUi(() -> {
-                        Components.ShowPopup(router, "técnico excluido com sucesso");
+                        Components.ShowPopup(ctx, "técnico excluido com sucesso");
                         tecnicos.removeIf(tecnicoModel -> tecnicoModel.id.equals(id));
                     });
                 } catch (SQLException e) {
@@ -155,7 +157,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                    //tecnicos.updateIf(it -> it.id.equals(tecnicoSelecionada.get().id), model);
                     loadTecnicos();
                     UI.runOnUi(() -> {
-                        Components.ShowPopup(router, "Técnico atualizada com sucesso");
+                        Components.ShowPopup(ctx, "Técnico atualizada com sucesso");
                         clearForm();
                     });
                 } catch (Exception e) {
@@ -168,7 +170,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                     var model = tecnicoRepository.salvar(dto);
                     UI.runOnUi(() -> {
                         tecnicos.add(model);
-                        Components.ShowPopup(router, "Técnico '" + model.nome + "' cadastrado com sucesso");
+                        Components.ShowPopup(ctx, "Técnico '" + model.nome + "' cadastrado com sucesso");
                         clearForm();
                         // Publicar evento de técnico criado
                         EventBus.getInstance().publish(new TecnicoCriadoEvent(model));

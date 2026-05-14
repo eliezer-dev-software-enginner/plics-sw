@@ -5,14 +5,16 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import megalodonte.ComputedState;
-import megalodonte.State;
-import megalodonte.base.async.Async;
+import megalodonte.*;
 import megalodonte.base.UI;
+import megalodonte.base.async.Async;
+import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.Router;
+import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import my_app.db.dto.CategoriaDto;
@@ -25,8 +27,8 @@ import my_app.utils.DateUtils;
 import java.sql.SQLException;
 
 public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
-    private final Router router;
     private final Theme theme = ThemeManager.theme();
+    private final ScreenContext ctx;
     State<String> nome = State.of("");
     State<Boolean> modoEdicao = State.of(false);
 
@@ -35,8 +37,8 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
     ObservableList<CategoriaModel> categoriasObservable = FXCollections.observableArrayList();
     private CategoriaRepository categoriaRepository = new CategoriaRepository();
 
-    public CategoriaScreen(Router router) {
-        this.router = router;
+    public CategoriaScreen(ScreenContext ctx) {
+        this.ctx = ctx;
     }
 
     public void onMount() {
@@ -99,7 +101,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
                     Long id = categoriaSelecionada.get().id;
                     categoriaRepository.excluirById(id);
                     UI.runOnUi(() -> {
-                        Components.ShowPopup(router, "categoria excluida com sucesso");
+                        Components.ShowPopup(ctx, "categoria excluida com sucesso");
                         categoriasObservable.removeIf(categoriaModel -> categoriaModel.id.equals(id));
                     });
                 } catch (SQLException e) {
@@ -139,7 +141,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
                     categoriaRepository.atualizar(model);
                     loadCategorias();
                     UI.runOnUi(() -> {
-                        Components.ShowPopup(router, "Categoria atualizada com sucesso");
+                        Components.ShowPopup(ctx, "Categoria atualizada com sucesso");
                         clearForm();
                     });
                 } catch (Exception e) {
@@ -154,7 +156,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrud {
                     var model = categoriaRepository.salvar(dto);
                     UI.runOnUi(() -> {
                         categoriasObservable.add(model);
-                        Components.ShowPopup(router, "Categoria '" + model.nome + "' cadastrada com sucesso");
+                        Components.ShowPopup(ctx, "Categoria '" + model.nome + "' cadastrada com sucesso");
                         nome.set("");
                     });
                 } catch (Exception e) {
