@@ -122,6 +122,32 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         return simpleTable;
     }
 
+    @Override
+    public void handleClickMenuClone() {
+        vm.modoEdicao.set(false);
+
+        if(vm.produtoSelected.get() == null) return;
+        final var model = vm.produtoSelected.get();
+
+        vm.codigoBarras.set(model.codigoBarras);
+        vm.descricao.set(model.descricao);
+        vm.precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
+        vm.precoVenda.set(Utils.deRealParaCentavos( model.precoVenda));
+        //vm.margem.set(model.);
+        //vm.lucro.set("0");
+        vm.comissao.set(model.comissao);
+        vm.garantia.set(model.garantia);
+        vm.marca.set(model.marca);
+        vm.unidadeSelected.set(model.unidade);
+        vm.estoque.set(Utils.quantidadeTratada(model.estoque));
+
+        vm.validade.set(model.validade != null ? DateUtils.millisParaLocalDate(model.validade) : null);
+        vm.perecivelSelected.set(model.validade != null && model.validade > 0? "Sim": "Não");
+        vm.observacoes.set(model.observacoes);
+        vm.imagem.set(model.imagem);
+    }
+
+
     public Component ContainerLeft(ProdutoScreenViewModel vm) {
         var rowProps = new RowProps().spacingOf(10);
 
@@ -232,28 +258,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         });
     }
 
-    @Override
-    public void handleClickMenuClone() {
-        vm.modoEdicao.set(false);
-
-        if(vm.produtoSelected.get() == null) return;
-        final var model = vm.produtoSelected.get();
-
-        vm.codigoBarras.set(model.codigoBarras);
-        vm.descricao.set(model.descricao);
-        vm.precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
-        vm.precoVenda.set(Utils.deRealParaCentavos( model.precoVenda));
-        //vm.margem.set(model.);
-        //vm.lucro.set("0");
-        vm.comissao.set(model.comissao);
-        vm.garantia.set(model.garantia);
-        vm.marca.set(model.marca);
-        vm.unidadeSelected.set(model.unidade);
-        vm.estoque.set(Utils.quantidadeTratada(model.estoque));
-        vm.validade.set(DateUtils.millisParaLocalDate(model.validade));
-        vm.observacoes.set(model.observacoes);
-        vm.imagem.set(model.imagem);
-    }
 
     @Override
     public void handleAddOrUpdate() {

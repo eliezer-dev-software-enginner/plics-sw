@@ -30,7 +30,7 @@ public final class DBInitializer {
                         observacoes TEXT,
                         imagem TEXT,
                         marca TEXT,
-                        validade TEXT,
+                        validade INTEGER,
                         comissao TEXT,
                         garantia TEXT,
                         data_criacao INTEGER,

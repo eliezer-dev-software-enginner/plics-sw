@@ -5,7 +5,6 @@ import megalodonte.ListState;
 import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import megalodonte.router.Router;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ProdutoDto;
 import my_app.db.models.CategoriaModel;
@@ -62,7 +61,43 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
     public final State<ProdutoModel> produtoSelected = State.of(null);
 
-    public final State<String> perecivelSelected = new State<>("Sim");
+    public final State<String> perecivelSelected = new State<>("Não");
+
+    public void loadInicial() {
+        Async.Run(() -> {
+            try {
+                var produtosList = produtoRepository.listar();
+                var fornecedorModelList = new FornecedorRepository().listar();
+                var categorias = new CategoriaRepository().listar();
+
+                UI.runOnUi(() -> {
+                    this.produtos.addAll(produtosList);
+                    this.categorias.set(categorias);
+                    this.categoriaSelected.set(categorias.isEmpty() ? null : categorias.getFirst());
+
+                    this.fornecedores.set(fornecedorModelList);
+                    this.fornecedorSelected.set(fornecedorModelList.isEmpty() ? null : fornecedorModelList.getFirst());
+
+                    for(var p :produtosList){
+                        var categoria = categorias.stream()
+                                .filter(it-> it.id.equals(p.categoriaId))
+                                .findFirst()
+                                .orElse(null);
+
+                        var fornecedor = fornecedorModelList.stream()
+                                .filter(it-> it.id.equals(p.fornecedorId))
+                                .findFirst()
+                                .orElse(null);
+
+                        p.categoria = categoria;
+                        p.fornecedor = fornecedor;
+                    }
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
+    }
 
     public ProdutoDto toProduto() {
         var p = new ProdutoDto();
@@ -104,6 +139,7 @@ public class ProdutoScreenViewModel extends ViewModel {
                         this.produtos.clear();
                         this.produtos.addAll(produtosList);
                         Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
+                        limparFormulario();
                     });
                 } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -153,40 +189,6 @@ public class ProdutoScreenViewModel extends ViewModel {
         produtos.removeIf(it -> it.id.equals(id));
     }
 
-    public void loadInicial() {
-        Async.Run(() -> {
-            try {
-                var produtosList = produtoRepository.listar();
-                var fornecedorModelList = new FornecedorRepository().listar();
-                var categorias = new CategoriaRepository().listar();
 
-                UI.runOnUi(() -> {
-                    this.produtos.addAll(produtosList);
-                    this.categorias.set(categorias);
-                    this.categoriaSelected.set(categorias.isEmpty() ? null : categorias.getFirst());
-
-                    this.fornecedores.set(fornecedorModelList);
-                    this.fornecedorSelected.set(fornecedorModelList.isEmpty() ? null : fornecedorModelList.getFirst());
-
-                    for(var p :produtosList){
-                        var categoria = categorias.stream()
-                                .filter(it-> it.id.equals(p.categoriaId))
-                                .findFirst()
-                                .orElse(null);
-
-                        var fornecedor = fornecedorModelList.stream()
-                                .filter(it-> it.id.equals(p.fornecedorId))
-                                .findFirst()
-                                .orElse(null);
-
-                        p.categoria = categoria;
-                        p.fornecedor = fornecedor;
-                    }
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            }
-        });
-    }
 }
 

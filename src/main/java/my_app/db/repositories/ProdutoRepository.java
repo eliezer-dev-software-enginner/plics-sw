@@ -112,14 +112,14 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
             ps.setString(9, p.imagem);
             ps.setString(10, p.marca);
             if (p.validade != null) {
-                ps.setLong(13, p.validade);
+                ps.setLong(11, p.validade);
             } else {
-                ps.setNull(13, java.sql.Types.BIGINT);
+                ps.setNull(11, java.sql.Types.BIGINT);
             }
             ps.setString(12, p.comissao);
             ps.setString(13, p.garantia);
-            ps.setString(14, p.codigoBarras);
-            ps.setBigDecimal(15, p.totalLiquido);
+            ps.setBigDecimal(14, p.totalLiquido);
+            ps.setString(15, p.codigoBarras);
             ps.executeUpdate();
         }
     }

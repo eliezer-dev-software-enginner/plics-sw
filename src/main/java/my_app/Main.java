@@ -1,5 +1,6 @@
 package my_app;
 
+import javafx.scene.image.Image;
 import megalodonte.ListenerManager;
 import megalodonte.application.Context;
 import megalodonte.application.MegalodonteApp;
@@ -12,6 +13,7 @@ import my_app.hotreload.HotReload;
 import my_app.routes.AppRoutes;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 
 public class Main {
@@ -25,7 +27,15 @@ public class Main {
     static void main() {
         MegalodonteApp.run(context -> {
             final var stage = context.javafxStage();
-            stage.setTitle("Ftp file pusher");
+            stage.setTitle("Plics SW - Sistema de Gestão para Pequenos Negócios");
+
+            final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
+
+            for (String image : images) {
+                stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream(image))));
+            }
+
+            stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("/assets/app_ico.png"))));
 
             initialize(context);
         }, ev->{
