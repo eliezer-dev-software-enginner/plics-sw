@@ -21,13 +21,15 @@ public class Main {
     static HotReload hotReload;
     static boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
+    public static String APP_VERSION = "1.0.2";
+
     static boolean askCredentials = false;
     static boolean forceAccessRoute = false;
 
     static void main() {
         MegalodonteApp.run(context -> {
             final var stage = context.javafxStage();
-            stage.setTitle("Plics SW - Sistema de Gestão para Pequenos Negócios");
+            stage.setTitle(String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios", APP_VERSION));
 
             final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
 

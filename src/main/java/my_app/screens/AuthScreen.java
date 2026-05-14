@@ -1,9 +1,11 @@
 package my_app.screens;
 
+import megalodonte.base.Redirect;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Button;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -11,6 +13,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
+import my_app.Main;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.screens.components.Components;
@@ -57,7 +60,7 @@ public class AuthScreen implements ScreenComponent {
 
     public Component render() {
         return new Container(new ContainerProps().paddingAll(20).bgImage("/assets/bgAuth.jpg")).children(
-                new Row(new RowProps()).children(new Text("Plics - SW", new TextProps().color("white").bold())),
+                new Row(new RowProps()).children(new Text("Plics - SW " + Main.APP_VERSION, new TextProps().color("white").bold())),
                 new SpacerVertical(20),
                 new Row().children(
                         new Column().children(
@@ -81,7 +84,8 @@ public class AuthScreen implements ScreenComponent {
                         )
                 ),
                 new Column(new ColumnProps().fillHeight()),
-               Components.imageWithTextRow("/assets/whatsapp.png","(96) 99167-8306 - Suporte garantido." )
+               Components.imageWithTextRow("/assets/whatsapp.png","+27 62 133 2217 - Suporte garantido." ),
+                new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to("https://wa.me/qr/W7AI2KFHT3OEI1"))
         );
     }
 
