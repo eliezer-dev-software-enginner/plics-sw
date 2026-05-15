@@ -9,8 +9,6 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import megalodonte.v2.Show;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
@@ -32,7 +30,6 @@ import static my_app.utils.Utils.*;
 
 public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     private final ScreenContext ctx;
-    private final Theme theme = ThemeManager.theme();
     private final ClienteRepository clienteRepository = new ClienteRepository();
     
     ListState<ClienteModel> clientes = ListState.of(List.of());
