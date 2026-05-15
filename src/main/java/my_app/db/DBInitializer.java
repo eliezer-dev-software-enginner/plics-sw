@@ -87,7 +87,7 @@ public final class DBInitializer {
                     CREATE TABLE IF NOT EXISTS clientes (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         nome TEXT NOT NULL,
-                        cpf_cnpj TEXT,
+                        cpf_cnpj TEXT UNIQUE,
                         celular TEXT,
                         email TEXT,
                         data_criacao INTEGER NOT NULL
@@ -233,10 +233,91 @@ public final class DBInitializer {
                     )
                 """);
             }
+
+            runMigrations();
             // Inserir dados padrão na primeira execução
             inserirDadosPadrao();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao inicializar banco", e);
+        }
+    }
+
+    private static void runMigrations() throws SQLException {
+        Connection conn = DB.getInstance().connection();
+
+        /**
+         * A tabela migrations guarda o histórico — cada migration roda uma única vez em qualquer máquina que abrir o app. Nas próximas execuções o SELECT COUNT(*) retorna 1 e ela é pulada.
+         * Para futuras alterações de schema, basta adicionar um novo aplicarMigration("002_...", ...) — nunca modifica as migrations antigas.
+         */
+        // Cria tabela de controle de migrations se não existir
+        try (Statement st = conn.createStatement()) {
+            st.execute("""
+            CREATE TABLE IF NOT EXISTS migrations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL UNIQUE,
+                aplicada_em INTEGER NOT NULL
+            )
+        """);
+        }
+
+        aplicarMigration("001_unique_cpf_cnpj_clientes", conn, () -> {
+            conn.setAutoCommit(false);
+            // SQLite não suporta ADD CONSTRAINT, então recria a tabela
+            try (Statement st = conn.createStatement()) {
+                // Limpa estado inconsistente de execução anterior
+                st.execute("DROP TABLE IF EXISTS clientes_old");
+
+                st.execute("ALTER TABLE clientes RENAME TO clientes_old");
+                st.execute("""
+                    CREATE TABLE clientes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT NOT NULL,
+                        cpf_cnpj TEXT UNIQUE,
+                        celular TEXT,
+                        email TEXT,
+                        data_criacao INTEGER NOT NULL
+                    )
+                """);
+                st.execute("""
+                    INSERT INTO clientes
+                    SELECT id, nome, cpf_cnpj, celular, email, data_criacao
+                    FROM clientes_old
+                    WHERE id IN (
+                        SELECT MIN(id) FROM clientes_old GROUP BY cpf_cnpj
+                    )
+                """);
+                st.execute("DROP TABLE clientes_old");
+                conn.commit();
+            }catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        });
+    }
+
+    @FunctionalInterface
+    private interface MigrationTask {
+        void run() throws SQLException;
+    }
+
+    private static void aplicarMigration(String nome, Connection conn, MigrationTask task) throws SQLException {
+        String check = "SELECT COUNT(*) FROM migrations WHERE nome = ?";
+        try (PreparedStatement ps = conn.prepareStatement(check)) {
+            ps.setString(1, nome);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) return; // já aplicada
+            }
+        }
+
+        task.run();
+
+        String insert = "INSERT INTO migrations (nome, aplicada_em) VALUES (?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(insert)) {
+            ps.setString(1, nome);
+            ps.setLong(2, System.currentTimeMillis());
+            ps.executeUpdate();
         }
     }
     

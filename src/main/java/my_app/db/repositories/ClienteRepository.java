@@ -14,10 +14,8 @@ public class ClienteRepository extends BaseRepository<ClienteDto,ClienteModel> {
         String sql = """
         INSERT INTO clientes
         (nome, cpf_cnpj, celular, data_criacao, email) VALUES (?,?,?,?,?)
-        """;
-
+    """;
         long dataCriacao = System.currentTimeMillis();
-
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, dto.nome());
             ps.setString(2, dto.cnpj());
@@ -25,14 +23,17 @@ public class ClienteRepository extends BaseRepository<ClienteDto,ClienteModel> {
             ps.setLong(4, dataCriacao);
             ps.setString(5, dto.email());
             ps.executeUpdate();
-            
-            // Recupera o ID gerado e cria nova instância
+
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    long idGerado = generatedKeys.getLong(1);
-                    return new ClienteModel().fromIdAndDto(idGerado, dto);
+                    return new ClienteModel().fromIdAndDto(generatedKeys.getLong(1), dto);
                 }
             }
+        } catch (SQLException e) {
+            if (e.getMessage().contains("UNIQUE constraint failed: clientes.cpf_cnpj")) {
+                throw new SQLException("Já existe um cliente cadastrado com este CPF/CNPJ");
+            }
+            throw e;
         }
         throw new SQLException("Falha ao recuperar ID gerado");
     }

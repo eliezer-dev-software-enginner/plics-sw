@@ -107,9 +107,13 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleClickMenuEdit() {
+        editMode.set(true);
+        populateFromCliente();
+    }
+
+    private void populateFromCliente() {
         final var data = clienteSelecionado.get();
         if(data != null){
-            editMode.set(true);
             nome.set(data.nome);
             cnpjCpf.set(data.cpfCnpj);
             celular.set(data.celular);
@@ -148,14 +152,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     @Override
     public void handleClickMenuClone() {
         editMode.set(false);
-
-        final var data = clienteSelecionado.get();
-        if(data != null){
-            nome.set(data.nome);
-            cnpjCpf.set(data.cpfCnpj);
-            celular.set(data.celular);
-            email.set(data.email);
-        }
+        populateFromCliente();
     }
 
     @Override
@@ -192,55 +189,43 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
             return;
         }
 
-        if(editMode.get() && clienteSelecionado.get() == null) return;
-
-        if(editMode.get()){
-            var selecionado = clienteSelecionado.get();
-            var id = selecionado.id;
-
-            Async.Run(()->{
-                try {
-                    // 1. Criamos a Model com os novos dados mantendo o ID e Data de Criação originais
-
-                    var modelAtualizada = new ClienteModel().fromIdAndDto(id, new ClienteDto(
-                            nomeValue, cnpjCpfValue, celularValue, emailValue
-                    ));
-
-                    // 2. Atualiza no Banco de Dados
-                    clienteRepository.atualizar(modelAtualizada);
-
-                    UI.runOnUi(() -> {
-                        clientes.updateIf(it-> it.id.equals(id), it-> modelAtualizada);
-                        Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
-                        clearForm();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
-                }
-            });
-        }else{
-            Async.Run(()->{
-                try {
-                    var dto = new ClienteDto(
-                            nomeValue,
-                            cnpjCpfValue,
-                            celularValue,
-                            emailValue
-                    );
-
-                    var model = clienteRepository.salvar(dto);
-
-                    UI.runOnUi(()-> {
-                        clientes.add(model);
-                        Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
-                        clearForm();
-                    });
-
-                } catch (Exception e) {
-                    UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
-                }
-            });
+        if (editMode.get()) {
+            if (clienteSelecionado.get() == null) return;
+            asyncUpdate(clienteSelecionado.get().id, nomeValue, cnpjCpfValue, celularValue, emailValue);
+        } else {
+            asyncSalvar(nomeValue, cnpjCpfValue, celularValue, emailValue);
         }
+    }
+
+    private void asyncUpdate(long id, String nome, String cnpjCpf, String celular, String email) {
+        Async.Run(() -> {
+            try {
+                var model = new ClienteModel().fromIdAndDto(id, new ClienteDto(nome, cnpjCpf, celular, email));
+                clienteRepository.atualizar(model);
+                UI.runOnUi(() -> {
+                    clientes.updateIf(it -> it.id.equals(id), it -> model);
+                    Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
+    }
+
+    private void asyncSalvar(String nome, String cnpjCpf, String celular, String email) {
+        Async.Run(() -> {
+            try {
+                var model = clienteRepository.salvar(new ClienteDto(nome, cnpjCpf, celular, email));
+                UI.runOnUi(() -> {
+                    clientes.add(model);
+                    Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
     }
 
     @Override
