@@ -49,16 +49,16 @@ public class AppRoutes {
 
         );
 
-        //String rotaInicial = "entrar-com-credenciais";
+        String rotaInicial = "clientes";
 
-        String rotaInicial;
-        if (forceAccessRoute) {
-            rotaInicial = "welcome";
-        } else if (askCredentials) {
-            rotaInicial = "entrar-com-credenciais";
-        } else {
-            rotaInicial = "home";
-        }
+//        String rotaInicial;
+//        if (forceAccessRoute) {
+//            rotaInicial = "welcome";
+//        } else if (askCredentials) {
+//            rotaInicial = "entrar-com-credenciais";
+//        } else {
+//            rotaInicial = "home";
+//        }
         return new Router(routes, rotaInicial);
     }
 }

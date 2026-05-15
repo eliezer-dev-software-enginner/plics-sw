@@ -129,6 +129,11 @@ public static BigDecimal deCentavosParaReal(String centavos){
         return cleanCnpj.length() == 14;
     }
 
+    public static boolean isValidCpf(String cpf) {
+        String cleanCpf = cpf.replaceAll("[^0-9]", "");
+        return cleanCpf.length() == 11;
+    }
+
     // Valida se o telefone tem 10 ou 11 dígitos numéricos
     public static boolean isValidPhone(String phone) {
         String cleanPhone = phone.replaceAll("[^0-9]", "");

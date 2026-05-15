@@ -11,6 +11,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
+import megalodonte.v2.Show;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
@@ -37,9 +38,14 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     State<ClienteModel> clienteSelecionado = State.of(null);
 
     private final State<String> nome = new State<>("");
-    private final State<String> cnpj = new State<>("");
+    private final State<String> cnpjCpf = new State<>("");
     private final State<String> celular = new State<>("");
     private final State<String> email = new State<>("");
+
+    final List<String> tipoPessoaList = List.of("Física", "Jurídica");
+    State<String> tipoPessoaSelected = new State<>(tipoPessoaList.getFirst());
+
+    ComputedState<Boolean> tipoPessoaEhFisica = ComputedState.of(()-> tipoPessoaSelected.get().equals(tipoPessoaList.getFirst()), tipoPessoaSelected);
 
     State<Boolean> editMode = State.of(false);
 
@@ -80,7 +86,11 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Nome", nome, "Ex: João"))
-                                .r_child(Components.InputColumnNumeric("CPF/CNPJ", cnpj,"xx..."))
+                                .r_child(Components.SelectColumn("Tipo de pessoa", tipoPessoaList, tipoPessoaSelected, it-> it))
+                                .r_child(Show.when(tipoPessoaEhFisica,
+                                        ()-> Components.InputColumnNumeric("CPF", cnpjCpf,"000.000.000-00"),
+                                        ()-> Components.InputColumnNumeric("CNPJ", cnpjCpf,"00.000.000/0000-00")
+                                        ))
                                 .r_child(Components.InputColumnPhone("Celular", celular))
                                 .r_child(Components.InputColumn("Email", email,""))
                         )
@@ -100,7 +110,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
         if(data != null){
             editMode.set(true);
             nome.set(data.nome);
-            cnpj.set(data.cpfCnpj);
+            cnpjCpf.set(data.cpfCnpj);
             celular.set(data.celular);
             email.set(data.email);
         }
@@ -135,7 +145,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
         final var data = clienteSelecionado.get();
         if(data != null){
             nome.set(data.nome);
-            cnpj.set(data.cpfCnpj);
+            cnpjCpf.set(data.cpfCnpj);
             celular.set(data.celular);
             email.set(data.email);
         }
@@ -144,7 +154,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     @Override
     public void handleAddOrUpdate() {
         String nomeValue = nome.get().trim();
-        String cnpjValue = cnpj.get().trim();
+        String cnpjCpfValue = cnpjCpf.get().trim();
         String celularValue = celular.get().trim();
         String emailValue = email.get().trim();
 
@@ -153,9 +163,14 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
             return;
         }
 
-        if (!cnpjValue.isEmpty() && !isValidCnpj(cnpjValue)) {
-            Components.ShowAlertError("CNPJ inválido (deve conter 14 dígitos) e tem: " + cnpjValue.length() + " dígitos");
-            return;
+        if(!cnpjCpfValue.isEmpty()){
+            if(tipoPessoaEhFisica.get() && !isValidCpf(cnpjCpfValue)){
+                Components.ShowAlertError("CPF inválido (deve conter 11 dígitos) e tem: " + cnpjCpfValue.length() + " dígitos");
+                return;
+            } else if (!tipoPessoaEhFisica.get() && !isValidCnpj(cnpjCpfValue)) {
+                Components.ShowAlertError("CNPJ inválido (deve conter 14 dígitos) e tem: " + cnpjCpfValue.length() + " dígitos");
+                return;
+            }
         }
 
         // 3. Validação de E-mail (se preenchido)
@@ -181,7 +196,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                     // 1. Criamos a Model com os novos dados mantendo o ID e Data de Criação originais
 
                     var modelAtualizada = new ClienteModel().fromIdAndDto(id, new ClienteDto(
-                            nomeValue, cnpjValue, celularValue, emailValue
+                            nomeValue, cnpjCpfValue, celularValue, emailValue
                     ));
 
                     // 2. Atualiza no Banco de Dados
@@ -201,7 +216,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                 try {
                     var dto = new ClienteDto(
                             nomeValue,
-                            cnpjValue,
+                            cnpjCpfValue,
                             celularValue,
                             emailValue
                     );
@@ -224,7 +239,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     @Override
     public void clearForm() {
         nome.set("");
-        cnpj.set("");
+        cnpjCpf.set("");
         celular.set("");
         email.set("");
     }

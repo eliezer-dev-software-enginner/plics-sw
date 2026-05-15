@@ -86,7 +86,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         return new Card(
                 new Column(new ColumnProps().paddingAll(5))
                         .c_child(new Text("Dados do Produto",
-                                (TextProps) new TextProps().variant(TextVariant.BODY).bold()))
+                                new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row()
                                 .r_child(ContainerLeft(vm))
