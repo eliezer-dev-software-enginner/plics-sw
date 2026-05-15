@@ -1,5 +1,7 @@
 package my_app.hotreload;
 
+import megalodonte.application.Context;
+
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.IOException;
@@ -16,48 +18,62 @@ import java.util.Set;
 
 public class HotReload {
 
-    private final Path sourcePath;
-    private final Path classesPath;
-    private final String implementationClassName;
-    private final Object reloadContext;
-    private final Set<String> classesToExclude; // Novo parâmetro para o ClassLoader
+    private Path sourcePath;
+    private Path classesPath;
+    private String implementationClassName;
+    private String screenClassName;
+    private Context reloadContext;
+    private Set<String> classesToExclude = new HashSet<>();
 
     private volatile boolean running = true;
 
-    private final Path resourcesPath;
+    private Path resourcesPath;
 
-    // Timeout de 500ms para estabilidade.
     private static final long WATCHER_TIMEOUT_MS = 500;
 
-    /**
-     * @param src              O caminho para os arquivos .java (ex:
-     *                         "src/main/java").
-     * @param classes          O caminho para o output da compilação (ex:
-     *                         "target/classes").
-     * @param res              O caminho para os arquivos de recurso (ex:
-     *                         "src/main/resources").
-     * @param implClassName    O nome completo da classe que implementa IReloadable
-     *                         (ex: "my_app.UIReloaderImpl").
-     * @param reloadContext    A referência do objeto a ser passada para
-     *                         IReloadable.reload() (ex: Stage principal).
-     * @param classesToExclude Classes/interfaces que NÃO devem ser recarregadas.
-     */
-    public HotReload(String src, String classes, String res,
-            String implClassName, Object reloadContext, Set<String> classesToExclude) {
-        this.sourcePath = Paths.get(src);
-        this.classesPath = Paths.get(classes);
-        this.resourcesPath = Paths.get(res);
-        this.implementationClassName = implClassName;
+    public HotReload() {}
+
+    public HotReload sourcePath(String sourcePath) {
+        this.sourcePath = Paths.get(sourcePath);
+        return this;
+    }
+
+    public HotReload classesPath(String classesPath) {
+        this.classesPath = Paths.get(classesPath);
+        return this;
+    }
+
+    public HotReload resourcesPath(String resourcesPath) {
+        this.resourcesPath = Paths.get(resourcesPath);
+        return this;
+    }
+
+    public HotReload implementationClassName(String implementationClassName) {
+        this.implementationClassName = implementationClassName;
+        return this;
+    }
+
+    public HotReload screenClassName(String screenClassName) {
+        this.screenClassName = screenClassName;
+        return this;
+    }
+
+    public HotReload reloadContext(Context reloadContext) {
         this.reloadContext = reloadContext;
-        this.classesToExclude = classesToExclude;
-        // Adiciona a interface de biblioteca para evitar ClassCastException (regra 1)
+        return this;
+    }
+
+    public HotReload classesToExclude(Set<String> classesToExclude) {
+        this.classesToExclude = new HashSet<>(classesToExclude);
         this.classesToExclude.add(Reloader.class.getName());
-        this.classesToExclude.add(CoesionApp.class.getName());
-        this.classesToExclude.add(ReloadableWindow.class.getName());
-        this.classesToExclude.add(Reloader.class.getName());
+        return this;
     }
 
     public void start() {
+        if (classesToExclude.isEmpty()) {
+            classesToExclude.add(Reloader.class.getName());
+        }
+        
         Thread t = new Thread(this::watchLoop, "HotReload-Watcher");
         t.setDaemon(true);
         t.start();
@@ -224,6 +240,8 @@ public class HotReload {
         if (modulePath != null) {
             args.add("--module-path");
             args.add(modulePath);
+            args.add("--add-modules");
+            args.add("javafx.controls,javafx.graphics,javafx.base");
         }
 
         args.addAll(files);
@@ -257,8 +275,9 @@ public class HotReload {
 
         runLaterMethod.invoke(null, (Runnable) () -> {
             try {
-                // Passa o objeto de contexto injetado (Stage principal)
-                reloader.reload(reloadContext);
+                // Passa o contexto, o nome da screen class e o classesPath
+                Method reloadWithScreen = reloaderClass.getMethod("reload", Context.class, String.class, String.class);
+                reloadWithScreen.invoke(reloader, reloadContext, screenClassName, classesPath.toString());
                 System.out.println("[HotReload] Reload finished.");
             } catch (Exception e) {
                 System.err.println("[HotReload] Error during reload execution.");
@@ -268,6 +287,7 @@ public class HotReload {
     }
 
     public void stop() {
+        System.out.println("[HotReload Debug] HotReload was stopped");
         running = false;
     }
 

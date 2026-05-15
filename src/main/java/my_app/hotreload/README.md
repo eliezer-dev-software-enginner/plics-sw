@@ -142,10 +142,44 @@ Para recarregar código, não podemos "descarregar" uma classe do ClassLoader em
 3.  Passamos o contexto do `Stage` para a nova instância.
 4.  A nova instância carrega as versões atualizadas de `AppScenes` e outros componentes de UI.
 
-### Uso
+### Uso / Usage
 
-A instância de `HotReload` é inicializada em `App.start()`. Ela requer:
-- Caminho do código fonte (`src/main/java`)
-- Caminho de saída (`target/classes`)
-- Caminho de recursos (`src/main/resources`)
-- Um conjunto de "Classes Excluídas" (como a própria `App`) que **não** devem ser recarregadas (ou que causam um reinício completo se alteradas).
+A instância de `HotReload` é inicializada em `App.start()`. Ela usa method chaining:
+
+```java
+boolean devMode = true;
+if (devMode) {
+    new HotReload()
+        .sourcePath("src/main/java")
+        .classesPath("build/classes/java/main")
+        .resourcesPath("src/main/resources")
+        .implementationClassName("my_app.hotreload.UIReloaderImpl")
+        .screenClassName("my_app.HomeScreen")
+        .reloadContext(context)
+        .classesToExclude(Set.of(
+            "my_app.Main",
+            "my_app.hotreload.Reloader",
+            "my_app.hotreload.UIReloaderImpl",
+            "my_app.hotreload.HotReload",
+            "my_app.hotreload.HotReloadClassLoader"
+        ))
+        .start();
+}
+```
+
+#### Parâmetros / Parameters
+
+| Método | Descrição |
+|--------|-----------|
+| `sourcePath` | Caminho para os arquivos .java fonte |
+| `classesPath` | Caminho para os arquivos .class compilados |
+| `resourcesPath` | Caminho para os recursos |
+| `implementationClassName` | Classe que implementa `Reloader` |
+| `screenClassName` | Classe da screen principal a ser recarregada |
+| `reloadContext` | Contexto (objeto context do MegalodonteApp) |
+| `classesToExclude` | Classes que não devem ser recarregadas |
+| `addExclude()` | Adicionar uma classe à lista de exclusão |
+
+### Credits
+
+Desenvolvido por [Eliezer Software Engineer](https://github.com/eliezer-software-enginner)

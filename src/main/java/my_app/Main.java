@@ -14,6 +14,7 @@ import my_app.routes.AppRoutes;
 
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class Main {
@@ -76,22 +77,22 @@ public class Main {
         context.useRouter(router);
         context.useView(router.entrypoint());
 
-//        if (devMode) {
-//            hotReload = new HotReload()
-//                    .sourcePath("src/main/java")
-//                    .classesPath("build/classes/java/main")
-//                    .resourcesPath("src/main/resources")
-//                    .implementationClassName("my_app.hotreload.Reloader")
-//                    .screenClassName("my_app.HomeScreen")
-//                    .reloadContext(context)
-//                    .classesToExclude(Set.of(
-//                            "my_app.Main",
-//                            "my_app.hotreload.Reloader",
-//                            "my_app.hotreload.HotReload",
-//                            "my_app.hotreload.HotReloadClassLoader"
-//                    ));
-//            hotReload.start();
-//        }
+        if (devMode) {
+            hotReload = new HotReload()
+                    .sourcePath("src/main/java")
+                    .classesPath("build/classes/java/main")
+                    .resourcesPath("src/main/resources")
+                    .implementationClassName("my_app.hotreload.Reloader")
+                    .screenClassName("my_app.HomeScreen")
+                    .reloadContext(context)
+                    .classesToExclude(Set.of(
+                            "my_app.Main",
+                            "my_app.hotreload.Reloader",
+                            "my_app.hotreload.HotReload",
+                            "my_app.hotreload.HotReloadClassLoader"
+                    ));
+            hotReload.start();
+        }
     }
 }
 

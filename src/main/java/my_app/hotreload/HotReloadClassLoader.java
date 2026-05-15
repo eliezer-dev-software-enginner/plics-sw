@@ -16,32 +16,31 @@ public class HotReloadClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        System.out.println("[HotReloadClassLoader] loadClass called for: " + name + " (parent: " + getParent() + ")");
+        
         // 1. Tenta encontrar a classe JÁ CARREGADA por ESTE ClassLoader
-        // Se já foi carregada, não tenta redefinir.
         Class<?> loadedClass = findLoadedClass(name);
         if (loadedClass != null) {
+            System.out.println("[HotReloadClassLoader] Found loaded class: " + name + " -> " + loadedClass);
             if (resolve) resolveClass(loadedClass);
             return loadedClass;
         }
 
-        // 2. Regras de exclusão (Java, JavaFX, classes da lib, classes do App)
-        // Se a classe está excluída, DELEGAMOS ao ClassLoader PAI (System ClassLoader),
-        // que deve carregar a versão estática.
+        // 2. Regras de exclusão (Java, JavaFX, classes da lib)
         if (name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("javafx.") ||
-                name.startsWith("plantfall.") || classesToExclude.contains(name)) {
-
+                name.startsWith("megalodonte.") || classesToExclude.contains(name)) {
+            System.out.println("[HotReloadClassLoader] Delegating to parent (excluded): " + name);
             return super.loadClass(name, resolve);
         }
 
-        // 3. Se não está excluída e não foi carregada, tentamos carregar a versão nova
-        // na pasta target/classes usando findClass (que define a classe).
+        // 3. Se não está excluída, tentamos carregar a versão nova
         try {
+            System.out.println("[HotReloadClassLoader] Loading NEW class from classesPath: " + name);
             Class<?> c = findClass(name);
             if (resolve) resolveClass(c);
             return c;
         } catch (ClassNotFoundException e) {
-            // Se findClass falhar (o arquivo .class não existe no classesPath),
-            // delegamos ao parent (super.loadClass) como fallback.
+            System.out.println("[HotReloadClassLoader] Not found in classesPath, delegating to parent: " + name);
             return super.loadClass(name, resolve);
         }
     }
