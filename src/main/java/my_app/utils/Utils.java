@@ -171,6 +171,52 @@ public static BigDecimal deCentavosParaReal(String centavos){
         return sb.toString();
     }
 
+    public static String formatCpf(String numeric) {
+        if (numeric == null || numeric.isEmpty()) return "";
+
+        StringBuilder sb = new StringBuilder();
+        int len = numeric.length();
+
+        if (len <= 3) {
+            sb.append(numeric);
+        } else if (len <= 6) {
+            sb.append(numeric, 0, 3).append(".").append(numeric.substring(3));
+        } else if (len <= 9) {
+            sb.append(numeric, 0, 3).append(".").append(numeric, 3, 6).append(".").append(numeric.substring(6));
+        } else {
+            sb.append(numeric, 0, 3).append(".")
+                    .append(numeric, 3, 6).append(".")
+                    .append(numeric, 6, 9).append("-")
+                    .append(numeric.substring(9));
+        }
+
+        return sb.toString();
+    }
+
+    public static String formatCnpj(String numeric) {
+        if (numeric == null || numeric.isEmpty()) return "";
+
+        StringBuilder sb = new StringBuilder();
+        int len = numeric.length();
+
+        if (len <= 2) {
+            sb.append(numeric);
+        } else if (len <= 5) {
+            sb.append(numeric, 0, 2).append(".").append(numeric.substring(2));
+        } else if (len <= 8) {
+            sb.append(numeric, 0, 2).append(".").append(numeric, 2, 5).append(".").append(numeric.substring(5));
+        } else if (len <= 12) {
+            sb.append(numeric, 0, 2).append(".").append(numeric, 2, 5).append(".")
+                    .append(numeric, 5, 8).append("/").append(numeric.substring(8));
+        } else {
+            sb.append(numeric, 0, 2).append(".").append(numeric, 2, 5).append(".")
+                    .append(numeric, 5, 8).append("/").append(numeric, 8, 12).append("-")
+                    .append(numeric.substring(12));
+        }
+
+        return sb.toString();
+    }
+
 
     @Deprecated(forRemoval = true)
     public static <T> void updateItemOnObservableList(

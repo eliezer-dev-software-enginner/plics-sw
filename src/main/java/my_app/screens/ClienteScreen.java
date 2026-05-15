@@ -39,6 +39,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     State<ClienteModel> clienteSelecionado = State.of(null);
 
     private final State<String> nome = new State<>("");
+    //TODO: CONSIDERAR TER 2 CAMPOS NA UI, UM PARA CPF E OUTRO PARA CNPJ
     private final State<String> cnpjCpf = new State<>("");
     private final State<String> celular = new State<>("");
     private final State<String> email = new State<>("");
@@ -59,6 +60,9 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
     @Override
     public void onMount() {
         loadClientes();
+        tipoPessoaSelected.subscribe(_->{
+            cnpjCpf.set("");
+        });
     }
 
     private void loadClientes() {
@@ -89,8 +93,8 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                                 .r_child(Components.InputColumn("Nome", nome, "Ex: João"))
                                 .r_child(Components.SelectColumn("Tipo de pessoa", tipoPessoaList, tipoPessoaSelected, it-> it))
                                 .r_child(Show.when(tipoPessoaEhFisica,
-                                        ()-> Components.InputColumnNumeric("CPF", cnpjCpf,"000.000.000-00"),
-                                        ()-> Components.InputColumnNumeric("CNPJ", cnpjCpf,"00.000.000/0000-00")
+                                        ()-> Components.InputColumnCpf("CPF", cnpjCpf),
+                                        ()-> Components.InputColumnCnpj("CNPJ", cnpjCpf)
                                         ))
                                 .r_child(Components.InputColumnPhone("Celular", celular))
                                 .r_child(Components.InputColumn("Email", email,""))
@@ -244,7 +248,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                 .columns()
                     .column("ID", it-> it.id)
                     .column("Nome", it-> it.nome)
-                    .column("CPF/CNPJ", it-> it.cpfCnpj)
+                    .column("CPF/CNPJ", it-> it.cpfCnpj.length() == 11? Utils.formatCpf(it.cpfCnpj): Utils.formatCnpj(it.cpfCnpj))
                     .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(it->   clienteSelecionado.set(it));

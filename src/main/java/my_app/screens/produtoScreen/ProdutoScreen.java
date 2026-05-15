@@ -54,7 +54,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(Components.FormTitle("Cadastro de Produtos"))
                         .c_child(new SpacerVertical(10))
                         .c_child(new Text("Gerencie o catálogo de produtos do seu estabelecimento",
-                                (TextProps) new TextProps().variant(TextVariant.BODY).color("#6b7280"))),
+                                new TextProps().variant(TextVariant.BODY).color("#6b7280"))),
                 new CardProps()
                         .padding(0)
                         .borderRadius(12)
@@ -250,9 +250,8 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         vm.limparFormulario();
                         Components.ShowPopup(ctx, "Produto excluído com sucesso");
                     });
-
                 } catch (Exception e) {
-                    Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage());
+                    UI.runOnUi(()-> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
                 }
             });
         });

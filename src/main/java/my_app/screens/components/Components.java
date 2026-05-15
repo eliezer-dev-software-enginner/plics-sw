@@ -43,7 +43,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static my_app.utils.Utils.formatPhone;
+import static my_app.utils.Utils.*;
 
 public class Components {
 
@@ -362,6 +362,64 @@ public class Components {
         return new Row()
                 .r_child(new Text(label,  new TextProps().fontSize(theme.typography().body()).bold()))
                 .r_child(new Text(valueState,  new TextProps().fontSize(theme.typography().body())));
+    }
+
+    public static Component InputColumnCpf(String label, State<String> inputState) {
+        var inputProps = new InputProps()
+                .height(31).placeHolder("000.000.000-00")
+                .fontSize(theme.typography().small())
+                .borderWidth(theme.border().width())
+                .borderColor(theme.colors().primary());
+
+        var input = new Input(inputState, inputProps)
+                .onInitialize(value -> {
+                    String formatted = formatCpf(value);
+                    return OnChangeResult.of(formatted, value);
+                })
+                .onChange(value -> {
+                    String numeric = value.replaceAll("[^0-9]", "");
+
+                    if (numeric.length() > 11) {
+                        numeric = numeric.substring(0, 11);
+                    }
+
+                    String formatted = formatCpf(numeric);
+                    return OnChangeResult.of(formatted, numeric);
+                })
+                .lockCursorToEnd();
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(input);
+    }
+
+    public static Component InputColumnCnpj(String label, State<String> inputState) {
+        var inputProps = new InputProps()
+                .height(31).placeHolder("00.000.000/0000-00")
+                .fontSize(theme.typography().small())
+                .borderWidth(theme.border().width())
+                .borderColor(theme.colors().primary());
+
+        var input = new Input(inputState, inputProps)
+                .onInitialize(value -> {
+                    String formatted = formatCnpj(value);
+                    return OnChangeResult.of(formatted, value);
+                })
+                .onChange(value -> {
+                    String numeric = value.replaceAll("[^0-9]", "");
+
+                    if (numeric.length() > 14) {
+                        numeric = numeric.substring(0, 14);
+                    }
+
+                    String formatted = formatCnpj(numeric);
+                    return OnChangeResult.of(formatted, numeric);
+                })
+                .lockCursorToEnd();
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(input);
     }
 
     public static Component InputColumnPhone(String label, State<String> inputState) {
