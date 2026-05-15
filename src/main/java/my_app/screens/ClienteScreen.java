@@ -24,6 +24,7 @@ import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import my_app.utils.DateUtils;
+import my_app.utils.Utils;
 
 import java.util.List;
 
@@ -113,6 +114,12 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
             cnpjCpf.set(data.cpfCnpj);
             celular.set(data.celular);
             email.set(data.email);
+
+            if(Utils.isValidCpf(data.cpfCnpj)){
+                tipoPessoaSelected.set(tipoPessoaList.getFirst());
+            }else{
+                tipoPessoaSelected.set(tipoPessoaList.getLast());
+            }
         }
     }
 
