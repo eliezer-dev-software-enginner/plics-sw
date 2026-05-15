@@ -7,6 +7,10 @@ plugins {
 
     // 🛑 CORREÇÃO: Usando o ID e a versão CORRETOS conforme a documentação oficial.
     id("org.openjfx.javafxplugin") version "0.1.0"
+
+    //shadow jar para iconly funcionar
+    //id("com.github.johnrengelman.shadow") version "8.1.1" (NÃO FUNCIONA)
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 val props = Properties()
@@ -77,8 +81,29 @@ application {
     mainClass.set(props.getProperty("appMainClass"))
 }
 
+
+tasks.shadowJar {
+    archiveBaseName.set(props.getProperty("appName"))
+    archiveClassifier.set("")
+    mergeServiceFiles() // equivalente ao ServicesResourceTransformer
+
+    manifest {
+        attributes(
+            "Main-Class" to props.getProperty("appMainClass")
+        )
+    }
+
+    // Exclui JavaFX (como o pom.xml fazia)
+    exclude("org/openjfx/**")
+
+    // 🔥 remove assinaturas quebradas (igual no Maven)
+    exclude("META-INF/*.SF")
+    exclude("META-INF/*.DSA")
+    exclude("META-INF/*.RSA")
+}
+
 tasks.jar {
-    enabled = true
+    enabled = false
     archiveBaseName.set(props.getProperty("appName"))
 
     manifest {
@@ -88,74 +113,13 @@ tasks.jar {
             "Main-Class" to props.getProperty("appMainClass")
         )
     }
-}
-//no caso vai copiar os jar dinamicamente que a aplicação ta usando
-// Crie uma tarefa para copiar todas as dependências de runtime
-val copyDeps = tasks.register<Copy>("copyDependencies") {
-    from(configurations.runtimeClasspath)
-    into(layout.buildDirectory.dir("dependencies"))
 
-    // Evita duplicar o que já vai estar no JRE via JLink
-    exclude("org/openjfx/**")
+    from(configurations.runtimeClasspath.get().map {
+        if (it.isDirectory) it else zipTree(it)
+    })
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-
-
-tasks.register<Exec>("createInstallerLinux") {
-    group = "distribution"
-    description = "Gera o instalador .deb usando o script shell."
-
-    dependsOn("jar", "copyDependencies")
-
-    // Define o diretório de execução como a raiz do projeto
-    workingDir = projectDir
-
-    // Comando para rodar o script
-    commandLine("bash", "./scripts/linux/create-installer-using-gradlew.sh")
-}
-
-tasks.register<Exec>("runInstallerLinux") {
-    group = "distribution"
-    description = "Executa a aplicação a partir da app-image gerada (sem precisar instalar)."
-    
-    val appName = props.getProperty("appName")
-    commandLine("build/app-image/$appName/bin/$appName")
-}
-
-tasks.register<Exec>("createInstallerWindows") {
-    group = "distribution"
-    description = "Gera o instalador .msi usando o script PowerShell."
-
-    dependsOn("jar", "copyDependencies")
-
-    // Define o diretório de execução como a raiz do projeto
-    workingDir = projectDir
-
-    // Comando para rodar o script
-    commandLine("pwsh", "./scripts/windows/create-installer-using-gradlew.ps1")
-}
-
-tasks.register<Exec>("createInstallerWindowsPython") {
-    group = "distribution"
-    description = "Gera o instalador .msi usando Python."
-
-    dependsOn("jar", "copyDependencies")
-
-    workingDir = projectDir
-
-    commandLine("python", "./scripts/windows/create-installer.py")
-}
-
-tasks.register<Exec>("createFastExeWindows") {
-    group = "distribution"
-    description = "Gera o executável .exe rápido usando o script PowerShell."
-
-    dependsOn("jar", "copyDependencies")
-
-    workingDir = projectDir
-
-    commandLine("pwsh", "./scripts/windows/create-fast-exe-using-gradlew.ps1")
-}
 
 // Configuração de Publicação (mantida)
 publishing {

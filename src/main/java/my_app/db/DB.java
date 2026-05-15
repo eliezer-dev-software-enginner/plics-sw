@@ -10,17 +10,30 @@ public final class DB {
     private static volatile DB instance;
     private Connection conn;
 
-    private DB(String url) throws SQLException {
-        this.conn = DriverManager.getConnection(url);
-    }
+//    private DB(String url) throws SQLException {
+//        this.conn = DriverManager.getConnection(url);
+//    }
 
 //    public static DB getInstance() throws SQLException {
 //        return getInstance("jdbc:sqlite:erp.db");
 //    }
 
-    public static DB getInstance() throws SQLException {
-        return getInstance(resolveDbPath());
+    private DB(String url) throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC"); // força o registro do driver
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("SQLite driver não encontrado", e);
+        }
+        this.conn = DriverManager.getConnection(url);
     }
+
+    public static DB getInstance() throws SQLException {
+        return getInstance("jdbc:sqlite:" + resolveDbPath());
+    }
+
+//    public static DB getInstance() throws SQLException {
+//        return getInstance(resolveDbPath());
+//    }
 
     //No Windows salva em AppData\Roaming\plics-sw\erp.db, no Linux em ~/.plics-sw/erp.db.
     private static String resolveDbPath() {
