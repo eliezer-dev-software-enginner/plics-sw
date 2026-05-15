@@ -243,54 +243,5 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                 .onItemSelectChange(it->   clienteSelecionado.set(it));
 
         return simpleTable;
-
-//        TableView<ClienteModel> table = new TableView<>();
-//        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-//
-//        // Coluna ID
-//        TableColumn<ClienteModel, String> idCol = new TableColumn<>("ID");
-//        idCol.setCellValueFactory(data ->
-//                new javafx.beans.property.SimpleStringProperty(
-//                    data.getValue().id != null ? String.valueOf(data.getValue().id) : ""
-//                )
-//        );
-//        idCol.setMinWidth(60);
-//        idCol.setMaxWidth(60);
-//
-//        // Coluna Nome
-//        TableColumn<ClienteModel, String> nomeCol = new TableColumn<>("Nome");
-//        nomeCol.setCellValueFactory(data ->
-//                new javafx.beans.property.SimpleStringProperty(data.getValue().nome)
-//        );
-//        //nomeCol.setPrefWidth(100);
-//
-//        // Coluna CNPJ
-//        TableColumn<ClienteModel, String> cnpjCol = new TableColumn<>("CNPJ");
-//        cnpjCol.setCellValueFactory(data ->
-//                new javafx.beans.property.SimpleStringProperty(data.getValue().cpfCnpj)
-//        );
-//
-//        // Coluna Data Criação
-//        TableColumn<ClienteModel, String> dataCol = new TableColumn<>("Data Criação");
-//        dataCol.setCellValueFactory(data -> {
-//            if (data.getValue().dataCriacao != null) {
-//                return new javafx.beans.property.SimpleStringProperty(
-//                    Utils.formatDateTime(data.getValue().dataCriacao));
-//            }
-//            return new javafx.beans.property.SimpleStringProperty("");
-//        });
-//
-//        table.getColumns().addAll(idCol, nomeCol, cnpjCol, dataCol);
-//        table.setItems(clientes);
-//
-//        table.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
-//            if (newSelection != null) {
-//                IO.println("ID selecionado: " + newSelection.id);
-//                clienteSelecionado.set(newSelection);
-//            }
-//        });
-
-
-       // return Component.CreateFromJavaFxNode(table);
     }
 }
