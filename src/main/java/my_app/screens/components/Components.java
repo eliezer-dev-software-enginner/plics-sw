@@ -570,6 +570,24 @@ public class Components {
                 .c_child(new Text(message,  new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
     }
 
+
+    public static <T> Component commonCustomMenus(
+            State<T> itemSelectedInTable, Runnable onClickNew,
+            Runnable onEdit, Runnable onDelete, Runnable onClone) {
+
+        ComputedState<Boolean> thereIsItemSelectedInTable = ComputedState.of(()-> !itemSelectedInTable.isNull() ,itemSelectedInTable);
+
+        return Show.when(thereIsItemSelectedInTable, ()-> {
+            return new Row(new RowProps().spacingOf(20)).children(
+                    MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)),
+                    MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)),
+                    MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run))
+            );
+        });
+    }
+
+
+    @Deprecated
     public static Row commonCustomMenus(Runnable onClickNew, Runnable onEdit, Runnable onDelete, Runnable onClone) {
         return new Row(new RowProps().spacingOf(20))
                 .r_child(MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", () -> executar(onClickNew::run)))

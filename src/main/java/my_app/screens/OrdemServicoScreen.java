@@ -13,6 +13,7 @@ import my_app.db.dto.OrdemServicoDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
+import my_app.domain.ContratoTelaCrudV2;
 import my_app.events.EventBus;
 import my_app.events.TecnicoCriadoEvent;
 import my_app.screens.components.Components;
@@ -31,7 +32,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
+public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     private final ScreenContext ctx;
     private final ListState<ClienteModel> clientes = ListState.of(List.of());
     private final ListState<TecnicoModel> tecnicos = ListState.of(List.of());
@@ -44,7 +45,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
 
     State<String> equipamento = State.of("");
 
-    List<String> tiposPagamento = List.of("A VISTA", "CRÉDITO", "DÉBITO", "PIX");
+    private final List<String> tiposPagamento = List.of("A VISTA", "CRÉDITO", "DÉBITO", "PIX");
     State<String> tipoPagamentoSeleced = State.of(tiposPagamento.get(1));
 
     List<String> status = List.of("Aberto", "Aguardando peça", "Autorizado", "Cancelado", "Em andamento", "Faturado", "Finalizado", "Orçamento");
@@ -143,7 +144,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public Component render() {
-        return mainView();
+        return mainView(osSelected);
     }
 
     @Override
@@ -175,7 +176,6 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
         ));
     }
 
-
     @Override
     public Component table() {
         return new SimpleTable<OrdemServicoModel>()
@@ -193,7 +193,8 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
                 .column("Data de criação da OS", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(it -> osSelected.set(it))
-                .onItemDoubleClick(it-> Components.ShowModal( ItemDetails(it), ctx));
+                .onItemDoubleClick(it-> Components.ShowModal( ItemDetails(it), ctx))
+                .onClickOutside(()-> osSelected.set(null));
     }
 
     Component ItemDetails(OrdemServicoModel model){
@@ -330,7 +331,6 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void clearForm() {
-//        clienteSelected.set(null);
         clienteSelected.set(clientes.get(0));
         tecnicoSelected.set(null);
 
