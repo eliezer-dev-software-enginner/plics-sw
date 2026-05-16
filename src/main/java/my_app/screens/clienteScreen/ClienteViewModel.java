@@ -7,7 +7,6 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
-import my_app.lifecycle.viewmodel.component.ViewModel;
 import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import my_app.utils.Utils;

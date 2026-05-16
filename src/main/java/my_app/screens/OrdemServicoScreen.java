@@ -223,8 +223,12 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleClickMenuEdit() {
-        handleClickMenuClone();
+        final var data = osSelected.get();
+        if (data == null) return;
+
         modoEdicao.set(true);
+        populateFromOrdemServicoModel(data);
+
     }
 
     @Override
@@ -253,20 +257,24 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
         modoEdicao.set(false);
 
         final var data = osSelected.get();
-        if (data != null) {
-            clienteSelected.set(data.cliente);
-            tecnicoSelected.set(data.tecnico);
+        if (data == null) return;
 
-            equipamento.set(data.equipamento);
-            tipoPagamentoSeleced.set(data.tipoPagamento);
-            statusSelecionado.set(data.status);
-            dataVisita.set(DateUtils.millisParaLocalDate(data.dataEscolhida));
+        populateFromOrdemServicoModel(data);
+    }
 
-            maoDeObra.set(Utils.deRealParaCentavos(data.maoDeObraValor));
-            pecasValor.set(Utils.deRealParaCentavos(data.pecas_valor));
+    private void populateFromOrdemServicoModel(OrdemServicoModel data) {
+        clienteSelected.set(data.cliente);
+        tecnicoSelected.set(data.tecnico);
 
-            checklistRelatorio.set(data.checklistRelatorio);
-        }
+        equipamento.set(data.equipamento);
+        tipoPagamentoSeleced.set(data.tipoPagamento);
+        statusSelecionado.set(data.status);
+        dataVisita.set(DateUtils.millisParaLocalDate(data.dataEscolhida));
+
+        maoDeObra.set(Utils.deRealParaCentavos(data.maoDeObraValor));
+        pecasValor.set(Utils.deRealParaCentavos(data.pecas_valor));
+
+        checklistRelatorio.set(data.checklistRelatorio);
     }
 
     @Override
@@ -322,11 +330,12 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void clearForm() {
-        clienteSelected.set(null);
+//        clienteSelected.set(null);
+        clienteSelected.set(clientes.get(0));
         tecnicoSelected.set(null);
 
         equipamento.set("");
-        tipoPagamentoSeleced.set(tiposPagamento.getFirst());
+        tipoPagamentoSeleced.set(tiposPagamento.get(1));
         statusSelecionado.set(status.getFirst());
         dataVisita.set(LocalDate.now());
 

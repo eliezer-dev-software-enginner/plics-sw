@@ -50,7 +50,7 @@ public class AppRoutes {
 
         );
 
-        String rotaInicial = "clientes";
+        String rotaInicial = "ordem-de-servico";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {
