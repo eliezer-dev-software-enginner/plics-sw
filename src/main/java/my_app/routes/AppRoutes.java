@@ -5,6 +5,7 @@ import megalodonte.router.v4.Router;
 import my_app.screens.*;
 import my_app.screens.WelcomeScreen;
 import my_app.screens.CategoriaScreen;
+import my_app.screens.clienteScreen.ClienteScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;

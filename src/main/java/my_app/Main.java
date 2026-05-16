@@ -83,7 +83,7 @@ public class Main {
 //                    .classesPath("build/classes/java/main")
 //                    .resourcesPath("src/main/resources")
 //                    .implementationClassName("my_app.hotreload.Reloader")
-//                    .screenClassName("my_app.screens.ClienteScreen")
+//                    .screenClassName("my_app.screens.clienteScreen.ClienteScreen")
 //                    .reloadContext(context)
 //                    .classesToExclude(Set.of(
 //                            "my_app.Main",

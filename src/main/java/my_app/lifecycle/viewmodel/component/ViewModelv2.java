@@ -1,10 +1,7 @@
 package my_app.lifecycle.viewmodel.component;
 
-
-@Deprecated
-public abstract class ViewModel {
-    public ViewModel(){
-        onInit();
+public abstract class ViewModelv2 {
+    public ViewModelv2(){
     }
 
     protected void onInit() {
