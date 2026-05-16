@@ -113,6 +113,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                 try {
                     Long id = tecnicoSelecionada.get().id;
                     tecnicoRepository.excluirById(id);
+                    EventBus.getInstance().publish(new TecnicoExcluidoEvent(id));
                     UI.runOnUi(() -> {
                         Components.ShowPopup(ctx, "técnico excluido com sucesso");
                         tecnicos.removeIf(tecnicoModel -> tecnicoModel.id.equals(id));
