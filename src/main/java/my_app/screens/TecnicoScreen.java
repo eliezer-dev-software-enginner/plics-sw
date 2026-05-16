@@ -79,7 +79,10 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
         return new SimpleTable<TecnicoModel>()
                 .fromData(tecnicos)
                 .onItemSelectChange(tecnicoSelecionada::set)
-                .onClickOutside(()-> tecnicoSelecionada.set(null))
+                .onClickOutside(()-> {
+                    tecnicoSelecionada.set(null);
+                    modoEdicao.set(false);
+                })
                 .header()
                 .columns()
                 .column("ID", it-> it.id, 90.0)
