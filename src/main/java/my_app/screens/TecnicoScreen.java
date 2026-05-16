@@ -12,10 +12,10 @@ import my_app.db.dto.TecnicoDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
+import my_app.domain.ContratoTelaCrudV2;
 import my_app.events.EventBus;
-import my_app.events.TecnicoCriadoEvent;
+import my_app.events.TecnicoEvents;
 import my_app.screens.components.Components;
-//import javafx.scene.control.*;
 import javafx.scene.control.*;
 import megalodonte.*;
 import megalodonte.components.*;
@@ -26,7 +26,7 @@ import my_app.utils.DateUtils;
 import java.sql.SQLException;
 import java.util.List;
 
-public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
+public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     private final ScreenContext ctx;
     private final TecnicoRepository tecnicoRepository;
 
@@ -51,29 +51,26 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
             try {
                tecnicos.addAll(tecnicoRepository.listar());
             } catch (Exception e) {
-                Components.ShowAlertError("Erro ao carregar tecnicos: " + e.getMessage());
+                UI.runOnUi(()-> Components.ShowAlertError("Erro ao carregar tecnicos: " + e.getMessage()));
             }
         });
-
     }
 
     public Component render() {
-        return mainView();
+        return mainView(tecnicoSelecionada);
     }
 
     @Override
     public Component form() {
-        return new Card(new Column()
-                .c_child(Components.FormTitle("Cadastrar Novo Técnico"))
-                .c_child(new SpacerVertical(20))
-                .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                        .r_child(
-                                Components.InputColumn("Nome", nome, "Ex: Matias"))
-//                        .r_child(
-//                                Components.SelectColumn("Status", status, statusSelecionado, it-> it))
+        return new Card(new Column().children(
+                        Components.FormTitle("Cadastrar Novo Técnico"),
+                        new SpacerVertical(20),
+                        new Row(new RowProps().bottomVertically().spacingOf(10))
+                                .r_child(
+                                        Components.InputColumn("Nome", nome, "Ex: Matias")),
+                        new SpacerVertical(20),
+                        Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm)
                 )
-                .c_child(new SpacerVertical(20))
-                .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
         );
     }
 
@@ -82,6 +79,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
         return new SimpleTable<TecnicoModel>()
                 .fromData(tecnicos)
                 .onItemSelectChange(tecnicoSelecionada::set)
+                .onClickOutside(()-> tecnicoSelecionada.set(null))
                 .header()
                 .columns()
                 .column("ID", it-> it.id, 90.0)
@@ -99,9 +97,10 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public void handleClickMenuEdit() {
-        modoEdicao.set(true);
-        if (tecnicoSelecionada.get() != null)
+        if (tecnicoSelecionada.get() != null){
+            modoEdicao.set(true);
             nome.set(tecnicoSelecionada.get().nome);
+        }
     }
 
     @Override
@@ -113,7 +112,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
                 try {
                     Long id = tecnicoSelecionada.get().id;
                     tecnicoRepository.excluirById(id);
-                    EventBus.getInstance().publish(new TecnicoExcluidoEvent(id));
+                    EventBus.getInstance().publish(new TecnicoEvents.Excluido(id));
                     UI.runOnUi(() -> {
                         Components.ShowPopup(ctx, "técnico excluido com sucesso");
                         tecnicos.removeIf(tecnicoModel -> tecnicoModel.id.equals(id));
@@ -150,37 +149,51 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrud {
         var dto = new TecnicoDto(value.trim());
 
         if (modoEdicao.get()) {
-            Async.Run(() -> {
-                try {
-                    final var model = tecnicoSelecionada.get();
-                    model.nome = value;
-                    tecnicoRepository.atualizar(model);
-                   //tecnicos.updateIf(it -> it.id.equals(tecnicoSelecionada.get().id), model);
-                    loadTecnicos();
-                    UI.runOnUi(() -> {
-                        Components.ShowPopup(ctx, "Técnico atualizada com sucesso");
-                        clearForm();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
-                }
-            });
+            asyncUpdate(value);
         } else {
-            Async.Run(() -> {
-                try {
-                    var model = tecnicoRepository.salvar(dto);
-                    UI.runOnUi(() -> {
-                        tecnicos.add(model);
-                        Components.ShowPopup(ctx, "Técnico '" + model.nome + "' cadastrado com sucesso");
-                        clearForm();
-                        // Publicar evento de técnico criado
-                        EventBus.getInstance().publish(new TecnicoCriadoEvent(model));
-                    });
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            asyncCreate(dto);
         }
+    }
+
+    private void asyncCreate(TecnicoDto dto) {
+        Async.Run(() -> {
+            try {
+                var model = tecnicoRepository.salvar(dto);
+                UI.runOnUi(() -> {
+                    tecnicos.add(model);
+                    Components.ShowPopup(ctx, "Técnico '" + model.nome + "' cadastrado com sucesso");
+                    clearForm();
+                    // Publicar evento de técnico criado
+                    EventBus.getInstance().publish(new TecnicoEvents.Criado(model));
+                });
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void asyncUpdate(String value) {
+        Async.Run(() -> {
+            try {
+                final var original = tecnicoSelecionada.get();
+                // não muta o original — cria novo com os dados atualizados
+                final var model = new TecnicoModel();
+                model.id = original.id;
+                model.nome = value;
+                model.dataCriacao = original.dataCriacao;
+
+                tecnicoRepository.atualizar(model);
+                EventBus.getInstance().publish(new TecnicoEvents.Editado(model));
+
+                UI.runOnUi(() -> {
+                    tecnicos.updateIf(it -> it.id.equals(model.id), it -> model);
+                    Components.ShowPopup(ctx, "Técnico atualizada com sucesso");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
+            }
+        });
     }
 
     @Override

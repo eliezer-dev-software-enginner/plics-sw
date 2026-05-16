@@ -12,12 +12,10 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.OrdemServicoDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
-import my_app.domain.ContratoTelaCrud;
 import my_app.domain.ContratoTelaCrudV2;
 import my_app.events.EventBus;
-import my_app.events.TecnicoCriadoEvent;
+import my_app.events.TecnicoEvents;
 import my_app.screens.components.Components;
-//import javafx.scene.control.*;
 import javafx.scene.control.*;
 import megalodonte.*;
 import megalodonte.components.*;
@@ -83,13 +81,25 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
         
         // Inscrever para receber eventos de criação de técnicos
         EventBus.getInstance().subscribe(event -> {
-            if (event instanceof TecnicoCriadoEvent ev) {
-                TecnicoModel novoTecnico = ev.getTecnico();
+            if (event instanceof TecnicoEvents.Criado(TecnicoModel novoTecnico)) {
                 UI.runOnUi(() -> {
                     tecnicos.add(novoTecnico);
                     // Se for o primeiro técnico, selecioná-lo automaticamente
-                    if (tecnicos.size() == 1) {
-                        tecnicoSelected.set(novoTecnico);
+                    if (tecnicos.size() == 1) tecnicoSelected.set(novoTecnico);
+                });
+            }else if (event instanceof TecnicoEvents.Excluido(long id)) {
+                UI.runOnUi(() -> {
+                    tecnicos.removeIf(it -> it.id.equals(id));
+                    if (tecnicoSelected.get() != null && tecnicoSelected.get().id.equals(id)) {
+                        tecnicoSelected.set(null);
+                    }
+                });
+            }
+            else if (event instanceof TecnicoEvents.Editado(TecnicoModel tecnico)) {
+                UI.runOnUi(() -> {
+                    tecnicos.updateIf(it -> it.id.equals(tecnico.id), it -> tecnico);
+                    if (tecnicoSelected.get() != null && tecnicoSelected.get().id.equals(tecnico.id)) {
+                        tecnicoSelected.set(tecnico);
                     }
                 });
             }
