@@ -92,6 +92,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                     tecnicos.removeIf(it -> it.id.equals(id));
                     if (tecnicoSelected.get() != null && tecnicoSelected.get().id.equals(id)) {
                         tecnicoSelected.set(null);
+                        osSelected.set(null);//desabilita o menu no topo
                     }
                 });
             }
@@ -100,6 +101,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                     tecnicos.updateIf(it -> it.id.equals(tecnico.id), it -> tecnico);
                     if (tecnicoSelected.get() != null && tecnicoSelected.get().id.equals(tecnico.id)) {
                         tecnicoSelected.set(tecnico);
+                        osSelected.set(null);//desabilita o menu no topo
                     }
                 });
             }
@@ -199,12 +201,15 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 .column("Equipamento", it -> it.equipamento)
                 .column("Mão de obra", it -> Utils.toBRLCurrency(it.maoDeObraValor))
                 .column("Total liq.", it -> Utils.toBRLCurrency(it.totalLiquido))
-                .column("Data de visita", it -> DateUtils.millisToBrazilianDateTime(it.dataEscolhida))
+                .column("Data de visita", it -> DateUtils.millisToBrazilianDate(it.dataEscolhida))
                 .column("Data de criação da OS", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(it -> osSelected.set(it))
                 .onItemDoubleClick(it-> Components.ShowModal( ItemDetails(it), ctx))
-                .onClickOutside(()-> osSelected.set(null));
+                .onClickOutside(()-> {
+                    osSelected.set(null);
+                    modoEdicao.set(false);
+                });
     }
 
     Component ItemDetails(OrdemServicoModel model){
@@ -216,7 +221,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 .c_child(Components.TextWithDetails("Checklist/Relatório: ", model.checklistRelatorio))
                 .c_child(Components.TextWithDetails("Cliente: ", model.cliente.nome))
                 .c_child(Components.TextWithDetails("Técnico visitante: ", model.tecnico.nome))
-                .c_child(Components.TextWithDetails("Data de visita: ", DateUtils.millisToBrazilianDateTime(model.dataEscolhida)))
+                .c_child(Components.TextWithDetails("Data de visita: ", DateUtils.millisToBrazilianDate(model.dataEscolhida)))
                 .c_child(Components.TextWithDetails("Equipamento: ", model.equipamento))
                 .c_child(Components.TextWithDetails("Mão de obra (R$): ", Utils.toBRLCurrency(model.maoDeObraValor)))
                 .c_child(Components.TextWithDetails("Peças (R$): ", Utils.toBRLCurrency(model.pecas_valor)))

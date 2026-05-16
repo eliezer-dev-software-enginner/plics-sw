@@ -46,6 +46,18 @@ public class DateUtils {
                 .format(BR_FORMATTER);
     }
 
+
+    private static final DateTimeFormatter BR_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    public static String millisToBrazilianDate(Long timestamp) {
+        if (timestamp == null || timestamp == 0) return "";
+        return Instant.ofEpochMilli(timestamp)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .format(BR_DATE_FORMATTER);
+    }
+
 }
 
 // Uso:
