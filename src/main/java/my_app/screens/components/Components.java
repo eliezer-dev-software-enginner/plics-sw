@@ -12,6 +12,7 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import megalodonte.*;
 import megalodonte.application.Context;
+import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.components.*;
 import megalodonte.components.Button;
@@ -578,12 +579,13 @@ public class Components {
         ComputedState<Boolean> thereIsItemSelectedInTable = ComputedState.of(()-> !itemSelectedInTable.isNull() ,itemSelectedInTable);
 
         return Show.when(thereIsItemSelectedInTable, ()-> {
-            return new Row(new RowProps().spacingOf(20)).children(
+            return new Row(new RowProps().spacingOf(20))
+                    .children(
                     MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)),
                     MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)),
                     MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run))
             );
-        });
+        }).withTransition(Animations::fadeSlide);
     }
 
 
