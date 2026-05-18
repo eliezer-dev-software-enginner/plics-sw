@@ -15,7 +15,7 @@ import java.util.List;
 
 import static my_app.utils.Utils.*;
 
-public class ClienteViewModel extends ViewModelv2 {
+public class PDVScreenViewModel extends ViewModelv2 {
 
     private final ScreenContext ctx;
     private final ClienteRepository clienteRepository = new ClienteRepository();
@@ -41,7 +41,7 @@ public class ClienteViewModel extends ViewModelv2 {
             editMode
     );
 
-    public ClienteViewModel(ScreenContext ctx) {
+    public PDVScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;
         this.onInit();
     }

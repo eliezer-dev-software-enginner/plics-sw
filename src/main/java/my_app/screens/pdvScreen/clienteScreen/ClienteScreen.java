@@ -1,11 +1,14 @@
-package my_app.screens.clienteScreen;
+package my_app.screens.pdvScreen.clienteScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.*;
+import megalodonte.components.Card;
+import megalodonte.components.SimpleTable;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;

@@ -5,7 +5,7 @@ import megalodonte.router.v4.Router;
 import my_app.screens.*;
 import my_app.screens.WelcomeScreen;
 import my_app.screens.CategoriaScreen;
-import my_app.screens.clienteScreen.ClienteScreen;
+import my_app.screens.clienteScreen.PDVScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;
@@ -28,7 +28,7 @@ public class AppRoutes {
                //ok
                 new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
-                new Router.Route("clientes",ctx-> new ClienteScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de clientes", true)),
+                new Router.Route("clientes",ctx-> new PDVScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de clientes", true)),
                 //ok
                 new Router.Route("contas-a-pagar",ctx-> new ComprasAPagarScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a pagar", true)),
                 //ok
@@ -39,6 +39,7 @@ public class AppRoutes {
                 new Router.Route("relatar-erro",ctx-> new RelatarErroScreen(ctx), new RouteProps(1000, 650, "Relatar erros", true)),
 
                 new Router.Route("sugerir-melhoria",ctx-> new SugerirMelhoriaScreen(ctx), new RouteProps(1000, 650, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
+                new Router.Route("pdv-screen",ctx-> new PDVScreen(ctx), new RouteProps(1000, 650, "Seu caixa está aberto", true)),
 
                 new Router.Route("contas-a-receber",ctx-> new ContasAReceberScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a receber", true)),
                 //ok
@@ -50,7 +51,7 @@ public class AppRoutes {
 
         );
 
-        String rotaInicial = "ordem-de-servico";
+        String rotaInicial = "pdv-screen";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {
