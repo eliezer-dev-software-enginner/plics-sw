@@ -51,8 +51,9 @@ public class PDVScreen implements ScreenComponent {
                         //imagem,
                         new Column().children(
                                 Components.InputColumn("Código de barras", vm.codigoBarrasInput, "Ex: João"),
-                                Components.InputColumnComFocusHandler("Quantidade",
-                                        vm.quantidadeInput, "Ex: 1", ()-> vm.adicionarPorCodigo(vm.codigoBarrasInput.get())
+                                Components.InputColumnComEnterHandler("Quantidade",
+                                        vm.quantidadeInput, "Ex: 1",
+                                        () -> vm.adicionarPorCodigo(vm.codigoBarrasInput.get())
                                 )
                         )
                 )

@@ -518,6 +518,17 @@ public class Components {
                 .placeHolder(placeholder).fontSize(theme.typography().small());
     }
 
+
+    public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder, Runnable onEnter) {
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Input((State<String>) inputState,
+                                getInputProps(placeholder).borderWidth(theme.border().width())
+                                        .borderColor(theme.colors().primary())
+                        ).onEnter(onEnter)
+                );
+    }
+
     public static Component InputColumnComFocusHandler(String label, ReadableState<String> inputState, String placeholder, Runnable focusChangeHandler) {
         return new Column()
                 .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
