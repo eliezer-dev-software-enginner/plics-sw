@@ -1,6 +1,8 @@
 package my_app.screens.clienteScreen;
 
-import megalodonte.*;
+import megalodonte.ComputedState;
+import megalodonte.ListState;
+import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
@@ -15,7 +17,7 @@ import java.util.List;
 
 import static my_app.utils.Utils.*;
 
-public class PDVScreenViewModel extends ViewModelv2 {
+public class ClienteViewModel extends ViewModelv2 {
 
     private final ScreenContext ctx;
     private final ClienteRepository clienteRepository = new ClienteRepository();
@@ -41,7 +43,7 @@ public class PDVScreenViewModel extends ViewModelv2 {
             editMode
     );
 
-    public PDVScreenViewModel(ScreenContext ctx) {
+    public ClienteViewModel(ScreenContext ctx) {
         this.ctx = ctx;
         this.onInit();
     }

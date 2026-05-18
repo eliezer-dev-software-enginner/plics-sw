@@ -1,4 +1,4 @@
-package my_app.screens.pdvScreen.clienteScreen;
+package my_app.screens.clienteScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
