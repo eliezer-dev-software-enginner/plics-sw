@@ -41,6 +41,22 @@ public class Main {
             stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream("/assets/app_ico.png"))));
 
             initialize(context);
+
+            if (devMode) {
+                hotReload = new HotReload()
+                        .sourcePath("src/main/java")
+                        .classesPath("build/classes/java/main")
+                        .resourcesPath("src/main/resources")
+                        .implementationClassName("my_app.hotreload.Reloader")
+                        .screenClassName(null)
+                        .reloadContext(context)
+                        .classesToExclude(Set.of(
+                                "my_app.Main",
+                                "my_app.Launcher"
+                        ));
+                hotReload.start();
+            }
+
         }, ev->{
             if(ev == MegalodonteApp.Event.CloseRequest){
                 System.out.println("Clicked on X - close application");
@@ -76,23 +92,6 @@ public class Main {
 
         context.useRouter(router);
         context.useView(router.entrypoint());
-
-//        if (devMode) {
-//            hotReload = new HotReload()
-//                    .sourcePath("src/main/java")
-//                    .classesPath("build/classes/java/main")
-//                    .resourcesPath("src/main/resources")
-//                    .implementationClassName("my_app.hotreload.Reloader")
-//                    .screenClassName("my_app.screens.clienteScreen.ClienteScreen")
-//                    .reloadContext(context)
-//                    .classesToExclude(Set.of(
-//                            "my_app.Main",
-//                            "my_app.hotreload.Reloader",
-//                            "my_app.hotreload.HotReload",
-//                            "my_app.hotreload.HotReloadClassLoader"
-//                    ));
-//            hotReload.start();
-//        }
     }
 }
 

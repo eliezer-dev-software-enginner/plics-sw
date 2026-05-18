@@ -2,7 +2,6 @@ package my_app.screens.components;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-//import javafx.scene.control.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -11,7 +10,6 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import megalodonte.*;
-import megalodonte.application.Context;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.components.*;

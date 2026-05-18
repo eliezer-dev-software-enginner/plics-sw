@@ -2,10 +2,9 @@ package my_app.hotreload;
 
 import javafx.application.Platform;
 import megalodonte.application.Context;
-import megalodonte.base.components.ComponentInterface;
-import megalodonte.base.components.ScreenComponent;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -16,17 +15,13 @@ public class Reloader {
 
     private void doReload(Context context, String screenClassName, String classesPath) {
         try {
-            if (screenClassName == null) {
-                System.err.println("[UIReloader] Screen class name is null.");
-                return;
-            }
-
             if (classesPath == null) {
                 classesPath = "build/classes/java/main";
             }
 
             URL classesUrl = new File(classesPath).toURI().toURL();
             ClassLoader parent = this.getClass().getClassLoader();
+
             URLClassLoader freshLoader = new URLClassLoader(new URL[]{classesUrl}, parent) {
                 @Override
                 public Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -34,19 +29,19 @@ public class Reloader {
                         try {
                             return findClass(name);
                         } catch (ClassNotFoundException e) {
-                            // Fall through to parent
+                            // fall through to parent
                         }
                     }
                     return super.loadClass(name);
                 }
             };
 
-            Class<?> screenClass = freshLoader.loadClass(screenClassName);
-            ScreenComponent screenInstance = (ScreenComponent) screenClass.getDeclaredConstructor().newInstance();
+            // Recarrega Main e chama initialize() — isso reconstrói AppRoutes, Router e tudo
+            Class<?> mainClass = freshLoader.loadClass("my_app.Main");
+            Method initMethod = mainClass.getMethod("initialize", Context.class);
+            initMethod.invoke(null, context);
 
-            context.useView(screenInstance);
-
-            System.out.println("[UIReloader] UI reloaded successfully.");
+            System.out.println("[UIReloader] UI reloaded via Main.initialize().");
             freshLoader.close();
 
         } catch (Exception e) {
