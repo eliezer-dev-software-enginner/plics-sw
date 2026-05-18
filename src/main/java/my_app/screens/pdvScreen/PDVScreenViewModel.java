@@ -1,5 +1,6 @@
 package my_app.screens.pdvScreen;
 
+import megalodonte.ComputedState;
 import megalodonte.State;
 import megalodonte.v2.ListState;
 import megalodonte.base.UI;
@@ -11,6 +12,7 @@ import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,14 +27,20 @@ public class PDVScreenViewModel extends ViewModelv2 {
     // Estado reativo: itens no carrinho
     final ListState<ItemVenda> itensCarrinho = ListState.ofEmpty();
 
+
     // Estado do campo de busca
     final State<String> codigoBarrasInput = State.of("");
+
+    //item atual buscado
+    final State<String> quantidadeInput = State.of("0");
 
     // Subtotal derivado — recalculado sempre que itensCarrinho mudar
     final State<String> subtotal = State.of("0");
 
     final State<String> totalRecebido = State.of("0");
     final State<String> troco         = State.of("0");
+
+
 
     public PDVScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;
@@ -101,10 +109,13 @@ public class PDVScreenViewModel extends ViewModelv2 {
             existente.get().quantidade = existente.get().quantidade.add(BigDecimal.ONE);
             itensCarrinho.refresh(); // notifica observers sem substituir a lista
         } else {
-            itensCarrinho.add(new ItemVenda(produto));
+            var item = new ItemVenda(produto);
+            item.quantidade = new BigDecimal(quantidadeInput.get());
+            itensCarrinho.add(item);
         }
 
         codigoBarrasInput.set(""); // limpa o campo após adicionar
+        quantidadeInput.set("0");
     }
 
     void atualizarQuantidade(ItemVenda item, BigDecimal novaQtd) {
