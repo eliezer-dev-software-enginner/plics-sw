@@ -43,7 +43,7 @@ public class PDVScreenViewModel extends ViewModelv2 {
     final State<String> codigoBarrasInput = State.of("");
 
     //item atual buscado
-    final State<String> quantidadeInput = State.of("0");
+    final State<String> quantidadeInput = State.of("1");
 
     // Subtotal derivado — recalculado sempre que itensCarrinho mudar
     final State<String> subtotal = State.of("0");
@@ -145,7 +145,7 @@ public class PDVScreenViewModel extends ViewModelv2 {
         }
 
         codigoBarrasInput.set(""); // limpa o campo após adicionar
-        quantidadeInput.set("0");
+        quantidadeInput.set("1");
     }
 
     void atualizarQuantidade(ItemVenda item, BigDecimal novaQtd) {
@@ -186,7 +186,7 @@ public class PDVScreenViewModel extends ViewModelv2 {
                 UI.runOnUi(() -> {
                     itensCarrinho.clear();
                     codigoBarrasInput.set("");
-                    quantidadeInput.set("0");
+                    quantidadeInput.set("1");
                     subtotal.set("0");
                     totalRecebido.set("0");
                     troco.set("0");

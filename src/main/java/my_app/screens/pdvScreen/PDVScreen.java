@@ -6,6 +6,7 @@ import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
@@ -29,16 +30,17 @@ public class PDVScreen implements ScreenComponent {
 
     @Override
     public Component render() {
-        return new Container()
-                .children(Components.FormTitle("Caixa Aberto"),
-                        new Row().children(
+        return new Container(new ContainerProps().bgColor("#FFF4E9"))
+                .children(new Container(new ContainerProps().fillHeight()).children(
+                        topBanner(),
+                        new Row(new RowProps().spacingOf(10).paddingAll(10)).children(
                                 produtoForm(),
                                 table(),
                                 new Column().children(
-                                        Components.InputColumn("SUBTOTAL", vm.subtotal, "0,00"),
+                                        Components.InputColumn("SUBTOTAL", vm.subtotal, "0,00",true),
                                         new Row().children(
                                                 Components.InputColumn("TOTAL RECEBIDO", vm.totalRecebido,"0,00"),
-                                                Components.InputColumn("TROCO", vm.troco,"0,00")
+                                                Components.InputColumn("TROCO", vm.troco,"0,00",true)
                                         ),
                                         new SpacerVertical(30),
                                         vendaFiadaComponent(),
@@ -46,34 +48,42 @@ public class PDVScreen implements ScreenComponent {
                                         new Button("Finalizar Venda").onClick(vm::finalizarVenda)
                                 )
 
-                        )
-                );
+                        ),
+                        new SpacerVertical().fill(),
+                        bottomBanner()
+                ));
     }
 
-    Component vendaFiadaComponent(){
-        return new Column().children(
-                new Checkbox("É uma venda fiada?",vm.isVendaFiada),
-                Show.when(vm.isVendaFiada, ()-> {
-                    return new Column().children(
-                            Components.FormTitle("Quem é o cliente?"),
-                            Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome,
-                                    true,"+ Criar cliente", vm::handleCriarCliente)
-                    );
-                })
+    Component topBanner(){
+        return new Container(new ContainerProps().bgColor("#121420").paddingAll(10)).children(
+            Components.FormTitle("Plics SW - Meu Ponto de venda (PDV)","#fff")
+        );
+    }
+
+    Component bottomBanner(){
+        return new Container(new ContainerProps().bgColor("#121420").paddingAll(10)).children(
+                //qrCode
+                new Column().children(
+                        new Image("/assets/qrcode_suporte.jpg", new ImageProps().size(80)),
+                        new Text("Plics - SW", new TextProps().color("white").bold().fontSize(14))
+                        ),
+                        new SpacerVertical(10),
+                        new Text("Scaneie o QRCode para ir para o suporte no WhatsApp.",
+                                new TextProps().textColor("#fff").fontSize(13))
+
         );
     }
 
     Component produtoForm(){
         return new Card(
-                new Row().children(
-                        //imagem,
-                        new Column().children(
-                                Components.InputColumn("Código de barras", vm.codigoBarrasInput, "Ex: João"),
-                                Components.InputColumnComEnterHandler("Quantidade",
+                new Column().children(
+                        Components.FormTitle("Buscar produto"),
+                        new SpacerVertical(5),
+                        Components.InputColumn("Código do produto", vm.codigoBarrasInput, "Ex: João"),
+                        Components.InputColumnComEnterHandler("Quantidade",
                                         vm.quantidadeInput, "Ex: 1",
                                         () -> vm.adicionarPorCodigo(vm.codigoBarrasInput.get())
                                 )
-                        )
                 )
         );
     }
@@ -102,4 +112,18 @@ public class PDVScreen implements ScreenComponent {
                     .build()
         );
     }
+
+    Component vendaFiadaComponent(){
+        return new Column().children(
+                new Checkbox("É uma venda fiada?",vm.isVendaFiada),
+                Show.when(vm.isVendaFiada, ()-> {
+                    return new Column().children(
+                            Components.FormTitle("Quem é o cliente?"),
+                            Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome,
+                                    true,"+ Criar cliente", vm::handleCriarCliente)
+                    );
+                })
+        );
+    }
+
 }

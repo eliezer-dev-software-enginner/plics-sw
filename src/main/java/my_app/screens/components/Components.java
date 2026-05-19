@@ -244,6 +244,9 @@ public class Components {
                 .c_child(ButtonCadastro(title, callback));
     }
 
+    public static Component FormTitle(String title, String textColor) {
+        return new Text(title,  new TextProps().variant(TextVariant.BODY).bold().textColor(textColor));
+    }
     public static Component FormTitle(String title) {
         return new Text(title,  new TextProps().variant(TextVariant.BODY).bold());
     }
@@ -549,13 +552,12 @@ public class Components {
                 .placeHolder(placeholder).fontSize(theme.typography().small());
     }
 
-
     public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder, Runnable onEnter) {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
                                 getInputProps(placeholder).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().primary())
+                                        .borderColor(theme.colors().border())
                         ).onEnter(onEnter)
                 );
     }
@@ -565,15 +567,20 @@ public class Components {
                 .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
                         getInputProps(placeholder).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().primary())
+                                        .borderColor(theme.colors().border())
                         ).onChangeFocus(focus -> {
                             if (!focus) focusChangeHandler.run();
                         })
                 );
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-       var props =  getInputProps(placeholder);
+    public static Component InputColumnPDV(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
+        return  InputColumn(label, inputState, placeholder, disableInput, theme.border().width(),  theme.radius().md(), theme.colors().primary());
+    }
+
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
+                                        int borderWidth, int borderRadius, String borderColor) {
+        var props =  getInputProps(placeholder);
         if(disableInput) props.disable();
 
         TextProps textProps = new TextProps().fontSize(theme.typography().small());
@@ -583,9 +590,13 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, textProps))
                 .c_child(new Input((State<String>) inputState,
-                        props.borderWidth(theme.border().width()).borderColor(theme.colors().primary())
+                                props.borderWidth(borderWidth).borderColor(borderColor).borderRadius(borderRadius)
                         )
                 );
+    }
+
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
+      return  InputColumn(label, inputState, placeholder, disableInput, theme.border().width(),  theme.radius().sm(), theme.colors().border());
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {

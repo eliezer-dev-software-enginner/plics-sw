@@ -59,7 +59,7 @@ return new ThemeColors(
                 "#e2e8f0",                    // secondary: Cinza claro para elementos secundários
                 "#0f172a",                    // text primary: Azul quase preto para máximo contraste
                 "#94a3b8",                    // text secondary: Cinza médio para textos de apoio
-                "#e2e8f0",                    // border: Cinza suave para divisórias e bordas,
+                "#1B2432",                    // border: Cinza suave para divisórias e bordas,
                 
                 // Button colors
                 "#2563eb",                    // buttonPrimary (same as primary)

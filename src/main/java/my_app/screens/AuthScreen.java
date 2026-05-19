@@ -83,7 +83,7 @@ public class AuthScreen implements ScreenComponent {
                                         new TextProps().textColor("#fff").fontSize(13)))
                         )
                 ),
-                new Column(new ColumnProps().fillHeight()),
+                new Column(new ColumnProps().fillHeight()),//TODO: TROCAR PARA SPACERVERTICAL.FILL
                Components.imageWithTextRow("/assets/whatsapp.png","+27 62 133 2217 - Suporte garantido." ),
                 new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to("https://wa.me/qr/W7AI2KFHT3OEI1"))
         );

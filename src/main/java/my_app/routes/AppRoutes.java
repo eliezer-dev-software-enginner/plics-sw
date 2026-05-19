@@ -43,7 +43,7 @@ public class AppRoutes {
                 new Router.Route("relatar-erro",ctx-> new RelatarErroScreen(ctx), new RouteProps(1000, 650, "Relatar erros", true)),
 
                 new Router.Route("sugerir-melhoria",ctx-> new SugerirMelhoriaScreen(ctx), new RouteProps(1000, 650, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
-                new Router.Route("pdv-screen",ctx-> new PDVScreen(ctx), new RouteProps(1020, 650, "Seu caixa está aberto", true)),
+                new Router.Route("pdv-screen",ctx-> new PDVScreen(ctx), new RouteProps(1025, 650, "Seu caixa está aberto", true)),
 
                 new Router.Route("contas-a-receber",ctx-> new ContasAReceberScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a receber", true)),
                 //ok
