@@ -99,6 +99,7 @@ public class HomeScreen implements ScreenComponent {
     }
 
 
+    //TODO: HISTÓRICO DE CAICXA, COMPRAS DE MERCADORIA E CONTAS A PAGAR NÃO APARECEM
     record CardItem(String img, String title, String desc, String destination){}
     List<CardItem> cardItemList = List.of(
             new CardItem("/assets/venda.png", "Venda","Tela de vendas","vendas"),
@@ -106,10 +107,10 @@ public class HomeScreen implements ScreenComponent {
             new CardItem("/assets/produtos.png", "Produtos","Gerencie seus produtos","produtos"),
             new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes","clientes"),
             new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber","contas-a-receber"),
-            new CardItem("/assets/pdv.png", "PDV","Meu PDV","pdv-screen"),
+            new CardItem("/assets/pdv.png", "PDV","Abrir caixa","pdv-screen"),
             new CardItem("/assets/despesas.png", "Contas a pagar","Tela de contas a pagar","contas-a-pagar"),
-            new CardItem("/assets/compras.png", "Compras de mercadorias","Tela de compras","compras")
-           // new CardItem("/assets/abertura.png", "Abertura de Caixa","Tela de vendas",null)
+            new CardItem("/assets/compras.png", "Compras de mercadorias","Tela de compras","compras"),
+            new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa",null)
            // new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
     );
     Component CardColumn(CardItem cardItem){
