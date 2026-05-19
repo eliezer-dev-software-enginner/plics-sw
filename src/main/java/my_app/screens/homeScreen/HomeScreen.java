@@ -36,7 +36,7 @@ public class HomeScreen implements ScreenComponent {
 
     public Component render (){
         var rowProps = new RowProps().spacingOf(10);
-        return new Container(new ContainerProps().bgColor("#fff")).children(
+        return new Container(new ContainerProps().bgImage("/assets/home-bg.jpg")).children(
                 menuBar(),
                 new Container(new ContainerProps().paddingAll(10))
                         .children(
@@ -81,7 +81,7 @@ public class HomeScreen implements ScreenComponent {
         return new Column().children(
                 Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(80)))
                         .withTransition(Animations::fadeSlide),
-                new Text(viewModel.vendasHoje, new TextProps().variant(TextVariant.BODY).bold())
+                new Text(viewModel.vendasHoje, new TextProps().variant(TextVariant.BODY).bold().textColor("#fff"))
         );
     }
 
