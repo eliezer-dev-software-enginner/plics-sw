@@ -260,6 +260,38 @@ public final class DBInitializer {
         """);
         }
 
+        aplicarMigration("criar_pedidos_pdv", conn, () -> {
+            try (Statement st = conn.createStatement()) {
+                st.execute("""
+            CREATE TABLE IF NOT EXISTS pedidos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                cliente_id INTEGER,
+                forma_pagamento TEXT NOT NULL,
+                total_liquido REAL NOT NULL,
+                desconto REAL DEFAULT 0,
+                observacao TEXT,
+                is_fiado INTEGER DEFAULT 0,
+                data_criacao INTEGER NOT NULL,
+                FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+            )
+        """);
+
+                st.execute("""
+            CREATE TABLE IF NOT EXISTS pedido_itens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                pedido_id INTEGER NOT NULL,
+                produto_cod TEXT NOT NULL,
+                quantidade REAL NOT NULL,
+                preco_unitario REAL NOT NULL,
+                desconto REAL DEFAULT 0,
+                total_item REAL NOT NULL,
+                data_criacao INTEGER NOT NULL,
+                FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
+            )
+        """);
+            }
+        });
+
         aplicarMigration("001_unique_cpf_cnpj_clientes", conn, () -> {
             conn.setAutoCommit(false);
             // SQLite não suporta ADD CONSTRAINT, então recria a tabela

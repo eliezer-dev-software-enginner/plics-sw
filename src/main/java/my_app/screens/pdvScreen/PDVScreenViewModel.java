@@ -1,18 +1,22 @@
 package my_app.screens.pdvScreen;
 
-import megalodonte.ComputedState;
 import megalodonte.State;
 import megalodonte.v2.ListState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
+import my_app.db.models.ClienteModel;
 import my_app.db.models.ProdutoModel;
+import my_app.db.repositories.ClienteRepository;
 import my_app.db.repositories.ProdutoRepository;
+import my_app.events.ClienteEvents;
+import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
+import my_app.services.PDVService;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,13 +24,20 @@ public class PDVScreenViewModel extends ViewModelv2 {
 
     private final ScreenContext ctx;
     private final ProdutoRepository produtoRepository;
+    private final ClienteRepository clienteRepository;
+    private final PDVService pdvService;
 
     // Cache de todos os produtos (lookup por código)
     private final Map<String, ProdutoModel> produtosCache = new HashMap<>();
 
+    final ListState<ClienteModel> clientes = ListState.ofEmpty();
+
+    State<ClienteModel> clienteSelected = State.of(null);
+
     // Estado reativo: itens no carrinho
     final ListState<ItemVenda> itensCarrinho = ListState.ofEmpty();
 
+    final State<Boolean> isVendaFiada = State.of(false);
 
     // Estado do campo de busca
     final State<String> codigoBarrasInput = State.of("");
@@ -45,6 +56,8 @@ public class PDVScreenViewModel extends ViewModelv2 {
     public PDVScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;
         this.produtoRepository = new ProdutoRepository();
+        this.clienteRepository = new ClienteRepository();
+        pdvService = new PDVService();
         this.onInit();
     }
 
@@ -68,6 +81,12 @@ public class PDVScreenViewModel extends ViewModelv2 {
                 troco.set("0");
             }
         });
+
+        EventBus.getInstance().subscribe(event -> {
+            if(event instanceof ClienteEvents.Criado(ClienteModel clienteModel)){
+                clientes.add(clienteModel);
+            }
+        });
     }
 
     void loadProdutos() {
@@ -89,6 +108,17 @@ public class PDVScreenViewModel extends ViewModelv2 {
             } catch (Exception e) {
                 e.printStackTrace(); // <- isso é importante, pode estar engolindo exceção
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar produtos: " + e.getMessage()));
+            }
+        });
+    }
+
+    void loadClientes() {
+        Async.Run(() -> {
+            try {
+                var list = clienteRepository.listar();
+                UI.runOnUi(() -> clientes.set(list));
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar clientes: " + e.getMessage()));
             }
         });
     }
@@ -129,5 +159,48 @@ public class PDVScreenViewModel extends ViewModelv2 {
 
     void removerItem(ItemVenda item) {
         itensCarrinho.remove(item);
+    }
+
+    void finalizarVenda() {
+        if (itensCarrinho.isEmpty()) {
+            Components.ShowAlertError("Carrinho vazio.");
+            return;
+        }
+
+        boolean fiado = isVendaFiada.get();
+        Long clienteId = clienteSelected.get() != null ? clienteSelected.get().id : null;
+
+        if (fiado && clienteId == null) {
+            Components.ShowAlertError("Selecione um cliente para venda fiada.");
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                pdvService.finalizarVenda(
+                        itensCarrinho.get(),
+                        "À VISTA", // TODO: adicionar seletor de forma de pagamento
+                        clienteId,
+                        fiado
+                );
+                UI.runOnUi(() -> {
+                    itensCarrinho.clear();
+                    codigoBarrasInput.set("");
+                    quantidadeInput.set("0");
+                    subtotal.set("0");
+                    totalRecebido.set("0");
+                    troco.set("0");
+                    clienteSelected.set(null);
+                    isVendaFiada.set(false);
+                    Components.ShowPopup(ctx, "Venda finalizada com sucesso!");
+                });
+            } catch (SQLException e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao finalizar venda: " + e.getMessage()));
+            }
+        });
+    }
+
+    void handleCriarCliente(){
+        ctx.router().spawnWindow("clientes",e->{});
     }
 }

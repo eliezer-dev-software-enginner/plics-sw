@@ -2,21 +2,25 @@ package my_app.routes;
 
 import megalodonte.base.route.RouteProps;
 import megalodonte.router.v4.Router;
+import my_app.Main;
 import my_app.screens.*;
 import my_app.screens.WelcomeScreen;
 import my_app.screens.CategoriaScreen;
+import my_app.screens.clienteScreen.ClienteScreen;
 import my_app.screens.pdvScreen.PDVScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
+import my_app.screens.pedidosScreen.PedidosScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;
 
 import java.util.Set;
 
 public class AppRoutes {
     public Router defineRoutes(boolean askCredentials, boolean forceAccessRoute) throws ReflectiveOperationException {
+
         var routes = Set.of(
-                new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(900, 550,null, true)),
-                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1050, 550,null, true)),
+                new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(900, 550, Main.BASE_TITLE, true)),
+                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1050, 550,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
                 new Router.Route("produtos",ctx-> new ProdutoScreen(ctx), new RouteProps(1000, 650,"Cadastro de produtos", true)),
                 //ok
@@ -28,7 +32,7 @@ public class AppRoutes {
                //ok
                 new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
-                new Router.Route("clientes",ctx-> new PDVScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de clientes", true)),
+                new Router.Route("clientes",ctx-> new ClienteScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de clientes", true)),
                 //ok
                 new Router.Route("contas-a-pagar",ctx-> new ComprasAPagarScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a pagar", true)),
                 //ok
@@ -44,6 +48,7 @@ public class AppRoutes {
                 new Router.Route("contas-a-receber",ctx-> new ContasAReceberScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a receber", true)),
                 //ok
                 new Router.Route("vendas",ctx-> new VendaMercadoriaScreen(ctx), new RouteProps(1000, 650, "Gerencie sua venda de mercadorias", true)),
+                new Router.Route("pedidos",ctx-> new PedidosScreen(ctx), new RouteProps(1000, 650, "Analise suas vendas feitas no PDV", true)),
                 new Router.Route("preferencias",ctx-> new PreferenciasScreen(ctx),
                         new RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
                 new Router.Route("entrar-com-credenciais",ctx-> new AuthScreen(ctx),
@@ -53,6 +58,8 @@ public class AppRoutes {
 
         //String rotaInicial = "produtos";
         String rotaInicial = "pdv-screen";
+        //String rotaInicial = "vendas";
+        //String rotaInicial = "pedidos";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {

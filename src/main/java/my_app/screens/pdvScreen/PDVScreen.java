@@ -7,6 +7,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
 import my_app.screens.components.Components;
 
@@ -23,7 +24,7 @@ public class PDVScreen implements ScreenComponent {
     @Override
     public void onMount() {
         vm.loadProdutos();
-        System.out.println("Produto loaded");
+        vm.loadClientes();
     }
 
     @Override
@@ -38,11 +39,28 @@ public class PDVScreen implements ScreenComponent {
                                         new Row().children(
                                                 Components.InputColumn("TOTAL RECEBIDO", vm.totalRecebido,"0,00"),
                                                 Components.InputColumn("TROCO", vm.troco,"0,00")
-                                        )
+                                        ),
+                                        new SpacerVertical(30),
+                                        vendaFiadaComponent(),
+                                        new SpacerVertical(30),
+                                        new Button("Finalizar Venda").onClick(vm::finalizarVenda)
                                 )
 
                         )
                 );
+    }
+
+    Component vendaFiadaComponent(){
+        return new Column().children(
+                new Checkbox("É uma venda fiada?",vm.isVendaFiada),
+                Show.when(vm.isVendaFiada, ()-> {
+                    return new Column().children(
+                            Components.FormTitle("Quem é o cliente?"),
+                            Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome,
+                                    true,"+ Criar cliente", vm::handleCriarCliente)
+                    );
+                })
+        );
     }
 
     Component produtoForm(){

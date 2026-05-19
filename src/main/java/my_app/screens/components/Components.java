@@ -27,6 +27,7 @@ import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
+import my_app.db.models.ClienteModel;
 import my_app.domain.Parcela;
 import my_app.utils.DateUtils;
 import org.kordamp.ikonli.Ikon;
@@ -317,6 +318,36 @@ public class Components {
         return new Column()
                 .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
+    }
+
+    public static <T> Component SelectColumn(String label, megalodonte.v2.ListState<T> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
+        var select = new Select<T>(selectProps)
+                .items(list)
+                .value(stateSelected)
+                .displayText(display);
+
+        if (compareById) {
+            select.compareById();
+        }
+
+        return new Column()
+                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(select);
+    }
+
+    public static <T> Component SelectColumnWithButton(
+            String label, megalodonte.v2.ListState<T> list, State<T> stateSelected,
+            Function<T, String> display, boolean compareById,
+            String btnText, Runnable handleClick) {
+
+        var rowProps = new RowProps().spacingOf(2)
+                .bottomVertically();
+
+        return new Row(rowProps)
+                .r_child(Components.SelectColumn(  label,  list,  stateSelected, display,compareById))
+                .r_child(new Button(btnText,  new ButtonProps().height(31)
+                        .textColor("#FFF")).onClick(handleClick)
+                ).r_child(new SpacerVertical(2));
     }
 
     public static <T> Component SelectColumn(String label, ListState<T> list, State<T> stateSelected,Function<T, String> display, boolean compareById) {
@@ -732,9 +763,6 @@ public class Components {
 
         }
     }
-
-
-
 
     public enum AlertType {ERRO, SUCESSO}
 

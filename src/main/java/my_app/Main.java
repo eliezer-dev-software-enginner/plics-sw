@@ -23,6 +23,7 @@ public class Main {
     static boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
     public static String APP_VERSION = "1.0.2";
+    public static String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios", APP_VERSION);
 
     static boolean askCredentials = false;
     static boolean forceAccessRoute = false;
@@ -30,7 +31,6 @@ public class Main {
     static void main() {
         MegalodonteApp.run(context -> {
             final var stage = context.javafxStage();
-            stage.setTitle(String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios", APP_VERSION));
 
             final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
 
