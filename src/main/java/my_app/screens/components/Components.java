@@ -509,12 +509,15 @@ public class Components {
 
     private static final NumberFormat BRL =
             NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-    public static Component InputColumnCurrency(String label, State<String> inputState) {
+
+    public static Component InputColumnCurrency(String label, State<String> inputState, boolean disableInput) {
         var icon = Entypo.CREDIT;
         var fonticon = FontIcon.of(icon, 15, Color.web("green"));
 
         var inputProps = getInputProps("R$ 0,00").width(140).borderWidth(theme.border().width())
                 .borderColor(theme.colors().primary());
+
+        if(disableInput) inputProps.disable();
 
         // inputState armazena valores brutos (em centavos), campo exibe formato BRL
         var input = new Input(inputState, inputProps)
@@ -543,6 +546,10 @@ public class Components {
                 .c_child(input);
     }
 
+    public static Component InputColumnCurrency(String label, State<String> inputState) {
+      return InputColumnCurrency(label, inputState, false);
+    }
+
     static InputProps getInputProps(String placeholder){
         return getInputProps(placeholder, 31);
     }
@@ -557,7 +564,7 @@ public class Components {
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
                                 getInputProps(placeholder).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().border())
+                                        .borderColor(theme.colors().border()).borderRadius(theme.radius().sm())
                         ).onEnter(onEnter)
                 );
     }
@@ -567,15 +574,11 @@ public class Components {
                 .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
                         getInputProps(placeholder).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().border())
+                                        .borderColor(theme.colors().border()).borderRadius( theme.radius().sm())
                         ).onChangeFocus(focus -> {
                             if (!focus) focusChangeHandler.run();
                         })
                 );
-    }
-
-    public static Component InputColumnPDV(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-        return  InputColumn(label, inputState, placeholder, disableInput, theme.border().width(),  theme.radius().md(), theme.colors().primary());
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
@@ -672,99 +675,6 @@ public class Components {
                 .left(icon);
     }
 
-    /**
-     * Exemplo de uso do componente Clickable com efeito TouchableOpacity.
-     */
-    public static Component clickableButton(String text, Runnable onClick) {
-        return new Clickable(
-                new Text(text, new TextProps().variant(TextVariant.BODY)),
-                onClick,
-                new ClickableProps()
-                        .padding(12)
-                        .borderRadius(8)
-                        .backgroundColor(theme.colors().primary())
-                        .hoverColor("rgba(0,0,0,0.05)")
-                        .activeColor("rgba(0,0,0,0.1)")
-        );
-    }
-
-    /**
-     * Exemplo de Clickable com ícone e texto.
-     */
-    public static Component clickableButtonWithIcon(String text, Ikon icon, String color, Runnable onClick) {
-        var iconNode = Component.CreateFromJavaFxNode(FontIcon.of(icon, 16, Color.web(color)));
-
-        return new Clickable(
-                new Row(new RowProps().spacingOf(8))
-                        .r_child(iconNode)
-                        .r_child(new Text(text, new TextProps().variant(TextVariant.BODY))),
-                onClick,
-                new ClickableProps()
-                        .padding(10)
-                        .borderRadius(6)
-                        .backgroundColor("white")
-                        .hoverColor("rgba(0,0,0,0.03)")
-                        .activeColor("rgba(0,0,0,0.06)")
-        );
-    }
-
-    /**
-     * Exemplo de formulário com larguras controladas.
-     */
-    public static Component formRowWithConstraints(String labelText, Component inputComponent) {
-        return new Row(new RowProps()
-                .spacingOf(10)
-                .width(400)
-                .paddingAll(5))
-                .r_child(new Text(labelText, new TextProps().variant(TextVariant.BODY)))
-                .r_child(inputComponent);
-    }
-
-    /**
-     * Exemplo de coluna com largura e espaçamento controlados.
-     */
-    public static Component columnWithWidthConstraints() {
-        return new Column(new ColumnProps()
-                .width(300)
-                .maxWidth(500)
-                .spacingOf(15)
-                .paddingAll(20))
-                .c_child(new Text("Título da Coluna", new TextProps().variant(TextVariant.SUBTITLE)))
-                .c_child(new SpacerVertical(10))
-                .c_child(new Text("Conteúdo da coluna com largura fixa."))
-                .c_child(clickableButton("Ação Principal", () -> IO.println("Botão principal clicado")));
-    }
-
-    /**
-     * Exemplo de alinhamento horizontal centralizado.
-     */
-    public static Component centeredRow() {
-        return new Row(new RowProps()
-                .width(400)
-                .spacingOf(15)
-                .centerHorizontally()
-                .paddingAll(10))
-                .r_child(new Text("Item 1"))
-                .r_child(new Text("Item 2"))
-                .r_child(new Text("Item 3"));
-    }
-
-    /**
-     * Exemplo de alinhamento vertical centralizado.
-     */
-    public static Component centeredColumn() {
-        return new Column(new ColumnProps()
-                .width(300)
-                .spacingOf(20)
-                .centerVertically()
-                .paddingAll(15))
-                .c_child(new Text("Topo"))
-                .c_child(new Text("Meio"))
-                .c_child(new Text("Fundo"));
-    }
-
-
-
     private static void executar(Action action) {
         try {
             action.run();
@@ -776,7 +686,6 @@ public class Components {
     }
 
     public enum AlertType {ERRO, SUCESSO}
-
 
     @FunctionalInterface
     interface Action {

@@ -37,17 +37,16 @@ public class PDVScreen implements ScreenComponent {
                                 produtoForm(),
                                 table(),
                                 new Column().children(
-                                        Components.InputColumn("SUBTOTAL", vm.subtotal, "0,00",true),
+                                        Components.InputColumnCurrency("SUBTOTAL", vm.subtotal,true),
                                         new Row().children(
-                                                Components.InputColumn("TOTAL RECEBIDO", vm.totalRecebido,"0,00"),
-                                                Components.InputColumn("TROCO", vm.troco,"0,00",true)
+                                                Components.InputColumnCurrency("TOTAL RECEBIDO", vm.totalRecebido),
+                                                Components.InputColumnCurrency("TROCO", vm.troco,true)
                                         ),
                                         new SpacerVertical(30),
                                         vendaFiadaComponent(),
                                         new SpacerVertical(30),
                                         new Button("Finalizar Venda").onClick(vm::finalizarVenda)
                                 )
-
                         ),
                         new SpacerVertical().fill(),
                         bottomBanner()
@@ -55,13 +54,13 @@ public class PDVScreen implements ScreenComponent {
     }
 
     Component topBanner(){
-        return new Container(new ContainerProps().bgColor("#121420").paddingAll(10)).children(
+        return new Container(new ContainerProps().bgColor("#140F2D").paddingAll(10)).children(
             Components.FormTitle("Plics SW - Meu Ponto de venda (PDV)","#fff")
         );
     }
 
     Component bottomBanner(){
-        return new Container(new ContainerProps().bgColor("#121420").paddingAll(10)).children(
+        return new Container(new ContainerProps().bgColor("#140F2D").paddingAll(10)).children(
                 //qrCode
                 new Column().children(
                         new Image("/assets/qrcode_suporte.jpg", new ImageProps().size(80)),

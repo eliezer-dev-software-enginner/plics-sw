@@ -10,10 +10,12 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.ClienteRepository;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.events.ClienteEvents;
+import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import my_app.services.PDVService;
+import my_app.utils.Utils;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -73,7 +75,7 @@ public class PDVScreenViewModel extends ViewModelv2 {
 
         totalRecebido.subscribe(recebido -> {
             try {
-                BigDecimal recebidoBD = new BigDecimal(recebido);
+                BigDecimal recebidoBD = Utils.deCentavosParaReal(recebido);
                 BigDecimal subtotalBD = new BigDecimal(subtotal.get());
                 BigDecimal t = recebidoBD.subtract(subtotalBD);
                 troco.set(t.compareTo(BigDecimal.ZERO) < 0 ? "0" : t.toPlainString());
@@ -193,6 +195,7 @@ public class PDVScreenViewModel extends ViewModelv2 {
                     clienteSelected.set(null);
                     isVendaFiada.set(false);
                     Components.ShowPopup(ctx, "Venda finalizada com sucesso!");
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (SQLException e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao finalizar venda: " + e.getMessage()));

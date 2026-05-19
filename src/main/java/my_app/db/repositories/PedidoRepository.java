@@ -2,9 +2,11 @@ package my_app.db.repositories;
 
 import my_app.db.dto.PedidoDto;
 import my_app.db.models.PedidoModel;
+import my_app.utils.DateUtils;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +61,44 @@ public class PedidoRepository extends BaseRepository<PedidoDto, PedidoModel> {
     @Override
     protected PedidoModel buscarById(Long id) throws SQLException {
         return null;
+    }
+
+    public BigDecimal somarPedidosHoje() throws SQLException {
+        long inicioHoje = DateUtils.localDateParaMillis(LocalDate.now());
+        long fimHoje = inicioHoje + 86399999L;
+
+        String sql = """
+        SELECT COALESCE(SUM(total_liquido), 0) as total
+        FROM pedidos
+        WHERE data_criacao BETWEEN ? AND ?
+        AND is_fiado = 0
+    """;
+        try (PreparedStatement ps = conn().prepareStatement(sql)) {
+            ps.setLong(1, inicioHoje);
+            ps.setLong(2, fimHoje);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBigDecimal("total");
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
+    // No PedidoRepository — versão por período em vez de só hoje
+    public BigDecimal somarPedidosPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        String sql = """
+        SELECT COALESCE(SUM(total_liquido), 0) as total
+        FROM pedidos
+        WHERE data_criacao BETWEEN ? AND ?
+        AND is_fiado = 0
+    """;
+        try (PreparedStatement ps = conn().prepareStatement(sql)) {
+            ps.setLong(1, dataInicio);
+            ps.setLong(2, dataFim);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getBigDecimal("total");
+            }
+        }
+        return BigDecimal.ZERO;
     }
 
     // buscarById, listar, excluirById — padrão igual aos outros repos

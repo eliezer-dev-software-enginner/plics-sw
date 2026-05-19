@@ -7,6 +7,7 @@ import my_app.screens.*;
 import my_app.screens.WelcomeScreen;
 import my_app.screens.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
+import my_app.screens.homeScreen.HomeScreen;
 import my_app.screens.pdvScreen.PDVScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
@@ -20,7 +21,7 @@ public class AppRoutes {
 
         var routes = Set.of(
                 new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(900, 550, Main.BASE_TITLE, true)),
-                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1050, 550,Main.BASE_TITLE, true)),
+                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1050, 650,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
                 new Router.Route("produtos",ctx-> new ProdutoScreen(ctx), new RouteProps(1000, 650,"Cadastro de produtos", true)),
                 //ok
@@ -53,13 +54,13 @@ public class AppRoutes {
                         new RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
                 new Router.Route("entrar-com-credenciais",ctx-> new AuthScreen(ctx),
                         new RouteProps(550, 400, "Seja muito bem vindo", false))
-
         );
 
         //String rotaInicial = "produtos";
-        String rotaInicial = "pdv-screen";
+        //String rotaInicial = "pdv-screen";
         //String rotaInicial = "vendas";
         //String rotaInicial = "pedidos";
+        String rotaInicial = "home";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {
