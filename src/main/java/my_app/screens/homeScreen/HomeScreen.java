@@ -1,6 +1,7 @@
 package my_app.screens.homeScreen;
 
 import megalodonte.State;
+import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -10,6 +11,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.Show;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -77,7 +79,8 @@ public class HomeScreen implements ScreenComponent {
 
     public Component saudacaoComponent(){
         return new Column().children(
-                new Image("/assets/gifs/feliz.gif", new ImageProps().size(80)),
+                Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(80)))
+                        .withTransition(Animations::fadeSlide),
                 new Text(viewModel.vendasHoje, new TextProps().variant(TextVariant.BODY).bold())
         );
     }
