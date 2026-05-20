@@ -13,6 +13,7 @@ import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
 import my_app.screens.pedidosScreen.PedidosScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;
+import my_app.screens.vendaScreen.VendaMercadoriaScreen;
 
 import java.util.Set;
 
@@ -58,9 +59,9 @@ public class AppRoutes {
 
         //String rotaInicial = "produtos";
         //String rotaInicial = "pdv-screen";
-        //String rotaInicial = "vendas";
+        String rotaInicial = "vendas";
         //String rotaInicial = "pedidos";
-        String rotaInicial = "home";
+        //String rotaInicial = "home";
         //String rotaInicial = "entrar-com-credenciais";
 
 //        String rotaInicial;

@@ -4,8 +4,10 @@ import megalodonte.State;
 import megalodonte.base.components.Component;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
+import megalodonte.props.ContainerProps;
 import my_app.screens.components.Components;
 
 public interface ContratoTelaCrudV2 {
@@ -30,14 +32,15 @@ public interface ContratoTelaCrudV2 {
     Component form();
 
     default <T> Component mainView(State<T> itemSelectedInTable) {
-        var mainContent = new Column()
-                .c_child(form())
-                .c_child(new SpacerVertical(30))
-                .c_child(table());
+        var mainContent = new Container(new ContainerProps().bgColor("#fff")).children(
+                        form(), new SpacerVertical(30), table()
+        );
 
-        return new Column(new ColumnProps().paddingAll(10))
-                .c_child(commonCustomMenus(itemSelectedInTable))
-                .c_child(new SpacerVertical(10))
-                .c_child(Components.ScrollPaneDefault(mainContent));
+        return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))
+                .children(
+                        commonCustomMenus(itemSelectedInTable),
+                        new SpacerVertical(10),
+                        Components.ScrollPaneDefault(mainContent)
+                );
     }
 }
