@@ -66,6 +66,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row()
                                 .r_child(ContainerLeft(vm))
+                                .r_child(new SpacerHorizontal(90))
                                 .r_child(Components.CardImageSelector(vm.imagem, handleChangeImage)))
                         .c_child(new SpacerVertical(25))
                         .c_child(Components.actionButtons(vm.btnText,this::handleAddOrUpdate, this::clearForm)),
@@ -137,16 +138,12 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
 
         return new Column(new ColumnProps().spacingOf(20))
                 .c_child(
-                        new Row(rowProps)
-                                .r_child(new Row(new RowProps().bottomVertically())
-                                        .r_child(Components.InputColumn("SKU(Código de barras)", vm.codigoBarras, ""))
-                                        .r_child(new Button("Gerar", new ButtonProps().height(37).textColor("#FFF"))
-                                                .onClick(handleGerarCodigoBarras)
-                                        )
+                        new Row(rowProps).children(
+                                        Components.InputWithButtonRow("SKU(Código de barras)", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
+                                        Components.InputColumn("Descrição curta", vm.descricao, ""),
+                                        Components.SelectColumn("Unidade", vm.unidades, vm.unidadeSelected, it -> it),
+                                        Components.InputColumn("Marca", vm.marca, "")
                                 )
-                                .r_child(Components.InputColumn("Descrição curta", vm.descricao, ""))
-                                .r_child(Components.SelectColumn("Unidade", vm.unidades, vm.unidadeSelected, it -> it))
-                                .r_child(Components.InputColumn("Marca", vm.marca, ""))
                 ).c_child(new Row(rowProps)
                                 .r_child(Components.InputColumnCurrency("Preço de compra", vm.precoCompra))
                                 //.r_child(Components.InputColumn("Margem %", vm.margem, ""))

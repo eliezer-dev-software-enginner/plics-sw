@@ -620,6 +620,16 @@ public class Components {
                 );
     }
 
+    public static Component InputWithButtonRow(String label, String btnTitle, State<String> inputState, Runnable onClick){
+        return new Row(new RowProps().bottomVertically())
+                .r_child(Components.InputColumn(label, inputState, ""))
+                .r_child(new Button(btnTitle, new ButtonProps().height(32).textColor("#FFF")
+                        .borderRadius(theme.radius().sm()).borderWidth(theme.border().width()).borderColor(theme.colors().primary())
+                        )
+                        .onClick(onClick)
+                );
+    }
+
     public static Component errorText(String message) {
         return new Container(new ContainerProps().bgColor("white")).c_child(new SpacerVertical(5))
                 .c_child(new Text(message,  new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
