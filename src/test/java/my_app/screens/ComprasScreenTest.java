@@ -1,6 +1,7 @@
 package my_app.screens;
 
 import my_app.db.models.ProdutoModel;
+import my_app.screens.comprasScreen.ComprasScreen;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

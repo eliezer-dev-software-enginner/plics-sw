@@ -1,4 +1,4 @@
-package my_app.screens;
+package my_app.screens.comprasScreen;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,17 +11,15 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import my_app.db.dto.*;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrud;
+import my_app.domain.ContratoTelaCrudV2;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.screens.components.Components;
 //import javafx.scene.control.*;
-import javafx.scene.control.*;
 import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
@@ -38,9 +36,8 @@ import java.util.List;
 
 //TODO: finalizar implementações
 //TODO: lista de compras para exibir na tabela
-public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
+public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
     private final ScreenContext ctx;
-    private final Theme theme = ThemeManager.theme();
     private final ListState<CompraModel> compras = ListState.of(List.of());
     State<LocalDate> dataCompra = State.of(LocalDate.now());
     State<String> numeroNota = State.of("");
@@ -146,7 +143,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public Component render() {
-        return mainView();
+        return mainView(compraSelected);
     }
 
     @Override
@@ -165,10 +162,13 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                 .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(Utils::toBRLCurrency))
                 );
 
-        return new Card(new Scroll(
-                new Column(new ColumnProps().minWidth(800))
-                        .c_child(Components.FormTitle("Cadastrar Nova Compra"))
-                        .c_child(new SpacerVertical(20))
+        return new Column(new ColumnProps().spacingOf(10)).children(
+                Components.FormTitle("Cadastrar Nova Compra"),
+                new SpacerVertical(20),
+                        formFirstRow(),
+                        formSecondRow(),
+                        .c_child()
+                        .c_child()
                         .c_child(top)
                         .c_child(new SpacerVertical(10))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
@@ -194,7 +194,14 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(new SpacerVertical(10))
                         .c_child(valoresRow)
                         .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
-        ));
+        );
+    }
+
+    private Row displayOperationsRow() {
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(Components.TextWithValue("Valor total(bruto): ", totalBruto))
+                .r_child(Components.TextWithValue("Desconto: ", descontoComputed))
+                .r_child(Components.TextWithValue("Total geral(líquido): ", vm.totalLiquido.map(Utils::toBRLCurrency)));
     }
 
     private void buscarProduto() {

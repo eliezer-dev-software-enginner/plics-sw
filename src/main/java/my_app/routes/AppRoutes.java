@@ -7,6 +7,7 @@ import my_app.screens.*;
 import my_app.screens.WelcomeScreen;
 import my_app.screens.categoriaScreen.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
+import my_app.screens.comprasScreen.ComprasScreen;
 import my_app.screens.fornecedorScreen.FornecedorScreen;
 import my_app.screens.homeScreen.HomeScreen;
 import my_app.screens.pdvScreen.PDVScreen;
