@@ -18,13 +18,14 @@ import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.ContratoTelaCrud;
+import my_app.domain.ContratoTelaCrudV2;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.util.List;
 
-public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
+public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     private final ProdutoScreenViewModel vm;
     private final Theme theme = ThemeManager.theme();
     private final ScreenContext ctx;
@@ -39,35 +40,10 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
         vm.loadInicial();
     }
 
-    public Component render() {
-        return new Container(new ContainerProps().paddingAll(15).bgColor(theme.colors().background()))
-                .c_child(commonCustomMenus())
-                .c_child(new SpacerVertical(20))
-                .c_child(createHeaderSection())
-                .c_child(new SpacerVertical(30))
-                .c_child(new Scroll(createMainContent()));
-    }
+    public Component render() {return mainView(vm.produtoSelected);}
 
-    private Component createHeaderSection() {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(5))
-                        .c_child(Components.FormTitle("Cadastro de Produtos"))
-                        .c_child(new SpacerVertical(10))
-                        .c_child(new Text("Gerencie o catálogo de produtos do seu estabelecimento",
-                                new TextProps().variant(TextVariant.BODY).color("#6b7280"))),
-                new CardProps()
-                        .padding(0)
-                        .borderRadius(12)
-        );
-    }
-
-    private Component createMainContent() {
-        return new Column(new ColumnProps().spacingOf(30))
-                .c_child(createFormSection())
-                .c_child(table());
-    }
-
-    private Component createFormSection() {
+    @Override
+    public Component form() {
         Runnable handleChangeImage = () -> {
             var stage = this.ctx.selfStage();
 
@@ -94,7 +70,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(new SpacerVertical(25))
                         .c_child(Components.actionButtons(vm.btnText,this::handleAddOrUpdate, this::clearForm)),
                 new CardProps()
-                        .padding(0)
+                        .padding(10)
                         .borderRadius(12)
         );
     }
@@ -192,12 +168,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         .r_child(Components.InputColumnNumeric("Estoque", vm.estoque, ""))//fornecedor padrão
                 );
     }
-
-    @Override
-    public Component form() {
-        return null;
-    }
-
 
     Component ItemDetails(ProdutoModel model){
         var validade = model.validade!= null?  DateUtils.millisToBrazilianDateTime(model.dataCriacao): "Sem validade";

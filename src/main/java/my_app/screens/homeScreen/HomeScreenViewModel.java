@@ -104,7 +104,7 @@ public class HomeScreenViewModel extends ViewModelv2 {
 
                     this.vendasHoje.set("Hoje você fez: " + Utils.toBRLCurrency(totalHoje));
 
-                    exibirGifNaUI(lucro);
+                    exibirGifNaUI(totalHoje);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> {
@@ -116,10 +116,11 @@ public class HomeScreenViewModel extends ViewModelv2 {
         });
     }
 
-    private void exibirGifNaUI(BigDecimal lucro) {
-        if(lucro.compareTo(BigDecimal.ZERO) < 0) {
+    private void exibirGifNaUI(BigDecimal totalHoje) {
+        System.out.println("totalHoje: " + totalHoje);
+        if(totalHoje.compareTo(BigDecimal.ZERO) < 0) {
             currentGif.set(gifsList.get(3));
-        }else if(lucro.compareTo(BigDecimal.ZERO) == 0) {
+        }else if(totalHoje.compareTo(BigDecimal.ZERO) == 0) {
             String randomItem = gifsOcioso.get(random.nextInt(gifsOcioso.size()));
             currentGif.set(randomItem);
         }else{

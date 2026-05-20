@@ -32,7 +32,8 @@ public interface ContratoTelaCrudV2 {
     Component form();
 
     default <T> Component mainView(State<T> itemSelectedInTable) {
-        var mainContent = new Container(new ContainerProps().bgColor("#fff")).children(
+        var mainContent = new Container(new ContainerProps().bgColor("#fff"))
+                .children(
                         form(), new SpacerVertical(30), table()
         );
 

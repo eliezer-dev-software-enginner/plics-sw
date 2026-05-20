@@ -22,9 +22,9 @@ public class AppRoutes {
 
         var routes = Set.of(
                 new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(900, 550, Main.BASE_TITLE, true)),
-                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1150, 650,Main.BASE_TITLE, true)),
+                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1150, 690,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
-                new Router.Route("produtos",ctx-> new ProdutoScreen(ctx), new RouteProps(1000, 650,"Cadastro de produtos", true)),
+                new Router.Route("produtos",ctx-> new ProdutoScreen(ctx), new RouteProps(1130, 650,"Cadastro de produtos", true)),
                 //ok
                 new Router.Route("categorias",ctx-> new CategoriaScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de categorias", false)),
                 //ok
@@ -49,7 +49,7 @@ public class AppRoutes {
 
                 new Router.Route("contas-a-receber",ctx-> new ContasAReceberScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a receber", true)),
                 //ok
-                new Router.Route("vendas",ctx-> new VendaMercadoriaScreen(ctx), new RouteProps(1020, 650, "Gerencie sua venda de mercadorias", true)),
+                new Router.Route("vendas",ctx-> new VendaMercadoriaScreen(ctx), new RouteProps(1200, 650, "Gerencie sua venda de mercadorias", true)),
                 new Router.Route("pedidos",ctx-> new PedidosScreen(ctx), new RouteProps(1000, 650, "Analise suas vendas feitas no PDV", true)),
                 new Router.Route("preferencias",ctx-> new PreferenciasScreen(ctx),
                         new RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
@@ -57,11 +57,11 @@ public class AppRoutes {
                         new RouteProps(550, 400, "Seja muito bem vindo", false))
         );
 
-        //String rotaInicial = "produtos";
+        String rotaInicial = "produtos";
         //String rotaInicial = "pdv-screen";
-        String rotaInicial = "vendas";
+        //String rotaInicial = "vendas";
         //String rotaInicial = "pedidos";
-        //String rotaInicial = "home";
+       // String rotaInicial = "home";
         //String rotaInicial = "entrar-com-credenciais";
 
 //        String rotaInicial;
