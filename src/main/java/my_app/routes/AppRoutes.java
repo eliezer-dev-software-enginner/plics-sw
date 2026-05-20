@@ -5,7 +5,7 @@ import megalodonte.router.v4.Router;
 import my_app.Main;
 import my_app.screens.*;
 import my_app.screens.WelcomeScreen;
-import my_app.screens.CategoriaScreen;
+import my_app.screens.categoriaScreen.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
 import my_app.screens.homeScreen.HomeScreen;
 import my_app.screens.pdvScreen.PDVScreen;
@@ -57,12 +57,13 @@ public class AppRoutes {
                         new RouteProps(550, 400, "Seja muito bem vindo", false))
         );
 
-        String rotaInicial = "produtos";
+        //String rotaInicial = "produtos";
         //String rotaInicial = "pdv-screen";
         //String rotaInicial = "vendas";
         //String rotaInicial = "pedidos";
        // String rotaInicial = "home";
         //String rotaInicial = "entrar-com-credenciais";
+        String rotaInicial = "categorias";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {

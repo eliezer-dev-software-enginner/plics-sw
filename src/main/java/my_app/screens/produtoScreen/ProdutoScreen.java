@@ -94,6 +94,9 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 .onItemSelectChange(vm.produtoSelected::set)
                 .onItemDoubleClick(it-> {
                     Components.ShowModal( ItemDetails(it), ctx, 550);
+                })
+                .onClickOutside(()->{
+                    vm.produtoSelected.set(null);
                 });
 
         return simpleTable;

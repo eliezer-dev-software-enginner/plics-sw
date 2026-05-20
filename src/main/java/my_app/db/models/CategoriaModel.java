@@ -1,31 +1,22 @@
 package my_app.db.models;
 
+import my_app.db.dto.CategoriaDto;
+import my_app.db.dto.FornecedorDto;
+import my_app.domain.ModelBase;
+import my_app.domain.SqlField;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CategoriaModel {
-    public Long id;
+public class CategoriaModel extends ModelBase<CategoriaDto> {
+    @SqlField(name = "nome", type = "string")
     public String nome;
-    public Long dataCriacao;
 
-    public CategoriaModel(){}
-
-    public CategoriaModel(Long id, String nome, Long dataCriacao){
-        this.id = id;
-        this(nome,dataCriacao);
-    }
-
-    public CategoriaModel(String nome, Long dataCriacao){
-        this.nome = nome;
-        this.dataCriacao = dataCriacao;
-    }
-
-    public static CategoriaModel fromResultSet(ResultSet rs) throws SQLException {
-        var model  = new CategoriaModel();
-        model.id = rs.getLong("id");
-        model.nome = rs.getString("nome");
-        model.dataCriacao = rs.getLong("data_criacao");
-       return model;
+    @Override
+    public CategoriaModel fromIdAndDtoAndMillis(Long id, CategoriaDto dto, long millis) {
+        var model = (CategoriaModel) super.fromIdAndDtoAndMillis(id, dto, millis);
+        model.nome = dto.nome();
+        return model;
     }
 }
 
