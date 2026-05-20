@@ -44,44 +44,48 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
 
     @Override
     public Component form() {
-        final var top = new Row(new RowProps().bottomVertically().spacingOf(10)).children(
-                Components.DatePickerColumn(vm.dataVenda, "Data de venda"),
-                Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome, true),
-                Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
-                Components.InputColumnComFocusHandler("Código", vm.codigo, "xxxxxxxx", vm::buscarProduto)
-        );
-
-        final var valoresRow = new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.TextWithValue("Valor total(bruto): ", vm.totalBruto))
-                .r_child(Components.TextWithValue("Desconto: ", vm.descontoFormatado))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", vm.totalLiquido.map(Utils::toBRLCurrency)));
-
-        return new Container().children(
+        return new Column(new ColumnProps().spacingOf(10)).children(
                 Components.FormTitle("Cadastrar Nova Venda"),
                 new SpacerVertical(20),
-                top,
-                new SpacerVertical(10),
-                new Row(new RowProps().bottomVertically().spacingOf(10))
-                        .r_child(Components.InputColumn("Descrição do produto",
-                                vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""),
-                                "Ex: Paraiso", true))
-                        .r_child(Components.InputColumnCurrency("Pc. de venda", vm.pcVenda))
-                        .r_child(Components.InputColumn("Quantidade", vm.qtd, "Ex: 2"))
-                        .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro)),
-                new SpacerVertical(10),
-                new Row(new RowProps().spacingOf(10))
-                        .r_child(Components.SelectColumn("Tipo de pagamento",
-                                vm.tiposPagamento, vm.tipoPagamentoSelecionado, it -> it))
-                        .r_child(Components.SelectColumn("Refletir no estoque?",
-                                vm.opcoesEstoque, vm.opcaoEstoqueSelected, it -> it))
-                        .r_child(Components.TextAreaColumn("Observação", vm.observacao, "")),
-                new SpacerVertical(10),
+                formFirstRow(),
+                formSecondRow(),
                 new Row(new RowProps().spacingOf(15))
                         .r_child(Components.TextWithValue("Estoque anterior:", vm.estoqueAnterior))
                         .r_child(Components.TextWithValue("Estoque após venda:", vm.estoqueAtual)),
-                new SpacerVertical(10),
+                displayOperationsRow(),
                 Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalLiquido),
                 Components.actionButtons(vm.btnText, vm::handleAddOrUpdate, vm::clearForm)
+        );
+    }
+
+    private Row displayOperationsRow() {
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(Components.TextWithValue("Valor total(bruto): ", vm.totalBruto))
+                .r_child(Components.TextWithValue("Desconto: ", vm.descontoFormatado))
+                .r_child(Components.TextWithValue("Total geral(líquido): ", vm.totalLiquido.map(Utils::toBRLCurrency)));
+    }
+
+    private Row formSecondRow() {
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(Components.InputColumnCurrency("Pc. de venda", vm.pcVenda))
+                .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
+                .r_child(Components.SelectColumn("Tipo de pagamento",
+                        vm.tiposPagamento, vm.tipoPagamentoSelecionado, it -> it))
+                .r_child(Components.SelectColumn("Refletir no estoque?",
+                        vm.opcoesEstoque, vm.opcaoEstoqueSelected, it -> it))
+                .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
+    }
+
+    private Row formFirstRow() {
+        return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
+                Components.DatePickerColumn(vm.dataVenda, "Data de venda"),
+                Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome, true),
+                Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
+                Components.InputColumnComFocusHandler("Código", vm.codigo, "xxxxxxxx", vm::buscarProduto),
+                Components.InputColumn("Quantidade", vm.qtd, "Ex: 2"),
+                Components.InputColumn("Descrição do produto",
+                        vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""),
+                        "Ex: Paraiso", true)
         );
     }
 

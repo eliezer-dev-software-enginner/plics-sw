@@ -49,7 +49,7 @@ public class AppRoutes {
 
                 new Router.Route("contas-a-receber",ctx-> new ContasAReceberScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a receber", true)),
                 //ok
-                new Router.Route("vendas",ctx-> new VendaMercadoriaScreen(ctx), new RouteProps(1000, 650, "Gerencie sua venda de mercadorias", true)),
+                new Router.Route("vendas",ctx-> new VendaMercadoriaScreen(ctx), new RouteProps(1020, 650, "Gerencie sua venda de mercadorias", true)),
                 new Router.Route("pedidos",ctx-> new PedidosScreen(ctx), new RouteProps(1000, 650, "Analise suas vendas feitas no PDV", true)),
                 new Router.Route("preferencias",ctx-> new PreferenciasScreen(ctx),
                         new RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
