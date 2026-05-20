@@ -7,6 +7,7 @@ import my_app.screens.*;
 import my_app.screens.WelcomeScreen;
 import my_app.screens.categoriaScreen.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
+import my_app.screens.fornecedorScreen.FornecedorScreen;
 import my_app.screens.homeScreen.HomeScreen;
 import my_app.screens.pdvScreen.PDVScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
@@ -28,7 +29,7 @@ public class AppRoutes {
                 //ok
                 new Router.Route("categorias",ctx-> new CategoriaScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de categorias", false)),
                 //ok
-                new Router.Route("fornecedores",ctx-> new FornecedorScreen(ctx), new RouteProps(900, 650, "Gerenciamento de Fornecedores", true)),
+                new Router.Route("fornecedores",ctx-> new FornecedorScreen(ctx), new RouteProps(1210, 650, "Gerenciamento de Fornecedores", true)),
                 //ok
                 new Router.Route("empresa",ctx-> new CadastroEmpresaScreen(ctx), new RouteProps(900, 650, "Informações da empresa", false)),
                //ok
@@ -63,7 +64,8 @@ public class AppRoutes {
         //String rotaInicial = "pedidos";
        // String rotaInicial = "home";
         //String rotaInicial = "entrar-com-credenciais";
-        String rotaInicial = "categorias";
+        //String rotaInicial = "categorias";
+        String rotaInicial = "fornecedores";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {

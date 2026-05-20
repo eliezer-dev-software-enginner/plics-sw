@@ -131,38 +131,46 @@ public class ProdutoScreenViewModel extends ViewModel {
         }
 
         if (modoEdicao.get()) {
-            Async.Run(() -> {
-                try {
-                    service.atualizar(new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
-                    var produtosList = produtoRepository.listar();
-                    UI.runOnUi(() -> {
-                        this.produtos.clear();
-                        this.produtos.addAll(produtosList);
-                        Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
-                        limparFormulario();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-                }
-            });
+            asyncAtualizar(ctx, dto);
         }else{
-            Async.Run(() -> {
-                try {
-                    var produtoModel = service.salvar(dto);
-                    produtoModel.dataCriacao = System.currentTimeMillis();
-                    produtoModel.categoria = categoriaSelected.get();
-                    produtoModel.fornecedor = fornecedorSelected.get();
-
-                    UI.runOnUi(() -> {
-                        produtos.add(produtoModel);
-                        Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
-                        limparFormulario();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-                }
-            });
+            asyncSalvar(ctx, dto);
         }
+    }
+
+    private void asyncAtualizar(ScreenContext ctx, ProdutoDto dto) {
+        Async.Run(() -> {
+            try {
+                service.atualizar(new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
+                var produtosList = produtoRepository.listar();
+                UI.runOnUi(() -> {
+                    this.produtos.clear();
+                    this.produtos.addAll(produtosList);
+                    Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
+                    limparFormulario();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
+    }
+
+    private void asyncSalvar(ScreenContext ctx, ProdutoDto dto) {
+        Async.Run(() -> {
+            try {
+                var produtoModel = service.salvar(dto);
+                produtoModel.dataCriacao = System.currentTimeMillis();
+                produtoModel.categoria = categoriaSelected.get();
+                produtoModel.fornecedor = fornecedorSelected.get();
+
+                UI.runOnUi(() -> {
+                    produtos.add(produtoModel);
+                    Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
+                    limparFormulario();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
     }
 
 
@@ -183,6 +191,7 @@ public class ProdutoScreenViewModel extends ViewModel {
         imagem.set("/assets/produto-generico.png");
     }
 
+    //TODO: usar a exclusão da FornecedorScreenViewModel, pois esta não mostra aviso
     public void excluir() throws Exception {
         Long id = produtoSelected.get().id;
         service.excluir(id);
