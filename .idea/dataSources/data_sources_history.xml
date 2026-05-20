@@ -6,7 +6,6 @@
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/erp.db</jdbc-url>
-      <auth-provider>no-auth</auth-provider>
       <schema-mapping />
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>

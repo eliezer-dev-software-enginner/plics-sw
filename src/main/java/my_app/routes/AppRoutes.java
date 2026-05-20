@@ -21,7 +21,7 @@ public class AppRoutes {
 
         var routes = Set.of(
                 new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(900, 550, Main.BASE_TITLE, true)),
-                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1050, 650,Main.BASE_TITLE, true)),
+                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1150, 650,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
                 new Router.Route("produtos",ctx-> new ProdutoScreen(ctx), new RouteProps(1000, 650,"Cadastro de produtos", true)),
                 //ok
@@ -61,6 +61,7 @@ public class AppRoutes {
         //String rotaInicial = "vendas";
         //String rotaInicial = "pedidos";
         String rotaInicial = "home";
+        //String rotaInicial = "entrar-com-credenciais";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {

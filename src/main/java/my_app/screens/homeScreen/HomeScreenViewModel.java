@@ -6,7 +6,6 @@ import megalodonte.base.UI;
 import my_app.db.repositories.*;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModel;
 import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -14,6 +13,11 @@ import my_app.utils.Utils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class HomeScreenViewModel extends ViewModelv2 {
 
@@ -29,6 +33,23 @@ public class HomeScreenViewModel extends ViewModelv2 {
 
     public final State<String> vendasHoje = new State<>("R$ 0,00");
     private final PedidoRepository pedidoRepo;
+
+    public final State<Boolean> gifVisible = State.of(true);
+    public State<String> currentGif = new State<>(null);
+    private final Random random = new Random();
+
+    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+    List<String> gifsList = List.of(
+            "/assets/gifs/feliz.gif",
+            "/assets/gifs/aguardando-apreencivamente.gif",
+            "/assets/gifs/feliz-2.gif",
+            "/assets/gifs/negativa.gif",
+            "/assets/gifs/de-boa-relaxando.gif"
+    );
+
+    List<String> gifsFeliz = List.of(gifsList.getFirst(), gifsList.get(2));
+    List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
 
     public HomeScreenViewModel() {
         receitasRepo = new ContasAReceberRepository();
@@ -51,8 +72,6 @@ public class HomeScreenViewModel extends ViewModelv2 {
     }
 
     public void calcularFinanceiroMesAtual() {
-
-
         Async.Run(() -> {
             try {
                 LocalDate now = LocalDate.now();
@@ -84,6 +103,8 @@ public class HomeScreenViewModel extends ViewModelv2 {
                     this.mesAtual.set(mesFormatado);
 
                     this.vendasHoje.set("Hoje você fez: " + Utils.toBRLCurrency(totalHoje));
+
+                    exibirGifNaUI(lucro);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> {
@@ -93,5 +114,20 @@ public class HomeScreenViewModel extends ViewModelv2 {
                 });
             }
         });
+    }
+
+    private void exibirGifNaUI(BigDecimal lucro) {
+        if(lucro.compareTo(BigDecimal.ZERO) < 0) {
+            currentGif.set(gifsList.get(3));
+        }else if(lucro.compareTo(BigDecimal.ZERO) == 0) {
+            String randomItem = gifsOcioso.get(random.nextInt(gifsOcioso.size()));
+            currentGif.set(randomItem);
+        }else{
+            String randomItem = gifsFeliz.get(random.nextInt(gifsFeliz.size()));
+            currentGif.set(randomItem);
+
+        }
+
+        executor.schedule(()-> UI.runOnUi(()-> gifVisible.set(false)),10, TimeUnit.SECONDS);
     }
 }

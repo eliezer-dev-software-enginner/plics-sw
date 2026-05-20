@@ -1,6 +1,7 @@
 package my_app.screens.homeScreen;
 
 import megalodonte.State;
+import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -10,6 +11,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.Show;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -33,15 +35,16 @@ public class HomeScreen implements ScreenComponent {
     }
 
     public Component render (){
-        return new Container(new ContainerProps().bgColor("#fff")).children(
+        var rowProps = new RowProps().spacingOf(10);
+        return new Container(new ContainerProps().bgImage("/assets/home-bg.jpg")).children(
                 menuBar(),
                 new Container(new ContainerProps().paddingAll(10))
                         .children(
-                                new Row().children(
+                                new Row(rowProps).children(
                                         new Column().children(
-                                                financeCard("Receitas", AntDesignIconsOutlined.RISE, "do mês", viewModel.receitas),
-                                                financeCard("Despesas", AntDesignIconsOutlined.FALL, "do mês", viewModel.despesas),
-                                                financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, "do mês", viewModel.lucroLiquido)
+                                                financeCard("Receitas", AntDesignIconsOutlined.RISE, viewModel.receitas),
+                                                financeCard("Despesas", AntDesignIconsOutlined.FALL, viewModel.despesas),
+                                                financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, viewModel.lucroLiquido)
                                         ),
                                         centerContent()
                                 )
@@ -50,33 +53,47 @@ public class HomeScreen implements ScreenComponent {
     }
 
     private Column centerContent() {
-        return new Column(new ColumnProps().centerHorizontally()).children(
-                new Row()
+        var rowProps = new RowProps().spacingOf(10);
+        return new Column(new ColumnProps().spacingOf(10)).children(
+                new Row(rowProps)
                         .children(
                                 CardColumn(cardItemList.get(0)),
                                 CardColumn(cardItemList.get(1)),
                                 CardColumn(cardItemList.get(2)),
                                 CardColumn(cardItemList.get(3))
                         ),
-                new Row()
+                new Row(rowProps)
                         .children(
                                 CardColumn(cardItemList.get(4)),
                                 CardColumn(cardItemList.get(5)),
-                                CardColumn(cardItemList.get(6))
+                                CardColumn(cardItemList.get(6)),
+                                CardColumn(cardItemList.get(7))
                         ),
-                new Text(viewModel.vendasHoje, new TextProps().variant(TextVariant.BODY).bold())
+                new Row(rowProps)
+                        .children(
+                                CardColumn(cardItemList.get(8)),
+                              saudacaoComponent()
+                        )
         );
     }
 
-    private Component financeCard(String title, Ikon ikon, String desc, State<String> valueState){
+    public Component saudacaoComponent(){
+        return new Column().children(
+                Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(80)))
+                        .withTransition(Animations::fadeSlide),
+                new Text(viewModel.vendasHoje, new TextProps().variant(TextVariant.BODY).bold().textColor("#fff"))
+        );
+    }
+
+    private Component financeCard(String title, Ikon ikon, State<String> valueState){
         return new Card(new Column(new ColumnProps().centerHorizontally().paddingAll(20))
                         .children(
                                 Component.CreateFromJavaFxNode(FontIcon.of(ikon)),
                                 new Text(title, new TextProps().variant(TextVariant.BODY).bold()),
-                                new Text(desc,  new TextProps().variant(TextVariant.SMALL)),
+                                new Text("do mês",  new TextProps().variant(TextVariant.SMALL)),
                                 new Text(valueState, new TextProps().variant(TextVariant.SUBTITLE).bold())
                         ),
-                new CardProps().padding(0).height(220).borderRadius(20)
+                new CardProps().padding(0).height(100).borderRadius(20).width(170)
         );
     }
 
@@ -118,9 +135,9 @@ public class HomeScreen implements ScreenComponent {
                new Card(
                 new Column(new ColumnProps().centerHorizontally().paddingAll(20))
                         .c_child(new Image(cardItem.img, new ImageProps().size(60)))
-                        .c_child(new Text(cardItem.title, (TextProps) new TextProps().variant(TextVariant.BODY).bold()))
+                        .c_child(new Text(cardItem.title, new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new Text(cardItem.desc,  new TextProps().variant(TextVariant.SMALL))),
-                       new CardProps().padding(0).height(220).width(200).borderRadius(20)),
+                       new CardProps().padding(0).height(200).width(230).borderRadius(20)),
                ()-> ctx.router().spawnWindow(cardItem.destination,e->{})
        );
     }
