@@ -65,7 +65,9 @@ public class AppRoutes {
        // String rotaInicial = "home";
         //String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "categorias";
-        String rotaInicial = "fornecedores";
+        //String rotaInicial = "fornecedores";
+        //String rotaInicial = "empresa";
+        String rotaInicial = "compras";
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {

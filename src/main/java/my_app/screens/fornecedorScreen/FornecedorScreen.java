@@ -1,7 +1,5 @@
 package my_app.screens.fornecedorScreen;
 
-import megalodonte.base.UI;
-import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.Card;
@@ -9,24 +7,15 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
-import my_app.db.repositories.FornecedorRepository;
-import my_app.domain.ContratoTelaCrud;
 import my_app.domain.ContratoTelaCrudV2;
 import my_app.screens.components.Components;
-//import javafx.scene.control.*;
 import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
-
-import java.util.List;
-
-
-import static my_app.utils.Utils.*;
 
 public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV2 {
     private final FornecedorScreenViewModel vm;
@@ -51,27 +40,32 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV2 {
                         .c_child(new Row(new RowProps().centerHorizontally())
                                 .r_child(new Text("Cadastro de Fornecedor", (TextProps) new TextProps().variant(TextVariant.SUBTITLE).bold())))
                         .c_child(new SpacerVertical(20))
-                        .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.InputColumn("Nome Fantasia", vm.nome,"Ex: Empresa 123"))
-                                .r_child(Components.InputColumnNumeric("CNPJ", vm.cnpj, ""))
-                                .r_child(Components.InputColumnPhone("Celular", vm.celular))
-                                .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, ""))
+                        .c_child(informacoesPessoais()
                         )
-                        .c_child(Components.InputColumn("Email", vm.email, "Ex: email@teste.com"))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Column().c_child(Components.FormTitle("Endereço")))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
+                                .r_child(Components.SelectColumn("UF", vm.ufList, vm.ufSelected, it->it))
                                 .r_child(Components.InputColumn("Cidade", vm.cidade,""))
                                 .r_child(Components.InputColumn("Bairro", vm.bairro, ""))
                                 .r_child(Components.InputColumn("Rua", vm.rua, ""))
                                 .r_child(Components.InputColumnNumeric("Número", vm.numero, ""))
+
                         )
-                        .c_child(Components.SelectColumn("UF", vm.ufList, vm.ufSelected, it->it))
                         .c_child(new SpacerVertical(20))
                         .c_child(new LineHorizontal())
                         .c_child(Components.TextAreaColumn("Observação", vm.observacao,""))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)));
+    }
+
+    private Row informacoesPessoais() {
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(Components.InputColumn("Nome Fantasia", vm.nome, "Ex: Empresa 123"))
+                .r_child(Components.InputColumnNumeric("CNPJ", vm.cnpj, ""))
+                .r_child(Components.InputColumnPhone("Celular", vm.celular))
+                .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, ""))
+                .r_child(Components.InputColumn("Email", vm.email, "Ex: email@teste.com"));
     }
 
     @Override

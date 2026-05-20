@@ -457,10 +457,7 @@ public class Components {
 
     public static Component InputColumnPhone(String label, State<String> inputState) {
         var inputProps =  new InputProps()
-                .height(31).placeHolder("(00) 00000-0000")
-                .fontSize(theme.typography().small())
-                .borderWidth(theme.border().width())
-                .borderColor(theme.colors().primary());
+                .height(31).placeHolder("(00) 00000-0000");
 
 
         var input = new Input(inputState, inputProps)
@@ -488,9 +485,7 @@ public class Components {
 
     
     public static Component InputColumnNumeric(String label, State<String> inputState,  String placeholder) {
-        var inputProps = getInputProps(placeholder).
-                borderWidth(theme.border().width())
-                .borderColor(theme.colors().primary());
+        var inputProps = getInputProps(placeholder);
 
         var input = new Input(inputState, inputProps)
                 .onChange(value -> {
@@ -607,17 +602,17 @@ public class Components {
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder) {
-        return TextAreaColumn(label,inputState,placeholder,100);
+        return TextAreaColumn(label,inputState,placeholder,80);
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int height) {
+        TextAreaInput textAreaInput = new TextAreaInput(inputState,
+                getInputProps(placeholder, height)
+        );
+
         return new Column()
                 .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
-                .c_child(new TextAreaInput(inputState,
-                  getInputProps(placeholder, height).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().primary())
-                        )
-                );
+                .c_child(textAreaInput);
     }
 
     public static Component InputWithButtonRow(String label, String btnTitle, State<String> inputState, Runnable onClick){
