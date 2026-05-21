@@ -14,6 +14,7 @@ import my_app.db.repositories.CategoriaRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.lifecycle.viewmodel.component.ViewModel;
+import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import my_app.services.ProdutoService;
 import my_app.utils.DateUtils;
@@ -23,8 +24,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ProdutoScreenViewModel extends ViewModel {
-
+public class ProdutoScreenViewModel extends ViewModelv2 {
+    private final ScreenContext ctx;
     private final ProdutoService service = new ProdutoService();
     private final ProdutoRepository produtoRepository = new ProdutoRepository();
     public final ListState<ProdutoModel> produtos = ListState.of(List.of());
@@ -62,6 +63,11 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final State<ProdutoModel> produtoSelected = State.of(null);
 
     public final State<String> perecivelSelected = new State<>("Não");
+
+
+    public ProdutoScreenViewModel(ScreenContext ctx) {
+        this.ctx = ctx;
+    }
 
     public void loadInicial() {
         Async.Run(() -> {
@@ -122,7 +128,7 @@ public class ProdutoScreenViewModel extends ViewModel {
     }
 
 
-    public void salvarOuAtualizar(ScreenContext ctx) {
+    public void handleAddOrUpdate() {
         var dto = toProduto();
 
         if(perecivelSelected.get().equals("Sim") && validade.isNull()) {
@@ -146,7 +152,7 @@ public class ProdutoScreenViewModel extends ViewModel {
                     this.produtos.clear();
                     this.produtos.addAll(produtosList);
                     Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
-                    limparFormulario();
+                    clearForm();
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -165,7 +171,7 @@ public class ProdutoScreenViewModel extends ViewModel {
                 UI.runOnUi(() -> {
                     produtos.add(produtoModel);
                     Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
-                    limparFormulario();
+                    clearForm();
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -173,8 +179,7 @@ public class ProdutoScreenViewModel extends ViewModel {
         });
     }
 
-
-    public void limparFormulario() {
+    public void clearForm() {
         codigoBarras.set("");
         descricao.set("");
         precoCompra.set("0");
@@ -198,6 +203,41 @@ public class ProdutoScreenViewModel extends ViewModel {
         produtos.removeIf(it -> it.id.equals(id));
     }
 
+    public void handleClickMenuClone() {
+        populateFromProdutoModel();
+        modoEdicao.set(false);
+    }
 
+    private void populateFromProdutoModel(){
+        if(produtoSelected.get() == null) return;
+        final var model = produtoSelected.get();
+
+        codigoBarras.set(model.codigoBarras);
+        descricao.set(model.descricao);
+        precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
+        precoVenda.set(Utils.deRealParaCentavos( model.precoVenda));
+        //margem.set(model.);
+        //lucro.set("0");
+        comissao.set(model.comissao);
+        garantia.set(model.garantia);
+        marca.set(model.marca);
+        unidadeSelected.set(model.unidade);
+        estoque.set(Utils.quantidadeTratada(model.estoque));
+
+        validade.set(model.validade != null ? DateUtils.millisParaLocalDate(model.validade) : null);
+        perecivelSelected.set(model.validade != null && model.validade > 0? "Sim": "Não");
+        observacoes.set(model.observacoes);
+        imagem.set(model.imagem);
+    }
+
+    public void handleClickMenuEdit() {
+        populateFromProdutoModel();
+        modoEdicao.set(true);
+    }
+
+
+    public ScreenContext getCtx() {
+        return ctx;
+    }
 }
 

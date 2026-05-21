@@ -49,7 +49,7 @@ public class Components {
 
     static Theme theme = ThemeManager.theme();
 
-    public static Component imageWithTextRow(String imgPath, String text){
+    public static Component imageWithTextRow(String imgPath, String text) {
         return new Row().children(
                 new Image(imgPath, new ImageProps().size(25)),
                 new SpacerHorizontal(5),
@@ -58,10 +58,10 @@ public class Components {
     }
 
     public static Row TextWithDetails(String label, Object value, boolean wrapText) {
-        var comp = new Text(value == null? "" : value.toString(),
+        var comp = new Text(value == null ? "" : value.toString(),
                 new TextProps().fontSize(theme.typography().body()));
 
-        var textValueComponent = wrapText?  new TextFlow(comp) :comp;
+        var textValueComponent = wrapText ? new TextFlow(comp) : comp;
 
         return new Row()
                 .children(
@@ -69,8 +69,9 @@ public class Components {
                         textValueComponent
                 );
     }
+
     public static Row TextWithDetails(String label, Object value) {
-       return TextWithDetails(label, value, false);
+        return TextWithDetails(label, value, false);
     }
 
     public static Component aPrazoForm(
@@ -106,23 +107,16 @@ public class Components {
     }
 
     public static Component actionButtons(ComputedState<String> btnText, Runnable onClick, Runnable onClearForm) {
-        return new Row(new RowProps().spacingOf(10))
-                .r_child(new Button(btnText,
-                        new ButtonProps()
-                                .fillWidth()
-                                .height(31)
-                                .fontSize(16)
-                                .textColor("white").bgColor("#10b981")
-                )  .onClick(onClick))
-                .r_child(new Button("Limpar",
-                          new ButtonProps()
-                                .fillWidth()
-                                .height(31).fontSize(16).textColor("white").bgColor("#6b7280")
-                               ).onClick(onClearForm)
-                );
+        return new Button(btnText,
+                new ButtonProps()
+                        .fillWidth()
+                        .height(31)
+                        .fontSize(16)
+                        .textColor("white").bgColor("#10b981")
+        ).onClick(onClick);
     }
 
-    public static Component ScrollPaneDefault(Component child){
+    public static Component ScrollPaneDefault(Component child) {
         var scroll = new ScrollPane();
         scroll.setContent(child.getJavaFxNode());
         VBox.setVgrow(scroll, Priority.ALWAYS);
@@ -148,7 +142,7 @@ public class Components {
         popup.show(context.selfStage());
     }
 
-    public static void ShowModal(Component ui, ScreenContext context, int height){
+    public static void ShowModal(Component ui, ScreenContext context, int height) {
         Stage stage = new Stage();
         stage.setScene(new Scene((Parent) ui.getJavaFxNode(), 700, height));
         stage.setTitle("Detalhes");
@@ -157,7 +151,7 @@ public class Components {
         stage.show();
     }
 
-    public static void ShowModal(Component ui, ScreenContext context){
+    public static void ShowModal(Component ui, ScreenContext context) {
         ShowModal(ui, context, 500);
     }
 
@@ -177,7 +171,7 @@ public class Components {
     public static Card CardImageSelector(State<String> imagemState, Runnable handleChangeImage) {
         return new Card(
                 new Column(new ColumnProps().centerHorizontally().spacingOf(15))
-                        .c_child(new Text("Foto do produto",  new TextProps().variant(TextVariant.BODY).bold()))
+                        .c_child(new Text("Foto do produto", new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new Image(imagemState, new ImageProps().size(120)))
                         .c_child(new SpacerVertical().fill())
                         .c_child(new Button("Inserir imagem",
@@ -202,7 +196,7 @@ public class Components {
 
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label) {
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new DatePicker(localDateState,
                                 new DatePickerProps().fontSize(theme.typography().small()).height(31)
                                         .placeHolder("dd/mm/yyyy")
@@ -215,12 +209,13 @@ public class Components {
                         )
                 );
     }
+
     //TODO: adicionar campo editavel:false
     @Deprecated
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label, String placeholder) {
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new DatePicker(localDateState,
                                 new DatePickerProps().fontSize(theme.typography().small()).height(31)
                                         .placeHolder(placeholder)
@@ -245,14 +240,15 @@ public class Components {
     }
 
     public static Component FormTitle(String title, String textColor) {
-        return new Text(title,  new TextProps().variant(TextVariant.BODY).bold().textColor(textColor));
+        return new Text(title, new TextProps().variant(TextVariant.BODY).bold().textColor(textColor));
     }
+
     public static Component FormTitle(String title) {
-        return new Text(title,  new TextProps().variant(TextVariant.BODY).bold());
+        return new Text(title, new TextProps().variant(TextVariant.BODY).bold());
     }
 
     static ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
-                .fontSize(theme.typography().small()).textColor("white").bgColor("#2563eb");
+            .fontSize(theme.typography().small()).textColor("white").bgColor("#2563eb");
 
     public static Component ButtonCadastro(String textState, Runnable handleAdd) {
         return new Button(textState, propsBtnCadastro
@@ -275,7 +271,7 @@ public class Components {
 
     public static <T> Component SelectColumn(String label, State<List<T>> listState, State<T> stateSelected, Function<T, String> display) {
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Select<T>(selectProps)
                         .items(listState)
                         .value(stateSelected)
@@ -285,7 +281,7 @@ public class Components {
 
     public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display) {
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Select<T>(selectProps)
                         .items(list)
                         .value(stateSelected)
@@ -304,7 +300,7 @@ public class Components {
         }
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
     }
 
@@ -313,13 +309,13 @@ public class Components {
                 .items(list)
                 .value(stateSelected)
                 .displayText(display);
-        
+
         if (compareById) {
             select.compareById();
         }
-        
+
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
     }
 
@@ -334,7 +330,7 @@ public class Components {
         }
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
     }
 
@@ -347,13 +343,13 @@ public class Components {
                 .bottomVertically();
 
         return new Row(rowProps)
-                .r_child(Components.SelectColumn(  label,  list,  stateSelected, display,compareById))
-                .r_child(new Button(btnText,  new ButtonProps().height(31)
+                .r_child(Components.SelectColumn(label, list, stateSelected, display, compareById))
+                .r_child(new Button(btnText, new ButtonProps().height(31)
                         .textColor("#FFF")).onClick(handleClick)
                 ).r_child(new SpacerVertical(2));
     }
 
-    public static <T> Component SelectColumn(String label, ListState<T> list, State<T> stateSelected,Function<T, String> display, boolean compareById) {
+    public static <T> Component SelectColumn(String label, ListState<T> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
         var select = new Select<T>(selectProps)
                 .items(list)
                 .value(stateSelected)
@@ -364,7 +360,7 @@ public class Components {
         }
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
     }
 
@@ -377,24 +373,24 @@ public class Components {
                 .bottomVertically();
 
         return new Row(rowProps)
-                        .r_child(Components.SelectColumn(  label,  list,  stateSelected, display,compareById))
-                        .r_child(new Button(btnText,  new ButtonProps().height(31)
-                                .textColor("#FFF")).onClick(handleClick)
-                        ).r_child(new SpacerVertical(2));
+                .r_child(Components.SelectColumn(label, list, stateSelected, display, compareById))
+                .r_child(new Button(btnText, new ButtonProps().height(31)
+                        .textColor("#FFF")).onClick(handleClick)
+                ).r_child(new SpacerVertical(2));
     }
 
     public static Column TextColumn(String label, String value) {
         return new Column(new ColumnProps()
                 .borderColor(theme.colors().primary())
                 .borderWidth(theme.border().width()))
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().body()).bold()))
-                .c_child(new Text(value,  new TextProps().fontSize(theme.typography().body())));
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().body()).bold()))
+                .c_child(new Text(value, new TextProps().fontSize(theme.typography().body())));
     }
 
     public static Component TextWithValue(String label, ReadableState<String> valueState) {
         return new Row()
-                .r_child(new Text(label,  new TextProps().fontSize(theme.typography().body()).bold()))
-                .r_child(new Text(valueState,  new TextProps().fontSize(theme.typography().body())));
+                .r_child(new Text(label, new TextProps().fontSize(theme.typography().body()).bold()))
+                .r_child(new Text(valueState, new TextProps().fontSize(theme.typography().body())));
     }
 
     public static Component InputColumnCpf(String label, State<String> inputState) {
@@ -456,7 +452,7 @@ public class Components {
     }
 
     public static Component InputColumnPhone(String label, State<String> inputState) {
-        var inputProps =  new InputProps()
+        var inputProps = new InputProps()
                 .height(31).placeHolder("(00) 00000-0000");
 
 
@@ -479,12 +475,12 @@ public class Components {
                 .lockCursorToEnd();
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
 
-    
-    public static Component InputColumnNumeric(String label, State<String> inputState,  String placeholder) {
+
+    public static Component InputColumnNumeric(String label, State<String> inputState, String placeholder) {
         var inputProps = getInputProps(placeholder);
 
         var input = new Input(inputState, inputProps)
@@ -498,7 +494,7 @@ public class Components {
                 .lockCursorToEnd();
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
 
@@ -512,7 +508,7 @@ public class Components {
         var inputProps = getInputProps("R$ 0,00").width(140).borderWidth(theme.border().width())
                 .borderColor(theme.colors().primary());
 
-        if(disableInput) inputProps.disable();
+        if (disableInput) inputProps.disable();
 
         // inputState armazena valores brutos (em centavos), campo exibe formato BRL
         var input = new Input(inputState, inputProps)
@@ -537,20 +533,20 @@ public class Components {
                 .left(fonticon);
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
 
     public static Component InputColumnCurrency(String label, State<String> inputState) {
-      return InputColumnCurrency(label, inputState, false);
+        return InputColumnCurrency(label, inputState, false);
     }
 
-    static InputProps getInputProps(String placeholder){
+    static InputProps getInputProps(String placeholder) {
         return getInputProps(placeholder, 31);
     }
 
-    static InputProps getInputProps(String placeholder, int height){
-        return   new InputProps().height(height)
+    static InputProps getInputProps(String placeholder, int height) {
+        return new InputProps().height(height)
                 .placeHolder(placeholder).fontSize(theme.typography().small());
     }
 
@@ -566,10 +562,10 @@ public class Components {
 
     public static Component InputColumnComFocusHandler(String label, ReadableState<String> inputState, String placeholder, Runnable focusChangeHandler) {
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
-                        getInputProps(placeholder).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().border()).borderRadius( theme.radius().sm())
+                                getInputProps(placeholder).borderWidth(theme.border().width())
+                                        .borderColor(theme.colors().border()).borderRadius(theme.radius().sm())
                         ).onChangeFocus(focus -> {
                             if (!focus) focusChangeHandler.run();
                         })
@@ -578,11 +574,11 @@ public class Components {
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
                                         int borderWidth, int borderRadius, String borderColor) {
-        var props =  getInputProps(placeholder);
-        if(disableInput) props.disable();
+        var props = getInputProps(placeholder);
+        if (disableInput) props.disable();
 
         TextProps textProps = new TextProps().fontSize(theme.typography().small());
-        if(label.equals("Login") || label.equals("Senha") || label.equals("Licença")){
+        if (label.equals("Login") || label.equals("Senha") || label.equals("Licença")) {
             textProps.textColor("#fff");
         }
         return new Column()
@@ -594,15 +590,15 @@ public class Components {
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-      return  InputColumn(label, inputState, placeholder, disableInput, theme.border().width(),  theme.radius().md(), theme.colors().border());
+        return InputColumn(label, inputState, placeholder, disableInput, theme.border().width(), theme.radius().md(), theme.colors().border());
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {
-      return InputColumn(label, inputState, placeholder, false);
+        return InputColumn(label, inputState, placeholder, false);
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder) {
-        return TextAreaColumn(label,inputState,placeholder,80);
+        return TextAreaColumn(label, inputState, placeholder, 80);
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int height) {
@@ -611,23 +607,23 @@ public class Components {
         );
 
         return new Column()
-                .c_child(new Text(label,  new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(textAreaInput);
     }
 
-    public static Component InputWithButtonRow(String label, String btnTitle, State<String> inputState, Runnable onClick){
+    public static Component InputWithButtonRow(String label, String btnTitle, State<String> inputState, Runnable onClick) {
         return new Row(new RowProps().bottomVertically())
                 .r_child(Components.InputColumn(label, inputState, ""))
                 .r_child(new Button(btnTitle, new ButtonProps().height(32).textColor("#FFF")
-                        .borderRadius(theme.radius().sm()).borderWidth(theme.border().width()).borderColor(theme.colors().primary())
+                                .borderRadius(theme.radius().sm()).borderWidth(theme.border().width()).borderColor(theme.colors().primary())
                         )
-                        .onClick(onClick)
+                                .onClick(onClick)
                 );
     }
 
     public static Component errorText(String message) {
         return new Container(new ContainerProps().bgColor("white")).c_child(new SpacerVertical(5))
-                .c_child(new Text(message,  new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
+                .c_child(new Text(message, new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
     }
 
 
@@ -635,16 +631,15 @@ public class Components {
             State<T> itemSelectedInTable, Runnable onClickNew,
             Runnable onEdit, Runnable onDelete, Runnable onClone) {
 
-        ComputedState<Boolean> thereIsItemSelectedInTable = ComputedState.of(()-> !itemSelectedInTable.isNull() ,itemSelectedInTable);
+        ComputedState<Boolean> thereIsItemSelectedInTable = ComputedState.of(() -> !itemSelectedInTable.isNull(), itemSelectedInTable);
 
-        return Show.when(thereIsItemSelectedInTable, ()-> {
-            return new Row(new RowProps().spacingOf(20))
-                    .children(
-                    MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)),
-                    MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)),
-                    MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run))
-            );
-        }).withTransition(Animations::fadeSlide);
+        return Show.when(thereIsItemSelectedInTable, () -> new Row(new RowProps().spacingOf(20))
+                .children(
+                        MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", () -> executar(onClickNew::run)),
+                        MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)),
+                        MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)),
+                        MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run))
+                )).withTransition(Animations::fadeSlide);
     }
 
 

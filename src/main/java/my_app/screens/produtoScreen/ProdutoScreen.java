@@ -8,16 +8,12 @@ import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
-import my_app.domain.ContratoTelaCrud;
 import my_app.domain.ContratoTelaCrudV2;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
@@ -27,13 +23,8 @@ import java.util.List;
 
 public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     private final ProdutoScreenViewModel vm;
-    private final Theme theme = ThemeManager.theme();
-    private final ScreenContext ctx;
 
-    public ProdutoScreen(ScreenContext ctx) {
-        this.ctx = ctx;
-        this.vm = new ProdutoScreenViewModel();
-    }
+    public ProdutoScreen(ScreenContext ctx) {this.vm = new ProdutoScreenViewModel(ctx);}
 
     @Override
     public void onMount() {
@@ -45,7 +36,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     @Override
     public Component form() {
         Runnable handleChangeImage = () -> {
-            var stage = this.ctx.selfStage();
+            var stage = vm.getCtx().selfStage();
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Escolha a imagem");
@@ -93,38 +84,10 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
                 .onItemDoubleClick(it-> {
-                    Components.ShowModal( ItemDetails(it), ctx, 550);
-                })
-                .onClickOutside(()->{
-                    vm.produtoSelected.set(null);
+                    Components.ShowModal( ItemDetails(it), vm.getCtx(), 550);
                 });
 
         return simpleTable;
-    }
-
-    @Override
-    public void handleClickMenuClone() {
-        vm.modoEdicao.set(false);
-
-        if(vm.produtoSelected.get() == null) return;
-        final var model = vm.produtoSelected.get();
-
-        vm.codigoBarras.set(model.codigoBarras);
-        vm.descricao.set(model.descricao);
-        vm.precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
-        vm.precoVenda.set(Utils.deRealParaCentavos( model.precoVenda));
-        //vm.margem.set(model.);
-        //vm.lucro.set("0");
-        vm.comissao.set(model.comissao);
-        vm.garantia.set(model.garantia);
-        vm.marca.set(model.marca);
-        vm.unidadeSelected.set(model.unidade);
-        vm.estoque.set(Utils.quantidadeTratada(model.estoque));
-
-        vm.validade.set(model.validade != null ? DateUtils.millisParaLocalDate(model.validade) : null);
-        vm.perecivelSelected.set(model.validade != null && model.validade > 0? "Sim": "Não");
-        vm.observacoes.set(model.observacoes);
-        vm.imagem.set(model.imagem);
     }
 
 
@@ -194,14 +157,11 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     @Override
     public void handleClickNew() {
         vm.modoEdicao.set(false);
-        vm.limparFormulario();
+        vm.clearForm();
     }
 
     @Override
-    public void handleClickMenuEdit() {
-        handleClickMenuClone();
-        vm.modoEdicao.set(true);
-    }
+    public void handleClickMenuEdit() {vm.handleClickMenuEdit();}
 
     @Override
     public void handleClickMenuDelete() {
@@ -217,8 +177,8 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                     vm.excluir();
                     //vm.refreshProdutos();
                     UI.runOnUi(() -> {
-                        vm.limparFormulario();
-                        Components.ShowPopup(ctx, "Produto excluído com sucesso");
+                        vm.clearForm();
+                        Components.ShowPopup(vm.getCtx(), "Produto excluído com sucesso");
                     });
                 } catch (Exception e) {
                     UI.runOnUi(()-> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
@@ -227,15 +187,16 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
         });
     }
 
-
     @Override
     public void handleAddOrUpdate() {
-        vm.salvarOuAtualizar(ctx);
+        vm.handleAddOrUpdate();
     }
 
     @Override
     public void clearForm() {
-        this.vm.limparFormulario();
+        this.vm.clearForm();
     }
+    @Override
+    public void handleClickMenuClone() {vm.handleClickMenuClone();}
 
 }
