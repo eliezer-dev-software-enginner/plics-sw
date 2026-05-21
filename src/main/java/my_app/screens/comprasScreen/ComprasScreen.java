@@ -6,7 +6,6 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Card;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
@@ -14,12 +13,11 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.*;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
-import my_app.domain.ContratoTelaCrud;
 import my_app.domain.ContratoTelaCrudV2;
+import my_app.domain.Data;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.screens.components.Components;
-//import javafx.scene.control.*;
 import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
@@ -47,8 +45,8 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
     State<ProdutoModel> produtoEncontrado = State.of(null);
     State<String> qtd = State.of("0");
     State<String> observacao = State.of("");
-    List<String> tiposPagamento = List.of("A VISTA", "CRÉDITO", "DÉBITO", "PIX", "A PRAZO");
-    State<String> tipoPagamentoSeleced = State.of(tiposPagamento.get(1));
+
+    State<String> tipoPagamentoSeleced = State.of(Data.tiposPagamentoList.get(1));
     ComputedState<Boolean> tipoPagamentoSelectedIsAPrazo = ComputedState.of(
             () -> tipoPagamentoSeleced.get().equals("A PRAZO"),
             tipoPagamentoSeleced);
@@ -168,7 +166,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
                 .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
                 .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
-                .r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
+                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, tipoPagamentoSeleced, it -> it))
                 .r_child(Components.SelectColumn("Refletir no estoque?", opcoesDeControleDeEstoque, opcaoDeControleDeEstoqueSelected, it -> it))
                 .r_child(Components.TextAreaColumn("Observação", observacao, ""));
     }
@@ -400,7 +398,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
         produtoEncontrado.set(null);
         qtd.set("");
         observacao.set("");
-        tipoPagamentoSeleced.set(tiposPagamento.get(1));
+        tipoPagamentoSeleced.set(Data.tiposPagamentoList.get(1));
         pcCompra.set("0");
         dataValidade.set(null);
         fornecedorSelected.set(fornecedores.getFirst());
@@ -460,6 +458,4 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
             }
         });
     }
-
-
 }
