@@ -9,6 +9,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV2;
+import my_app.domain.Data;
 import my_app.screens.components.Components;
 import megalodonte.*;
 import megalodonte.components.*;
@@ -45,7 +46,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV2 {
                         .c_child(new SpacerVertical(20))
                         .c_child(new Column().c_child(Components.FormTitle("Endereço")))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.SelectColumn("UF", vm.ufList, vm.ufSelected, it->it))
+                                .r_child(Components.SelectColumn("UF", Data.ufList, vm.ufSelected, it->it))
                                 .r_child(Components.InputColumn("Cidade", vm.cidade,""))
                                 .r_child(Components.InputColumn("Bairro", vm.bairro, ""))
                                 .r_child(Components.InputColumn("Rua", vm.rua, ""))

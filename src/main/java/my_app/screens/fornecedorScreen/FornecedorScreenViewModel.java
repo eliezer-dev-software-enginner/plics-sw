@@ -9,6 +9,7 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.FornecedorRepository;
+import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 
@@ -30,15 +31,7 @@ public class FornecedorScreenViewModel extends ViewModelv2 {
     State<String> inscricaoEstadual = State.of("");
     State<String> email = State.of("");
 
-    //endereço
-    List<String> ufList = List.of(
-            "AC-Acre", "AL-Alagoas", "AP-Amapá", "AM-Amazonas", "BA-Bahia", "CE-Ceará", "DF-Distrito Federal", "ES-Espírito Santo",
-            "GO-Goiás", "MA-Maranhão", "MT-Mato Grosso", "MS-Mato Grosso do Sul", "MG-Minas Gerais", "PA-Pará", "PB-Paraíba", "PR-Paraná",
-            "PE-Pernambuco", "PI-Piauí", "RJ-Rio de Janeiro", "RN-Rio Grande do Norte", "RS-Rio Grande do Sul", "RO-Rondônia", "RR-Roraima",
-            "SC-Santa Catarina", "SP-São Paulo", "SE-Sergipe", "TO-Tocantins"
-    );
-
-    State<String> ufSelected = State.of(ufList.getFirst());
+    State<String> ufSelected = State.of(Data.ufList.getFirst());
     State<String> cidade = State.of("");
     State<String> bairro = State.of("");
     State<String> rua = State.of("");
@@ -246,7 +239,7 @@ public class FornecedorScreenViewModel extends ViewModelv2 {
         celular.set("");
         inscricaoEstadual.set("");
         email.set("");
-        ufSelected.set(ufList.getFirst());
+        ufSelected.set(Data.ufList.getFirst());
         cidade.set("");
         bairro.set("");
         rua.set("");
