@@ -109,20 +109,4 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     public ViewModelv2 viewModel() {
         return vm;
     }
-
-    @Override
-    public void handleClickNew() {
-        vm.modoEdicao.set(false);
-        vm.clearForm();
-    }
-
-    @Override
-    public void handleAddOrUpdate() {
-        vm.handleAddOrUpdate();
-    }
-
-    @Override
-    public void clearForm() {
-        vm.clearForm();
-    }
 }
