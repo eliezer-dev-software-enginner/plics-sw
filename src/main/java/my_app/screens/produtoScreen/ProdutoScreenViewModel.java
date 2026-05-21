@@ -63,6 +63,8 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
 
     public final State<String> perecivelSelected = new State<>("Não");
 
+    public final State<Boolean> focusState = new State<>(false);
+
     public ProdutoScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;
         service = new ProdutoService();
@@ -203,12 +205,15 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
         produtos.removeIf(it -> it.id.equals(id));
     }
 
-    public void handleClickMenuClone() {
-        populateFromProdutoModel();
-        modoEdicao.set(false);
+    public ScreenContext getCtx() {
+        return ctx;
     }
 
-    private void populateFromProdutoModel(){
+    public void handleFocusChange(boolean focus) {
+        focusState.set(focus);
+    }
+
+    public void populateFromModel() {
         if(produtoSelected.get() == null) return;
         final var model = produtoSelected.get();
 
@@ -228,16 +233,6 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
         perecivelSelected.set(model.validade != null && model.validade > 0? "Sim": "Não");
         observacoes.set(model.observacoes);
         imagem.set(model.imagem);
-    }
-
-    public void handleClickMenuEdit() {
-        populateFromProdutoModel();
-        modoEdicao.set(true);
-    }
-
-
-    public ScreenContext getCtx() {
-        return ctx;
     }
 }
 

@@ -2,6 +2,7 @@ package my_app.screens.produtoScreen;
 
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
+import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.base.components.Component;
@@ -15,6 +16,7 @@ import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.ContratoTelaCrudV2;
+import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
@@ -22,7 +24,7 @@ import my_app.utils.Utils;
 
 import java.util.List;
 
-public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
+public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final ProdutoScreenViewModel vm;
 
     public ProdutoScreen(ScreenContext ctx) {this.vm = new ProdutoScreenViewModel(ctx);}
@@ -32,7 +34,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
         vm.loadInicial();
     }
 
-    public Component render() {return mainView(vm.produtoSelected);}
+    public Component render() {return mainView(vm.focusState);}
 
     @Override
     public Component form() {
@@ -84,9 +86,8 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
-                .onItemDoubleClick(it-> {
-                    Components.ShowModal( ItemDetails(it), vm.getCtx(), 550);
-                });
+                .onChangeFocus(vm::handleFocusChange)
+                .onItemDoubleClick(it-> Components.ShowModal( ItemDetails(it), vm.getCtx(), 550));
 
         return simpleTable;
     }
@@ -156,15 +157,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     }
 
     @Override
-    public void handleClickNew() {
-        vm.modoEdicao.set(false);
-        vm.clearForm();
-    }
-
-    @Override
-    public void handleClickMenuEdit() {vm.handleClickMenuEdit();}
-
-    @Override
     public void handleClickMenuDelete() {
         vm.modoEdicao.set(false);
 
@@ -197,7 +189,15 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
     public void clearForm() {
         this.vm.clearForm();
     }
+
     @Override
-    public void handleClickMenuClone() {vm.handleClickMenuClone();}
+    public void populateFromModel() {
+        vm.populateFromModel();
+    }
+
+    @Override
+    public State<Boolean> modoEdicao() {
+        return vm.modoEdicao;
+    }
 
 }
