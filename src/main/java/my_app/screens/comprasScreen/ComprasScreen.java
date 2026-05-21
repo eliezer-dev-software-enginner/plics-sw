@@ -148,52 +148,43 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
 
     @Override
     public Component form() {
-        Runnable searchProductOnFocusChange = this::buscarProduto;
-
-        final var top = new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.DatePickerColumn(dataCompra, "Data de compra", "dd/mm/yyyy"))
-                .r_child(Components.SelectColumn("Fornecedor", fornecedores, fornecedorSelected, f -> f.nome, true))
-                .r_child(Components.InputColumn("N NF/Pedido compra", numeroNota, "Ex: 12345678920"))
-                .r_child(Components.InputColumnComFocusHandler("Código", codigo, "xxxxxxxx", searchProductOnFocusChange));
-
-        final var valoresRow = new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.TextWithValue("Valor total(bruto): ", totalBruto))
-                .r_child(Components.TextWithValue("Desconto: ", descontoComputed))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(Utils::toBRLCurrency))
-                );
-
         return new Column(new ColumnProps().spacingOf(10)).children(
                 Components.FormTitle("Cadastrar Nova Compra"),
                 new SpacerVertical(20),
-                        formFirstRow(),
-                        formSecondRow(),
-                        .c_child()
-                        .c_child()
-                        .c_child(top)
-                        .c_child(new SpacerVertical(10))
-                        .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.InputColumn("Descrição do produto", produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso"))
-                                .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
-                                .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
-                                .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
-                        )
-                        .c_child(new SpacerVertical(10))
-                        .c_child(
-                                new Row(new RowProps().spacingOf(10)).r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
-                                        .r_child(Components.SelectColumn("Refletir no estoque?", opcoesDeControleDeEstoque, opcaoDeControleDeEstoqueSelected, it -> it))
-                                        .r_child(Components.TextAreaColumn("Observação", observacao, ""))
-                        )
-                        .c_child(new SpacerVertical(10))
-                        .c_child(
-                                new Row(new RowProps().spacingOf(15))
-                                        .r_child(Components.TextWithValue("Estoque anterior:", estoqueAnterior))
-                                        .r_child(Components.TextWithValue("Estoque após compra:", estoqueAtual))
-                        )
-                        .c_child(new SpacerVertical(10))
-                        .c_child(Components.aPrazoForm(parcelas, tipoPagamentoSelectedIsAPrazo, totalLiquido))
-                        .c_child(new SpacerVertical(10))
-                        .c_child(valoresRow)
-                        .c_child(Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm))
+                formFirstRow(),
+                formSecondRow(),
+                new Row(new RowProps().spacingOf(15))
+                        .r_child(Components.TextWithValue("Estoque anterior:", estoqueAnterior))
+                        .r_child(Components.TextWithValue("Estoque após compra:", estoqueAtual)),
+                displayOperationsRow(),
+                Components.aPrazoForm(parcelas, tipoPagamentoSelectedIsAPrazo, totalLiquido),
+                Components.actionButtons(btnText, this::handleAddOrUpdate, this::clearForm)
+        );
+    }
+
+    private Row formSecondRow() {
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(Components.InputColumn("Descrição do produto", produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso"))
+                .r_child(Components.InputColumnCurrency("Pc. de compra", pcCompra))
+                .r_child(Components.InputColumn("Quantidade", qtd, "Ex: 2"))
+                .r_child(Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro))
+                .r_child(Components.SelectColumn("Tipo de pagamento", tiposPagamento, tipoPagamentoSeleced, it -> it))
+                .r_child(Components.SelectColumn("Refletir no estoque?", opcoesDeControleDeEstoque, opcaoDeControleDeEstoqueSelected, it -> it))
+                .r_child(Components.TextAreaColumn("Observação", observacao, ""));
+    }
+
+    private Row formFirstRow() {
+        Runnable searchProductOnFocusChange = this::buscarProduto;
+
+        return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
+                Components.DatePickerColumn(dataCompra, "Data de compra", "dd/mm/yyyy"),
+                Components.SelectColumn("Fornecedor", fornecedores, fornecedorSelected, f -> f.nome, true),
+                Components.InputColumn("N NF/Pedido compra", numeroNota, "Ex: 12345678920"),
+                Components.InputColumnComFocusHandler("Código", codigo, "xxxxxxxx", searchProductOnFocusChange),
+                Components.InputColumn("Descrição do produto", produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso"),
+                Components.InputColumnCurrency("Pc. de compra", pcCompra),
+                Components.InputColumn("Quantidade", qtd, "Ex: 2"),
+                Components.InputColumnCurrency("Desconto em R$", descontoEmDinheiro)
         );
     }
 
@@ -201,7 +192,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
         return new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.TextWithValue("Valor total(bruto): ", totalBruto))
                 .r_child(Components.TextWithValue("Desconto: ", descontoComputed))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", vm.totalLiquido.map(Utils::toBRLCurrency)));
+                .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(Utils::toBRLCurrency)));
     }
 
     private void buscarProduto() {
