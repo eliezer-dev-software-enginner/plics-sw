@@ -25,8 +25,9 @@ import java.util.List;
 
 public class ProdutoScreenViewModel extends ViewModelv2 {
     private final ScreenContext ctx;
-    private final ProdutoService service = new ProdutoService();
-    private final ProdutoRepository produtoRepository = new ProdutoRepository();
+    private final ProdutoService service;
+    private final ProdutoRepository produtoRepository;
+
     public final ListState<ProdutoModel> produtos = ListState.of(List.of());
     public final State<String> codigoBarras = new State<>("");
     public final State<String> descricao = new State<>("");
@@ -64,6 +65,8 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
 
     public ProdutoScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;
+        service = new ProdutoService();
+        produtoRepository = new ProdutoRepository();
     }
 
     public void loadInicial() {
