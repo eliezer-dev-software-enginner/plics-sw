@@ -125,11 +125,10 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
 
     @Override
     public void handleClickMenuDelete() {
-        if (produtoSelected.get() == null) return;
+        ProdutoModel produtoModel = produtoSelected.get();
+        if (produtoModel == null) return;
 
-        ProdutoModel produtoSelected = produtoSelected.get();
-
-        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoSelected.descricao, produtoSelected.codigoBarras);
+        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoModel.descricao, produtoModel.codigoBarras);
         Components.ShowAlertAdvice(bodyMessage, () -> {
             Async.Run(() -> {
                 try {

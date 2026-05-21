@@ -11,6 +11,8 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrudV2;
+import my_app.domain.ContratoTelaCrudV3;
+import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import megalodonte.*;
 import megalodonte.components.*;
@@ -24,7 +26,7 @@ import megalodonte.components.SimpleTable;
 import megalodonte.props.RowProps;
 import my_app.db.models.VendaModel;
 
-public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV2 {
+public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     private final VendaMercadoriaScreenViewModel vm;
 
@@ -39,7 +41,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
 
     @Override
     public Component render() {
-        return mainView(vm.vendaSelected);
+        return mainView(vm.focusState);
     }
 
     @Override
@@ -104,26 +106,14 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     }
 
     @Override
+    public ViewModelv2 viewModel() {
+        return vm;
+    }
+
+    @Override
     public void handleClickNew() {
         vm.modoEdicao.set(false);
         vm.clearForm();
-    }
-
-    @Override
-    public void handleClickMenuEdit() {
-        vm.handleClickMenuClone();
-        vm.modoEdicao.set(true);
-    }
-
-    @Override
-    public void handleClickMenuDelete() {
-        vm.modoEdicao.set(false);
-        vm.handleClickMenuDelete();
-    }
-
-    @Override
-    public void handleClickMenuClone() {
-        vm.handleClickMenuClone();
     }
 
     @Override
