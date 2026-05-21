@@ -127,7 +127,7 @@ public class HomeScreen implements ScreenComponent {
             new CardItem("/assets/pdv.png", "PDV","Abrir caixa","pdv-screen"),
             new CardItem("/assets/despesas.png", "Contas a pagar","Tela de contas a pagar","contas-a-pagar"),
             new CardItem("/assets/compras.png", "Compras de mercadorias","Tela de compras","compras"),
-            new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa",null)
+            new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa","pedidos")
            // new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
     );
     Component CardColumn(CardItem cardItem){

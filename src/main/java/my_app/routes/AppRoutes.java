@@ -24,7 +24,7 @@ public class AppRoutes {
 
         var routes = Set.of(
                 new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(900, 550, Main.BASE_TITLE, true)),
-                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1150, 690,Main.BASE_TITLE, true)),
+                new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1180, 710,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
                 new Router.Route("produtos",ctx-> new ProdutoScreen(ctx), new RouteProps(1210, 650,"Cadastro de produtos", true)),
                 //ok
@@ -36,7 +36,7 @@ public class AppRoutes {
                //ok
                 new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
-                new Router.Route("clientes",ctx-> new ClienteScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de clientes", true)),
+                new Router.Route("clientes",ctx-> new ClienteScreen(ctx), new RouteProps(1150, 650, "Gerenciamento de clientes", true)),
                 //ok
                 new Router.Route("contas-a-pagar",ctx-> new ComprasAPagarScreen(ctx), new RouteProps(1000, 650, "Gerenciamento de contas a pagar", true)),
                 //ok
@@ -68,8 +68,15 @@ public class AppRoutes {
         //String rotaInicial = "categorias";
         //String rotaInicial = "fornecedores";
         //String rotaInicial = "empresa";
-        String rotaInicial = "compras";
-
+        //String rotaInicial = "compras";
+        //String rotaInicial = "clientes";
+        //String rotaInicial = "contas-a-pagar";
+        //String rotaInicial = "tecnicos";
+        //String rotaInicial = "ordem-de-servico";
+        //String rotaInicial = "relatar-erro";
+        //String rotaInicial = "sugerir-melhoria";
+        //String rotaInicial = "preferencias";
+        String rotaInicial = "entrar-com-credenciais";
 //        String rotaInicial;
 //        if (forceAccessRoute) {
 //            rotaInicial = "welcome";

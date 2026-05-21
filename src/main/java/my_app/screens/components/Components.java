@@ -594,7 +594,7 @@ public class Components {
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-      return  InputColumn(label, inputState, placeholder, disableInput, theme.border().width(),  theme.radius().sm(), theme.colors().border());
+      return  InputColumn(label, inputState, placeholder, disableInput, theme.border().width(),  theme.radius().md(), theme.colors().border());
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {

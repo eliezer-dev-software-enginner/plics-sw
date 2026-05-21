@@ -42,8 +42,6 @@ public class FornecedorScreenViewModel extends ViewModelv2 {
     public final State<Boolean> modoEdicao = State.of(false);
     public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
 
-
-
     public FornecedorScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;
         this.fornecedorRepository = new FornecedorRepository();

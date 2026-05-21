@@ -64,7 +64,7 @@ public class AuthScreen implements ScreenComponent {
                 new SpacerVertical(20),
                 new Row().children(
                         new Column().children(
-                                new Text("Realiza já seu login na Plics SW", new TextProps().color("white").fontSize(14)),
+                                new Text("Realize já seu login na Plics SW", new TextProps().color("white").fontSize(14)),
                                 Show.when(showLicensaState, () -> Components.InputColumn("Licença", licensaState, "")),
                                 Components.InputColumn("Login", loginState, ""),
                                 Components.InputColumn("Senha", passwordState, ""),
@@ -85,7 +85,7 @@ public class AuthScreen implements ScreenComponent {
                 ),
                 new Column(new ColumnProps().fillHeight()),//TODO: TROCAR PARA SPACERVERTICAL.FILL
                Components.imageWithTextRow("/assets/whatsapp.png","+27 62 133 2217 - Suporte garantido." ),
-                new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to("https://wa.me/qr/W7AI2KFHT3OEI1"))
+                new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to("https://wa.me/27621332217"))
         );
     }
 
