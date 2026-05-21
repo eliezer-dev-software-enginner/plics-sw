@@ -14,7 +14,6 @@ import my_app.screens.components.Components;
 
 public class PedidosScreenViewModel extends ViewModelv2 {
 
-    private final ScreenContext ctx;
     private final PedidoRepository pedidoRepository;
     private final PedidoItemRepository pedidoItemRepository;
 
@@ -23,7 +22,7 @@ public class PedidosScreenViewModel extends ViewModelv2 {
     final State<PedidoModel> pedidoSelecionado = State.of(null);
 
     public PedidosScreenViewModel(ScreenContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
         this.pedidoRepository = new PedidoRepository();
         this.pedidoItemRepository = new PedidoItemRepository();
         this.onInit();
@@ -38,6 +37,26 @@ public class PedidosScreenViewModel extends ViewModelv2 {
             }
             loadItensDoPedido(pedido.id);
         });
+    }
+
+    @Override
+    public void populateFromModel() {
+
+    }
+
+    @Override
+    public void clearForm() {
+
+    }
+
+    @Override
+    public void handleAddOrUpdate() {
+
+    }
+
+    @Override
+    public void handleClickMenuDelete() {
+
     }
 
     void loadPedidos() {

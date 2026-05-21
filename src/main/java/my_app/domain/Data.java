@@ -13,4 +13,5 @@ public class Data {
     public static final List<String> tiposPagamentoList = List.of("A VISTA", "CRÉDITO", "DÉBITO", "PIX", "A PRAZO");
 
     public static final List<String> unidadesDeMedidaList = List.of("UN", "KG", "ml");
+    public static final List<String> tiposPessoaList = List.of("Física", "Jurídica");
 }

@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ProdutoScreenViewModel extends ViewModelv2 {
-    private final ScreenContext ctx;
     private final ProdutoService service;
     private final ProdutoRepository produtoRepository;
 
@@ -56,17 +55,11 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
     public final State<LocalDate> validade = State.of(null);
 
     public final State<String> imagem = new State<>("/assets/produto-generico.png");
-
-    public final State<Boolean> modoEdicao = State.of(false);
-    public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
-    public final State<ProdutoModel> produtoSelected = State.of(null);
-
+    public final State<ProdutoModel> produtoSelected = new State<>(null);
     public final State<String> perecivelSelected = new State<>("Não");
 
-    public final State<Boolean> focusState = new State<>(false);
-
     public ProdutoScreenViewModel(ScreenContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
         service = new ProdutoService();
         produtoRepository = new ProdutoRepository();
     }
@@ -129,6 +122,29 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
         return p;
     }
 
+
+    @Override
+    public void handleClickMenuDelete() {
+        if (produtoSelected.get() == null) return;
+
+        ProdutoModel produtoSelected = produtoSelected.get();
+
+        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoSelected.descricao, produtoSelected.codigoBarras);
+        Components.ShowAlertAdvice(bodyMessage, () -> {
+            Async.Run(() -> {
+                try {
+                    excluir();
+                    //vm.refreshProdutos();
+                    UI.runOnUi(() -> {
+                        clearForm();
+                        Components.ShowPopup(ctx, "Produto excluído com sucesso");
+                    });
+                } catch (Exception e) {
+                    UI.runOnUi(()-> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
+                }
+            });
+        });
+    }
 
     public void handleAddOrUpdate() {
         var dto = toProduto();
@@ -234,5 +250,11 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
         observacoes.set(model.observacoes);
         imagem.set(model.imagem);
     }
+
+    @Override
+    public State<Boolean> modoEdicaoState() {
+        return modoEdicao;
+    }
+
 }
 

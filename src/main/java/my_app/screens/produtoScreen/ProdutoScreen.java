@@ -18,6 +18,7 @@ import my_app.db.models.ProdutoModel;
 import my_app.domain.ContratoTelaCrudV2;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
+import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -157,47 +158,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public void handleClickMenuDelete() {
-        vm.modoEdicao.set(false);
-
-        if (vm.produtoSelected.isNull()) return;
-        var produtoSelected = vm.produtoSelected.get();
-
-        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoSelected.descricao, produtoSelected.codigoBarras);
-        Components.ShowAlertAdvice(bodyMessage, () -> {
-            Async.Run(() -> {
-                try {
-                    vm.excluir();
-                    //vm.refreshProdutos();
-                    UI.runOnUi(() -> {
-                        vm.clearForm();
-                        Components.ShowPopup(vm.getCtx(), "Produto excluído com sucesso");
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(()-> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
-                }
-            });
-        });
+    public ViewModelv2 viewModel() {
+        return vm;
     }
-
-    @Override
-    public void handleAddOrUpdate() {
-        vm.handleAddOrUpdate();
-    }
-
-    @Override
-    public void clearForm() {
-        this.vm.clearForm();
-    }
-
-    @Override
-    public void populateFromModel() {
-        vm.populateFromModel();
-    }
-
-    @Override
-    public State<Boolean> modoEdicao() {
-        return vm.modoEdicao;
-    }
-
 }

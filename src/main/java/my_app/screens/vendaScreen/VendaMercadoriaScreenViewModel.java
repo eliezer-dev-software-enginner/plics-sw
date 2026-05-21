@@ -30,9 +30,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
-
-    private final ScreenContext ctx;
-
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
     private final ClienteRepository clienteRepository;
@@ -96,7 +93,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
     final State<String> estoqueAtual = State.of("0");
 
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
         this.produtoRepository = new ProdutoRepository();
         this.vendaRepository = new VendaRepository();
         this.clienteRepository = new ClienteRepository();
@@ -108,6 +105,25 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
     protected void onInit() {
         qtd.subscribe(v -> atualizarEstoqueVisual());
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
+    }
+
+    @Override
+    public void populateFromModel() {
+        final var data = vendaSelected.get();
+        if (data == null) return;
+
+        modoEdicao.set(false);
+        dataVenda.set(DateUtils.millisParaLocalDate(data.dataVenda));
+        numeroNota.set(data.numeroNota);
+        codigo.set(data.produtoCod);
+        produtoEncontrado.set(null);
+        qtd.set(Utils.quantidadeTratada(data.quantidade));
+        observacao.set(data.observacao);
+        tipoPagamentoSelecionado.set(data.tipoPagamento);
+        pcVenda.set(Utils.deRealParaCentavos(data.precoUnitario));
+        dataValidade.set(data.dataValidade != null
+                ? DateUtils.millisParaLocalDate(data.dataValidade)
+                : null);
     }
 
     void fetchData() {
@@ -158,7 +174,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
         });
     }
 
-    void handleAddOrUpdate() {
+    @Override
+    public void handleAddOrUpdate() {
         if (produtoEncontrado.get() == null) {
             Components.ShowAlertError("Produto não encontrado!");
             return;
@@ -219,7 +236,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
         });
     }
 
-    void handleClickMenuDelete() {
+    @Override
+    public void handleClickMenuDelete() {
         final var data = vendaSelected.get();
         if (data == null) return;
 
@@ -240,25 +258,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
         });
     }
 
-    void handleClickMenuClone() {
-        final var data = vendaSelected.get();
-        if (data == null) return;
-
-        modoEdicao.set(false);
-        dataVenda.set(DateUtils.millisParaLocalDate(data.dataVenda));
-        numeroNota.set(data.numeroNota);
-        codigo.set(data.produtoCod);
-        produtoEncontrado.set(null);
-        qtd.set(Utils.quantidadeTratada(data.quantidade));
-        observacao.set(data.observacao);
-        tipoPagamentoSelecionado.set(data.tipoPagamento);
-        pcVenda.set(Utils.deRealParaCentavos(data.precoUnitario));
-        dataValidade.set(data.dataValidade != null
-                ? DateUtils.millisParaLocalDate(data.dataValidade)
-                : null);
-    }
-
-    void clearForm() {
+    @Override
+    public void clearForm() {
         dataVenda.set(LocalDate.now());
         numeroNota.set("");
         modoEdicao.set(false);

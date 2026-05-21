@@ -9,7 +9,9 @@ import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV2;
+import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
+import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import megalodonte.*;
 import megalodonte.components.*;
@@ -18,7 +20,7 @@ import megalodonte.props.*;
 import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
 
-public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV2 {
+public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final FornecedorScreenViewModel vm;
     private final ScreenContext ctx;
 
@@ -31,7 +33,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV2 {
     }
 
     public Component render() {
-        return mainView(vm.fornecedorSelected);
+        return mainView(vm.focusState);
     }
 
     @Override
@@ -70,17 +72,9 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV2 {
     }
 
     @Override
-    public void handleClickNew() {this.vm.handleClickNew();}
-    @Override
-    public void handleClickMenuEdit() {vm.handleClickMenuEdit();}
-    @Override
-    public void handleClickMenuDelete() {vm.handleClickMenuDelete();}
-    @Override
-    public void handleClickMenuClone() {vm.handleClickMenuClone();}
-    @Override
-    public void clearForm(){vm.clearForm();}
-    @Override
-    public void handleAddOrUpdate() {vm.handleAddOrUpdate();}
+    public ViewModelv2 viewModel() {
+        return vm;
+    }
 
     @Override
     public Component table() {

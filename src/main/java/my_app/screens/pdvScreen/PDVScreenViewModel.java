@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PDVScreenViewModel extends ViewModelv2 {
+public class PDVScreenViewModel {
 
     private final ScreenContext ctx;
     private final ProdutoRepository produtoRepository;
@@ -63,7 +63,6 @@ public class PDVScreenViewModel extends ViewModelv2 {
         this.onInit();
     }
 
-    @Override
     protected void onInit() {
         // Sempre que o carrinho mudar, recalcula o subtotal
         itensCarrinho.onChange(itens -> {

@@ -5,27 +5,31 @@ import megalodonte.base.components.Component;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
+import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 
 public interface ContratoTelaCrudV3 {
 
-    State<Boolean> modoEdicao();
+    ViewModelv2 viewModel();
 
     default void handleClickNew(){
-        modoEdicao().set(false);
+       viewModel().modoEdicaoState().set(false);
         clearForm();
     }
 
-    void handleClickMenuDelete();
+    default void handleClickMenuDelete(){
+        viewModel().modoEdicaoState().set(false);
+        viewModel().handleClickMenuDelete();
+    }
 
     default void handleClickMenuClone(){
         populateFromModel();
-        modoEdicao().set(false);
+        viewModel().modoEdicaoState().set(false);
     }
 
     default void handleClickMenuEdit(){
         populateFromModel();
-        modoEdicao().set(true);
+        viewModel().modoEdicaoState().set(true);
     }
 
      default <T> Component commonCustomMenus(State<Boolean> focusState){
@@ -38,8 +42,6 @@ public interface ContratoTelaCrudV3 {
         );
     }
 
-    void handleAddOrUpdate();
-    void clearForm();
     Component table();
     Component form();
 
@@ -57,6 +59,16 @@ public interface ContratoTelaCrudV3 {
                 );
     }
 
-   void populateFromModel();
+   default void populateFromModel(){
+       viewModel().populateFromModel();
+   }
+
+    default void clearForm() {
+        viewModel().clearForm();
+    }
+
+    default void handleAddOrUpdate() {
+        viewModel().handleAddOrUpdate();
+    }
 
 }

@@ -1,7 +1,7 @@
 package my_app.screens.clienteScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.ListState;
+import megalodonte.v2.ListState;
 import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
@@ -9,6 +9,7 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
+import my_app.domain.Data;
 import my_app.events.ClienteEvents;
 import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModelv2;
@@ -20,8 +21,6 @@ import java.util.List;
 import static my_app.utils.Utils.*;
 
 public class ClienteViewModel extends ViewModelv2 {
-
-    private final ScreenContext ctx;
     private final ClienteRepository clienteRepository = new ClienteRepository();
 
     final ListState<ClienteModel> clientes = ListState.of(List.of());
@@ -32,27 +31,35 @@ public class ClienteViewModel extends ViewModelv2 {
     final State<String> celular = new State<>("");
     final State<String> email = new State<>("");
 
-    final List<String> tipoPessoaList = List.of("Física", "Jurídica");
-    final State<String> tipoPessoaSelected = new State<>(tipoPessoaList.getFirst());
+    final State<String> tipoPessoaSelected = new State<>(Data.tiposPessoaList.getFirst());
     final ComputedState<Boolean> tipoPessoaEhFisica = ComputedState.of(
-            () -> tipoPessoaSelected.get().equals(tipoPessoaList.getFirst()),
+            () -> tipoPessoaSelected.get().equals(Data.tiposPessoaList.getFirst()),
             tipoPessoaSelected
     );
 
-    final State<Boolean> editMode = State.of(false);
-    final ComputedState<String> btnText = ComputedState.of(
-            () -> editMode.get() ? "Atualizar" : "+ Adicionar",
-            editMode
-    );
-
     public ClienteViewModel(ScreenContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
         this.onInit();
     }
 
     @Override
     protected void onInit() {
         tipoPessoaSelected.subscribe(_ -> cnpjCpf.set(""));
+    }
+
+    @Override
+    public void populateFromModel() {
+        final var data = clienteSelecionado.get();
+        if (data == null) return;
+        nome.set(data.nome);
+        cnpjCpf.set(data.cpfCnpj);
+        celular.set(data.celular);
+        email.set(data.email);
+        tipoPessoaSelected.set(
+                Utils.isValidCpf(data.cpfCnpj)
+                        ? Data.tiposPessoaList.getFirst()
+                        : Data.tiposPessoaList.getLast()
+        );
     }
 
     void loadClientes() {
@@ -66,26 +73,11 @@ public class ClienteViewModel extends ViewModelv2 {
         });
     }
 
-    void handleClickNew() {
-        editMode.set(false);
-        clearForm();
-    }
-
-    void handleClickMenuEdit() {
-        editMode.set(true);
-        populateFromCliente();
-    }
-
-    void handleClickMenuClone() {
-        editMode.set(false);
-        populateFromCliente();
-    }
-
-    void handleClickMenuDelete() {
+    @Override
+    public void handleClickMenuDelete() {
         final var cliente = clienteSelecionado.get();
         if (cliente == null) return;
 
-        editMode.set(false);
         Components.ShowAlertAdvice("Deseja excluir cliente " + cliente.nome, () -> {
             Async.Run(() -> {
                 try {
@@ -101,7 +93,8 @@ public class ClienteViewModel extends ViewModelv2 {
         });
     }
 
-    void handleAddOrUpdate() {
+    @Override
+    public void handleAddOrUpdate() {
         String nomeValue    = nome.get().trim();
         String cnpjCpfValue = cnpjCpf.get().trim();
         String celularValue = celular.get().trim();
@@ -129,7 +122,7 @@ public class ClienteViewModel extends ViewModelv2 {
             return;
         }
 
-        if (editMode.get()) {
+        if (modoEdicao.get()) {
             if (clienteSelecionado.get() == null) return;
             asyncUpdate(clienteSelecionado.get().id, nomeValue, cnpjCpfValue, celularValue, emailValue);
         } else {
@@ -137,25 +130,12 @@ public class ClienteViewModel extends ViewModelv2 {
         }
     }
 
-    void clearForm() {
+    @Override
+    public void clearForm() {
         nome.set("");
         cnpjCpf.set("");
         celular.set("");
         email.set("");
-    }
-
-    private void populateFromCliente() {
-        final var data = clienteSelecionado.get();
-        if (data == null) return;
-        nome.set(data.nome);
-        cnpjCpf.set(data.cpfCnpj);
-        celular.set(data.celular);
-        email.set(data.email);
-        tipoPessoaSelected.set(
-                Utils.isValidCpf(data.cpfCnpj)
-                        ? tipoPessoaList.getFirst()
-                        : tipoPessoaList.getLast()
-        );
     }
 
     private void asyncUpdate(long id, String nome, String cnpjCpf, String celular, String email) {

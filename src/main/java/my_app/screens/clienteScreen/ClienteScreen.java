@@ -13,12 +13,14 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
 import my_app.domain.ContratoTelaCrud;
+import my_app.domain.ContratoTelaCrudV3;
+import my_app.domain.Data;
+import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
-
+public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final ClienteViewModel vm;
 
     public ClienteScreen(ScreenContext ctx) {
@@ -32,7 +34,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
 
     @Override
     public Component render() {
-        return mainView();
+        return mainView(vm.focusState);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Nome", vm.nome, "Ex: João"))
-                                .r_child(Components.SelectColumn("Tipo de pessoa", vm.tipoPessoaList, vm.tipoPessoaSelected, it -> it))
+                                .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
                                 .r_child(Show.when(vm.tipoPessoaEhFisica,
                                         () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
                                         () -> Components.InputColumnCnpj("CNPJ", vm.cnpjCpf)
@@ -56,12 +58,10 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrud {
         );
     }
 
-    @Override public void handleClickNew()        { vm.handleClickNew(); }
-    @Override public void handleClickMenuEdit()   { vm.handleClickMenuEdit(); }
-    @Override public void handleClickMenuClone()  { vm.handleClickMenuClone(); }
-    @Override public void handleClickMenuDelete() { vm.handleClickMenuDelete(); }
-    @Override public void handleAddOrUpdate()     { vm.handleAddOrUpdate(); }
-    @Override public void clearForm()             { vm.clearForm(); }
+    @Override
+    public ViewModelv2 viewModel() {
+        return vm;
+    }
 
     @Override
     public Component table() {

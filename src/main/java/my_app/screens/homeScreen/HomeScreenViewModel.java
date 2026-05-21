@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class HomeScreenViewModel extends ViewModelv2 {
+public class HomeScreenViewModel {
 
     private final ContasAReceberRepository receitasRepo;
     private final ContasPagarRepository despesasRepo;
@@ -61,8 +61,7 @@ public class HomeScreenViewModel extends ViewModelv2 {
         this.onInit();
     }
 
-    @Override
-    protected void onInit() {
+    private void onInit() {
         calcularFinanceiroMesAtual();
         EventBus.getInstance().subscribe(event -> {
             if (event instanceof DadosFinanceirosAtualizadosEvent) {

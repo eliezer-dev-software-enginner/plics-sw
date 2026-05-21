@@ -14,12 +14,14 @@ import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.ContratoTelaCrudV2;
+import my_app.domain.ContratoTelaCrudV3;
+import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 
 import java.sql.SQLException;
 
-public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV2 {
+public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final CategoriaScreenViewModel vm;
 
     public CategoriaScreen(ScreenContext ctx) {this.vm = new CategoriaScreenViewModel(ctx);}
@@ -27,7 +29,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV2 {
     public void onMount() {vm.loadCategorias();}
 
     public Component render() {
-        return mainView(vm.categoriaSelecionada);
+        return mainView(vm.focusState);
     }
 
     @Override
@@ -44,17 +46,9 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV2 {
     }
 
     @Override
-    public void handleClickNew() {vm.handleClickNew();}
-    @Override
-    public void handleClickMenuEdit() {vm.handleClickMenuEdit();}
-    @Override
-    public void handleClickMenuDelete() {vm.handleClickMenuDelete();}
-    @Override
-    public void handleClickMenuClone() {vm.handleClickMenuClone();}
-    @Override
-    public void handleAddOrUpdate() {vm.handleAddOrUpdate();}
-    @Override
-    public void clearForm() {vm.clearForm();}
+    public ViewModelv2 viewModel() {
+        return vm;
+    }
 
     @Override
     public Component table() {

@@ -22,27 +22,23 @@ import java.util.List;
 import static my_app.utils.Utils.*;
 
 public class CategoriaScreenViewModel extends ViewModelv2 {
-    private final ScreenContext ctx;
     private final CategoriaRepository categoriaRepository;
-
-    State<Boolean> modoEdicao = State.of(false);
-
-    ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
 
     final ListState<CategoriaModel> categorias = ListState.of(List.of());
     final State<CategoriaModel> categoriaSelecionada = State.of(null);
-
     final State<String> nome = new State<>("");
-    final State<Boolean> editMode = State.of(false);
 
     public CategoriaScreenViewModel(ScreenContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
         categoriaRepository = new CategoriaRepository();
         this.onInit();
     }
 
     @Override
-    protected void onInit() {}
+    public void populateFromModel() {
+        final var data = categoriaSelecionada.get();
+        if (data != null) nome.set(data.nome);
+    }
 
     void loadCategorias() {
         Async.Run(() -> {
@@ -55,26 +51,11 @@ public class CategoriaScreenViewModel extends ViewModelv2 {
         });
     }
 
-    void handleClickNew() {
-        editMode.set(false);
-        clearForm();
-    }
-
-    void handleClickMenuEdit() {
-        editMode.set(true);
-        populateFromCategoria();
-    }
-
-    void handleClickMenuClone() {
-        editMode.set(false);
-        populateFromCategoria();
-    }
-
-    void handleClickMenuDelete() {
+    @Override
+    public void handleClickMenuDelete() {
         final var categoriaModel = categoriaSelecionada.get();
         if (categoriaModel == null) return;
 
-        editMode.set(false);
         Components.ShowAlertAdvice("Deseja excluir categoria " + categoriaModel.nome, () -> {
             Async.Run(() -> {
                 try {
@@ -90,7 +71,8 @@ public class CategoriaScreenViewModel extends ViewModelv2 {
         });
     }
 
-    void handleAddOrUpdate() {
+    @Override
+    public void handleAddOrUpdate() {
         String nomeValue = nome.get().trim();
 
         if (nomeValue.isEmpty()) {
@@ -98,7 +80,7 @@ public class CategoriaScreenViewModel extends ViewModelv2 {
             return;
         }
 
-        if (editMode.get()) {
+        if (modoEdicao.get()) {
             if (categoriaSelecionada.get() == null) return;
             asyncUpdate(categoriaSelecionada.get().id, nomeValue);
         } else {
@@ -106,13 +88,9 @@ public class CategoriaScreenViewModel extends ViewModelv2 {
         }
     }
 
-    void clearForm() {
+    @Override
+    public void clearForm() {
         nome.set("");
-    }
-
-    private void populateFromCategoria() {
-        final var data = categoriaSelecionada.get();
-        if (data != null) nome.set(data.nome);
     }
 
     private void asyncUpdate(long id, String nome) {

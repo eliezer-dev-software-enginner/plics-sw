@@ -19,7 +19,6 @@ import java.util.List;
 import static my_app.utils.Utils.*;
 
 public class FornecedorScreenViewModel extends ViewModelv2 {
-    private final ScreenContext ctx;
     private final FornecedorRepository fornecedorRepository;
 
     public final ListState<FornecedorModel> fornecedores = ListState.ofEmpty();
@@ -39,11 +38,8 @@ public class FornecedorScreenViewModel extends ViewModelv2 {
 
     State<String> observacao = State.of("");
 
-    public final State<Boolean> modoEdicao = State.of(false);
-    public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
-
     public FornecedorScreenViewModel(ScreenContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
         this.fornecedorRepository = new FornecedorRepository();
 
         this.onInit();
@@ -52,6 +48,24 @@ public class FornecedorScreenViewModel extends ViewModelv2 {
     @Override
     protected void onInit() {
 
+    }
+
+    @Override
+    public void populateFromModel() {
+        final var data = fornecedorSelected.get();
+        if(data != null){
+            nome.set(data.nome);
+            cnpj.set(data.cpfCnpj);
+            celular.set(data.celular);
+            inscricaoEstadual.set(data.inscricaoEstadual);
+            email.set(data.email);
+            ufSelected.set(data.ufSelected);
+            cidade.set(data.cidade);
+            bairro.set(data.bairro);
+            rua.set(data.rua);
+            numero.set(data.numero);
+            observacao.set(data.observacao);
+        }
     }
 
 
@@ -169,27 +183,7 @@ public class FornecedorScreenViewModel extends ViewModelv2 {
         });
     }
 
-    public void handleClickMenuEdit() {
-        final var forn = fornecedorSelected.get();
-        if(forn != null){
-            modoEdicao.set(true);
-            nome.set(forn.nome);
-            cnpj.set(forn.cpfCnpj);
-            celular.set(forn.celular);
-            inscricaoEstadual.set(forn.inscricaoEstadual);
-            email.set(forn.email);
-            ufSelected.set(forn.ufSelected);
-            cidade.set(forn.cidade);
-            bairro.set(forn.bairro);
-            rua.set(forn.rua);
-            numero.set(forn.numero);
-            observacao.set(forn.observacao);
-        }
-    }
-
     public void handleClickMenuDelete() {
-        modoEdicao.set(false);
-
         final var fornecedorModel = fornecedorSelected.get();
         if(fornecedorModel ==null) return;
 
@@ -208,28 +202,7 @@ public class FornecedorScreenViewModel extends ViewModelv2 {
             });
     }
 
-    public void handleClickMenuClone() {
-        modoEdicao.set(false);
-
-        final var data = fornecedorSelected.get();
-        if(data != null){
-            nome.set(data.nome);
-            cnpj.set(data.cpfCnpj);
-            celular.set(data.celular);
-            inscricaoEstadual.set(data.inscricaoEstadual);
-            email.set(data.email);
-            ufSelected.set(data.ufSelected);
-            cidade.set(data.cidade);
-            bairro.set(data.bairro);
-            rua.set(data.rua);
-            numero.set(data.numero);
-            observacao.set(data.observacao);
-        }
-    }
-
-    public void handleClickNew() {
-    }
-
+    @Override
     public void clearForm(){
         modoEdicao.set(false);
         nome.set("");
