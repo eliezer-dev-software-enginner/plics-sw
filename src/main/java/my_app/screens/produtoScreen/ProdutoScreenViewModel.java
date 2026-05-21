@@ -1,7 +1,7 @@
 package my_app.screens.produtoScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.ListState;
+import megalodonte.v2.ListState;
 import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
@@ -13,7 +13,6 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
-import my_app.lifecycle.viewmodel.component.ViewModel;
 import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.screens.components.Components;
 import my_app.services.ProdutoService;
@@ -42,7 +41,6 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
     public final State<String> garantia = new State<>("");
     public final State<String> marca = new State<>("");
 
-    public final List<String> unidades = List.of("UN", "KG", "ml");
     public final State<String> unidadeSelected = new State<>("UN");
 
     public final State<List<CategoriaModel>> categorias = new State<>(List.of());
@@ -63,7 +61,6 @@ public class ProdutoScreenViewModel extends ViewModelv2 {
     public final State<ProdutoModel> produtoSelected = State.of(null);
 
     public final State<String> perecivelSelected = new State<>("Não");
-
 
     public ProdutoScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;

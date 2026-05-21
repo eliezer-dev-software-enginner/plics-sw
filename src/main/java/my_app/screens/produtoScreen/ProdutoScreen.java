@@ -15,6 +15,7 @@ import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.ContratoTelaCrudV2;
+import my_app.domain.Data;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -107,7 +108,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV2 {
                         new Row(rowProps).children(
                                         Components.InputWithButtonRow("SKU(Código de barras)", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
                                         Components.InputColumn("Descrição curta", vm.descricao, ""),
-                                        Components.SelectColumn("Unidade", vm.unidades, vm.unidadeSelected, it -> it),
+                                        Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
                                         Components.InputColumn("Marca", vm.marca, "")
                                 )
                 ).c_child(new Row(rowProps)
