@@ -1,15 +1,11 @@
 package my_app.db.repositories;
 
 import my_app.db.DB;
-import my_app.db.DBInitializer;
 import my_app.db.dto.FornecedorDto;
-import my_app.db.models.CategoriaModel;
-import my_app.db.models.FornecedorModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

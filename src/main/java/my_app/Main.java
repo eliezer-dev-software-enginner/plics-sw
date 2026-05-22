@@ -7,7 +7,7 @@ import megalodonte.application.MegalodonteApp;
 import megalodonte.router.v4.Router;
 import megalodonte.theme.ThemeManager;
 import my_app.core.Themes;
-import my_app.db.DBInitializer;
+import my_app.db.MigrationRunner;
 import my_app.db.repositories.PreferenciasRepository;
 import my_app.hotreload.HotReload;
 import my_app.routes.AppRoutes;
@@ -69,7 +69,7 @@ public class Main {
     public static void initialize(Context context) {
         ThemeManager.setTheme(Themes.LIGHT);
 
-        DBInitializer.init();
+        MigrationRunner.run();
 
         try {
             var prefs = new PreferenciasRepository().listar();

@@ -1,7 +1,6 @@
 package my_app.db.repositories;
 
 import my_app.db.DB;
-import my_app.db.DBInitializer;
 import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import org.junit.jupiter.api.BeforeEach;
