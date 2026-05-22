@@ -223,10 +223,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         return ctx;
     }
 
-    public void handleFocusChange(boolean focus) {
-        focusState.set(focus);
-    }
-
     public void populateFromModel() {
         if(produtoSelected.get() == null) return;
         final var model = produtoSelected.get();

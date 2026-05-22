@@ -1,7 +1,7 @@
 package my_app.screens.vendaScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.ListState;
+import megalodonte.v2.ListState;
 import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
@@ -88,7 +88,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     final State<String> estoqueAtual = State.of("0");
 
 
-
     // --- Produtos ---
 
     private final megalodonte.v2.ListState<ProdutoModel> produtoModelListState = megalodonte.v2.ListState.ofEmpty();
@@ -118,7 +117,9 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         codigo.subscribe(termo -> filtrarProdutos(termo)); // filtra ao digitar
 
         produtoEncontrado.subscribe(this::selecionarProduto);
+
         //TODO: SUBSCREVER A EVENTOS DE PRODUTO
+        // EventBus.getInstance().subscribe();
     }
 
     void filtrarProdutos(String termo) {
@@ -158,6 +159,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         numeroNota.set(data.numeroNota);
         codigo.set(data.produtoCod);
         produtoEncontrado.set(null);
+        //estoqueAtual.set(data.q)
         qtd.set(Utils.quantidadeTratada(data.quantidade));
         observacao.set(data.observacao);
         tipoPagamentoSelecionado.set(data.tipoPagamento);
@@ -165,6 +167,15 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         dataValidade.set(data.dataValidade != null
                 ? DateUtils.millisParaLocalDate(data.dataValidade)
                 : null);
+    }
+
+    void reloadProdutos(){
+        try {
+            var produtoList = produtoRepository.listar();
+            UI.runOnUi(()->  produtoModelListState.set(produtoList));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     void fetchData() {
@@ -175,7 +186,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 var produtoList = produtoRepository.listar();
 
                 UI.runOnUi(() -> {
-                    produtoModelListState.addAll(produtoList);
+                    produtoModelListState.set(produtoList);
                     clientes.addAll(clienteList);
                     clienteList.stream()
                             .filter(f -> f.id == 1L)
@@ -194,25 +205,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             } catch (SQLException e) {
                 e.printStackTrace();
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar vendas: " + e.getMessage()));
-            }
-        });
-    }
-
-    void buscarProduto() {
-        Async.Run(() -> {
-            try {
-                var produto = produtoRepository.buscarPorCodigoBarras(codigo.get());
-                UI.runOnUi(() -> {
-                    if (!codigo.get().trim().isEmpty() && produto == null) {
-                        Components.ShowAlertError("Produto não encontrado: " + codigo.get());
-                        return;
-                    }
-                    produtoEncontrado.set(produto);
-                    pcVenda.set(Utils.deRealParaCentavos(produto.precoVenda));
-                    estoqueAnterior.set(produto.estoque.toString());
-                });
-            } catch (SQLException e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar produto: " + e.getMessage()));
             }
         });
     }
@@ -248,7 +240,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                         msg -> UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + msg)));
                 vendas.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
                 Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
-
+                reloadProdutos();
             } else {
                 VendaModel venda = null;
                 try {
@@ -274,6 +266,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                     Components.ShowPopup(ctx, "Venda salva com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    reloadProdutos();
                 });
             }
         });
@@ -325,6 +318,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         Async.Run(() -> {
             try {
                 produtoRepository.atualizarEstoque(codigoBarras, quantidade);
+                reloadProdutos();
             } catch (SQLException e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao devolver estoque: " + e.getMessage()));
             }

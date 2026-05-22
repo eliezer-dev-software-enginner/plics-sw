@@ -74,7 +74,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
 
         if (modoEdicao.get()) {
             if (categoriaSelecionada.get() == null) return;
-            asyncUpdate(categoriaSelecionada.get().id, nomeValue);
+            asyncUpdate(categoriaSelecionada.get().id, nomeValue, categoriaSelecionada.get().dataCriacao);
         } else {
             asyncSalvar(nomeValue);
         }
@@ -85,36 +85,58 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
         nome.set("");
     }
 
-    private void asyncUpdate(long id, String nome) {
-        Async.Run(() -> {
-            try {
-                var model = new CategoriaModel().fromIdAndDto(id, new CategoriaDto(nome));
-                categoriaRepository.atualizar((CategoriaModel) model);
-                UI.runOnUi(() -> {
-                    categorias.updateIf(it -> it.id.equals(id), it -> (CategoriaModel) model);
-                    Components.ShowPopup(ctx, "Categoria atualizado com sucesso");
-                    clearForm();
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            }
-        });
+    private void asyncUpdate(long id, String nome, Long dataCriacao) {
+        try{
+            validarNome(nome);
+            Async.Run(() -> {
+                try {
+                    var model = new CategoriaModel().fromIdAndDtoAndMillis(id, new CategoriaDto(nome), dataCriacao);
+                    categoriaRepository.atualizar((CategoriaModel) model);
+                    UI.runOnUi(() -> {
+                        categorias.updateIf(it -> it.id.equals(id), it -> (CategoriaModel) model);
+                        Components.ShowPopup(ctx, "Categoria atualizado com sucesso");
+                        clearForm();
+                    });
+                } catch (Exception e) {
+                  throw new RuntimeException(e);
+                }
+            });
+
+        }catch (Exception e){
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+        }
+
     }
 
     private void asyncSalvar(String nome) {
-        Async.Run(() -> {
-            try {
-                var model = categoriaRepository.salvar(new CategoriaDto(nome));
-                UI.runOnUi(() -> {
-                    categorias.add(model);
-                    Components.ShowPopup(ctx, "Categoria cadastrado com sucesso");
-                    clearForm();
-                    //TODO: SPAWNAR EVENT
-                    //EventBus.getInstance().publish(new ClienteEvents.Criado(model));
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+        try{
+            validarNome(nome.trim());
+
+            Async.Run(() -> {
+                try {
+                    var model = categoriaRepository.salvar(new CategoriaDto(nome));
+                    UI.runOnUi(() -> {
+                        categorias.add(model);
+                        Components.ShowPopup(ctx, "Categoria cadastrado com sucesso");
+                        clearForm();
+                        //TODO: SPAWNAR EVENT
+                        //EventBus.getInstance().publish(new ClienteEvents.Criado(model));
+                    });
+                } catch (Exception e) {
+                   throw new RuntimeException(e);
+                }
+            });
+        }catch (Exception e){
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+        }
+    }
+
+    private void validarNome(String nome) {
+        for (CategoriaModel categoriaModel : categorias.get()) {
+            if(categoriaModel.nome.equals(nome)) {
+                throw new RuntimeException("Esse nome já existe, use outro nome");
             }
-        });
+
+        }
     }
 }

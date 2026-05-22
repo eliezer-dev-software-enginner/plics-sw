@@ -53,6 +53,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(vm.categoriaSelecionada::set)
+                .onChangeFocus(vm::handleFocusChange)
                 .onItemDoubleClick(it-> {
                   //  Components.ShowModal( ItemDetails(it), ctx, 550);
                 });

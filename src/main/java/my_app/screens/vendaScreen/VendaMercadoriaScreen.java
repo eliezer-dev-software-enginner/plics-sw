@@ -95,6 +95,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .column("Total líquido", it -> Utils.toBRLCurrency(it.totalLiquido))
                 .column("Data", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
+                .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(vm.vendaSelected::set);
     }
 

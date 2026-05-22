@@ -32,4 +32,9 @@ public abstract class ViewModelScreenContract {
     public State<Boolean> modoEdicaoState(){
         return modoEdicao;
     }
+
+
+    public void handleFocusChange(boolean focus) {
+        focusState.set(focus);
+    }
 }
