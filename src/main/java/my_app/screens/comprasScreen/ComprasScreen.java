@@ -41,8 +41,6 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
     State<String> numeroNota = State.of("");
     State<Boolean> modoEdicao = State.of(false);
     ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
-    State<String> codigo = State.of("");
-    State<ProdutoModel> produtoEncontrado = State.of(null);
     State<String> qtd = State.of("0");
     State<String> observacao = State.of("");
 
@@ -86,16 +84,73 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
     private final ProdutoRepository produtoRepository;
     private CompraMercadoriaService compraMercadoriaService;
 
+
+    private final megalodonte.v2.ListState<ProdutoModel> produtoModelListState = megalodonte.v2.ListState.ofEmpty();
+
+    final megalodonte.v2.ListState sugestoesProduto = megalodonte.v2.ListState.ofEmpty();
+    final State<ProdutoModel> produtoEncontrado = State.of(null);
+    final State<String> codigo = State.of("");
+
+
+    final ComputedState<Boolean> sugestoesProdutoVisible = ComputedState.of(
+            () -> !sugestoesProduto.get().isEmpty(),
+            sugestoesProduto
+    );
+
     public ComprasScreen(ScreenContext ctx) {
         this.ctx = ctx;
-
-        // Configura listeners para atualizar estoque visual
-        qtd.subscribe(novaQtd -> atualizarEstoqueVisual());
-        opcaoDeControleDeEstoqueSelected.subscribe(novaOpcao -> atualizarEstoqueVisual());
-
-        comprasRepository = new ComprasRepository();
         produtoRepository = new ProdutoRepository();
+        comprasRepository = new ComprasRepository();
+
         compraMercadoriaService = new CompraMercadoriaService(comprasRepository, produtoRepository);
+        this.onInit();
+    }
+
+    private void onInit() {
+        qtd.subscribe(v -> atualizarEstoqueVisual());
+        opcaoDeControleDeEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
+        codigo.subscribe(termo -> filtrarProdutos(termo)); // filtra ao digitar
+
+        produtoEncontrado.subscribe(this::selecionarProduto);
+
+        //TODO: SUBSCREVER A EVENTOS DE PRODUTO
+        // EventBus.getInstance().subscribe();
+    }
+
+    void filtrarProdutos(String termo) {
+        if (termo == null || termo.trim().isEmpty()) {
+            sugestoesProduto.clear();
+            return;
+        }
+
+        // Limpa seleção antes de trocar a lista
+        produtoEncontrado.set(null);
+
+        var filtrados = produtoModelListState.get().stream()
+                .filter(p -> p.codigoBarras.contains(termo.trim())
+                        || p.descricao.toLowerCase().contains(termo.trim().toLowerCase()))
+                .limit(8) // evita lista enorme
+                .toList();
+
+        sugestoesProduto.set(filtrados);
+    }
+
+    void selecionarProduto(ProdutoModel produto) {
+        if(produto!=null){
+            codigo.set(produto.codigoBarras);
+            pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
+            estoqueAnterior.set(produto.estoque.toString());
+            sugestoesProduto.clear(); // fecha a lista após seleção
+        }
+    }
+
+    void reloadProdutos(){
+        try {
+            var produtoList = produtoRepository.listar();
+            UI.runOnUi(()->  produtoModelListState.set(produtoList));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -109,8 +164,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 var fornecedorModelList = new FornecedorRepository().listar();
                 fornecedores.addAll(fornecedorModelList);//meu select fica preenchido
                 var listCompras = new ComprasRepository().listar();
+                var produtoList = produtoRepository.listar();
 
                 UI.runOnUi(() -> {
+                    produtoModelListState.set(produtoList);
                     if (!fornecedorModelList.isEmpty()) {
                         fornecedorModelList.stream().filter(f -> f.id == 1L)
                                 .findFirst()
@@ -172,13 +229,13 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
     }
 
     private Row formFirstRow() {
-        Runnable searchProductOnFocusChange = this::buscarProduto;
-
         return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
                 Components.DatePickerColumn(dataCompra, "Data de compra", "dd/mm/yyyy"),
                 Components.SelectColumn("Fornecedor", fornecedores, fornecedorSelected, f -> f.nome, true),
                 Components.InputColumn("N NF/Pedido compra", numeroNota, "Ex: 12345678920"),
-                Components.InputColumnComFocusHandler("Código", codigo, "xxxxxxxx", searchProductOnFocusChange),
+                //Components.InputColumnComFocusHandler("Código", codigo, "xxxxxxxx", searchProductOnFocusChange),
+                Components.InputColumnComDynamicSearch("Código do produto", codigo, "xxxxxxxx",
+                        sugestoesProduto, produtoEncontrado, sugestoesProdutoVisible),
                 Components.InputColumn("Descrição do produto", produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso"),
                 Components.InputColumnCurrency("Pc. de compra", pcCompra),
                 Components.InputColumn("Quantidade", qtd, "Ex: 2"),
@@ -191,29 +248,6 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 .r_child(Components.TextWithValue("Valor total(bruto): ", totalBruto))
                 .r_child(Components.TextWithValue("Desconto: ", descontoComputed))
                 .r_child(Components.TextWithValue("Total geral(líquido): ", totalLiquido.map(Utils::toBRLCurrency)));
-    }
-
-    private void buscarProduto() {
-        Async.Run(() -> {
-            try {
-                var produto = new ProdutoRepository().buscarPorCodigoBarras(codigo.get());
-                UI.runOnUi(() -> {
-                    if (!codigo.get().trim().isEmpty() && produto == null) {
-                        IO.println("Produto não encontrado para o codigo: " + codigo.get());
-                        Components.ShowAlertError("Produto não encontrado para o codigo: " + codigo.get());
-                        return;
-                    }
-                    IO.println("Produto encontrado");
-                    produtoEncontrado.set(produto);
-                    pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
-                    // Atualiza os campos de estoque
-                    BigDecimal estoqueAtualValue = produto.estoque != null ? produto.estoque : BigDecimal.ZERO;
-                    estoqueAnterior.set(estoqueAtualValue.toString());
-                });
-            } catch (SQLException e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar produto por código: " + e.getMessage()));
-            }
-        });
     }
 
     @Override
@@ -351,12 +385,13 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 final var selecionado = compraSelected.get();
                 if(selecionado == null) return;
 
-                CompraModel modelAtualizada = new CompraModel().fromIdAndDto(selecionado.id, dto);
+                CompraModel modelAtualizada = (CompraModel) new CompraModel().fromIdAndDto(selecionado.id, dto);
                 compraMercadoriaService.atualizarOrThrow(modelAtualizada, message->   UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar compra: " + message)));
 
                 UI.runOnUi(()-> {
                     Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
                     compras.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
+                    reloadProdutos();
                 });
             } else {
                 final var compraSalva = compraMercadoriaService.salvarOrThrow(dto, message ->  UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar compra de mercadoria: " + message)));
@@ -384,6 +419,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
                     Components.ShowPopup(ctx, "Sua compra de mercadoria foi salva com sucesso!");
                     estoqueAnterior.set(estoqueAtual.get());
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    reloadProdutos();
                 });
             }
         });
@@ -452,6 +488,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV2 {
                 BigDecimal quantidadeParaRemover = quantidade.negate();
                 produtoRepository.atualizarEstoque(codigoBarras, quantidadeParaRemover);
                 IO.println("Estoque removido com sucesso para o produto: " + codigoBarras + " | Quantidade: " + quantidade);
+                reloadProdutos();
             } catch (SQLException e) {
                 IO.println("Erro ao remover estoque do produto " + codigoBarras + ": " + e.getMessage());
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao remover estoque: " + e.getMessage()));

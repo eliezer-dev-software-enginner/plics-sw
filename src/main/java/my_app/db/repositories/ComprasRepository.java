@@ -44,7 +44,7 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long idGerado = generatedKeys.getLong(1);
-                    return new CompraModel().fromIdAndDto(idGerado, dto);
+                    return (CompraModel) new CompraModel().fromIdAndDto(idGerado, dto);
                 }
             }
         }

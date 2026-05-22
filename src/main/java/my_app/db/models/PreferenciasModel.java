@@ -18,13 +18,14 @@ public class PreferenciasModel extends ModelBase<PreferenciasDto> {
 
     @Override
     public PreferenciasModel fromIdAndDtoAndMillis(Long id, PreferenciasDto dto, long millis) {
-        var model = (PreferenciasModel) super.fromIdAndDtoAndMillis(id, dto, millis);
-        model.tema = dto.tema();
-        model.login = dto.login();
-        model.senha = dto.senha();
-        model.credenciaisHabilitadas = dto.credentiaisHabilitadas();
-        model.primeiroAcesso = dto.primeiroAcesso();
-        return model;
+        this.id = id;
+        this.dataCriacao = millis;
+        this.tema = dto.tema();
+        this.login = dto.login();
+        this.senha = dto.senha();
+        this.credenciaisHabilitadas = dto.credentiaisHabilitadas();
+        this.primeiroAcesso = dto.primeiroAcesso();
+        return this;
     }
 
     public boolean isFirstAccess(){

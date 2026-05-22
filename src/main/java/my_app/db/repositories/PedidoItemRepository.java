@@ -31,7 +31,7 @@ public class PedidoItemRepository extends BaseRepository<PedidoItemDto, PedidoIt
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) return new PedidoItemModel().fromIdAndDto(keys.getLong(1), dto);
+                if (keys.next()) return (PedidoItemModel) new PedidoItemModel().fromIdAndDto(keys.getLong(1), dto);
             }
         }
         throw new SQLException("Falha ao recuperar ID gerado");

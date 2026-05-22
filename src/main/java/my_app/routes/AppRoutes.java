@@ -65,12 +65,9 @@ public class AppRoutes {
         //String rotaInicial = "vendas"; //ok
         //String rotaInicial = "pedidos";//ok
         //String rotaInicial = "home"; //ok
+        //String rotaInicial = "fornecedores";//ok
 
-
-        String rotaInicial = "fornecedores";
-        //String rotaInicial = "empresa";
-        //String rotaInicial = "compras";
-        //String rotaInicial = "clientes";
+        String rotaInicial = "clientes";
         //String rotaInicial = "contas-a-pagar";
         //String rotaInicial = "tecnicos";
         //String rotaInicial = "ordem-de-servico";
@@ -80,6 +77,10 @@ public class AppRoutes {
         //String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "pdv-screen";
+
+        //String rotaInicial = "empresa";
+        //String rotaInicial = "compras";
+
 //        String rotaInicial;
 //        if (forceAccessRoute) {
 //            rotaInicial = "welcome";

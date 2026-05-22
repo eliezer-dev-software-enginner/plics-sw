@@ -32,7 +32,7 @@ public class PedidoRepository extends BaseRepository<PedidoDto, PedidoModel> {
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) return new PedidoModel().fromIdAndDto(keys.getLong(1), dto);
+                if (keys.next()) return (PedidoModel) new PedidoModel().fromIdAndDto(keys.getLong(1), dto);
             }
         }
         throw new SQLException("Falha ao recuperar ID gerado");

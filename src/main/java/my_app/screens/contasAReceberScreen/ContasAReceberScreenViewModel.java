@@ -197,12 +197,12 @@ public class ContasAReceberScreenViewModel extends ViewModel {
             Async.Run(() -> {
                 try {
                     final var modelAtualizada = new ContaAreceberModel().fromIdAndDto(contaSelected.get().id, dto);
-                    repository.atualizar(modelAtualizada);
+                    repository.atualizar((ContaAreceberModel) modelAtualizada);
                     UI.runOnUi(() -> {
                         // Update item in observable list
                         int index = contas.indexOf(contaSelected.get());
                         if (index >= 0) {
-                            contas.set(index, modelAtualizada);
+                            contas.set(index, (ContaAreceberModel) modelAtualizada);
                         }
                         Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                         limparFormulario();

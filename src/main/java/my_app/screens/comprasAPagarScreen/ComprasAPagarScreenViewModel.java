@@ -202,7 +202,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
             // Update logic
             Async.Run(() -> {
                 try {
-                    ContasPagarModel modelAtualizada = new ContasPagarModel().fromIdAndDto(contaSelected.get().id, dto);
+                    ContasPagarModel modelAtualizada = (ContasPagarModel) new ContasPagarModel().fromIdAndDto(contaSelected.get().id, dto);
                     repository.atualizar(modelAtualizada);
                     UI.runOnUi(() -> {
                         // Update item in observable list

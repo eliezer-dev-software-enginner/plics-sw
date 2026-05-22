@@ -44,18 +44,19 @@ public class FornecedorModel extends ModelBase<FornecedorDto> {
 
     @Override
     public FornecedorModel fromIdAndDtoAndMillis(Long id, FornecedorDto dto, long millis) {
-        var model = (FornecedorModel) super.fromIdAndDtoAndMillis(id, dto, millis);
-        model.nome = dto.nome();
-        model.cpfCnpj = dto.cpfCnpj();
-        model.celular = dto.celular();
-        model.email = dto.email();
-        model.inscricaoEstadual = dto.inscricaoEstadual();
-        model.ufSelected = dto.ufSelected();
-        model.cidade = dto.cidade();
-        model.bairro = dto.bairro();
-        model.rua = dto.rua();
-        model.numero = dto.numero();
-        model.observacao = dto.observacao();
-        return model;
+        this.id = id;
+        this.dataCriacao = millis;
+        this.nome = dto.nome();
+        this.cpfCnpj = dto.cpfCnpj();
+        this.celular = dto.celular();
+        this.email = dto.email();
+        this.inscricaoEstadual = dto.inscricaoEstadual();
+        this.ufSelected = dto.ufSelected();
+        this.cidade = dto.cidade();
+        this.bairro = dto.bairro();
+        this.rua = dto.rua();
+        this.numero = dto.numero();
+        this.observacao = dto.observacao();
+        return this;
     }
 }

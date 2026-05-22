@@ -15,18 +15,19 @@ public class ClienteRepository extends BaseRepository<ClienteDto,ClienteModel> {
         INSERT INTO clientes
         (nome, cpf_cnpj, celular, data_criacao, email) VALUES (?,?,?,?,?)
     """;
-        long dataCriacao = System.currentTimeMillis();
+        long dataMillis = System.currentTimeMillis();
         try (PreparedStatement ps = conn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, dto.nome());
             ps.setString(2, dto.cnpj());
             ps.setString(3, dto.telefone());
-            ps.setLong(4, dataCriacao);
+            ps.setLong(4, dataMillis);
             ps.setString(5, dto.email());
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return new ClienteModel().fromIdAndDto(generatedKeys.getLong(1), dto);
+                    long idGerado = generatedKeys.getLong(1);
+                    return (ClienteModel) new ClienteModel().fromIdAndDtoAndMillis(idGerado, dto, dataMillis);
                 }
             }
         } catch (SQLException e) {
@@ -43,7 +44,7 @@ public class ClienteRepository extends BaseRepository<ClienteDto,ClienteModel> {
         List<ClienteModel> lista = new ArrayList<>();
         try (Statement st = conn().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM clientes");
-            while (rs.next()) lista.add(new ClienteModel().fromResultSet(rs));
+            while (rs.next()) lista.add((ClienteModel) new ClienteModel().fromResultSet(rs));
         }
         return lista;
     }
@@ -81,7 +82,7 @@ public class ClienteRepository extends BaseRepository<ClienteDto,ClienteModel> {
         try (PreparedStatement ps = conn().prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            return rs.next() ? new ClienteModel().fromResultSet(rs) : null;
+            return rs.next() ? (ClienteModel) new ClienteModel().fromResultSet(rs) : null;
         }
     }
 }

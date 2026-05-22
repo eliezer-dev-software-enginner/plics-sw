@@ -17,9 +17,11 @@ public class TecnicoModel extends ModelBase<TecnicoDto> {
 
     @Override
     public TecnicoModel fromIdAndDtoAndMillis(Long id, TecnicoDto tecnicoDto, long millis) {
-        var model = (TecnicoModel) super.fromIdAndDtoAndMillis(id, tecnicoDto, millis);
-        model.nome = tecnicoDto.nome();
-        return model;
+        this.id = id;
+        this.dataCriacao = millis;
+        this.nome = tecnicoDto.nome();
+        this.dataCriacao = millis;
+        return this;
     }
 }
 

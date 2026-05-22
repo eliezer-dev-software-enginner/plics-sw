@@ -20,6 +20,19 @@ public class PedidoModel extends ModelBase<PedidoDto> {
     public List<PedidoItemModel> itens; // composição, não vem do banco diretamente
 
     @Override
+    public PedidoModel fromIdAndDtoAndMillis(Long id, PedidoDto dto, long millis) {
+        this.id = id;
+        this.dataCriacao = millis;
+        this.clienteId = dto.clienteId();
+        this.formaPagamento = dto.formaPagamento();
+        this.totalLiquido = dto.totalLiquido();
+        this.desconto = dto.desconto();
+        this.observacao = dto.observacao();
+        this.isFiado = dto.isFiado();
+        return this;
+    }
+
+    @Override
     public PedidoModel fromResultSet(ResultSet rs) throws SQLException {
         var m = new PedidoModel();
         m.id = rs.getLong("id");
@@ -31,20 +44,6 @@ public class PedidoModel extends ModelBase<PedidoDto> {
         m.observacao = rs.getString("observacao");
         m.isFiado = rs.getInt("is_fiado") == 1;
         m.dataCriacao = rs.getLong("data_criacao");
-        return m;
-    }
-
-    @Override
-    public PedidoModel fromIdAndDto(Long id, PedidoDto dto) {
-        var m = new PedidoModel();
-        m.id = id;
-        m.clienteId = dto.clienteId();
-        m.formaPagamento = dto.formaPagamento();
-        m.totalLiquido = dto.totalLiquido();
-        m.desconto = dto.desconto();
-        m.observacao = dto.observacao();
-        m.isFiado = dto.isFiado();
-        m.dataCriacao = System.currentTimeMillis();
         return m;
     }
 }

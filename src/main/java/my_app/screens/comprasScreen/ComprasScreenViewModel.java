@@ -187,9 +187,9 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 if (selecionado == null) return;
 
                 var modelAtualizada = new VendaModel().fromIdAndDto(selecionado.id, dto);
-                vendaService.atualizarOrThrow(modelAtualizada,
+                vendaService.atualizarOrThrow((VendaModel) modelAtualizada,
                         msg -> UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + msg)));
-                vendas.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
+                vendas.updateIf(it -> it.id.equals(selecionado.id), it -> (VendaModel) modelAtualizada);
                 Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
 
             } else {

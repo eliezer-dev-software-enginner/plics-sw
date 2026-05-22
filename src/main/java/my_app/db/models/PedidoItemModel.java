@@ -16,6 +16,19 @@ public class PedidoItemModel extends ModelBase<PedidoItemDto> {
     public BigDecimal totalItem;
 
     @Override
+    public PedidoItemModel fromIdAndDtoAndMillis(Long id, PedidoItemDto dto, long millis) {
+        this.id = id;
+        this.dataCriacao = millis;
+        this.pedidoId = dto.pedidoId();
+        this.produtoCod = dto.produtoCod();
+        this.quantidade = dto.quantidade();
+        this.precoUnitario = dto.precoUnitario();
+        this.desconto = dto.desconto();
+        this.totalItem = dto.totalItem();
+        return this;
+    }
+
+    @Override
     public PedidoItemModel fromResultSet(ResultSet rs) throws SQLException {
         var m = new PedidoItemModel();
         m.id = rs.getLong("id");
@@ -26,20 +39,6 @@ public class PedidoItemModel extends ModelBase<PedidoItemDto> {
         m.desconto = rs.getBigDecimal("desconto");
         m.totalItem = rs.getBigDecimal("total_item");
         m.dataCriacao = rs.getLong("data_criacao");
-        return m;
-    }
-
-    @Override
-    public PedidoItemModel fromIdAndDto(Long id, PedidoItemDto dto) {
-        var m = new PedidoItemModel();
-        m.id = id;
-        m.pedidoId = dto.pedidoId();
-        m.produtoCod = dto.produtoCod();
-        m.quantidade = dto.quantidade();
-        m.precoUnitario = dto.precoUnitario();
-        m.desconto = dto.desconto();
-        m.totalItem = dto.totalItem();
-        m.dataCriacao = System.currentTimeMillis();
         return m;
     }
 }

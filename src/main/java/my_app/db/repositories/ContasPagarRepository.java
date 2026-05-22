@@ -59,7 +59,7 @@ public class ContasPagarRepository extends BaseRepository<ContasPagarDto, Contas
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long id = generatedKeys.getLong(1);
-                    return new ContasPagarModel().fromIdAndDto(id, dto);
+                    return (ContasPagarModel) new ContasPagarModel().fromIdAndDto(id, dto);
                 }
             }
         }

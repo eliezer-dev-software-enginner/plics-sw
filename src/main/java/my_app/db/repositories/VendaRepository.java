@@ -43,7 +43,7 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long id = generatedKeys.getLong(1);
-                    return new VendaModel().fromIdAndDto(id, dto);
+                    return (VendaModel) new VendaModel().fromIdAndDto(id, dto);
                 }
             }
         }

@@ -2,37 +2,30 @@ package my_app.db.models;
 
 import my_app.db.dto.ClienteDto;
 import my_app.domain.ModelBase;
+import my_app.domain.SqlField;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ClienteModel extends ModelBase<ClienteDto> {
-    public Long id;
+    @SqlField(name = "nome", type = "string")
     public String nome;
+    @SqlField(name = "cpf_cnpj", type = "string")
     public String cpfCnpj;
+    @SqlField(name = "celular", type = "string")
     public String celular;
+    @SqlField(name = "email", type = "string")
     public String email;
-    public Long dataCriacao;
-
-    public ClienteModel fromResultSet(ResultSet rs) throws SQLException {
-        var model = new ClienteModel();
-        model.id = rs.getLong("id");
-        model.nome = rs.getString("nome");
-        model.cpfCnpj = rs.getString("cpf_cnpj");
-        model.email = rs.getString("email");
-        model.celular = rs.getString("celular");
-        model.dataCriacao = rs.getLong("data_criacao");
-        return model;
-    }
 
     @Override
-    public ClienteModel fromIdAndDto(Long id, ClienteDto clienteDto) {
-        var model = new ClienteModel();
-        model.id = id;
-        model.nome = clienteDto.nome();
-        model.cpfCnpj = clienteDto.cnpj();
-        model.email = clienteDto.email();
-        model.celular = clienteDto.telefone();
-        return model;
+    public ClienteModel fromIdAndDtoAndMillis(Long id, ClienteDto clienteDto, long millis) {
+        this.id = id;
+        this.dataCriacao = millis;
+        this.nome = clienteDto.nome();
+        this.cpfCnpj = clienteDto.cnpj();
+        this.email = clienteDto.email();
+        this.celular = clienteDto.telefone();
+
+        return this;
     }
 }

@@ -162,7 +162,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     private void asyncAtualizar(ScreenContext ctx, ProdutoDto dto) {
         Async.Run(() -> {
             try {
-                service.atualizar(new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
+                service.atualizar((ProdutoModel) new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
                 var produtosList = produtoRepository.listar();
                 UI.runOnUi(() -> {
                     this.produtos.clear();

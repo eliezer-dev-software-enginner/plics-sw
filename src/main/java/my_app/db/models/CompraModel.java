@@ -27,6 +27,25 @@ public class CompraModel extends ModelBase<CompraDto> {
     public CompraModel() {}
 
     @Override
+    public CompraModel fromIdAndDtoAndMillis(Long id, CompraDto compraDto, long millis) {
+        this.id = id;
+        this.dataCriacao = millis;
+        this.produtoCod = compraDto.produtoCod();
+        this.fornecedorId = compraDto.fornecedorId();
+        this.quantidade = compraDto.quantidade();
+        this.precoDeCompra = compraDto.precoCompra();
+        this.totalLiquido = compraDto.totalLiquido();
+        this.descontoEmReais = compraDto.descontoEmReais();
+        this.tipoPagamento = compraDto.tipoPagamento();
+        this.observacao = compraDto.observacao();
+        this.dataCompra = compraDto.dataCompra();
+        this.numeroNota = compraDto.numeroNota();
+        this.dataValidade = compraDto.dataValidade();
+
+        return this;
+    }
+
+    @Override
     public CompraModel fromResultSet(ResultSet rs) throws SQLException {
         var model = new CompraModel();
         model.id = rs.getLong("id");
@@ -45,26 +64,6 @@ public class CompraModel extends ModelBase<CompraDto> {
         if (rs.wasNull()) {
             model.dataValidade = null;
         }
-        return model;
-    }
-
-    @Override
-    public CompraModel fromIdAndDto(Long id, CompraDto compraDto) {
-        var model = new CompraModel();
-        model.id = id;
-        model.produtoCod = compraDto.produtoCod();
-        model.fornecedorId = compraDto.fornecedorId();
-        model.quantidade = compraDto.quantidade();
-        model.precoDeCompra = compraDto.precoCompra();
-        model.totalLiquido = compraDto.totalLiquido();
-        model.descontoEmReais = compraDto.descontoEmReais();
-        model.tipoPagamento = compraDto.tipoPagamento();
-        model.observacao = compraDto.observacao();
-        model.dataCompra = compraDto.dataCompra();
-        model.numeroNota = compraDto.numeroNota();
-        model.dataValidade = compraDto.dataValidade();
-        
-        //model.dataCriacao = compraDto.dataCriacao();
         return model;
     }
 

@@ -8,6 +8,7 @@ import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
+import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.ClienteRepository;
 import my_app.domain.Data;
 import my_app.events.ClienteEvents;
@@ -101,25 +102,29 @@ public class ClienteViewModel extends ViewModelScreenContract {
         String emailValue   = email.get().trim();
 
         if (nomeValue.isEmpty()) {
-            Components.ShowAlertError("Nome é obrigatório");
-            return;
+            throw new RuntimeException("Nome é obrigatório");
         }
-        if (!cnpjCpfValue.isEmpty()) {
-            if (tipoPessoaEhFisica.get() && !isValidCpf(cnpjCpfValue)) {
-                Components.ShowAlertError("CPF inválido (deve conter 11 dígitos)");
-                return;
-            } else if (!tipoPessoaEhFisica.get() && !isValidCnpj(cnpjCpfValue)) {
-                Components.ShowAlertError("CNPJ inválido (deve conter 14 dígitos)");
-                return;
+
+        //Pode cadastrar com cnpj/cpf vazio
+        for (var model : clientes.get()) {
+            if(!cnpjCpfValue.isEmpty()){
+                if(cnpjCpfValue.equals(model.cpfCnpj.trim()))throw new RuntimeException("Já existe um cliente com este CNPJ/CPF");
             }
         }
+
+        if (!cnpjCpfValue.isEmpty()) {
+            if (tipoPessoaEhFisica.get() && !isValidCpf(cnpjCpfValue)) {
+                throw new RuntimeException("CPF inválido (deve conter 11 dígitos)");
+            } else if (!tipoPessoaEhFisica.get() && !isValidCnpj(cnpjCpfValue)) {
+                throw new RuntimeException("CNPJ inválido (deve conter 14 dígitos)");
+            }
+        }
+
         if (!emailValue.isEmpty() && !isValidEmail(emailValue)) {
-            Components.ShowAlertError("Formato de e-mail inválido");
-            return;
+            throw new RuntimeException("Formato de e-mail inválido");
         }
         if (!celularValue.isEmpty() && !isValidPhone(celularValue)) {
-            Components.ShowAlertError("Telefone inválido (informe DDD + Número)");
-            return;
+            throw new RuntimeException("Telefone inválido (informe DDD + Número)");
         }
 
         if (modoEdicao.get()) {
@@ -142,14 +147,14 @@ public class ClienteViewModel extends ViewModelScreenContract {
         Async.Run(() -> {
             try {
                 var model = new ClienteModel().fromIdAndDto(id, new ClienteDto(nome, cnpjCpf, celular, email));
-                clienteRepository.atualizar(model);
+                clienteRepository.atualizar((ClienteModel) model);
                 UI.runOnUi(() -> {
-                    clientes.updateIf(it -> it.id.equals(id), it -> model);
+                    clientes.updateIf(it -> it.id.equals(id), it -> (ClienteModel) model);
                     Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                     clearForm();
                 });
             } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+                throw new RuntimeException(e);
             }
         });
     }
@@ -165,7 +170,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
                     EventBus.getInstance().publish(new ClienteEvents.Criado(model));
                 });
             } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+                throw new RuntimeException(e);
             }
         });
     }
