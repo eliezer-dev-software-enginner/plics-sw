@@ -105,13 +105,6 @@ public class ClienteViewModel extends ViewModelScreenContract {
             throw new RuntimeException("Nome é obrigatório");
         }
 
-        //Pode cadastrar com cnpj/cpf vazio
-        for (var model : clientes.get()) {
-            if(!cnpjCpfValue.isEmpty()){
-                if(cnpjCpfValue.equals(model.cpfCnpj.trim()))throw new RuntimeException("Já existe um cliente com este CNPJ/CPF");
-            }
-        }
-
         if (!cnpjCpfValue.isEmpty()) {
             if (tipoPessoaEhFisica.get() && !isValidCpf(cnpjCpfValue)) {
                 throw new RuntimeException("CPF inválido (deve conter 11 dígitos)");
@@ -160,6 +153,13 @@ public class ClienteViewModel extends ViewModelScreenContract {
     }
 
     private void asyncSalvar(String nome, String cnpjCpf, String celular, String email) {
+        //Pode cadastrar com cnpj/cpf vazio
+        for (var model : clientes.get()) {
+            if(!cnpjCpf.isEmpty()){
+                if(cnpjCpf.equals(model.cpfCnpj.trim()))throw new RuntimeException("Já existe um cliente com este CNPJ/CPF");
+            }
+        }
+
         Async.Run(() -> {
             try {
                 var model = clienteRepository.salvar(new ClienteDto(nome, cnpjCpf, celular, email));

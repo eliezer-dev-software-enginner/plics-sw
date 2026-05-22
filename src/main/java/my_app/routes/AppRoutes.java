@@ -66,17 +66,23 @@ public class AppRoutes {
         //String rotaInicial = "pedidos";//ok
         //String rotaInicial = "home"; //ok
         //String rotaInicial = "fornecedores";//ok
+        //String rotaInicial = "clientes";//ok
 
-        String rotaInicial = "clientes";
-        //String rotaInicial = "contas-a-pagar";
-        //String rotaInicial = "tecnicos";
-        //String rotaInicial = "ordem-de-servico";
-        //String rotaInicial = "relatar-erro";
+
+
+        String rotaInicial = "relatar-erro";
         //String rotaInicial = "sugerir-melhoria";
         //String rotaInicial = "preferencias";
         //String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "pdv-screen";
+
+
+        //TODO: TRATAR ESSAS TELAS NA V4
+        //String rotaInicial = "contas-a-pagar";
+        //String rotaInicial = "tecnicos";
+        //String rotaInicial = "ordem-de-servico";
+
 
         //String rotaInicial = "empresa";
         //String rotaInicial = "compras";

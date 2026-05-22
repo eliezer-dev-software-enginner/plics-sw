@@ -260,43 +260,7 @@ public final class DBInitializer {
         """);
         }
 
-        aplicarMigration("001_unique_cpf_cnpj_clientes", conn, () -> {
-            conn.setAutoCommit(false);
-            // SQLite não suporta ADD CONSTRAINT, então recria a tabela
-            try (Statement st = conn.createStatement()) {
-                // Limpa estado inconsistente de execução anterior
-                st.execute("DROP TABLE IF EXISTS clientes_old");
-
-                st.execute("ALTER TABLE clientes RENAME TO clientes_old");
-                st.execute("""
-                    CREATE TABLE clientes (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        nome TEXT NOT NULL,
-                        cpf_cnpj TEXT UNIQUE,
-                        celular TEXT,
-                        email TEXT,
-                        data_criacao INTEGER NOT NULL
-                    )
-                """);
-                st.execute("""
-                    INSERT INTO clientes
-                    SELECT id, nome, cpf_cnpj, celular, email, data_criacao
-                    FROM clientes_old
-                    WHERE id IN (
-                        SELECT MIN(id) FROM clientes_old GROUP BY cpf_cnpj
-                    )
-                """);
-                st.execute("DROP TABLE clientes_old");
-                conn.commit();
-            }catch (SQLException e) {
-                conn.rollback();
-                throw e;
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        });
-
-        aplicarMigration("002_criar_pedidos_pdv", conn, () -> {
+        aplicarMigration("001_criar_pedidos_pdv", conn, () -> {
             try (Statement st = conn.createStatement()) {
                 st.execute("""
             CREATE TABLE IF NOT EXISTS pedidos (
@@ -327,7 +291,7 @@ public final class DBInitializer {
         """);
             }
         });
-        aplicarMigration("003_nome_nao_eh_mais_unique_em_fornecedores", conn, () -> {
+        aplicarMigration("002_nome_nao_eh_mais_unique_em_fornecedores", conn, () -> {
             conn.setAutoCommit(false);
             // SQLite não suporta ADD CONSTRAINT, então recria a tabela
             try (Statement st = conn.createStatement()) {
@@ -361,6 +325,42 @@ public final class DBInitializer {
                     )
                 """);
                 st.execute("DROP TABLE fornecedores_old");
+                conn.commit();
+            }catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        });
+        aplicarMigration("003_cpf_cnpj_nao_eh_mais_unique_em_clientes", conn, () -> {
+            //assim eu vou poder salvar mais de 1 regustro com cpf_cnpj vazio
+            conn.setAutoCommit(false);
+            // SQLite não suporta ADD CONSTRAINT, então recria a tabela
+            try (Statement st = conn.createStatement()) {
+                // Limpa estado inconsistente de execução anterior
+                st.execute("DROP TABLE IF EXISTS clientes_old");
+
+                st.execute("ALTER TABLE clientes RENAME TO clientes_old");
+                st.execute("""
+                    CREATE TABLE clientes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT NOT NULL,
+                        cpf_cnpj TEXT,
+                        celular TEXT,
+                        email TEXT,
+                        data_criacao INTEGER NOT NULL
+                    )
+                """);
+                st.execute("""
+                    INSERT INTO clientes
+                    SELECT id, nome, cpf_cnpj, celular, email, data_criacao
+                    FROM clientes_old
+                    WHERE id IN (
+                        SELECT MIN(id) FROM clientes_old GROUP BY cpf_cnpj
+                    )
+                """);
+                st.execute("DROP TABLE clientes_old");
                 conn.commit();
             }catch (SQLException e) {
                 conn.rollback();

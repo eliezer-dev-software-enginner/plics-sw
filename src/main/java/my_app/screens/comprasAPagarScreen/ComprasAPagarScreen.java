@@ -30,6 +30,7 @@ import my_app.utils.Utils;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+//TODO: REFATORAR NA V4
 public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
     private final ComprasAPagarScreenViewModel vm;
     private final Theme theme = ThemeManager.theme();

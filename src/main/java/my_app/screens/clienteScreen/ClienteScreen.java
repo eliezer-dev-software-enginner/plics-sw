@@ -53,7 +53,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                 .r_child(Components.InputColumn("Email", vm.email, ""))
                         )
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(vm.btnText, vm::handleAddOrUpdate, vm::clearForm))
+                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, vm::clearForm))
         );
     }
 
@@ -75,6 +75,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         : Utils.formatCnpj(it.cpfCnpj))
                 .column("Data de criação", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
+                .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(it -> vm.clienteSelecionado.set(it));
 
         return simpleTable;

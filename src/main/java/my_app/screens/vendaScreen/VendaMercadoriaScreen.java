@@ -47,7 +47,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                         .r_child(Components.TextWithValue("Estoque após venda:", vm.estoqueAtual)),
                 displayOperationsRow(),
                 Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalLiquido),
-                Components.actionButtons(vm.btnText, vm::handleAddOrUpdate, vm::clearForm)
+                Components.actionButtons(vm.btnText, this::handleAddOrUpdate, vm::clearForm)
         );
     }
 

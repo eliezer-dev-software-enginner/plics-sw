@@ -27,7 +27,7 @@ public class ClienteRepository extends BaseRepository<ClienteDto,ClienteModel> {
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long idGerado = generatedKeys.getLong(1);
-                    return (ClienteModel) new ClienteModel().fromIdAndDtoAndMillis(idGerado, dto, dataMillis);
+                    return new ClienteModel().fromIdAndDtoAndMillis(idGerado, dto, dataMillis);
                 }
             }
         } catch (SQLException e) {
