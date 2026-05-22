@@ -77,6 +77,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         });
     }
 
+    @Override
     public void handleAddOrUpdate() {
         String nomeValue = nome.getOrDefault("").trim();
         String cnpjValue = cnpj.getOrDefault("").trim();
@@ -90,28 +91,22 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         String numeroValue = numero.getOrDefault("").trim();
         String observacaoValue = observacao.getOrDefault("").trim();
 
-        if (nomeValue.isEmpty()) {
-            Components.ShowAlertError("Nome é obrigatório");
-            return;
+        //Pode cadastrar com cnpj/cpf vazio
+        for (FornecedorModel fornecedorModel : fornecedores.get()) {
+            if(!cnpjValue.isEmpty()){
+                if(cnpjValue.equals(fornecedorModel.cpfCnpj.trim()))throw new RuntimeException("Já existe um fornecedor com este CNPJ/CPF");
+            }
         }
+
+        if (nomeValue.isEmpty()) throw new RuntimeException("Nome é obrigatório");
 
         //TODO: DEVE TER O MESMO PROBLEMA QUE TINHA LÁ EM CLIENTE
-        if (!cnpjValue.isEmpty() && !isValidCnpj(cnpjValue)) {
-            Components.ShowAlertError("CNPJ inválido (deve conter 14 dígitos)");
-            return;
-        }
+        if (!cnpjValue.isEmpty() && !isValidCnpj(cnpjValue)) throw new RuntimeException("CNPJ inválido (deve conter 14 dígitos)");
 
         // 3. Validação de E-mail (se preenchido)
-        if (!emailValue.isEmpty() && !isValidEmail(emailValue)) {
-            Components.ShowAlertError("Formato de e-mail inválido");
-            return;
-        }
+        if (!emailValue.isEmpty() && !isValidEmail(emailValue)) throw new RuntimeException("Formato de e-mail inválido");
 
-        // 4. Validação de Telefone/Celular
-        if (!celularValue.isEmpty() && !isValidPhone(celularValue)) {
-            Components.ShowAlertError("Telefone inválido (informe DDD + Número)");
-            return;
-        }
+        if (!celularValue.isEmpty() && !isValidPhone(celularValue)) throw new RuntimeException("Telefone inválido (informe DDD + Número)");
 
         if(modoEdicao.get() && fornecedorSelected.get() == null) return;
 
@@ -144,7 +139,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
                 });
 
             } catch (Exception e) {
-                UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
+                throw new RuntimeException(e);
             }
         });
     }

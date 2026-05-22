@@ -1,6 +1,7 @@
 package my_app.domain;
 
 import megalodonte.State;
+import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
@@ -68,7 +69,13 @@ public interface ContratoTelaCrudV3 {
     }
 
     default void handleAddOrUpdate() {
-        viewModel().handleAddOrUpdate();
+        try{
+            viewModel().handleAddOrUpdate();
+        }catch(Exception e){
+            e.printStackTrace();
+            UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
+        }
+
     }
 
 }

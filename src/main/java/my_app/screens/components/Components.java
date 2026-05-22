@@ -435,11 +435,7 @@ public class Components {
     }
 
     public static Component InputColumnCnpj(String label, State<String> inputState) {
-        var inputProps = new InputProps()
-                .height(31).placeHolder("00.000.000/0000-00")
-                .fontSize(theme.typography().small())
-                .borderWidth(theme.border().width())
-                .borderColor(theme.colors().primary());
+        var inputProps =getInputProps("00.000.000/0000-00");
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {

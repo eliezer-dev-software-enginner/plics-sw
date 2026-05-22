@@ -260,7 +260,43 @@ public final class DBInitializer {
         """);
         }
 
-        aplicarMigration("criar_pedidos_pdv", conn, () -> {
+        aplicarMigration("001_unique_cpf_cnpj_clientes", conn, () -> {
+            conn.setAutoCommit(false);
+            // SQLite não suporta ADD CONSTRAINT, então recria a tabela
+            try (Statement st = conn.createStatement()) {
+                // Limpa estado inconsistente de execução anterior
+                st.execute("DROP TABLE IF EXISTS clientes_old");
+
+                st.execute("ALTER TABLE clientes RENAME TO clientes_old");
+                st.execute("""
+                    CREATE TABLE clientes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT NOT NULL,
+                        cpf_cnpj TEXT UNIQUE,
+                        celular TEXT,
+                        email TEXT,
+                        data_criacao INTEGER NOT NULL
+                    )
+                """);
+                st.execute("""
+                    INSERT INTO clientes
+                    SELECT id, nome, cpf_cnpj, celular, email, data_criacao
+                    FROM clientes_old
+                    WHERE id IN (
+                        SELECT MIN(id) FROM clientes_old GROUP BY cpf_cnpj
+                    )
+                """);
+                st.execute("DROP TABLE clientes_old");
+                conn.commit();
+            }catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        });
+
+        aplicarMigration("002_criar_pedidos_pdv", conn, () -> {
             try (Statement st = conn.createStatement()) {
                 st.execute("""
             CREATE TABLE IF NOT EXISTS pedidos (
@@ -291,34 +327,40 @@ public final class DBInitializer {
         """);
             }
         });
-
-        aplicarMigration("001_unique_cpf_cnpj_clientes", conn, () -> {
+        aplicarMigration("003_nome_nao_eh_mais_unique_em_fornecedores", conn, () -> {
             conn.setAutoCommit(false);
             // SQLite não suporta ADD CONSTRAINT, então recria a tabela
             try (Statement st = conn.createStatement()) {
                 // Limpa estado inconsistente de execução anterior
-                st.execute("DROP TABLE IF EXISTS clientes_old");
+                st.execute("DROP TABLE IF EXISTS fornecedores_old");
 
-                st.execute("ALTER TABLE clientes RENAME TO clientes_old");
+                st.execute("ALTER TABLE fornecedores RENAME TO fornecedores_old");
                 st.execute("""
-                    CREATE TABLE clientes (
+                CREATE TABLE IF NOT EXISTS fornecedores (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         nome TEXT NOT NULL,
-                        cpf_cnpj TEXT UNIQUE,
+                        cpf_cnpj TEXT,
                         celular TEXT,
                         email TEXT,
+                        inscricao_estadual TEXT,
+                        uf_selected TEXT,
+                        cidade TEXT,
+                        bairro TEXT,
+                        rua TEXT,
+                        numero TEXT,
+                        observacao TEXT,
                         data_criacao INTEGER NOT NULL
                     )
                 """);
                 st.execute("""
-                    INSERT INTO clientes
-                    SELECT id, nome, cpf_cnpj, celular, email, data_criacao
-                    FROM clientes_old
+                    INSERT INTO fornecedores
+                    SELECT id, nome, cpf_cnpj, celular, email, inscricao_estadual,uf_selected,cidade,bairro,rua,numero,observacao, data_criacao
+                    FROM fornecedores_old
                     WHERE id IN (
-                        SELECT MIN(id) FROM clientes_old GROUP BY cpf_cnpj
+                        SELECT MIN(id) FROM fornecedores_old GROUP BY cpf_cnpj
                     )
                 """);
-                st.execute("DROP TABLE clientes_old");
+                st.execute("DROP TABLE fornecedores_old");
                 conn.commit();
             }catch (SQLException e) {
                 conn.rollback();

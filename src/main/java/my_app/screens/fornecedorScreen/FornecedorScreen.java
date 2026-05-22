@@ -17,6 +17,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
+import my_app.utils.Utils;
 
 public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final FornecedorScreenViewModel vm;
@@ -51,7 +52,6 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                 .r_child(Components.InputColumn("Bairro", vm.bairro, ""))
                                 .r_child(Components.InputColumn("Rua", vm.rua, ""))
                                 .r_child(Components.InputColumnNumeric("Número", vm.numero, ""))
-
                         )
                         .c_child(new SpacerVertical(20))
                         .c_child(new LineHorizontal())
@@ -63,7 +63,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private Row informacoesPessoais() {
         return new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.InputColumn("Nome Fantasia", vm.nome, "Ex: Empresa 123"))
-                .r_child(Components.InputColumnNumeric("CNPJ", vm.cnpj, ""))
+                .r_child(Components.InputColumnCnpj("CNPJ", vm.cnpj))
                 .r_child(Components.InputColumnPhone("Celular", vm.celular))
                 .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, ""))
                 .r_child(Components.InputColumn("Email", vm.email, "Ex: email@teste.com"));
@@ -81,13 +81,14 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .header().columns()
                     .column("ID", it-> it.id)
                     .column("Nome", it->it.nome)
-                    .column("Telefone", it->it.celular)
+                    .column("Telefone", it-> Utils.formatPhone(it.celular))
                     .column("CNPJ", it->it.cpfCnpj)
                     .column("Email", it->it.email)
                     .column("Data de Criação", it->DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                     .end()
                 .build()
                 .onItemSelectChange(vm.fornecedorSelected::set)
+                .onChangeFocus(vm::handleFocusChange)
                 .onItemDoubleClick(it-> {
                     Components.ShowModal( ItemDetails(it), this.ctx, 550);
                 });

@@ -59,14 +59,15 @@ public class AppRoutes {
                         new RouteProps(550, 400, "Seja muito bem vindo", false))
         );
 
+        //String rotaInicial = "categorias";//ok completo
         //String rotaInicial = "produtos";//ok
-        //String rotaInicial = "pdv-screen";
+
         //String rotaInicial = "vendas"; //ok
         //String rotaInicial = "pedidos";//ok
         //String rotaInicial = "home"; //ok
-        //String rotaInicial = "entrar-com-credenciais";
-        String rotaInicial = "categorias";
-        //String rotaInicial = "fornecedores";
+
+
+        String rotaInicial = "fornecedores";
         //String rotaInicial = "empresa";
         //String rotaInicial = "compras";
         //String rotaInicial = "clientes";
@@ -77,6 +78,8 @@ public class AppRoutes {
         //String rotaInicial = "sugerir-melhoria";
         //String rotaInicial = "preferencias";
         //String rotaInicial = "entrar-com-credenciais";
+        //String rotaInicial = "entrar-com-credenciais";
+        //String rotaInicial = "pdv-screen";
 //        String rotaInicial;
 //        if (forceAccessRoute) {
 //            rotaInicial = "welcome";
