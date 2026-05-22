@@ -16,6 +16,7 @@ import megalodonte.v2.Show;
 import my_app.Main;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
+import my_app.domain.Data;
 import my_app.screens.components.Components;
 //import javafx.scene.control.*;
 import javafx.scene.control.*;
@@ -84,8 +85,9 @@ public class AuthScreen implements ScreenComponent {
                         )
                 ),
                 new Column(new ColumnProps().fillHeight()),//TODO: TROCAR PARA SPACERVERTICAL.FILL
-               Components.imageWithTextRow("/assets/whatsapp.png","+27 62 133 2217 - Suporte garantido." ),
-                new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to("https://wa.me/27621332217"))
+                //TODO: TROCAR QRCODE
+               Components.imageWithTextRow("/assets/whatsapp.png",Data.getNumberWhatsappSupportFormatted() + " - Suporte garantido." ),
+                new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to(Data.linkWhatsappSupport))
         );
     }
 

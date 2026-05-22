@@ -1,5 +1,7 @@
 package my_app.domain;
 
+import my_app.utils.Utils;
+
 import java.util.List;
 
 public class Data {
@@ -14,4 +16,15 @@ public class Data {
 
     public static final List<String> unidadesDeMedidaList = List.of("UN", "KG", "ml");
     public static final List<String> tiposPessoaList = List.of("Física", "Jurídica");
+
+    private static final String numberWhatsappSupport = "5532985066537";
+    public static final String linkWhatsappSupport = "https://wa.me/"+numberWhatsappSupport;
+
+    public static String getNumberWhatsappSupportFormatted() {
+        return Utils.formatPhone(numberWhatsappSupport.replace("55",""));
+    }
+
+    static void main() {
+        IO.println(getNumberWhatsappSupportFormatted());
+    }
 }
