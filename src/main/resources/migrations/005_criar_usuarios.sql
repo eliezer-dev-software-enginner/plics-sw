@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    senha TEXT NOT NULL,
+    cargo TEXT NOT NULL,
+    data_criacao INTEGER NOT NULL
+)

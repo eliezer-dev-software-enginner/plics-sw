@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS produtos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    codigo_barras TEXT UNIQUE NOT NULL,
+    descricao TEXT,
+    preco_compra REAL,
+    preco_venda REAL,
+    unidade TEXT,
+    categoria_id INTEGER,
+    fornecedor_id INTEGER,
+    estoque INTEGER,
+    observacoes TEXT,
+    imagem TEXT,
+    marca TEXT,
+    validade INTEGER,
+    comissao TEXT,
+    garantia TEXT,
+    data_criacao INTEGER,
+    total_liquido REAL NOT NULL,
+    FOREIGN KEY (categoria_id) REFERENCES categoria(id)
+)
