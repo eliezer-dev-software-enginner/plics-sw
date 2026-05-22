@@ -1,27 +1,19 @@
 package my_app.screens.categoriaScreen;
 
-import megalodonte.ComputedState;
 import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
 import my_app.db.dto.CategoriaDto;
-import my_app.db.dto.ClienteDto;
 import my_app.db.models.CategoriaModel;
-import my_app.db.models.ClienteModel;
 import my_app.db.repositories.CategoriaRepository;
-import my_app.events.ClienteEvents;
-import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
-import my_app.utils.Utils;
 
 import java.util.List;
 
-import static my_app.utils.Utils.*;
-
-public class CategoriaScreenViewModel extends ViewModelv2 {
+public class CategoriaScreenViewModel extends ViewModelScreenContract {
     private final CategoriaRepository categoriaRepository;
 
     final ListState<CategoriaModel> categorias = ListState.of(List.of());

@@ -6,7 +6,6 @@ import megalodonte.base.UI;
 import my_app.db.repositories.*;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 

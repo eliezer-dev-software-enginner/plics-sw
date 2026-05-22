@@ -12,7 +12,7 @@ import my_app.db.repositories.ClienteRepository;
 import my_app.domain.Data;
 import my_app.events.ClienteEvents;
 import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import my_app.utils.Utils;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static my_app.utils.Utils.*;
 
-public class ClienteViewModel extends ViewModelv2 {
+public class ClienteViewModel extends ViewModelScreenContract {
     private final ClienteRepository clienteRepository = new ClienteRepository();
 
     final ListState<ClienteModel> clientes = ListState.of(List.of());

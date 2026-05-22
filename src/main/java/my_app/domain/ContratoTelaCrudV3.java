@@ -5,12 +5,12 @@ import megalodonte.base.components.Component;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 
 public interface ContratoTelaCrudV3 {
 
-    ViewModelv2 viewModel();
+    ViewModelScreenContract viewModel();
 
     default void handleClickNew(){
        viewModel().modoEdicaoState().set(false);

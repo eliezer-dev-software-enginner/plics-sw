@@ -17,7 +17,7 @@ import my_app.db.repositories.VendaRepository;
 import my_app.domain.Parcela;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import my_app.services.ContasAReceberService;
 import my_app.services.VendaMercadoriaService;
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
+public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
     private final ClienteRepository clienteRepository;
@@ -41,12 +41,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
     // --- Form states ---
     final State<LocalDate> dataVenda = State.of(LocalDate.now());
     final State<String> numeroNota = State.of("");
-    final State<Boolean> modoEdicao = State.of(false);
-    final ComputedState<String> btnText = ComputedState.of(
-            () -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
 
-    final State<String> codigo = State.of("");
-    final State<ProdutoModel> produtoEncontrado = State.of(null);
     final State<String> qtd = State.of("0");
     final State<String> observacao = State.of("");
 
@@ -92,6 +87,21 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
     final State<String> estoqueAnterior = State.of("0");
     final State<String> estoqueAtual = State.of("0");
 
+
+
+    // --- Produtos ---
+
+    private final megalodonte.v2.ListState<ProdutoModel> produtoModelListState = megalodonte.v2.ListState.ofEmpty();
+
+    final megalodonte.v2.ListState sugestoesProduto = megalodonte.v2.ListState.ofEmpty();
+    final State<ProdutoModel> produtoEncontrado = State.of(null);
+    final State<String> codigo = State.of("");
+
+    final ComputedState<Boolean> sugestoesProdutoVisible = ComputedState.of(
+            () -> !sugestoesProduto.get().isEmpty(),
+            sugestoesProduto
+    );
+
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
         super(ctx);
         this.produtoRepository = new ProdutoRepository();
@@ -105,6 +115,37 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
     protected void onInit() {
         qtd.subscribe(v -> atualizarEstoqueVisual());
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
+        codigo.subscribe(termo -> filtrarProdutos(termo)); // filtra ao digitar
+
+        produtoEncontrado.subscribe(this::selecionarProduto);
+        //TODO: SUBSCREVER A EVENTOS DE PRODUTO
+    }
+
+    void filtrarProdutos(String termo) {
+        if (termo == null || termo.trim().isEmpty()) {
+            sugestoesProduto.clear();
+            return;
+        }
+
+        // Limpa seleção antes de trocar a lista
+        produtoEncontrado.set(null);
+
+        var filtrados = produtoModelListState.get().stream()
+                .filter(p -> p.codigoBarras.contains(termo.trim())
+                        || p.descricao.toLowerCase().contains(termo.trim().toLowerCase()))
+                .limit(8) // evita lista enorme
+                .toList();
+
+        sugestoesProduto.set(filtrados);
+    }
+
+    void selecionarProduto(ProdutoModel produto) {
+        if(produto!=null){
+            codigo.set(produto.codigoBarras);
+            pcVenda.set(Utils.deRealParaCentavos(produto.precoVenda));
+            estoqueAnterior.set(produto.estoque.toString());
+            sugestoesProduto.clear(); // fecha a lista após seleção
+        }
     }
 
     @Override
@@ -131,8 +172,10 @@ public class VendaMercadoriaScreenViewModel extends ViewModelv2 {
             try {
                 var clienteList = clienteRepository.listar();
                 var vendaList = vendaRepository.listar();
+                var produtoList = produtoRepository.listar();
 
                 UI.runOnUi(() -> {
+                    produtoModelListState.addAll(produtoList);
                     clientes.addAll(clienteList);
                     clienteList.stream()
                             .filter(f -> f.id == 1L)

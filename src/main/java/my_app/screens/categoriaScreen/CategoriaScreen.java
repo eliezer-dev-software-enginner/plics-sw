@@ -1,8 +1,5 @@
 package my_app.screens.categoriaScreen;
 
-import megalodonte.*;
-import megalodonte.base.UI;
-import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -10,16 +7,11 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
-import my_app.db.models.ProdutoModel;
-import my_app.domain.ContratoTelaCrudV2;
 import my_app.domain.ContratoTelaCrudV3;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
-
-import java.sql.SQLException;
 
 public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final CategoriaScreenViewModel vm;
@@ -46,7 +38,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public ViewModelv2 viewModel() {
+    public ViewModelScreenContract viewModel() {
         return vm;
     }
 

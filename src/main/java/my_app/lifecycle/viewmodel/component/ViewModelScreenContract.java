@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.State;
 import megalodonte.router.v4.ScreenContext;
 
-public abstract class ViewModelv2 {
+public abstract class ViewModelScreenContract {
     protected final ScreenContext ctx;
     protected final State<Boolean> modoEdicao = State.of(false);
 
@@ -12,7 +12,7 @@ public abstract class ViewModelv2 {
 
     public ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
 
-    public ViewModelv2(ScreenContext ctx){
+    public ViewModelScreenContract(ScreenContext ctx){
         this.ctx = ctx;
     }
 
@@ -33,14 +33,3 @@ public abstract class ViewModelv2 {
         return modoEdicao;
     }
 }
-/**
- * Isso te permite evoluir depois para:
- *
- * lifecycle
- *
- * cache
- *
- * hot reload
- *
- * scoping por screen
- */

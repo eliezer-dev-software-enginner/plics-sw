@@ -12,10 +12,9 @@ import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
-import my_app.domain.ContratoTelaCrud;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -59,7 +58,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public ViewModelv2 viewModel() {
+    public ViewModelScreenContract viewModel() {
         return vm;
     }
 

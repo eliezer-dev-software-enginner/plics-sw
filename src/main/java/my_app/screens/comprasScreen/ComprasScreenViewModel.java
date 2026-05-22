@@ -17,7 +17,7 @@ import my_app.db.repositories.VendaRepository;
 import my_app.domain.Parcela;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import my_app.services.ContasAReceberService;
 import my_app.services.VendaMercadoriaService;
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ComprasScreenViewModel extends ViewModelv2 {
+public class ComprasScreenViewModel extends ViewModelScreenContract {
     private final VendaRepository vendaRepository;
     private final ProdutoRepository produtoRepository;
     private final ClienteRepository clienteRepository;

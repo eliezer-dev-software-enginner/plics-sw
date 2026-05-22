@@ -9,10 +9,10 @@ import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.db.repositories.PedidoItemRepository;
 import my_app.db.repositories.PedidoRepository;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 
-public class PedidosScreenViewModel extends ViewModelv2 {
+public class PedidosScreenViewModel extends ViewModelScreenContract {
 
     private final PedidoRepository pedidoRepository;
     private final PedidoItemRepository pedidoItemRepository;

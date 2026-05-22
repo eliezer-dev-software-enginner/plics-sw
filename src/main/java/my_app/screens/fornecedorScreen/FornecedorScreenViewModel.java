@@ -1,6 +1,5 @@
 package my_app.screens.fornecedorScreen;
 
-import megalodonte.ComputedState;
 import megalodonte.v2.ListState;
 import megalodonte.State;
 import megalodonte.base.UI;
@@ -10,15 +9,12 @@ import my_app.db.dto.FornecedorDto;
 import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.domain.Data;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
-
-import java.time.LocalDate;
-import java.util.List;
 
 import static my_app.utils.Utils.*;
 
-public class FornecedorScreenViewModel extends ViewModelv2 {
+public class FornecedorScreenViewModel extends ViewModelScreenContract {
     private final FornecedorRepository fornecedorRepository;
 
     public final ListState<FornecedorModel> fornecedores = ListState.ofEmpty();

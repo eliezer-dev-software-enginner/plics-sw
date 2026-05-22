@@ -1,6 +1,5 @@
 package my_app.screens.produtoScreen;
 
-import megalodonte.ComputedState;
 import megalodonte.v2.ListState;
 import megalodonte.State;
 import megalodonte.base.async.Async;
@@ -13,7 +12,7 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import my_app.services.ProdutoService;
 import my_app.utils.DateUtils;
@@ -23,7 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ProdutoScreenViewModel extends ViewModelv2 {
+public class ProdutoScreenViewModel extends ViewModelScreenContract {
     private final ProdutoService service;
     private final ProdutoRepository produtoRepository;
 

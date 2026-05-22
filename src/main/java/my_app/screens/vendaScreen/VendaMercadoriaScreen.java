@@ -2,26 +2,17 @@ package my_app.screens.vendaScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Card;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.*;
-import my_app.db.repositories.*;
-import my_app.domain.ContratoTelaCrudV2;
 import my_app.domain.ContratoTelaCrudV3;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
-import megalodonte.*;
-import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-import megalodonte.components.Scroll;
 import megalodonte.components.SimpleTable;
 import megalodonte.props.RowProps;
 import my_app.db.models.VendaModel;
@@ -83,7 +74,9 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.DatePickerColumn(vm.dataVenda, "Data de venda"),
                 Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
-                Components.InputColumnComFocusHandler("Código", vm.codigo, "xxxxxxxx", vm::buscarProduto),
+                //Components.InputColumnComFocusHandler("Código do produto", vm.codigo, "xxxxxxxx", vm::buscarProduto),
+                Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
+                        vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
                 Components.InputColumn("Quantidade", vm.qtd, "Ex: 2"),
                 Components.InputColumn("Descrição do produto",
                         vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""),
@@ -106,7 +99,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     }
 
     @Override
-    public ViewModelv2 viewModel() {
+    public ViewModelScreenContract viewModel() {
         return vm;
     }
 }

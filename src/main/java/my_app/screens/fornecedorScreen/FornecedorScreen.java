@@ -8,12 +8,10 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.FornecedorModel;
-import my_app.domain.ContratoTelaCrudV2;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
-import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
@@ -72,7 +70,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public ViewModelv2 viewModel() {
+    public ViewModelScreenContract viewModel() {
         return vm;
     }
 

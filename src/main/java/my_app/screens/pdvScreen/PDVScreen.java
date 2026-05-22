@@ -8,8 +8,8 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.theme.ThemeManager;
 import megalodonte.v2.Show;
-import my_app.db.models.ProdutoModel;
 import my_app.screens.components.Components;
 
 import java.math.BigDecimal;
@@ -30,7 +30,8 @@ public class PDVScreen implements ScreenComponent {
 
     @Override
     public Component render() {
-        return new Container(new ContainerProps().bgColor("#FFF4E9"))
+        var theme = ThemeManager.theme();
+        return new Container(new ContainerProps().bgColor(theme.colors().surface()))
                 .children(new Container(new ContainerProps().fillHeight()).children(
                         topBanner(),
                         new Row(new RowProps().spacingOf(10).paddingAll(10)).children(

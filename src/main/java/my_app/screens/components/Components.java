@@ -27,7 +27,7 @@ import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
-import my_app.db.models.ClienteModel;
+import my_app.db.models.ProdutoModel;
 import my_app.domain.Parcela;
 import my_app.utils.DateUtils;
 import org.kordamp.ikonli.Ikon;
@@ -47,7 +47,7 @@ import static my_app.utils.Utils.*;
 
 public class Components {
 
-    static Theme theme = ThemeManager.theme();
+    public static Theme theme = ThemeManager.theme();
 
     public static Component imageWithTextRow(String imgPath, String text) {
         return new Row().children(
@@ -319,19 +319,31 @@ public class Components {
                 .c_child(select);
     }
 
-    public static <T> Component SelectColumn(String label, megalodonte.v2.ListState<T> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
+
+    public static <T> Component SelectColumn(String label, megalodonte.v2.ListState<T> list, State<T> stateSelected, Function<T, String> display,
+                                             boolean compareById, ReadableState<Boolean> expandAutomatically) {
         var select = new Select<T>(selectProps)
                 .items(list)
-                .value(stateSelected)
-                .displayText(display);
+                .displayText(display)
+                .value(stateSelected);
+
 
         if (compareById) {
             select.compareById();
         }
 
+        if(expandAutomatically != null) {
+            select.expandWhen(expandAutomatically);
+        }
+
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
+    }
+
+    public static <T> Component SelectColumn(String label, megalodonte.v2.ListState<T> list, State<T> stateSelected, Function<T, String> display,
+                                             boolean compareById) {
+      return SelectColumn(label, list, stateSelected, display,compareById, null);
     }
 
     public static <T> Component SelectColumnWithButton(
@@ -505,8 +517,7 @@ public class Components {
         var icon = Entypo.CREDIT;
         var fonticon = FontIcon.of(icon, 15, Color.web("green"));
 
-        var inputProps = getInputProps("R$ 0,00").width(140).borderWidth(theme.border().width())
-                .borderColor(theme.colors().primary());
+        var inputProps = getInputProps("R$ 0,00").width(140);
 
         if (disableInput) inputProps.disable();
 
@@ -570,6 +581,22 @@ public class Components {
                             if (!focus) focusChangeHandler.run();
                         })
                 );
+    }
+
+    public static Component InputColumnComDynamicSearch(String label, ReadableState<String> inputState,
+                                                        String placeholder,
+                                                        megalodonte.v2.ListState<ProdutoModel> produtoModelListState,
+                                                        State<ProdutoModel> produtoSelected,
+                                                        ComputedState<Boolean> sugestoesProdutoVisible) {
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(new Input((State<String>) inputState,
+                                getInputProps(placeholder)
+                        )
+                )
+                .c_child(Show.when(sugestoesProdutoVisible,
+                        ()-> SelectColumn("Produto encontrado", produtoModelListState, produtoSelected,
+                                it->  it.codigoBarras + " - " + it.descricao,true, sugestoesProdutoVisible )));
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
