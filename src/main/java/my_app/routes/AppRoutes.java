@@ -67,13 +67,11 @@ public class AppRoutes {
         //String rotaInicial = "home"; //ok
         //String rotaInicial = "fornecedores";//ok
         //String rotaInicial = "clientes";//ok
+        //String rotaInicial = "relatar-erro";//ok
+        //String rotaInicial = "sugerir-melhoria";//ok
+        //String rotaInicial = "preferencias";ok
 
-
-
-        String rotaInicial = "relatar-erro";
-        //String rotaInicial = "sugerir-melhoria";
-        //String rotaInicial = "preferencias";
-        //String rotaInicial = "entrar-com-credenciais";
+        String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "pdv-screen";
 
