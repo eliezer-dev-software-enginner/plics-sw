@@ -7,6 +7,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.ContratoTelaCrudV3;
+import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import megalodonte.components.layout_components.Row;
@@ -63,9 +64,9 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .r_child(Components.InputColumnCurrency("Pc. de venda", vm.pcVenda))
                 .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
                 .r_child(Components.SelectColumn("Tipo de pagamento",
-                        vm.tiposPagamento, vm.tipoPagamentoSelecionado, it -> it))
+                        Data.tiposPagamentoList, vm.tipoPagamentoSelecionado, it -> it))
                 .r_child(Components.SelectColumn("Refletir no estoque?",
-                        vm.opcoesEstoque, vm.opcaoEstoqueSelected, it -> it))
+                        Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
                 .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
     }
 

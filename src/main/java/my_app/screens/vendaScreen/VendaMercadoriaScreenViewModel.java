@@ -14,6 +14,7 @@ import my_app.db.repositories.ClienteRepository;
 import my_app.db.repositories.ContasAReceberRepository;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.db.repositories.VendaRepository;
+import my_app.domain.Data;
 import my_app.domain.Parcela;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
@@ -45,8 +46,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     final State<String> qtd = State.of("0");
     final State<String> observacao = State.of("");
 
-    final List<String> tiposPagamento = List.of("A VISTA", "CRÉDITO", "DÉBITO", "PIX", "A PRAZO");
-    final State<String> tipoPagamentoSelecionado = State.of(tiposPagamento.get(1));
+    final State<String> tipoPagamentoSelecionado = State.of(Data.tiposPagamentoList.get(1));
     final ComputedState<Boolean> tipoPagamentoIsAPrazo = ComputedState.of(
             () -> tipoPagamentoSelecionado.get().equals("A PRAZO"),
             tipoPagamentoSelecionado);
@@ -303,7 +303,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         produtoEncontrado.set(null);
         qtd.set("");
         observacao.set("");
-        tipoPagamentoSelecionado.set(tiposPagamento.get(1));
+        tipoPagamentoSelecionado.set(Data.tiposPagamentoList.get(1));
         pcVenda.set("0");
         dataValidade.set(null);
         if (!clientes.isEmpty()) clienteSelected.set(clientes.get(0));

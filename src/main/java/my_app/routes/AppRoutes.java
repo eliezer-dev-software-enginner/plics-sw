@@ -34,7 +34,7 @@ public class AppRoutes {
                 //ok
                 new Router.Route("empresa",ctx-> new CadastroEmpresaScreen(ctx), new RouteProps(900, 650, "Informações da empresa", false)),
                //ok
-                new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1000, 650, "Compras de mercadorias", true)),
+                new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1150, 650, "Compras de mercadorias", true)),
                 //ok
                 new Router.Route("clientes",ctx-> new ClienteScreen(ctx), new RouteProps(1150, 650, "Gerenciamento de clientes", true)),
                 //ok
@@ -70,9 +70,12 @@ public class AppRoutes {
         //String rotaInicial = "relatar-erro";//ok
         //String rotaInicial = "sugerir-melhoria";//ok
         //String rotaInicial = "preferencias";ok
+        //String rotaInicial = "entrar-com-credenciais";ok
+        String rotaInicial = "compras";
 
-        String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "pdv-screen";
+
+
 
 
         //TODO: TRATAR ESSAS TELAS NA V4
@@ -82,7 +85,7 @@ public class AppRoutes {
 
 
         //String rotaInicial = "empresa";
-        //String rotaInicial = "compras";
+
 
 //        String rotaInicial;
 //        if (forceAccessRoute) {
