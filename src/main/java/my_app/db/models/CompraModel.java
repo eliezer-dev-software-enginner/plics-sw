@@ -49,7 +49,7 @@ public class CompraModel extends ModelBase<CompraDto> {
     public CompraModel fromResultSet(ResultSet rs) throws SQLException {
         var model = new CompraModel();
         model.id = rs.getLong("id");
-        model.produtoCod = rs.getString("codigo_barras");
+        model.produtoCod = rs.getString("produto_cod");
         model.fornecedorId = rs.getLong("fornecedor_id");
         model.quantidade = rs.getBigDecimal("quantidade");
         model.precoDeCompra = rs.getBigDecimal("preco_compra");

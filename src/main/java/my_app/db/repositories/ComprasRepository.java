@@ -84,8 +84,8 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             } else {
                 ps.setNull(10, java.sql.Types.BIGINT);
             }
-            ps.setLong(11, model.id);
-            ps.setBigDecimal(12, model.totalLiquido);
+            ps.setBigDecimal(11, model.totalLiquido);
+            ps.setLong(12, model.id);
 
             ps.executeUpdate();
         }
