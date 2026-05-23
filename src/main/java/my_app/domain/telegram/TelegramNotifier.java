@@ -1,5 +1,6 @@
-package my_app.services;
+package my_app.domain.telegram;
 
+import my_app.Main;
 import my_app.security.CryptoManager;
 
 import java.net.URI;
@@ -8,31 +9,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class TelegramNotifier {
-    
-    private static final String ENCRYPTED_BOT_TOKEN = "/zz+xrN5EJrnWzp0e9Zg8HxPQxoZm4Wdx4ZM/WaXAUt0u47Jwg/3nrcqMhb9uRYN";
-    private static final String ENCRYPTED_CHAT_ID = "VrNFKok4Gzf2bzCk6oG8/g==";
-    private static final CryptoManager crypto = new CryptoManager();
-    
-    private static String getBotToken() {
-        try {
-            return crypto.decrypt(ENCRYPTED_BOT_TOKEN);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao descriptografar token: " + e.getMessage());
-        }
-    }
-    
-    private static String getChatId() {
-        try {
-            return crypto.decrypt(ENCRYPTED_CHAT_ID);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao descriptografar chat ID: " + e.getMessage());
-        }
+    private final String botToken;
+    private final String chatId;
+
+    public TelegramNotifier(String botToken, String chatId) {
+        this.botToken = botToken;
+        this.chatId = chatId;
     }
 
-    public static void enviarMensagemParaTelegram(String mensagem) {
-        String botToken = getBotToken();
-        String chatId = getChatId();
-        
+    public void enviarMensagem(String mensagem) {
         if (botToken == null || chatId == null) {
             throw new RuntimeException("❌ Erro de configuração do Telegram");
         }
@@ -42,10 +27,15 @@ public class TelegramNotifier {
                 botToken
         );
 
+        String newMessage = """
+                Plics SW (version): %s
+                Descricao: %s
+                """.formatted(Main.APP_VERSION, mensagem);
+
         String formData = String.format(
                 "chat_id=%s&text=%s&parse_mode=Markdown",
                 chatId,
-                mensagem
+                newMessage
         );
 
         try (HttpClient client = HttpClient.newHttpClient()) {
@@ -59,12 +49,17 @@ public class TelegramNotifier {
                     HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                System.out.printf("✅ Notificação enviada com sucesso%n");
+                System.out.printf("✅ Notificação enviada com sucesso");
             } else {
                 throw new RuntimeException("❌ Erro HTTP %d: %s%n".formatted(response.statusCode(), response.body()));
             }
         } catch (Exception e) {
             throw new RuntimeException("❌ Erro ao enviar: "+ e.getMessage());
         }
+    }
+
+    static void main() {
+        TelegramNotifier notifier = TelegramNotifierFactory.create();
+        notifier.enviarMensagem("Testando");
     }
 }
