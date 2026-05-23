@@ -71,8 +71,8 @@ public class AppRoutes {
         //String rotaInicial = "sugerir-melhoria";//ok
         //String rotaInicial = "preferencias";ok
 
-        //String rotaInicial = "entrar-com-credenciais";
-        String rotaInicial = "pdv-screen";
+        String rotaInicial = "entrar-com-credenciais";
+        //String rotaInicial = "pdv-screen";
 
 
         //TODO: TRATAR ESSAS TELAS NA V4

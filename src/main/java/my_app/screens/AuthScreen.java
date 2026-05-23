@@ -76,7 +76,7 @@ public class AuthScreen implements ScreenComponent {
                         //qrCode
                         new Column(new ColumnProps().maxWidth(170)).children(
                                 new Column(new ColumnProps().centerHorizontally()).children(
-                                        new Image("/assets/qrcode_suporte.jpg", new ImageProps().size(140)),
+                                        new Image("/assets/qrcode2.png", new ImageProps().size(170)),
                                         new Text("Plics - SW", new TextProps().color("white").bold())
                                 ),
                                 new SpacerVertical(10),
@@ -87,7 +87,9 @@ public class AuthScreen implements ScreenComponent {
                 new Column(new ColumnProps().fillHeight()),//TODO: TROCAR PARA SPACERVERTICAL.FILL
                 //TODO: TROCAR QRCODE
                Components.imageWithTextRow("/assets/whatsapp.png",Data.getNumberWhatsappSupportFormatted() + " - Suporte garantido." ),
-                new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to(Data.linkWhatsappSupport))
+                new Button("Ir para o Suporte (24h)", new ButtonProps().bgColor("#25D366").textColor("black")).onClick(()-> Redirect.to(Data.linkWhatsappSupport)),
+                new SpacerVertical(15),
+                new Button("Ir para o Site Oficial").onClick(()-> Redirect.to(Data.linkWebsiteOfficial))
         );
     }
 

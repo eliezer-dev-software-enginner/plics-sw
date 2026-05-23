@@ -20,6 +20,8 @@ public class Data {
     private static final String numberWhatsappSupport = "5532985066537";
     public static final String linkWhatsappSupport = "https://wa.me/"+numberWhatsappSupport;
 
+    public static final String linkWebsiteOfficial = "https://plics-sw-webpage.vercel.app/";
+
     public static String getNumberWhatsappSupportFormatted() {
         return Utils.formatPhone(numberWhatsappSupport.replace("55",""));
     }
