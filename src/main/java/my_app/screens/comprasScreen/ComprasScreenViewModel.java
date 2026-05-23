@@ -51,19 +51,22 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     final State<String> pcCompra = State.of("0");
 
     ComputedState<String> totalBruto = ComputedState.of(() -> {
-        int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-        double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
+        BigDecimal qtdValue = qtd.get().trim().isEmpty()
+                ? BigDecimal.ZERO
+                : new BigDecimal(qtd.get());
+        BigDecimal precoCompraValue = new BigDecimal(pcCompra.get()).movePointLeft(2);
 
-        return Utils.toBRLCurrency(BigDecimal.valueOf(qtdValue * precoCompraValue));
+        return Utils.toBRLCurrency(qtdValue.multiply(precoCompraValue));
     }, descontoEmDinheiro, qtd, pcCompra);
 
     ComputedState<String> totalLiquido = ComputedState.of(() -> {
-        int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-        double precoCompraValue = Double.parseDouble(pcCompra.get()) / 100.0;
+        BigDecimal qtdValue = qtd.get().trim().isEmpty()
+                ? BigDecimal.ZERO
+                : new BigDecimal(qtd.get());
+        BigDecimal precoCompraValue = new BigDecimal(pcCompra.get()).movePointLeft(2);
+        BigDecimal descontoValue = new BigDecimal(descontoEmDinheiro.get()).movePointLeft(2);
 
-        double precoDescontoValue = Double.parseDouble(descontoEmDinheiro.get()) / 100.0;
-
-        return String.valueOf (qtdValue * precoCompraValue - precoDescontoValue);
+        return qtdValue.multiply(precoCompraValue).subtract(descontoValue).toString();
     }, descontoEmDinheiro, qtd, pcCompra);
 
     ComputedState<String> descontoComputed = ComputedState.of(() -> Utils.toBRLCurrency(Utils.deCentavosParaReal(descontoEmDinheiro.get())),
@@ -349,8 +352,10 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
         if ("Sim".equals(opcaoEstoqueSelected.get())) {
             try {
-                int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-                BigDecimal estoqueAposCompra = estoqueBase.add(BigDecimal.valueOf(qtdValue));
+                BigDecimal qtdValue = qtd.get().trim().isEmpty()
+                        ? BigDecimal.ZERO
+                        : new BigDecimal(qtd.get());
+                BigDecimal estoqueAposCompra = estoqueBase.add(qtdValue);
                 estoqueAtual.set(estoqueAposCompra.toString());
             } catch (NumberFormatException e) {
                 estoqueAtual.set(estoqueBase.toString());

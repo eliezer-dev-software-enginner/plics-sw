@@ -304,22 +304,6 @@ public class Components {
                 .c_child(select);
     }
 
-    public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
-        var select = new Select<T>(selectProps)
-                .items(list)
-                .value(stateSelected)
-                .displayText(display);
-
-        if (compareById) {
-            select.compareById();
-        }
-
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
-                .c_child(select);
-    }
-
-
     public static <T> Component SelectColumn(String label, megalodonte.v2.ListState<T> list, State<T> stateSelected, Function<T, String> display,
                                              boolean compareById, ReadableState<Boolean> expandAutomatically) {
         var select = new Select<T>(selectProps)
@@ -426,6 +410,45 @@ public class Components {
 
                     String formatted = formatCpf(numeric);
                     return OnChangeResult.of(formatted, numeric);
+                })
+                .lockCursorToEnd();
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(input);
+    }
+
+    public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder) {
+        var inputProps = getInputProps(placeholder);
+
+        var input = new Input(inputState, inputProps)
+                .onInitialize(value -> {
+                    if (value == null || value.trim().isEmpty()) {
+                        return OnChangeResult.of("", "");
+                    }
+                    // Se já vier como número válido, só exibe
+                    return OnChangeResult.of(value.replace(".", ","), value);
+                })
+                .onChange(value -> {
+                    // Permite apenas dígitos e separadores
+                    String cleaned = value.replaceAll("[^0-9.,]", "");
+
+                    // Garante no máximo uma vírgula ou ponto
+                    long separators = cleaned.chars()
+                            .filter(c -> c == ',' || c == '.')
+                            .count();
+
+                    if (separators > 1) {
+                        // Remove o último caractere digitado se criou separador duplicado
+                        cleaned = cleaned.substring(0, cleaned.length() - 1);
+                    }
+
+                    // Normaliza: troca ponto por vírgula para exibição
+                    String display = cleaned.replace(".", ",");
+                    // Valor interno: vírgula por ponto (para parseDouble funcionar)
+                    String internal = cleaned.replace(",", ".");
+
+                    return OnChangeResult.of(display, internal);
                 })
                 .lockCursorToEnd();
 
@@ -564,18 +587,6 @@ public class Components {
                                 getInputProps(placeholder).borderWidth(theme.border().width())
                                         .borderColor(theme.colors().border()).borderRadius(theme.radius().sm())
                         ).onEnter(onEnter)
-                );
-    }
-
-    public static Component InputColumnComFocusHandler(String label, ReadableState<String> inputState, String placeholder, Runnable focusChangeHandler) {
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
-                .c_child(new Input((State<String>) inputState,
-                                getInputProps(placeholder).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().border()).borderRadius(theme.radius().sm())
-                        ).onChangeFocus(focus -> {
-                            if (!focus) focusChangeHandler.run();
-                        })
                 );
     }
 

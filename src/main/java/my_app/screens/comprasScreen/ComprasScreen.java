@@ -56,30 +56,25 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
         );
     }
 
-    private Row formSecondRow() {
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso"))
-                .r_child(Components.InputColumnCurrency("Pc. de compra", vm.pcCompra))
-                .r_child(Components.InputColumn("Quantidade", vm.qtd, "Ex: 2"))
-                .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
-                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSeleced, it -> it))
-                .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
-                .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
-    }
-
     private Row formFirstRow() {
         return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
                 Components.DatePickerColumn(vm.dataCompra, "Data de compra", "dd/mm/yyyy"),
                 Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, f -> f.nome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
-                //Components.InputColumnComFocusHandler("Código", codigo, "xxxxxxxx", searchProductOnFocusChange),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
-                Components.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso"),
-                Components.InputColumnCurrency("Pc. de compra", vm.pcCompra),
-                Components.InputColumn("Quantidade", vm.qtd, "Ex: 2"),
-                Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro)
+                Components.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso",true),
+                Components.InputColumnCurrency("Pc. de compra", vm.pcCompra)
         );
+    }
+
+    private Row formSecondRow() {
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 1,500"))
+                .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
+                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSeleced, it -> it))
+                .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
+                .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
     }
 
     private Row displayOperationsRow() {
