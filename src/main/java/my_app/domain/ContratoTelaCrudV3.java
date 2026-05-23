@@ -71,6 +71,7 @@ public interface ContratoTelaCrudV3 {
     default void handleAddOrUpdate() {
         try{
             viewModel().handleAddOrUpdate();
+            clearForm();
         }catch(Exception e){
             e.printStackTrace();
             UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));

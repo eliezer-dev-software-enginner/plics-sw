@@ -204,10 +204,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 e.printStackTrace();
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar compras: " + e.getMessage()));
             }
-
         });
-
-        IO.println(dataCompra.get());
     }
 
     @Override
