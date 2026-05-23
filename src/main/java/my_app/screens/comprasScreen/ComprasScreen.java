@@ -1,9 +1,5 @@
 package my_app.screens.comprasScreen;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import megalodonte.base.UI;
-import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.SpacerVertical;
@@ -13,26 +9,17 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.*;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
-import my_app.domain.ContratoTelaCrudV2;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
-import my_app.events.DadosFinanceirosAtualizadosEvent;
-import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import my_app.domain.Parcela;
 import my_app.services.*;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
-
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
 
 //TODO: finalizar implementações
 //TODO: lista de compras para exibir na tabela

@@ -7,7 +7,6 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.CompraDto;
-import my_app.db.dto.VendaDto;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.Data;
@@ -17,9 +16,7 @@ import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.screens.components.Components;
 import my_app.services.CompraMercadoriaService;
-import my_app.services.ContasAReceberService;
 import my_app.services.ContasPagarService;
-import my_app.services.VendaMercadoriaService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
@@ -86,10 +83,8 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     final State<String> estoqueAnterior = State.of("0");
     final State<String> estoqueAtual = State.of("0");
 
-
-    private final megalodonte.v2.ListState<ProdutoModel> produtoModelListState = megalodonte.v2.ListState.ofEmpty();
-
-    final megalodonte.v2.ListState sugestoesProduto = megalodonte.v2.ListState.ofEmpty();
+    private final ListState<ProdutoModel> produtoModelListState = ListState.ofEmpty();
+    final ListState<ProdutoModel> sugestoesProduto = ListState.ofEmpty();
     final State<ProdutoModel> produtoEncontrado = State.of(null);
 
     final ComputedState<Boolean> sugestoesProdutoVisible = ComputedState.of(
