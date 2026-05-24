@@ -10,7 +10,7 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.ThemeManager;
 import megalodonte.v2.Show;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 
 import java.math.BigDecimal;
 

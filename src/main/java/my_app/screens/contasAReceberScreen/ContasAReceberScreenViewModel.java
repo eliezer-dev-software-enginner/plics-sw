@@ -15,7 +15,7 @@ import my_app.db.repositories.VendaRepository;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModel;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.services.ContasAReceberService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;

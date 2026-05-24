@@ -9,7 +9,7 @@ import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 
 import java.util.List;
 

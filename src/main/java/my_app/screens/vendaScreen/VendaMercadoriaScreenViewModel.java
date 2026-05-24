@@ -16,10 +16,11 @@ import my_app.db.repositories.ProdutoRepository;
 import my_app.db.repositories.VendaRepository;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
+import my_app.domain.states.TotaisState;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.services.ContasAReceberService;
 import my_app.services.VendaMercadoriaService;
 import my_app.utils.DateUtils;
@@ -55,22 +56,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     final State<String> descontoEmDinheiro = State.of("0");
     final State<String> pcVenda = State.of("0");
 
-    final ComputedState<String> totalBruto = ComputedState.of(() -> {
-        int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-        double preco = Double.parseDouble(pcVenda.get()) / 100.0;
-        return Utils.toBRLCurrency(BigDecimal.valueOf(qtdValue * preco));
-    }, descontoEmDinheiro, qtd, pcVenda);
 
-    final ComputedState<String> totalLiquido = ComputedState.of(() -> {
-        int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-        double preco = Double.parseDouble(pcVenda.get()) / 100.0;
-        double desconto = Double.parseDouble(descontoEmDinheiro.get()) / 100.0;
-        return String.valueOf(qtdValue * preco - desconto);
-    }, descontoEmDinheiro, qtd, pcVenda);
 
-    final ComputedState<String> descontoFormatado = ComputedState.of(
-            () -> Utils.toBRLCurrency(Utils.deCentavosParaReal(descontoEmDinheiro.get())),
-            descontoEmDinheiro);
 
     final State<LocalDate> dataValidade = State.of(null);
 
@@ -89,10 +76,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
 
 
     // --- Produtos ---
-
-    private final megalodonte.v2.ListState<ProdutoModel> produtoModelListState = megalodonte.v2.ListState.ofEmpty();
-
-    final megalodonte.v2.ListState sugestoesProduto = megalodonte.v2.ListState.ofEmpty();
+    private final ListState<ProdutoModel> produtoModelListState = megalodonte.v2.ListState.ofEmpty();
+    final ListState<ProdutoModel> sugestoesProduto = megalodonte.v2.ListState.ofEmpty();
     final State<ProdutoModel> produtoEncontrado = State.of(null);
     final State<String> codigo = State.of("");
 
@@ -100,6 +85,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             () -> !sugestoesProduto.get().isEmpty(),
             sugestoesProduto
     );
+
+    final TotaisState totais = new TotaisState(pcVenda, qtd, descontoEmDinheiro);
 
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
         super(ctx);
@@ -224,7 +211,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 Utils.deCentavosParaReal(descontoEmDinheiro.get()),
                 tipoPagamentoSelecionado.get(),
                 observacao.get(),
-                new BigDecimal(totalLiquido.get()),
+                new BigDecimal(totais.totalLiquido.get()),
                 dataValidade.isNull() ? null : DateUtils.localDateParaMillis(dataValidade.get())
         );
 
@@ -238,9 +225,13 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 var modelAtualizada = new VendaModel().fromIdAndDto(selecionado.id, dto);
                 vendaService.atualizarOrThrow((VendaModel) modelAtualizada,
                         msg -> UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + msg)));
-                vendas.updateIf(it -> it.id.equals(selecionado.id), it -> (VendaModel) modelAtualizada);
-                Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
-                reloadProdutos();
+
+                UI.runOnUi(()->{
+                    vendas.updateIf(it -> it.id.equals(selecionado.id), it -> (VendaModel) modelAtualizada);
+                    Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
+                    reloadProdutos();
+                    clearForm();
+                });
             } else {
                 VendaModel venda = null;
                 try {
@@ -267,6 +258,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
+                    clearForm();
                 });
             }
         });

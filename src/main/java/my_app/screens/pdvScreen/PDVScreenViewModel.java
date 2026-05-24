@@ -12,7 +12,7 @@ import my_app.db.repositories.ProdutoRepository;
 import my_app.events.ClienteEvents;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.services.PDVService;
 import my_app.utils.Utils;
 

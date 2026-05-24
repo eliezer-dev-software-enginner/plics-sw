@@ -9,7 +9,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 

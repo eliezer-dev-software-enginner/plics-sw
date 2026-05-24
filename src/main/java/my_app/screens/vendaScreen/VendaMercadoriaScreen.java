@@ -9,7 +9,7 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import megalodonte.components.layout_components.Row;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -19,7 +19,6 @@ import megalodonte.props.RowProps;
 import my_app.db.models.VendaModel;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
-
     private final VendaMercadoriaScreenViewModel vm;
 
     public VendaMercadoriaScreen(ScreenContext ctx) {
@@ -46,19 +45,11 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 new Row(new RowProps().spacingOf(15))
                         .r_child(Components.TextWithValue("Estoque anterior:", vm.estoqueAnterior))
                         .r_child(Components.TextWithValue("Estoque após venda:", vm.estoqueAtual)),
-                displayOperationsRow(),
-                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalLiquido),
+                Components.displayOperationsRow(vm.totais),
+                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totais.totalLiquido),
                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate, vm::clearForm)
         );
     }
-
-    private Row displayOperationsRow() {
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.TextWithValue("Valor total(bruto): ", vm.totalBruto))
-                .r_child(Components.TextWithValue("Desconto: ", vm.descontoFormatado))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", vm.totalLiquido.map(Utils::toBRLCurrency)));
-    }
-
     private Row formSecondRow() {
         return new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.InputColumnCurrency("Pc. de venda", vm.pcVenda))

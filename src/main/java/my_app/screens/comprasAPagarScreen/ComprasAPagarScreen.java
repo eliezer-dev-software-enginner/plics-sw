@@ -15,7 +15,7 @@ import megalodonte.theme.ThemeManager;
 import megalodonte.v2.Show;
 import my_app.db.models.ContasPagarModel;
 import my_app.domain.ContratoTelaCrud;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 //import javafx.scene.control.*;
 import javafx.scene.control.*;
 import megalodonte.*;

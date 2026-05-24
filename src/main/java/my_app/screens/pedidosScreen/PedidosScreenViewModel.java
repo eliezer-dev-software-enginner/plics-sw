@@ -10,7 +10,7 @@ import my_app.db.models.PedidoModel;
 import my_app.db.repositories.PedidoItemRepository;
 import my_app.db.repositories.PedidoRepository;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 
 public class PedidosScreenViewModel extends ViewModelScreenContract {
 

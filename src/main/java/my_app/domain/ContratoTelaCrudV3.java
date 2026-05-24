@@ -7,7 +7,7 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 
 public interface ContratoTelaCrudV3 {
 
@@ -15,7 +15,7 @@ public interface ContratoTelaCrudV3 {
 
     default void handleClickNew(){
        viewModel().modoEdicaoState().set(false);
-        clearForm();
+       clearForm();
     }
 
     default void handleClickMenuDelete(){
@@ -71,7 +71,6 @@ public interface ContratoTelaCrudV3 {
     default void handleAddOrUpdate() {
         try{
             viewModel().handleAddOrUpdate();
-            clearForm();
         }catch(Exception e){
             e.printStackTrace();
             UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));

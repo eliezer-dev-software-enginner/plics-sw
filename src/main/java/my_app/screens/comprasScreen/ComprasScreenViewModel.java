@@ -11,10 +11,11 @@ import my_app.db.models.*;
 import my_app.db.repositories.*;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
+import my_app.domain.states.TotaisState;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.services.CompraMercadoriaService;
 import my_app.services.ContasPagarService;
 import my_app.utils.DateUtils;
@@ -41,36 +42,17 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     final State<String> qtd = State.of("0");
     final State<String> observacao = State.of("");
 
-    final State<String> tipoPagamentoSeleced = State.of(Data.tiposPagamentoList.get(1));
+    final State<String> tipoPagamentoSelected = State.of(Data.tiposPagamentoList.get(1));
     final ComputedState<Boolean> tipoPagamentoSelectedIsAPrazo = ComputedState.of(
-            () -> tipoPagamentoSeleced.get().equals("A PRAZO"),
-            tipoPagamentoSeleced);
+            () -> tipoPagamentoSelected.get().equals("A PRAZO"),
+            tipoPagamentoSelected);
 
     final State<List<Parcela>> parcelas = State.of(List.of());
     final State<String> descontoEmDinheiro = State.of("0");
     final State<String> pcCompra = State.of("0");
 
-    ComputedState<String> totalBruto = ComputedState.of(() -> {
-        BigDecimal qtdValue = qtd.get().trim().isEmpty()
-                ? BigDecimal.ZERO
-                : new BigDecimal(qtd.get());
-        BigDecimal precoCompraValue = new BigDecimal(pcCompra.get()).movePointLeft(2);
+    final TotaisState totais = new TotaisState(pcCompra, qtd, descontoEmDinheiro);
 
-        return Utils.toBRLCurrency(qtdValue.multiply(precoCompraValue));
-    }, descontoEmDinheiro, qtd, pcCompra);
-
-    ComputedState<String> totalLiquido = ComputedState.of(() -> {
-        BigDecimal qtdValue = qtd.get().trim().isEmpty()
-                ? BigDecimal.ZERO
-                : new BigDecimal(qtd.get());
-        BigDecimal precoCompraValue = new BigDecimal(pcCompra.get()).movePointLeft(2);
-        BigDecimal descontoValue = new BigDecimal(descontoEmDinheiro.get()).movePointLeft(2);
-
-        return qtdValue.multiply(precoCompraValue).subtract(descontoValue).toString();
-    }, descontoEmDinheiro, qtd, pcCompra);
-
-    ComputedState<String> descontoComputed = ComputedState.of(() -> Utils.toBRLCurrency(Utils.deCentavosParaReal(descontoEmDinheiro.get())),
-            descontoEmDinheiro);
     final State<LocalDate> dataValidade = State.of(null);
 
     // --- fornecedores ---
@@ -81,8 +63,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     final State<CompraModel> compraSelected = State.of(null);
 
     // --- Controle de estoque ---
-    final List<String> opcoesEstoque = List.of("Sim", "Não");
-    final State<String> opcaoEstoqueSelected = State.of(opcoesEstoque.get(0));
+    final State<String> opcaoEstoqueSelected = State.of(Data.simNaoList.get(0));
     final State<String> estoqueAnterior = State.of("0");
     final State<String> estoqueAtual = State.of("0");
 
@@ -117,19 +98,38 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         // EventBus.getInstance().subscribe();
     }
 
-    void filtrarProdutos(String termo) {
+    private void atualizarEstoqueVisual() {
+        if (produtoEncontrado.get() == null) {
+            estoqueAnterior.set("0");
+            estoqueAtual.set("0");
+            return;
+        }
+
+        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ?
+                produtoEncontrado.get().estoque : BigDecimal.ZERO;
+
+        IO.println("Estoque Base (anterior) " + estoqueBase.toString());
+        estoqueAnterior.set(estoqueBase.toString());
+
+        if ("Sim".equals(opcaoEstoqueSelected.get())) {
+            String qtdStr = qtd.get().trim();
+            IO.println("Estoque Atual " + qtdStr);
+            BigDecimal qtdValue = qtdStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(qtdStr);
+            estoqueAtual.set(estoqueBase.add(qtdValue).toString());
+        } else {
+            estoqueAtual.set(estoqueBase.toString());
+        }
+    }
+    private void filtrarProdutos(String termo) {
         if (termo == null || termo.trim().isEmpty()) {
             sugestoesProduto.clear();
             return;
         }
 
-        // Limpa seleção antes de trocar a lista
-        produtoEncontrado.set(null);
-
         var filtrados = produtoModelListState.get().stream()
                 .filter(p -> p.codigoBarras.contains(termo.trim())
                         || p.descricao.toLowerCase().contains(termo.trim().toLowerCase()))
-                .limit(8) // evita lista enorme
+                .limit(8)
                 .toList();
 
         sugestoesProduto.set(filtrados);
@@ -141,6 +141,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
             pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
             estoqueAnterior.set(produto.estoque.toString());
             sugestoesProduto.clear(); // fecha a lista após seleção
+            atualizarEstoqueVisual();
         }
     }
     void reloadProdutos(){
@@ -165,7 +166,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         //estoqueAtual.set(data.q)
         qtd.set(Utils.quantidadeTratada(data.quantidade));
         observacao.set(data.observacao);
-        tipoPagamentoSeleced.set(data.tipoPagamento);
+        tipoPagamentoSelected.set(data.tipoPagamento);
         pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
         dataValidade.set(data.dataValidade != null
                 ? DateUtils.millisParaLocalDate(data.dataValidade)
@@ -218,12 +219,12 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 fornecedorSelected.get().id,
                 new BigDecimal(qtd.get()),
                 Utils.deCentavosParaReal(descontoEmDinheiro.get()),
-                tipoPagamentoSeleced.get(), observacao.get(),
+                tipoPagamentoSelected.get(), observacao.get(),
                 DateUtils.localDateParaMillis(dataCompra.get()),
                 numeroNota.get(),
                 dtValidade,
                 opcaoEstoqueSelected.get(),
-                new BigDecimal(totalLiquido.get())
+                new BigDecimal(totais.totalLiquido.get())
         );
 
         compraMercadoriaService.deveAtualizarEstoque = opcaoEstoqueSelected.get().equalsIgnoreCase("Sim");
@@ -240,11 +241,12 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                     Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
                     compras.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
                     reloadProdutos();
+                    clearForm();
                 });
             } else {
                 final var compraSalva = compraMercadoriaService.salvarOrThrow(dto, message ->  UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar compra de mercadoria: " + message)));
                 // Gerar contas a pagar se for a prazo
-                if ("A PRAZO".equals(tipoPagamentoSeleced.get()) && !parcelas.get().isEmpty()) {
+                if ("A PRAZO".equals(tipoPagamentoSelected.get()) && !parcelas.get().isEmpty()) {
                     try {
                         ContasPagarService contasPagarService = new ContasPagarService();
                         List<Parcela> parcelasParaService = parcelas.get().stream()
@@ -256,8 +258,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                                 .toList();
                         contasPagarService.gerarContasDeCompra(compraSalva, parcelasParaService);
                     } catch (SQLException e) {
-                        UI.runOnUi(() -> Components.ShowAlertError("Erro ao gerar contas a pagar: " + e.getMessage()));
-                        return;
+                        throw new RuntimeException("Erro ao gerar contas a pagar: " + e.getMessage());
                     }
                 }
 
@@ -265,14 +266,13 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                     IO.println("compra foi salva!");
                     compras.add(compraSalva);
                     Components.ShowPopup(ctx, "Sua compra de mercadoria foi salva com sucesso!");
-                    estoqueAnterior.set(estoqueAtual.get());
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
+                    clearForm();
                 });
             }
         });
     }
-
 
     @Override
     public void handleClickMenuDelete() {
@@ -313,13 +313,13 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         modoEdicao.set(false);
         codigo.set("");
         produtoEncontrado.set(null);
-        qtd.set("");
+        qtd.set("0");
         observacao.set("");
-        tipoPagamentoSeleced.set(Data.tiposPagamentoList.get(1));
+        tipoPagamentoSelected.set(Data.tiposPagamentoList.get(1));
         pcCompra.set("0");
         dataValidade.set(null);
         fornecedorSelected.set(fornecedores.get(0));
-        opcaoEstoqueSelected.set("Não"); // Reset para padrão seguro
+        opcaoEstoqueSelected.set(Data.simNaoList.get(0));
         estoqueAnterior.set("0");
         estoqueAtual.set("0");
     }
@@ -336,31 +336,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         });
     }
 
-    void atualizarEstoqueVisual() {
-        if (produtoEncontrado.get() == null) {
-            estoqueAnterior.set("0");
-            estoqueAtual.set("0");
-            return;
-        }
 
-        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ?
-                produtoEncontrado.get().estoque : BigDecimal.ZERO;
-        estoqueAnterior.set(estoqueBase.toString());
-
-        if ("Sim".equals(opcaoEstoqueSelected.get())) {
-            try {
-                BigDecimal qtdValue = qtd.get().trim().isEmpty()
-                        ? BigDecimal.ZERO
-                        : new BigDecimal(qtd.get());
-                BigDecimal estoqueAposCompra = estoqueBase.add(qtdValue);
-                estoqueAtual.set(estoqueAposCompra.toString());
-            } catch (NumberFormatException e) {
-                estoqueAtual.set(estoqueBase.toString());
-            }
-        } else {
-            estoqueAtual.set(estoqueBase.toString());
-        }
-    }
     /**
      * Remove do estoque a quantidade correspondente a uma compra excluída
      *

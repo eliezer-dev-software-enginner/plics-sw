@@ -3,12 +3,9 @@ package my_app.domain;
 import megalodonte.State;
 import megalodonte.base.components.Component;
 import megalodonte.components.SpacerVertical;
-import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.ColumnProps;
 import megalodonte.props.ContainerProps;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 
 
 @Deprecated

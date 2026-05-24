@@ -13,7 +13,7 @@ import my_app.db.repositories.CategoriaRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.services.ProdutoService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;

@@ -1,4 +1,4 @@
-package my_app.screens.components;
+package my_app.domain.components;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,7 +29,9 @@ import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.Parcela;
+import my_app.domain.states.TotaisState;
 import my_app.utils.DateUtils;
+import my_app.utils.Utils;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.entypo.Entypo;
@@ -381,6 +383,13 @@ public class Components {
                 .borderWidth(theme.border().width()))
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().body()).bold()))
                 .c_child(new Text(value, new TextProps().fontSize(theme.typography().body())));
+    }
+
+    public static Row displayOperationsRow(TotaisState totais) {
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(TextWithValue("Valor total(bruto): ", totais.totalBruto))
+                .r_child(TextWithValue("Desconto: ", totais.descontoComputed))
+                .r_child(TextWithValue("Total geral(líquido): ", totais.totalLiquido.map(Utils::toBRLCurrency)));
     }
 
     public static Component TextWithValue(String label, ReadableState<String> valueState) {

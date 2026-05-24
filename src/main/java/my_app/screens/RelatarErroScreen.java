@@ -10,13 +10,11 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.telegram.TelegramNotifierFactory;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 //import javafx.scene.control.*;
 import megalodonte.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-
-import my_app.domain.telegram.TelegramNotifier;
 
 public class RelatarErroScreen implements ScreenComponent {
     private final ScreenContext ctx;

@@ -6,22 +6,17 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.*;
 import my_app.db.models.*;
-import my_app.db.repositories.*;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
-import megalodonte.*;
+import my_app.domain.components.Components;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import my_app.services.*;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-//TODO: finalizar implementações
 //TODO: lista de compras para exibir na tabela
 public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final ComprasScreenViewModel vm;
@@ -50,8 +45,8 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 new Row(new RowProps().spacingOf(15))
                         .r_child(Components.TextWithValue("Estoque anterior:", vm.estoqueAnterior))
                         .r_child(Components.TextWithValue("Estoque após compra:", vm.estoqueAtual)),
-                displayOperationsRow(),
-                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoSelectedIsAPrazo, vm.totalLiquido),
+                Components.displayOperationsRow(vm.totais),
+                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoSelectedIsAPrazo, vm.totais.totalLiquido),
                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)
         );
     }
@@ -72,16 +67,9 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
         return new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 1,500"))
                 .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
-                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSeleced, it -> it))
+                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSelected, it -> it))
                 .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
                 .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
-    }
-
-    private Row displayOperationsRow() {
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.TextWithValue("Valor total(bruto): ", vm.totalBruto))
-                .r_child(Components.TextWithValue("Desconto: ", vm.descontoComputed))
-                .r_child(Components.TextWithValue("Total geral(líquido): ", vm.totalLiquido.map(Utils::toBRLCurrency)));
     }
 
     @Override

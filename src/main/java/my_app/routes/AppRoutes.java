@@ -34,7 +34,7 @@ public class AppRoutes {
                 //ok
                 new Router.Route("empresa",ctx-> new CadastroEmpresaScreen(ctx), new RouteProps(900, 650, "Informações da empresa", false)),
                //ok
-                new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1150, 650, "Compras de mercadorias", true)),
+                new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
                 new Router.Route("clientes",ctx-> new ClienteScreen(ctx), new RouteProps(1150, 650, "Gerenciamento de clientes", true)),
                 //ok
@@ -56,7 +56,7 @@ public class AppRoutes {
                 new Router.Route("preferencias",ctx-> new PreferenciasScreen(ctx),
                         new RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
                 new Router.Route("entrar-com-credenciais",ctx-> new AuthScreen(ctx),
-                        new RouteProps(550, 400, "Seja muito bem vindo", false))
+                        new RouteProps(550, 490, "Seja muito bem vindo", false))
         );
 
         //String rotaInicial = "categorias";//ok completo
@@ -70,12 +70,10 @@ public class AppRoutes {
         //String rotaInicial = "relatar-erro";//ok
         //String rotaInicial = "sugerir-melhoria";//ok
         //String rotaInicial = "preferencias";ok
-        //String rotaInicial = "entrar-com-credenciais";ok
-        String rotaInicial = "compras";
+        //String rotaInicial = "compras";ok
 
+        //String rotaInicial = "entrar-com-credenciais";
         //String rotaInicial = "pdv-screen";
-
-
 
 
         //TODO: TRATAR ESSAS TELAS NA V4
@@ -83,18 +81,17 @@ public class AppRoutes {
         //String rotaInicial = "tecnicos";
         //String rotaInicial = "ordem-de-servico";
 
-
         //String rotaInicial = "empresa";
 
 
-//        String rotaInicial;
-//        if (forceAccessRoute) {
-//            rotaInicial = "welcome";
-//        } else if (askCredentials) {
-//            rotaInicial = "entrar-com-credenciais";
-//        } else {
-//            rotaInicial = "home";
-//        }
+        String rotaInicial;
+        if (forceAccessRoute) {
+            rotaInicial = "welcome";
+        } else if (askCredentials) {
+            rotaInicial = "entrar-com-credenciais";
+        } else {
+            rotaInicial = "home";
+        }
         return new Router(routes, rotaInicial);
     }
 }

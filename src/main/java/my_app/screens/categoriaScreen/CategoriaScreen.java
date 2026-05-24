@@ -10,7 +10,7 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.CategoriaModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 
 public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
