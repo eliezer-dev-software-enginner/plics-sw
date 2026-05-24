@@ -2,11 +2,13 @@ package my_app.db.repositories;
 
 import my_app.db.dto.VendaDto;
 import my_app.db.models.VendaModel;
+import my_app.utils.DateUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
@@ -171,7 +173,13 @@ public class VendaRepository extends BaseRepository<VendaDto, VendaModel> {
 
         return venda;
     }
-    
+
+    public BigDecimal somarVendasHoje() throws SQLException {
+        long inicioHoje = DateUtils.localDateParaMillis(LocalDate.now());
+        long fimHoje = inicioHoje + 86399999L;
+        return somarVendasPorPeriodo(inicioHoje, fimHoje);
+    }
+
     public BigDecimal somarVendasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
         String sql = """
             SELECT COALESCE(SUM(total_liquido), 0) as total 

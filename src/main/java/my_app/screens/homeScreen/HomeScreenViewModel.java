@@ -76,7 +76,11 @@ public class HomeScreenViewModel {
                 LocalDate primeiroDia = now.with(TemporalAdjusters.firstDayOfMonth());
                 LocalDate ultimoDia = now.with(TemporalAdjusters.lastDayOfMonth());
 
-                BigDecimal totalHoje = pedidoRepo.somarPedidosHoje();
+                //BigDecimal totalHoje = pedidoRepo.somarPedidosHoje();só mostra vendas do pdv
+
+                BigDecimal totalPedidosHoje = pedidoRepo.somarPedidosHoje();
+                BigDecimal totalVendasHoje = vendaRepo.somarVendasHoje();
+                BigDecimal totalHoje = totalPedidosHoje.add(totalVendasHoje);
 
                 long inicioMillis = DateUtils.localDateParaMillis(primeiroDia);
                 long fimMillis = DateUtils.localDateParaMillis(ultimoDia) + 86399999L;
@@ -100,7 +104,7 @@ public class HomeScreenViewModel {
                     this.lucroLiquido.set(Utils.toBRLCurrency(lucro));
                     this.mesAtual.set(mesFormatado);
 
-                    this.vendasHoje.set("Hoje você fez: " + Utils.toBRLCurrency(totalHoje));
+                    this.vendasHoje.set("Hoje você fez: " + Utils.toBRLCurrency(totalHoje) + " (bruto)");
 
                     exibirGifNaUI(totalHoje);
                 });
