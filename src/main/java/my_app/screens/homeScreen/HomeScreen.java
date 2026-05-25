@@ -112,6 +112,7 @@ public class HomeScreen implements ScreenComponent {
                 .menu(new Menu("Suporte")
                         .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
                         .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
+                        .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow("info-update",e->{}))
                 );
     }
 

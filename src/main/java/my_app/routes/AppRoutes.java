@@ -56,7 +56,9 @@ public class AppRoutes {
                 new Router.Route("preferencias",ctx-> new PreferenciasScreen(ctx),
                         new RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
                 new Router.Route("entrar-com-credenciais",ctx-> new AuthScreen(ctx),
-                        new RouteProps(550, 490, "Seja muito bem vindo", false))
+                        new RouteProps(550, 490, "Seja muito bem vindo", false)),
+                new Router.Route("info-update",ctx-> new InfoUpdateScreen(ctx),
+                        new RouteProps(900, 650, "Atualizações do aplicativo", false))
         );
 
         //String rotaInicial = "categorias";//ok completo
@@ -82,7 +84,7 @@ public class AppRoutes {
         //String rotaInicial = "ordem-de-servico";
 
         //String rotaInicial = "empresa";
-
+        //String rotaInicial = "info-update";
 
         String rotaInicial;
         if (forceAccessRoute) {

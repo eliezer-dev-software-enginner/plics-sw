@@ -1,175 +1,57 @@
 package my_app.screens;
 
-import javafx.stage.FileChooser;
-import megalodonte.base.UI;
-import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Card;
-import megalodonte.components.SpacerVertical;
+import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
-import my_app.db.models.EmpresaModel;
-import my_app.db.repositories.EmpresaRepository;
 import my_app.domain.components.Components;
-//import javafx.scene.control.*;
-import megalodonte.*;
-import megalodonte.components.*;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+
+import java.util.List;
 
 
-import java.io.File;
-
-public class CadastroEmpresaScreen implements ScreenComponent {
+public class InfoUpdateScreen implements ScreenComponent {
     private final ScreenContext ctx;
 
-    State<String> nome = State.of("");
-    State<String> celular = State.of("");
-    State<String> logoMarca = State.of("/logo_256x256.png");
+    private record NotaAtualizacao(String title, String[] notes){}
 
-    State<String> cep = State.of("");
-    State<String> cidade = State.of("");
-    State<String> bairro = State.of("");
-    State<String> rua = State.of("");
+    private final List<NotaAtualizacao> notasAtualizacaoList = List.of(
+            new NotaAtualizacao("v1.0.3", new String[]{
+                    "Feat: Escolhe se cliente é físico ou juridico, isso habilita campo com base no tipo selecionado",
+                    "Fix: Não permite dois clientes com o mesmo cpf ou cnpj",
+                    "Fix: Correção em Ordem de serviço. Edição só é habilitado se clicar em uma célula.",
+                    "Fix: Ao limpar formulário mantém o \"cliente padrão\" e tipo pagamento \"crédito\"",
+                    "Fix: Alterações no Tecnico agora afetam a tela de Ordem de serviço dinamicamente",
+                    "Fix: Data de visita em Ordem de Serviço não tem mais o horário 00:00",
+                    "Fix: correção e validação completa na tela de Categorias",
+                    "Fix: correção na exibição dos totais na tela de Compra de mercadoria"
+            })
+    );
 
-    State<String> localPagamento = State.of("");
-    State<String> textoResponsabilidade = State.of("");
-
-    private EmpresaRepository empresaRepository = new EmpresaRepository();
-
-    public CadastroEmpresaScreen(ScreenContext ctx) {
+    public InfoUpdateScreen(ScreenContext ctx) {
         this.ctx = ctx;
     }
 
-    public void onMount(){
-        fetchData();
-    }
-
-    private void fetchData() {
-        Async.Run(()->{
-            try {
-                var list = empresaRepository.listar();
-                if(!list.isEmpty()){
-                    var model = list.getFirst();
-
-                    UI.runOnUi(()->{
-                        nome.set(model.nome);
-                        celular.set(model.telefone);
-                        logoMarca.set(model.logoMarca != null ? model.logoMarca : "/logo_256x256.png");
-                        cep.set(model.cep);
-                        cidade.set(model.cidade);
-                        bairro.set(model.bairro);
-                        rua.set(model.rua);
-                        localPagamento.set(model.localPagamento);
-                        textoResponsabilidade.set(model.textoResponsabilidade);
-                    });
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException("Erro ao carregar categorias", e);
-            }
-        });
-
-    }
-
-    private final Theme theme = ThemeManager.theme();
-
     public Component render() {
-        return new Container(new ContainerProps().paddingAll(5).bgColor(theme.colors().background()))
-                .c_child(new SpacerVertical(10))
-                .c_child(form());
-    }
+        var container = new Container();
 
-    Component form(){
-        return new Card(new Column()
-                .c_child(Components.FormTitle("Informações da empresa"))
-                .c_child(new SpacerVertical(20))
-                .c_child(TopWithImage())
-                .c_child(new SpacerVertical(10))
-                .c_child(Components.FormTitle("Endereço"))
-                .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                        .r_child(
-                                Components.InputColumn("Cep", cep,"xxxxxxxx"))
-                        .r_child(
-                                Components.InputColumn("Cidade", cidade,"Ex: Paraiso"))
-                        .r_child(
-                                Components.InputColumn("Bairro", bairro,"Ex: Bairro abc"))
-                        .r_child(
-                                Components.InputColumn("Rua", rua,"Ex: rua das graças"))
-                )
-                .c_child(new SpacerVertical(10))
-                .c_child(Components.FormTitle("Dados de carnê"))
-                .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                        .r_child(
-                                Components.InputColumn("Local de pagamento", localPagamento,"Ex: Pagável em qualquer banco ou lotérica"))
-                        .r_child(
-                                Components.TextAreaColumn("Texto de responsabilidade do cedente", textoResponsabilidade,"Ex: Após o vencimento cobrar multa..."))
-                )
-                .c_child(new SpacerVertical(20))
-                .c_child(Components.ButtonCadastro("Salvar",this::handleSave)))
-            //TODO: adicionar imagem
-                ;
-    }
+        notasAtualizacaoList.forEach(it -> {
+            var columnInsideCard = new Column();
+            columnInsideCard.c_child(Components.FormTitle(it.title));
+            columnInsideCard.c_child(new LineHorizontal());
+            columnInsideCard.c_child(new SpacerHorizontal(10));
 
-    Row TopWithImage() {
-        var left = new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(
-                        Components.InputColumn("Nome", nome, "Ex: Empresa ABC"))
-                .r_child(
-                        Components.InputColumn("Telefone/Celular", celular, "(xx)xxxxx-yyyy"));
-
-        return new Row()
-                .r_child(left)
-                .r_child(new SpacerHorizontal(10))
-                .r_child(Components.ImageSelector("Mudar logomarca", logoMarca,
-                        new ImageProps().size(100), this::handleUpdateLogoMarca));
-    }
-
-    private void handleUpdateLogoMarca(){
-        var fileChooser = new FileChooser();
-        fileChooser.setTitle("Selecionar imagem");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Text files", "*.png","*.jpg","*.jpeg"));
-
-        File arquivo = fileChooser.showOpenDialog(this.ctx.selfStage());
-        if(arquivo != null){
-            IO.println("abs: " + arquivo.getAbsolutePath());
-            String imagePath = arquivo.toURI().toString();
-            IO.println("uri: " + imagePath);
-
-            logoMarca.set(imagePath);
-        }
-    }
-
-    private void handleSave(){
-        var model = new EmpresaModel();
-        model.id = 1L;
-        model.nome = nome.get();
-        model.logoMarca = logoMarca.get();
-        model.cep = cep.get();
-        model.bairro = bairro.get();
-        model.rua = rua.get();
-        model.cidade = cidade.get();
-        model.localPagamento = localPagamento.get();
-        model.termoServico = textoResponsabilidade.get();
-        model.telefone = celular.get();
-        model.textoResponsabilidade = textoResponsabilidade.get();
-
-        Async.Run(()->{
-            try{
-                empresaRepository.atualizar(model);
-                UI.runOnUi(()-> {
-                    IO.println("Empresa atualizada com sucesso!");
-                });
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            for (String note : it.notes) {
+                columnInsideCard.c_child(new Text(note));
             }
+            container.c_child(columnInsideCard);
         });
+
+        return new Container(new ContainerProps().paddingAll(10)).children(
+                new Card(container)
+        );
     }
+
 }
