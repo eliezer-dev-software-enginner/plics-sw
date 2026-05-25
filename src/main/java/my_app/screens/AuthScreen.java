@@ -1,28 +1,23 @@
 package my_app.screens;
 
+import megalodonte.State;
 import megalodonte.base.Redirect;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Button;
-import megalodonte.components.SpacerVertical;
+import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.ContainerProps;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.Main;
-import my_app.db.models.*;
-import my_app.db.repositories.*;
+import my_app.db.models.PreferenciasModel;
+import my_app.db.repositories.PreferenciasRepository;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
-//import javafx.scene.control.*;
-import megalodonte.*;
-import megalodonte.components.*;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
 
 import java.sql.SQLException;
 
@@ -40,11 +35,13 @@ public class AuthScreen implements ScreenComponent {
 
     public AuthScreen(ScreenContext ctx) {
         this.ctx = ctx;
+        ctx.selfStage().getIcons().add(Main.loadIcon());
         preferenciasRepository = new PreferenciasRepository();
     }
 
     @Override
     public void onMount() {
+        ctx.selfStage().getIcons().add(Main.loadIcon());
         Async.Run(()->{
             try{
                 var prefs = preferenciasRepository.listar();
