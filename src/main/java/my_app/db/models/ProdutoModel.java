@@ -44,6 +44,34 @@ public class ProdutoModel extends ModelBase<ProdutoDto> {
     public String garantia;
 
     @Override
+    public ProdutoModel fromIdAndDtoAndMillis(Long id, ProdutoDto dto, long millis) {
+        this.id = id;
+        this.dataCriacao = millis;
+        this.codigoBarras = dto.codigoBarras;
+        this.descricao = dto.descricao;
+        this.precoCompra = dto.precoCompra;
+        this.precoVenda = dto.precoVenda;
+        this.unidade = dto.unidade;
+        this.marca = dto.marca;
+        this.categoriaId = dto.categoriaId;
+        this.fornecedorId = dto.fornecedorId;
+        this.estoque = dto.estoque;
+        this.observacoes = dto.observacoes;
+        this.imagem = dto.imagem;
+        this.validade = dto.validade;
+        this.comissao = dto.comissao;
+        this.garantia = dto.garantia;
+        this.totalLiquido = dto.totalLiquido;
+
+        // campo derivado (runtime)
+        if (this.precoCompra != null && this.precoVenda != null) {
+            this.lucro = this.precoVenda.subtract(this.precoCompra);
+        }
+
+        return this;
+    }
+
+    @Override
     public ProdutoModel fromResultSet(ResultSet rs) throws SQLException {
         var p = new ProdutoModel();
         p.id = rs.getLong("id");
@@ -79,31 +107,4 @@ public class ProdutoModel extends ModelBase<ProdutoDto> {
         return p;
     }
 
-    @Override
-    public ProdutoModel fromIdAndDto(Long id, ProdutoDto dto) {
-        var p = new ProdutoModel();
-        p.id = id;
-        p.codigoBarras = dto.codigoBarras;
-        p.descricao = dto.descricao;
-        p.precoCompra = dto.precoCompra;
-        p.precoVenda = dto.precoVenda;
-        p.unidade = dto.unidade;
-        p.marca = dto.marca;
-        p.categoriaId = dto.categoriaId;
-        p.fornecedorId = dto.fornecedorId;
-        p.estoque = dto.estoque;
-        p.observacoes = dto.observacoes;
-        p.imagem = dto.imagem;
-        p.validade = dto.validade;
-        p.comissao = dto.comissao;
-        p.garantia = dto.garantia;
-        p.totalLiquido = dto.totalLiquido;
-
-        // campo derivado (runtime)
-        if (p.precoCompra != null && p.precoVenda != null) {
-            p.lucro = p.precoVenda.subtract(p.precoCompra);
-        }
-
-        return p;
-    }
 }

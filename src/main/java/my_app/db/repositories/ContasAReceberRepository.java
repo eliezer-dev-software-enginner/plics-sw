@@ -58,7 +58,7 @@ public class ContasAReceberRepository extends BaseRepository<ContaAreceberDto, C
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long id = generatedKeys.getLong(1);
-                    return new ContaAreceberModel().fromIdAndDto(id, dto);
+                    return (ContaAreceberModel) new ContaAreceberModel().fromIdAndDto(id, dto);
                 }
             }
         }

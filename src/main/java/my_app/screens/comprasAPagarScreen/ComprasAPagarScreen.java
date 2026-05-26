@@ -15,7 +15,7 @@ import megalodonte.theme.ThemeManager;
 import megalodonte.v2.Show;
 import my_app.db.models.ContasPagarModel;
 import my_app.domain.ContratoTelaCrud;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 //import javafx.scene.control.*;
 import javafx.scene.control.*;
 import megalodonte.*;
@@ -30,6 +30,7 @@ import my_app.utils.Utils;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+//TODO: REFATORAR NA V4
 public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
     private final ComprasAPagarScreenViewModel vm;
     private final Theme theme = ThemeManager.theme();
@@ -174,24 +175,24 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                     new Row(new RowProps().spacingOf(10).bottomVertically())
                         .r_child(Components.InputColumn("Descrição", vm.descricao, "Descrição da conta"))
                         .r_child(Components.InputColumnCurrency("Valor Original", vm.valorOriginal))
+                            .r_child( Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected,
+                                    f -> f != null ? f.nome : "", true))
+                            .r_child(
+                                    Components.SelectColumn("Status", vm.statusOptions, vm.status, status -> status))
                 )
                 .c_child(
                     new Row(new RowProps().spacingOf(10).bottomVertically())
                         .r_child(Components.DatePickerColumn(vm.dataVencimento, "Data Vencimento", "dd/mm/yyyy"))
                         .r_child(Components.DatePickerColumn(vm.dataPagamento, "Data Pagamento", "dd/mm/yyyy"))
+                            .r_child(
+                                    Components.SelectColumn("Tipo Doc", vm.tipoDocumentoOptions, vm.tipoDocumento, tipo -> tipo))
+                            .r_child(Components.InputColumn("Número Doc", vm.numeroDocumento, "Número do documento"))
                 )
                 .c_child(
                     new Row(new RowProps().spacingOf(10).bottomVertically())
-                        .r_child(
-                            Components.SelectColumn("Status", vm.statusOptions, vm.status, status -> status))
-                        .r_child(
-                            Components.SelectColumn("Tipo Doc", vm.tipoDocumentoOptions, vm.tipoDocumento, tipo -> tipo))
+
                 )
-                .c_child(
-                    Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected,
-                        f -> f != null ? f.nome : "", true)
-                )
-                .c_child(Components.InputColumn("Número Doc", vm.numeroDocumento, "Número do documento"))
+
                 .c_child(Components.TextAreaColumn("Observação", vm.observacao, ""))
                 .c_child(new SpacerVertical(20))
                 .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm))
@@ -199,7 +200,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                         .r_child(
                                 Show.when(naoEhPagamento, () -> new Button(
                                         vm.btnPagamentoText,
-                                        (ButtonProps) new ButtonProps()
+                                        new ButtonProps()
                                                 .height(35)
                                                 .fontSize(theme.typography().small())
                                                 .bgColor("#10b981")
@@ -215,7 +216,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrud {
                         )
                         .r_child(
                             new Button("Quitar",
-                                    (ButtonProps) new ButtonProps()
+                                    new ButtonProps()
                                     .height(35)
                                     .fontSize(theme.typography().small())
                                     .bgColor("#007bff")

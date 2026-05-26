@@ -9,15 +9,12 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.screens.components.Components;
+import my_app.domain.telegram.TelegramNotifierFactory;
+import my_app.domain.components.Components;
 //import javafx.scene.control.*;
-import javafx.scene.control.*;
 import megalodonte.*;
-import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-
-import my_app.services.TelegramNotifier;
 
 public class RelatarErroScreen implements ScreenComponent {
     private final ScreenContext ctx;
@@ -43,7 +40,9 @@ public class RelatarErroScreen implements ScreenComponent {
 
             Async.Run(()->{
                 try{
-                    TelegramNotifier.enviarMensagemParaTelegram(content.get());
+                    TelegramNotifierFactory.create()
+                            .enviarMensagem(content.get());
+
                     UI.runOnUi(()->{
                         Components.ShowPopup(ctx, "Enviado com sucesso");
                         content.set("");

@@ -27,6 +27,21 @@ public class VendaModel extends ModelBase<VendaDto> {
     public ClienteModel cliente;
 
     @Override
+    public VendaModel fromIdAndDtoAndMillis(Long id, VendaDto dto, long millis) {
+        this.id = id;
+        this.dataCriacao = millis;
+       this.produtoCod = dto.produtoCod();
+       this.clienteId = dto.clienteId();
+       this.quantidade = dto.quantidade();
+       this.precoUnitario = dto.precoUnitario();
+       this.desconto = dto.desconto();
+       this.tipoPagamento = dto.formaPagamento();
+       this.observacao = dto.observacao();
+       this.totalLiquido = dto.totalLiquido();
+       return this;
+    }
+
+    @Override
     public VendaModel fromResultSet(ResultSet rs) throws SQLException {
         var v = new VendaModel();
         v.id = rs.getLong("id");
@@ -42,22 +57,6 @@ public class VendaModel extends ModelBase<VendaDto> {
         v.dataVenda = rs.getLong("data_venda");
         v.numeroNota = rs.getString("numero_nota");
         v.dataValidade = rs.getLong("data_validade");
-        return v;
-    }
-
-    @Override
-    public VendaModel fromIdAndDto(Long id, VendaDto dto) {
-        var v = new VendaModel();
-        v.id = id;
-        v.produtoCod = dto.produtoCod();
-        v.clienteId = dto.clienteId();
-        v.quantidade = dto.quantidade();
-        v.precoUnitario = dto.precoUnitario();
-        v.desconto = dto.desconto();
-        v.tipoPagamento = dto.formaPagamento();
-        v.observacao = dto.observacao();
-        v.totalLiquido = dto.totalLiquido();
-        v.dataCriacao = System.currentTimeMillis();
         return v;
     }
 }

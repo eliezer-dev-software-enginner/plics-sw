@@ -53,19 +53,20 @@ public class OrdemServicoModel extends ModelBase<OrdemServicoDto> {
 
     @Override
     public OrdemServicoModel fromIdAndDtoAndMillis(Long id, OrdemServicoDto dto, long millis) {
-        var model = (OrdemServicoModel) super.fromIdAndDtoAndMillis(id, dto, millis);
-        model.clienteId = dto.clienteId();
-        model.tecnicoId = dto.tecnicoId();
-        model.equipamento = dto.equipamento();
-        model.maoDeObraValor = dto.mao_de_obra_valor();
-        model.pecas_valor = dto.pecas_valor();
-        model.tipoPagamento = dto.tipoPagamento();
-        model.checklistRelatorio = dto.checklist_relatorio();
-        model.dataEscolhida = dto.data_escolhida();
-        model.totalLiquido = dto.totalLiquido();
-        model.status = dto.status();
-        model.numeroOs = dto.numeroOs();
-        return model;
+        this.id = id;
+        this.dataCriacao = millis;
+        this.clienteId = dto.clienteId();
+       this.tecnicoId = dto.tecnicoId();
+       this.equipamento = dto.equipamento();
+       this.maoDeObraValor = dto.mao_de_obra_valor();
+       this.pecas_valor = dto.pecas_valor();
+       this.tipoPagamento = dto.tipoPagamento();
+       this.checklistRelatorio = dto.checklist_relatorio();
+       this.dataEscolhida = dto.data_escolhida();
+       this.totalLiquido = dto.totalLiquido();
+       this.status = dto.status();
+       this.numeroOs = dto.numeroOs();
+        return this;
     }
 
 }

@@ -1,7 +1,6 @@
 package my_app.examples;
 
 import megalodonte.State;
-import my_app.screens.components.Components;
 import my_app.utils.Utils;
 import java.math.BigDecimal;
 

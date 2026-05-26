@@ -1,9 +1,7 @@
 package my_app.db.repositories;
 
 import my_app.db.DB;
-import my_app.db.DBInitializer;
 import my_app.db.dto.VendaDto;
-import my_app.db.models.VendaModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

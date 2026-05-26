@@ -72,7 +72,7 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long id = generatedKeys.getLong(1);
-                    return new ProdutoModel().fromIdAndDto(id, p);
+                    return (ProdutoModel) new ProdutoModel().fromIdAndDto(id, p);
                 }
             }
         }

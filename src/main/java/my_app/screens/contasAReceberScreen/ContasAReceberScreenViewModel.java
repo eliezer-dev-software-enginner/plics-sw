@@ -15,7 +15,7 @@ import my_app.db.repositories.VendaRepository;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModel;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.services.ContasAReceberService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -197,12 +197,12 @@ public class ContasAReceberScreenViewModel extends ViewModel {
             Async.Run(() -> {
                 try {
                     final var modelAtualizada = new ContaAreceberModel().fromIdAndDto(contaSelected.get().id, dto);
-                    repository.atualizar(modelAtualizada);
+                    repository.atualizar((ContaAreceberModel) modelAtualizada);
                     UI.runOnUi(() -> {
                         // Update item in observable list
                         int index = contas.indexOf(contaSelected.get());
                         if (index >= 0) {
-                            contas.set(index, modelAtualizada);
+                            contas.set(index, (ContaAreceberModel) modelAtualizada);
                         }
                         Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                         limparFormulario();

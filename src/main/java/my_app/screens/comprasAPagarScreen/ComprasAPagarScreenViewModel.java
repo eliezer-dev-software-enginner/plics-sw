@@ -15,7 +15,7 @@ import my_app.db.repositories.FornecedorRepository;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.lifecycle.viewmodel.component.ViewModel;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 import my_app.services.ContasPagarService;
 import my_app.utils.Utils;
 import my_app.utils.DateUtils;
@@ -202,7 +202,7 @@ public class ComprasAPagarScreenViewModel extends ViewModel {
             // Update logic
             Async.Run(() -> {
                 try {
-                    ContasPagarModel modelAtualizada = new ContasPagarModel().fromIdAndDto(contaSelected.get().id, dto);
+                    ContasPagarModel modelAtualizada = (ContasPagarModel) new ContasPagarModel().fromIdAndDto(contaSelected.get().id, dto);
                     repository.atualizar(modelAtualizada);
                     UI.runOnUi(() -> {
                         // Update item in observable list

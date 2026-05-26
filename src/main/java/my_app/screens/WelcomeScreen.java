@@ -13,8 +13,6 @@ import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 
-//import javafx.scene.control.*;
-
 public class WelcomeScreen {
     private final ScreenContext ctx;
 
@@ -38,7 +36,7 @@ public class WelcomeScreen {
                                             zoom.setCycleCount(2);
                                             return zoom;
                                         }),
-                                new Text("Plics SW", (TextProps) new TextProps().variant(TextVariant.TITLE).bold()),
+                                new Text("Plics SW", new TextProps().variant(TextVariant.TITLE).bold()),
                                 new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
                                         new TextProps().variant(TextVariant.SUBTITLE)),
                                 new LineHorizontal(),

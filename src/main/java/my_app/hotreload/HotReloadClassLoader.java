@@ -28,7 +28,8 @@ public class HotReloadClassLoader extends URLClassLoader {
 
         // 2. Regras de exclusão (Java, JavaFX, classes da lib)
         if (name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("javafx.") ||
-                name.startsWith("megalodonte.") || classesToExclude.contains(name)) {
+                name.startsWith("megalodonte.") || name.startsWith("my_app.hotreload.") ||
+                classesToExclude.contains(name)) {
             System.out.println("[HotReloadClassLoader] Delegating to parent (excluded): " + name);
             return super.loadClass(name, resolve);
         }

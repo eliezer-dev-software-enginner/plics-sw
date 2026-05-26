@@ -1,7 +1,6 @@
 package my_app.screens.produtoScreen;
 
-import megalodonte.ComputedState;
-import megalodonte.ListState;
+import megalodonte.v2.ListState;
 import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
@@ -13,8 +12,8 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.CategoriaRepository;
 import my_app.db.repositories.FornecedorRepository;
 import my_app.db.repositories.ProdutoRepository;
-import my_app.lifecycle.viewmodel.component.ViewModel;
-import my_app.screens.components.Components;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.components.Components;
 import my_app.services.ProdutoService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -23,10 +22,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ProdutoScreenViewModel extends ViewModel {
+public class ProdutoScreenViewModel extends ViewModelScreenContract {
+    private final ProdutoService service;
+    private final ProdutoRepository produtoRepository;
 
-    private final ProdutoService service = new ProdutoService();
-    private final ProdutoRepository produtoRepository = new ProdutoRepository();
     public final ListState<ProdutoModel> produtos = ListState.of(List.of());
     public final State<String> codigoBarras = new State<>("");
     public final State<String> descricao = new State<>("");
@@ -41,7 +40,6 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final State<String> garantia = new State<>("");
     public final State<String> marca = new State<>("");
 
-    public final List<String> unidades = List.of("UN", "KG", "ml");
     public final State<String> unidadeSelected = new State<>("UN");
 
     public final State<List<CategoriaModel>> categorias = new State<>(List.of());
@@ -56,12 +54,14 @@ public class ProdutoScreenViewModel extends ViewModel {
     public final State<LocalDate> validade = State.of(null);
 
     public final State<String> imagem = new State<>("/assets/produto-generico.png");
-
-    public final State<Boolean> modoEdicao = State.of(false);
-    public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
-    public final State<ProdutoModel> produtoSelected = State.of(null);
-
+    public final State<ProdutoModel> produtoSelected = new State<>(null);
     public final State<String> perecivelSelected = new State<>("Não");
+
+    public ProdutoScreenViewModel(ScreenContext ctx) {
+        super(ctx);
+        service = new ProdutoService();
+        produtoRepository = new ProdutoRepository();
+    }
 
     public void loadInicial() {
         Async.Run(() -> {
@@ -122,7 +122,29 @@ public class ProdutoScreenViewModel extends ViewModel {
     }
 
 
-    public void salvarOuAtualizar(ScreenContext ctx) {
+    @Override
+    public void handleClickMenuDelete() {
+        ProdutoModel produtoModel = produtoSelected.get();
+        if (produtoModel == null) return;
+
+        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoModel.descricao, produtoModel.codigoBarras);
+        Components.ShowAlertAdvice(bodyMessage, () -> {
+            Async.Run(() -> {
+                try {
+                    excluir();
+                    //vm.refreshProdutos();
+                    UI.runOnUi(() -> {
+                        clearForm();
+                        Components.ShowPopup(ctx, "Produto excluído com sucesso");
+                    });
+                } catch (Exception e) {
+                    UI.runOnUi(()-> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
+                }
+            });
+        });
+    }
+
+    public void handleAddOrUpdate() {
         var dto = toProduto();
 
         if(perecivelSelected.get().equals("Sim") && validade.isNull()) {
@@ -131,42 +153,49 @@ public class ProdutoScreenViewModel extends ViewModel {
         }
 
         if (modoEdicao.get()) {
-            Async.Run(() -> {
-                try {
-                    service.atualizar(new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
-                    var produtosList = produtoRepository.listar();
-                    UI.runOnUi(() -> {
-                        this.produtos.clear();
-                        this.produtos.addAll(produtosList);
-                        Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
-                        limparFormulario();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-                }
-            });
+            asyncAtualizar(ctx, dto);
         }else{
-            Async.Run(() -> {
-                try {
-                    var produtoModel = service.salvar(dto);
-                    produtoModel.dataCriacao = System.currentTimeMillis();
-                    produtoModel.categoria = categoriaSelected.get();
-                    produtoModel.fornecedor = fornecedorSelected.get();
-
-                    UI.runOnUi(() -> {
-                        produtos.add(produtoModel);
-                        Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
-                        limparFormulario();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-                }
-            });
+            asyncSalvar(ctx, dto);
         }
     }
 
+    private void asyncAtualizar(ScreenContext ctx, ProdutoDto dto) {
+        Async.Run(() -> {
+            try {
+                service.atualizar((ProdutoModel) new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
+                var produtosList = produtoRepository.listar();
+                UI.runOnUi(() -> {
+                    this.produtos.clear();
+                    this.produtos.addAll(produtosList);
+                    Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
+    }
 
-    public void limparFormulario() {
+    private void asyncSalvar(ScreenContext ctx, ProdutoDto dto) {
+        Async.Run(() -> {
+            try {
+                var produtoModel = service.salvar(dto);
+                produtoModel.dataCriacao = System.currentTimeMillis();
+                produtoModel.categoria = categoriaSelected.get();
+                produtoModel.fornecedor = fornecedorSelected.get();
+
+                UI.runOnUi(() -> {
+                    produtos.add(produtoModel);
+                    Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
+    }
+
+    public void clearForm() {
         codigoBarras.set("");
         descricao.set("");
         precoCompra.set("0");
@@ -183,12 +212,43 @@ public class ProdutoScreenViewModel extends ViewModel {
         imagem.set("/assets/produto-generico.png");
     }
 
+    //TODO: usar a exclusão da FornecedorScreenViewModel, pois esta não mostra aviso
     public void excluir() throws Exception {
         Long id = produtoSelected.get().id;
         service.excluir(id);
         produtos.removeIf(it -> it.id.equals(id));
     }
 
+    public ScreenContext getCtx() {
+        return ctx;
+    }
+
+    public void populateFromModel() {
+        if(produtoSelected.get() == null) return;
+        final var model = produtoSelected.get();
+
+        codigoBarras.set(model.codigoBarras);
+        descricao.set(model.descricao);
+        precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
+        precoVenda.set(Utils.deRealParaCentavos( model.precoVenda));
+        //margem.set(model.);
+        //lucro.set("0");
+        comissao.set(model.comissao);
+        garantia.set(model.garantia);
+        marca.set(model.marca);
+        unidadeSelected.set(model.unidade);
+        estoque.set(Utils.quantidadeTratada(model.estoque));
+
+        validade.set(model.validade != null ? DateUtils.millisParaLocalDate(model.validade) : null);
+        perecivelSelected.set(model.validade != null && model.validade > 0? "Sim": "Não");
+        observacoes.set(model.observacoes);
+        imagem.set(model.imagem);
+    }
+
+    @Override
+    public State<Boolean> modoEdicaoState() {
+        return modoEdicao;
+    }
 
 }
 

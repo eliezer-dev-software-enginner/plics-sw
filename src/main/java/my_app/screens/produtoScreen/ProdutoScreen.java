@@ -2,74 +2,41 @@ package my_app.screens.produtoScreen;
 
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
-import megalodonte.base.async.Async;
-import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
-import my_app.domain.ContratoTelaCrud;
-import my_app.screens.components.Components;
+import my_app.domain.ContratoTelaCrudV3;
+import my_app.domain.Data;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.util.List;
 
-public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
+public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final ProdutoScreenViewModel vm;
-    private final Theme theme = ThemeManager.theme();
-    private final ScreenContext ctx;
 
-    public ProdutoScreen(ScreenContext ctx) {
-        this.ctx = ctx;
-        this.vm = new ProdutoScreenViewModel();
-    }
+    public ProdutoScreen(ScreenContext ctx) {this.vm = new ProdutoScreenViewModel(ctx);}
 
     @Override
     public void onMount() {
         vm.loadInicial();
     }
 
-    public Component render() {
-        return new Container(new ContainerProps().paddingAll(15).bgColor(theme.colors().background()))
-                .c_child(commonCustomMenus())
-                .c_child(new SpacerVertical(20))
-                .c_child(createHeaderSection())
-                .c_child(new SpacerVertical(30))
-                .c_child(new Scroll(createMainContent()));
-    }
+    public Component render() {return mainView(vm.focusState);}
 
-    private Component createHeaderSection() {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(5))
-                        .c_child(Components.FormTitle("Cadastro de Produtos"))
-                        .c_child(new SpacerVertical(10))
-                        .c_child(new Text("Gerencie o catálogo de produtos do seu estabelecimento",
-                                new TextProps().variant(TextVariant.BODY).color("#6b7280"))),
-                new CardProps()
-                        .padding(0)
-                        .borderRadius(12)
-        );
-    }
-
-    private Component createMainContent() {
-        return new Column(new ColumnProps().spacingOf(30))
-                .c_child(createFormSection())
-                .c_child(table());
-    }
-
-    private Component createFormSection() {
+    @Override
+    public Component form() {
         Runnable handleChangeImage = () -> {
-            var stage = this.ctx.selfStage();
+            var stage = vm.getCtx().selfStage();
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Escolha a imagem");
@@ -90,11 +57,12 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row()
                                 .r_child(ContainerLeft(vm))
+                                .r_child(new SpacerHorizontal(90))
                                 .r_child(Components.CardImageSelector(vm.imagem, handleChangeImage)))
                         .c_child(new SpacerVertical(25))
                         .c_child(Components.actionButtons(vm.btnText,this::handleAddOrUpdate, this::clearForm)),
                 new CardProps()
-                        .padding(0)
+                        .padding(10)
                         .borderRadius(12)
         );
     }
@@ -115,36 +83,10 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                 .column("Data de criação", it-> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
-                .onItemDoubleClick(it-> {
-                    Components.ShowModal( ItemDetails(it), ctx, 550);
-                });
+                .onChangeFocus(vm::handleFocusChange)
+                .onItemDoubleClick(it-> Components.ShowModal( ItemDetails(it), vm.getCtx(), 550));
 
         return simpleTable;
-    }
-
-    @Override
-    public void handleClickMenuClone() {
-        vm.modoEdicao.set(false);
-
-        if(vm.produtoSelected.get() == null) return;
-        final var model = vm.produtoSelected.get();
-
-        vm.codigoBarras.set(model.codigoBarras);
-        vm.descricao.set(model.descricao);
-        vm.precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
-        vm.precoVenda.set(Utils.deRealParaCentavos( model.precoVenda));
-        //vm.margem.set(model.);
-        //vm.lucro.set("0");
-        vm.comissao.set(model.comissao);
-        vm.garantia.set(model.garantia);
-        vm.marca.set(model.marca);
-        vm.unidadeSelected.set(model.unidade);
-        vm.estoque.set(Utils.quantidadeTratada(model.estoque));
-
-        vm.validade.set(model.validade != null ? DateUtils.millisParaLocalDate(model.validade) : null);
-        vm.perecivelSelected.set(model.validade != null && model.validade > 0? "Sim": "Não");
-        vm.observacoes.set(model.observacoes);
-        vm.imagem.set(model.imagem);
     }
 
 
@@ -161,16 +103,12 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
 
         return new Column(new ColumnProps().spacingOf(20))
                 .c_child(
-                        new Row(rowProps)
-                                .r_child(new Row(new RowProps().bottomVertically())
-                                        .r_child(Components.InputColumn("SKU(Código de barras)", vm.codigoBarras, ""))
-                                        .r_child(new Button("Gerar", new ButtonProps().height(37).textColor("#FFF"))
-                                                .onClick(handleGerarCodigoBarras)
-                                        )
+                        new Row(rowProps).children(
+                                        Components.InputWithButtonRow("SKU(Código de barras)", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
+                                        Components.InputColumn("Descrição curta", vm.descricao, ""),
+                                        Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
+                                        Components.InputColumn("Marca", vm.marca, "")
                                 )
-                                .r_child(Components.InputColumn("Descrição curta", vm.descricao, ""))
-                                .r_child(Components.SelectColumn("Unidade", vm.unidades, vm.unidadeSelected, it -> it))
-                                .r_child(Components.InputColumn("Marca", vm.marca, ""))
                 ).c_child(new Row(rowProps)
                                 .r_child(Components.InputColumnCurrency("Preço de compra", vm.precoCompra))
                                 //.r_child(Components.InputColumn("Margem %", vm.margem, ""))
@@ -192,12 +130,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
                         .r_child(Components.InputColumnNumeric("Estoque", vm.estoque, ""))//fornecedor padrão
                 );
     }
-
-    @Override
-    public Component form() {
-        return null;
-    }
-
 
     Component ItemDetails(ProdutoModel model){
         var validade = model.validade!= null?  DateUtils.millisToBrazilianDateTime(model.dataCriacao): "Sem validade";
@@ -222,50 +154,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrud {
     }
 
     @Override
-    public void handleClickNew() {
-        vm.modoEdicao.set(false);
-        vm.limparFormulario();
+    public ViewModelScreenContract viewModel() {
+        return vm;
     }
-
-    @Override
-    public void handleClickMenuEdit() {
-        handleClickMenuClone();
-        vm.modoEdicao.set(true);
-    }
-
-    @Override
-    public void handleClickMenuDelete() {
-        vm.modoEdicao.set(false);
-
-        if (vm.produtoSelected.isNull()) return;
-        var produtoSelected = vm.produtoSelected.get();
-
-        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoSelected.descricao, produtoSelected.codigoBarras);
-        Components.ShowAlertAdvice(bodyMessage, () -> {
-            Async.Run(() -> {
-                try {
-                    vm.excluir();
-                    //vm.refreshProdutos();
-                    UI.runOnUi(() -> {
-                        vm.limparFormulario();
-                        Components.ShowPopup(ctx, "Produto excluído com sucesso");
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(()-> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
-                }
-            });
-        });
-    }
-
-
-    @Override
-    public void handleAddOrUpdate() {
-        vm.salvarOuAtualizar(ctx);
-    }
-
-    @Override
-    public void clearForm() {
-        this.vm.limparFormulario();
-    }
-
 }

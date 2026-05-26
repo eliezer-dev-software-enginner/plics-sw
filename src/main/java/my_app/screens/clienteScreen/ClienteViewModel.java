@@ -1,23 +1,26 @@
 package my_app.screens.clienteScreen;
 
-import megalodonte.*;
+import megalodonte.ComputedState;
+import megalodonte.v2.ListState;
+import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
-import my_app.lifecycle.viewmodel.component.ViewModelv2;
-import my_app.screens.components.Components;
+import my_app.domain.Data;
+import my_app.events.ClienteEvents;
+import my_app.events.EventBus;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.components.Components;
 import my_app.utils.Utils;
 
 import java.util.List;
 
 import static my_app.utils.Utils.*;
 
-public class ClienteViewModel extends ViewModelv2 {
-
-    private final ScreenContext ctx;
+public class ClienteViewModel extends ViewModelScreenContract {
     private final ClienteRepository clienteRepository = new ClienteRepository();
 
     final ListState<ClienteModel> clientes = ListState.of(List.of());
@@ -28,27 +31,35 @@ public class ClienteViewModel extends ViewModelv2 {
     final State<String> celular = new State<>("");
     final State<String> email = new State<>("");
 
-    final List<String> tipoPessoaList = List.of("Física", "Jurídica");
-    final State<String> tipoPessoaSelected = new State<>(tipoPessoaList.getFirst());
+    final State<String> tipoPessoaSelected = new State<>(Data.tiposPessoaList.getFirst());
     final ComputedState<Boolean> tipoPessoaEhFisica = ComputedState.of(
-            () -> tipoPessoaSelected.get().equals(tipoPessoaList.getFirst()),
+            () -> tipoPessoaSelected.get().equals(Data.tiposPessoaList.getFirst()),
             tipoPessoaSelected
     );
 
-    final State<Boolean> editMode = State.of(false);
-    final ComputedState<String> btnText = ComputedState.of(
-            () -> editMode.get() ? "Atualizar" : "+ Adicionar",
-            editMode
-    );
-
     public ClienteViewModel(ScreenContext ctx) {
-        this.ctx = ctx;
+        super(ctx);
         this.onInit();
     }
 
     @Override
     protected void onInit() {
         tipoPessoaSelected.subscribe(_ -> cnpjCpf.set(""));
+    }
+
+    @Override
+    public void populateFromModel() {
+        final var data = clienteSelecionado.get();
+        if (data == null) return;
+        nome.set(data.nome);
+        cnpjCpf.set(data.cpfCnpj);
+        celular.set(data.celular);
+        email.set(data.email);
+        tipoPessoaSelected.set(
+                Utils.isValidCpf(data.cpfCnpj)
+                        ? Data.tiposPessoaList.getFirst()
+                        : Data.tiposPessoaList.getLast()
+        );
     }
 
     void loadClientes() {
@@ -62,26 +73,11 @@ public class ClienteViewModel extends ViewModelv2 {
         });
     }
 
-    void handleClickNew() {
-        editMode.set(false);
-        clearForm();
-    }
-
-    void handleClickMenuEdit() {
-        editMode.set(true);
-        populateFromCliente();
-    }
-
-    void handleClickMenuClone() {
-        editMode.set(false);
-        populateFromCliente();
-    }
-
-    void handleClickMenuDelete() {
+    @Override
+    public void handleClickMenuDelete() {
         final var cliente = clienteSelecionado.get();
         if (cliente == null) return;
 
-        editMode.set(false);
         Components.ShowAlertAdvice("Deseja excluir cliente " + cliente.nome, () -> {
             Async.Run(() -> {
                 try {
@@ -97,35 +93,33 @@ public class ClienteViewModel extends ViewModelv2 {
         });
     }
 
-    void handleAddOrUpdate() {
+    @Override
+    public void handleAddOrUpdate() {
         String nomeValue    = nome.get().trim();
         String cnpjCpfValue = cnpjCpf.get().trim();
         String celularValue = celular.get().trim();
         String emailValue   = email.get().trim();
 
         if (nomeValue.isEmpty()) {
-            Components.ShowAlertError("Nome é obrigatório");
-            return;
-        }
-        if (!cnpjCpfValue.isEmpty()) {
-            if (tipoPessoaEhFisica.get() && !isValidCpf(cnpjCpfValue)) {
-                Components.ShowAlertError("CPF inválido (deve conter 11 dígitos)");
-                return;
-            } else if (!tipoPessoaEhFisica.get() && !isValidCnpj(cnpjCpfValue)) {
-                Components.ShowAlertError("CNPJ inválido (deve conter 14 dígitos)");
-                return;
-            }
-        }
-        if (!emailValue.isEmpty() && !isValidEmail(emailValue)) {
-            Components.ShowAlertError("Formato de e-mail inválido");
-            return;
-        }
-        if (!celularValue.isEmpty() && !isValidPhone(celularValue)) {
-            Components.ShowAlertError("Telefone inválido (informe DDD + Número)");
-            return;
+            throw new RuntimeException("Nome é obrigatório");
         }
 
-        if (editMode.get()) {
+        if (!cnpjCpfValue.isEmpty()) {
+            if (tipoPessoaEhFisica.get() && !isValidCpf(cnpjCpfValue)) {
+                throw new RuntimeException("CPF inválido (deve conter 11 dígitos)");
+            } else if (!tipoPessoaEhFisica.get() && !isValidCnpj(cnpjCpfValue)) {
+                throw new RuntimeException("CNPJ inválido (deve conter 14 dígitos)");
+            }
+        }
+
+        if (!emailValue.isEmpty() && !isValidEmail(emailValue)) {
+            throw new RuntimeException("Formato de e-mail inválido");
+        }
+        if (!celularValue.isEmpty() && !isValidPhone(celularValue)) {
+            throw new RuntimeException("Telefone inválido (informe DDD + Número)");
+        }
+
+        if (modoEdicao.get()) {
             if (clienteSelecionado.get() == null) return;
             asyncUpdate(clienteSelecionado.get().id, nomeValue, cnpjCpfValue, celularValue, emailValue);
         } else {
@@ -133,44 +127,38 @@ public class ClienteViewModel extends ViewModelv2 {
         }
     }
 
-    void clearForm() {
+    @Override
+    public void clearForm() {
         nome.set("");
         cnpjCpf.set("");
         celular.set("");
         email.set("");
     }
 
-    private void populateFromCliente() {
-        final var data = clienteSelecionado.get();
-        if (data == null) return;
-        nome.set(data.nome);
-        cnpjCpf.set(data.cpfCnpj);
-        celular.set(data.celular);
-        email.set(data.email);
-        tipoPessoaSelected.set(
-                Utils.isValidCpf(data.cpfCnpj)
-                        ? tipoPessoaList.getFirst()
-                        : tipoPessoaList.getLast()
-        );
-    }
-
     private void asyncUpdate(long id, String nome, String cnpjCpf, String celular, String email) {
         Async.Run(() -> {
             try {
                 var model = new ClienteModel().fromIdAndDto(id, new ClienteDto(nome, cnpjCpf, celular, email));
-                clienteRepository.atualizar(model);
+                clienteRepository.atualizar((ClienteModel) model);
                 UI.runOnUi(() -> {
-                    clientes.updateIf(it -> it.id.equals(id), it -> model);
+                    clientes.updateIf(it -> it.id.equals(id), it -> (ClienteModel) model);
                     Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                     clearForm();
                 });
             } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+                throw new RuntimeException(e);
             }
         });
     }
 
     private void asyncSalvar(String nome, String cnpjCpf, String celular, String email) {
+        //Pode cadastrar com cnpj/cpf vazio
+        for (var model : clientes.get()) {
+            if(!cnpjCpf.isEmpty()){
+                if(cnpjCpf.equals(model.cpfCnpj.trim()))throw new RuntimeException("Já existe um cliente com este CNPJ/CPF");
+            }
+        }
+
         Async.Run(() -> {
             try {
                 var model = clienteRepository.salvar(new ClienteDto(nome, cnpjCpf, celular, email));
@@ -178,9 +166,10 @@ public class ClienteViewModel extends ViewModelv2 {
                     clientes.add(model);
                     Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
                     clearForm();
+                    EventBus.getInstance().publish(new ClienteEvents.Criado(model));
                 });
             } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+                throw new RuntimeException(e);
             }
         });
     }

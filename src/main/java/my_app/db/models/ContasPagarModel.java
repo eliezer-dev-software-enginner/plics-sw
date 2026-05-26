@@ -25,6 +25,25 @@ public class ContasPagarModel extends ModelBase<ContasPagarDto> {
     public CompraModel compra;
 
     @Override
+    public ContasPagarModel fromIdAndDtoAndMillis(Long id, ContasPagarDto dto, long millis) {
+        this.id = id;
+        this.dataCriacao = millis;
+        this.descricao = dto.descricao();
+        this.valorOriginal = dto.valorOriginal();
+        this.valorPago = dto.valorPago();
+        this.valorRestante = dto.valorRestante();
+        this.dataVencimento = dto.dataVencimento();
+        this.dataPagamento = dto.dataPagamento();
+        this.status = dto.status();
+        this.fornecedorId = dto.fornecedorId();
+        this.compraId = dto.compraId();
+        this.numeroDocumento = dto.numeroDocumento();
+        this.tipoDocumento = dto.tipoDocumento();
+        this.observacao = dto.observacao();
+        return this;
+    }
+
+    @Override
     public ContasPagarModel fromResultSet(ResultSet rs) throws SQLException {
         ContasPagarModel model = new ContasPagarModel();
         model.id = rs.getLong("id");
@@ -44,26 +63,6 @@ public class ContasPagarModel extends ModelBase<ContasPagarDto> {
         model.tipoDocumento = rs.getString("tipo_documento");
         model.observacao = rs.getString("observacao");
         model.dataCriacao = rs.getLong("data_criacao");
-        return model;
-    }
-
-    @Override
-    public ContasPagarModel fromIdAndDto(Long id, ContasPagarDto dto) {
-        ContasPagarModel model = new ContasPagarModel();
-        model.id = id;
-        model.descricao = dto.descricao();
-        model.valorOriginal = dto.valorOriginal();
-        model.valorPago = dto.valorPago();
-        model.valorRestante = dto.valorRestante();
-        model.dataVencimento = dto.dataVencimento();
-        model.dataPagamento = dto.dataPagamento();
-        model.status = dto.status();
-        model.fornecedorId = dto.fornecedorId();
-        model.compraId = dto.compraId();
-        model.numeroDocumento = dto.numeroDocumento();
-        model.tipoDocumento = dto.tipoDocumento();
-        model.observacao = dto.observacao();
-        model.dataCriacao = System.currentTimeMillis();
         return model;
     }
 

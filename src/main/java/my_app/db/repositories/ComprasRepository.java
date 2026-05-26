@@ -44,7 +44,7 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long idGerado = generatedKeys.getLong(1);
-                    return new CompraModel().fromIdAndDto(idGerado, dto);
+                    return (CompraModel) new CompraModel().fromIdAndDto(idGerado, dto);
                 }
             }
         }
@@ -84,8 +84,8 @@ public class ComprasRepository extends BaseRepository<CompraDto, CompraModel> {
             } else {
                 ps.setNull(10, java.sql.Types.BIGINT);
             }
-            ps.setLong(11, model.id);
-            ps.setBigDecimal(12, model.totalLiquido);
+            ps.setBigDecimal(11, model.totalLiquido);
+            ps.setLong(12, model.id);
 
             ps.executeUpdate();
         }

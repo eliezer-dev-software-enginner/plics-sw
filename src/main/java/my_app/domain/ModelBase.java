@@ -12,17 +12,11 @@ public abstract class ModelBase<Dto> {
     private Map<String,Map<String,String>> mapSqlFieldModelField;
 
    // abstract public ModelBase<?> fromResultSet(ResultSet queryResultSet) throws SQLException;
-    @Deprecated
-    //TODO: marcar como protected
-     public ModelBase<?> fromIdAndDto(Long id, Dto dto){
-         this.id = id;
-         return this;
-    }
 
-    public ModelBase<?> fromIdAndDtoAndMillis(Long id, Dto dto, long millis){
-        this.id = id;
-        this.dataCriacao = millis;
-        return this;
+    public abstract ModelBase<Dto> fromIdAndDtoAndMillis(Long id, Dto dto, long millis);
+
+    public ModelBase<Dto> fromIdAndDto(Long id, Dto dto) {
+        return fromIdAndDtoAndMillis(id, dto, System.currentTimeMillis());
     }
 
     public Map<String, Map<String,String>> getMapSqlFieldModelFieldBase() {

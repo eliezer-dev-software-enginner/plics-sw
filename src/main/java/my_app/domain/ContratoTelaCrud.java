@@ -5,7 +5,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 
 @Deprecated
 public interface ContratoTelaCrud {

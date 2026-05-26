@@ -1,0 +1,367 @@
+package my_app.screens.comprasScreen;
+
+import megalodonte.ComputedState;
+import megalodonte.v2.ListState;
+import megalodonte.State;
+import megalodonte.base.UI;
+import megalodonte.base.async.Async;
+import megalodonte.router.v4.ScreenContext;
+import my_app.db.dto.CompraDto;
+import my_app.db.models.*;
+import my_app.db.repositories.*;
+import my_app.domain.Data;
+import my_app.domain.Parcela;
+import my_app.domain.states.TotaisState;
+import my_app.events.DadosFinanceirosAtualizadosEvent;
+import my_app.events.EventBus;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.components.Components;
+import my_app.services.CompraMercadoriaService;
+import my_app.services.ContasPagarService;
+import my_app.utils.DateUtils;
+import my_app.utils.Utils;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
+
+public class ComprasScreenViewModel extends ViewModelScreenContract {
+    private final ComprasRepository comprasRepository;
+    private final ProdutoRepository produtoRepository;
+    private final FornecedorRepository fornecedorRepository;
+    private final CompraMercadoriaService compraMercadoriaService;
+
+    // --- Lista principal ---
+    final ListState<CompraModel> compras = ListState.ofEmpty();
+
+    // --- Form states ---
+    final State<String> numeroNota = State.of("");
+    final State<LocalDate> dataCompra = State.of(LocalDate.now());
+    final State<String> codigo = State.of("");
+    final State<String> qtd = State.of("0");
+    final State<String> observacao = State.of("");
+
+    final State<String> tipoPagamentoSelected = State.of(Data.tiposPagamentoList.get(1));
+    final ComputedState<Boolean> tipoPagamentoSelectedIsAPrazo = ComputedState.of(
+            () -> tipoPagamentoSelected.get().equals("A PRAZO"),
+            tipoPagamentoSelected);
+
+    final State<List<Parcela>> parcelas = State.of(List.of());
+    final State<String> descontoEmDinheiro = State.of("0");
+    final State<String> pcCompra = State.of("0");
+
+    final TotaisState totais = new TotaisState(pcCompra, qtd, descontoEmDinheiro);
+
+    final State<LocalDate> dataValidade = State.of(null);
+
+    // --- fornecedores ---
+    final ListState<FornecedorModel> fornecedores = ListState.ofEmpty();
+    final State<FornecedorModel> fornecedorSelected = State.of(null);
+
+    // --- Seleção na tabela ---
+    final State<CompraModel> compraSelected = State.of(null);
+
+    // --- Controle de estoque ---
+    final State<String> opcaoEstoqueSelected = State.of(Data.simNaoList.get(0));
+    final State<String> estoqueAnterior = State.of("0");
+    final State<String> estoqueAtual = State.of("0");
+
+    private final ListState<ProdutoModel> produtoModelListState = ListState.ofEmpty();
+    final ListState<ProdutoModel> sugestoesProduto = ListState.ofEmpty();
+    final State<ProdutoModel> produtoEncontrado = State.of(null);
+
+    final ComputedState<Boolean> sugestoesProdutoVisible = ComputedState.of(
+            () -> !sugestoesProduto.get().isEmpty(),
+            sugestoesProduto
+    );
+
+    public ComprasScreenViewModel(ScreenContext ctx) {
+        super(ctx);
+        this.produtoRepository = new ProdutoRepository();
+        this.comprasRepository = new ComprasRepository();
+        this.fornecedorRepository = new FornecedorRepository();
+        this.compraMercadoriaService = new CompraMercadoriaService(comprasRepository, produtoRepository);
+        this.onInit();
+    }
+
+    @Override
+    protected void onInit() {
+        qtd.subscribe(v -> atualizarEstoqueVisual());
+        opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
+
+        codigo.subscribe(termo -> filtrarProdutos(termo)); // filtra ao digitar
+
+        produtoEncontrado.subscribe(this::selecionarProduto);
+
+        //TODO: SUBSCREVER A EVENTOS DE PRODUTO
+        // EventBus.getInstance().subscribe();
+    }
+
+    private void atualizarEstoqueVisual() {
+        if (produtoEncontrado.get() == null) {
+            estoqueAnterior.set("0");
+            estoqueAtual.set("0");
+            return;
+        }
+
+        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ?
+                produtoEncontrado.get().estoque : BigDecimal.ZERO;
+
+        IO.println("Estoque Base (anterior) " + estoqueBase.toString());
+        estoqueAnterior.set(estoqueBase.toString());
+
+        if ("Sim".equals(opcaoEstoqueSelected.get())) {
+            String qtdStr = qtd.get().trim();
+            IO.println("Estoque Atual " + qtdStr);
+            BigDecimal qtdValue = qtdStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(qtdStr);
+            estoqueAtual.set(estoqueBase.add(qtdValue).toString());
+        } else {
+            estoqueAtual.set(estoqueBase.toString());
+        }
+    }
+    private void filtrarProdutos(String termo) {
+        if (termo == null || termo.trim().isEmpty()) {
+            sugestoesProduto.clear();
+            return;
+        }
+
+        var filtrados = produtoModelListState.get().stream()
+                .filter(p -> p.codigoBarras.contains(termo.trim())
+                        || p.descricao.toLowerCase().contains(termo.trim().toLowerCase()))
+                .limit(8)
+                .toList();
+
+        sugestoesProduto.set(filtrados);
+    }
+
+    void selecionarProduto(ProdutoModel produto) {
+        if(produto!=null){
+            codigo.set(produto.codigoBarras);
+            pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
+            estoqueAnterior.set(produto.estoque.toString());
+            sugestoesProduto.clear(); // fecha a lista após seleção
+            atualizarEstoqueVisual();
+        }
+    }
+    void reloadProdutos(){
+        try {
+            var produtoList = produtoRepository.listar();
+            UI.runOnUi(()->  produtoModelListState.set(produtoList));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void populateFromModel() {
+        final var data = compraSelected.get();
+        if (data == null) return;
+
+        modoEdicao.set(false);
+        dataCompra.set(DateUtils.millisParaLocalDate(data.dataCompra));
+        numeroNota.set(data.numeroNota);
+        codigo.set(data.produtoCod);
+        produtoEncontrado.set(null);
+        //estoqueAtual.set(data.q)
+        qtd.set(Utils.quantidadeTratada(data.quantidade));
+        observacao.set(data.observacao);
+        tipoPagamentoSelected.set(data.tipoPagamento);
+        pcCompra.set(Utils.deRealParaCentavos(data.precoDeCompra));
+        dataValidade.set(data.dataValidade != null
+                ? DateUtils.millisParaLocalDate(data.dataValidade)
+                : null);
+    }
+
+    public void fetchData() {
+        Async.Run(() -> {
+            try {
+                var fornecedorModelList = fornecedorRepository.listar();
+                fornecedores.addAll(fornecedorModelList);//meu select fica preenchido
+                var listCompras = comprasRepository.listar();
+                var produtoList = produtoRepository.listar();
+
+                UI.runOnUi(() -> {
+                    produtoModelListState.set(produtoList);
+                    if (!fornecedorModelList.isEmpty()) {
+                        fornecedorModelList.stream().filter(f -> f.id == 1L)
+                                .findFirst()
+                                .ifPresent(fornecedorSelected::set);
+                    }
+
+                    // Associar fornecedores às compras
+                    for (CompraModel compra : listCompras) {
+                        FornecedorModel fornecedor = fornecedorModelList.stream()
+                                .filter(f -> f.id.equals(compra.fornecedorId))
+                                .findFirst()
+                                .orElse(null);
+                        compra.fornecedor = fornecedor;
+                    }
+
+                    compras.addAll(listCompras);
+                });
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar compras: " + e.getMessage()));
+            }
+        });
+    }
+
+    @Override
+    public void handleAddOrUpdate() {
+        final var dtValidade = dataValidade.get() != null ?
+                DateUtils.localDateParaMillis(dataValidade.get()) : null;
+
+        final var dto = new CompraDto(
+                codigo.get(),
+                Utils.deCentavosParaReal(pcCompra.get()),
+                fornecedorSelected.get().id,
+                new BigDecimal(qtd.get()),
+                Utils.deCentavosParaReal(descontoEmDinheiro.get()),
+                tipoPagamentoSelected.get(), observacao.get(),
+                DateUtils.localDateParaMillis(dataCompra.get()),
+                numeroNota.get(),
+                dtValidade,
+                opcaoEstoqueSelected.get(),
+                new BigDecimal(totais.totalLiquido.get())
+        );
+
+        compraMercadoriaService.deveAtualizarEstoque = opcaoEstoqueSelected.get().equalsIgnoreCase("Sim");
+
+        Async.Run(() -> {
+            if (modoEdicao.get()) {
+                final var selecionado = compraSelected.get();
+                if(selecionado == null) return;
+
+                CompraModel modelAtualizada = (CompraModel) new CompraModel().fromIdAndDto(selecionado.id, dto);
+                compraMercadoriaService.atualizarOrThrow(modelAtualizada, message->   UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar compra: " + message)));
+
+                UI.runOnUi(()-> {
+                    Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
+                    compras.updateIf(it -> it.id.equals(selecionado.id), it -> modelAtualizada);
+                    reloadProdutos();
+                    clearForm();
+                });
+            } else {
+                final var compraSalva = compraMercadoriaService.salvarOrThrow(dto, message ->  UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar compra de mercadoria: " + message)));
+                // Gerar contas a pagar se for a prazo
+                if ("A PRAZO".equals(tipoPagamentoSelected.get()) && !parcelas.get().isEmpty()) {
+                    try {
+                        ContasPagarService contasPagarService = new ContasPagarService();
+                        List<Parcela> parcelasParaService = parcelas.get().stream()
+                                .map(p -> new Parcela(
+                                        p.numero(),
+                                        p.dataVencimento(),
+                                        p.valor()
+                                ))
+                                .toList();
+                        contasPagarService.gerarContasDeCompra(compraSalva, parcelasParaService);
+                    } catch (SQLException e) {
+                        throw new RuntimeException("Erro ao gerar contas a pagar: " + e.getMessage());
+                    }
+                }
+
+                UI.runOnUi(() -> {
+                    IO.println("compra foi salva!");
+                    compras.add(compraSalva);
+                    Components.ShowPopup(ctx, "Sua compra de mercadoria foi salva com sucesso!");
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    reloadProdutos();
+                    clearForm();
+                });
+            }
+        });
+    }
+
+    @Override
+    public void handleClickMenuDelete() {
+        modoEdicao.set(false);
+
+        final var data = compraSelected.get();
+        if (data != null) {
+            Async.Run(() -> {
+                try {
+                    Long compraId = data.id;
+
+                    //TODO: mover esse trecho pra dentro da ContasPagarService
+                    // Primeiro exclui todas as contas a pagar vinculadas a esta compra
+                    new ContasPagarRepository().excluirPorCompraId(compraId);
+
+                    // Depois exclui a compra
+                    comprasRepository.excluirById(compraId);
+
+                    // Remove do estoque a quantidade correspondente a esta compra
+                    removerEstoqueProduto(data.produtoCod, data.quantidade);
+
+                    UI.runOnUi(() -> {
+                        compras.removeIf(it -> it.id.equals(compraId));
+                        Components.ShowPopup(ctx, "Compra e contas vinculadas excluídas com sucesso!");
+                    });
+
+                } catch (SQLException e) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir compra: " + e.getMessage()));
+                }
+            });
+        }
+    }
+
+    @Override
+    public void clearForm() {
+        dataCompra.set(LocalDate.now());
+        numeroNota.set("");
+        modoEdicao.set(false);
+        codigo.set("");
+        produtoEncontrado.set(null);
+        qtd.set("0");
+        observacao.set("");
+        tipoPagamentoSelected.set(Data.tiposPagamentoList.get(1));
+        pcCompra.set("0");
+        dataValidade.set(null);
+        fornecedorSelected.set(fornecedores.get(0));
+        opcaoEstoqueSelected.set(Data.simNaoList.get(0));
+        estoqueAnterior.set("0");
+        estoqueAtual.set("0");
+    }
+
+    private void devolverEstoque(String codigoBarras, BigDecimal quantidade) {
+        if (!"Sim".equals(opcaoEstoqueSelected.get())) return;
+
+        Async.Run(() -> {
+            try {
+                produtoRepository.atualizarEstoque(codigoBarras, quantidade);
+            } catch (SQLException e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao devolver estoque: " + e.getMessage()));
+            }
+        });
+    }
+
+
+    /**
+     * Remove do estoque a quantidade correspondente a uma compra excluída
+     *
+     * @param codigoBarras Código de barras do produto
+     * @param quantidade   Quantidade da compra que está sendo excluída
+     */
+
+    void removerEstoqueProduto(String codigoBarras, BigDecimal quantidade) {
+        if (!"Sim".equals(opcaoEstoqueSelected.get())) {
+            IO.println("Controle de estoque desativado para esta operação");
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                // Remove a quantidade do estoque (valor negativo)
+                BigDecimal quantidadeParaRemover = quantidade.negate();
+                produtoRepository.atualizarEstoque(codigoBarras, quantidadeParaRemover);
+                IO.println("Estoque removido com sucesso para o produto: " + codigoBarras + " | Quantidade: " + quantidade);
+                reloadProdutos();
+            } catch (SQLException e) {
+                IO.println("Erro ao remover estoque do produto " + codigoBarras + ": " + e.getMessage());
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao remover estoque: " + e.getMessage()));
+            }
+        });
+    }
+
+}

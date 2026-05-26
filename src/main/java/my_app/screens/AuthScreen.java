@@ -1,28 +1,23 @@
 package my_app.screens;
 
+import megalodonte.State;
 import megalodonte.base.Redirect;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Button;
-import megalodonte.components.SpacerVertical;
+import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.ContainerProps;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.Main;
-import my_app.db.models.*;
-import my_app.db.repositories.*;
-import my_app.screens.components.Components;
-//import javafx.scene.control.*;
-import javafx.scene.control.*;
-import megalodonte.*;
-import megalodonte.components.*;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import my_app.db.models.PreferenciasModel;
+import my_app.db.repositories.PreferenciasRepository;
+import my_app.domain.Data;
+import my_app.domain.components.Components;
 
 import java.sql.SQLException;
 
@@ -40,11 +35,13 @@ public class AuthScreen implements ScreenComponent {
 
     public AuthScreen(ScreenContext ctx) {
         this.ctx = ctx;
+        ctx.selfStage().getIcons().add(Main.loadIcon());
         preferenciasRepository = new PreferenciasRepository();
     }
 
     @Override
     public void onMount() {
+        ctx.selfStage().getIcons().add(Main.loadIcon());
         Async.Run(()->{
             try{
                 var prefs = preferenciasRepository.listar();
@@ -64,7 +61,7 @@ public class AuthScreen implements ScreenComponent {
                 new SpacerVertical(20),
                 new Row().children(
                         new Column().children(
-                                new Text("Realiza já seu login na Plics SW", new TextProps().color("white").fontSize(14)),
+                                new Text("Realize já seu login na Plics SW", new TextProps().color("white").fontSize(14)),
                                 Show.when(showLicensaState, () -> Components.InputColumn("Licença", licensaState, "")),
                                 Components.InputColumn("Login", loginState, ""),
                                 Components.InputColumn("Senha", passwordState, ""),
@@ -75,7 +72,7 @@ public class AuthScreen implements ScreenComponent {
                         //qrCode
                         new Column(new ColumnProps().maxWidth(170)).children(
                                 new Column(new ColumnProps().centerHorizontally()).children(
-                                        new Image("/assets/qrcode_suporte.jpg", new ImageProps().size(140)),
+                                        new Image("/assets/qrcode2.png", new ImageProps().size(170)),
                                         new Text("Plics - SW", new TextProps().color("white").bold())
                                 ),
                                 new SpacerVertical(10),
@@ -83,9 +80,12 @@ public class AuthScreen implements ScreenComponent {
                                         new TextProps().textColor("#fff").fontSize(13)))
                         )
                 ),
-                new Column(new ColumnProps().fillHeight()),
-               Components.imageWithTextRow("/assets/whatsapp.png","+27 62 133 2217 - Suporte garantido." ),
-                new Button("Acionar Suporte (24h)").onClick(()-> Redirect.to("https://wa.me/qr/W7AI2KFHT3OEI1"))
+                new Column(new ColumnProps().fillHeight()),//TODO: TROCAR PARA SPACERVERTICAL.FILL
+                //TODO: TROCAR QRCODE
+               Components.imageWithTextRow("/assets/whatsapp.png",Data.getNumberWhatsappSupportFormatted() + " - Suporte garantido." ),
+                new Button("Ir para o Suporte (24h)", new ButtonProps().bgColor("#25D366").textColor("black")).onClick(()-> Redirect.to(Data.linkWhatsappSupport)),
+                new SpacerVertical(15),
+                new Button("Ir para o Site Oficial").onClick(()-> Redirect.to(Data.linkWebsiteOfficial))
         );
     }
 

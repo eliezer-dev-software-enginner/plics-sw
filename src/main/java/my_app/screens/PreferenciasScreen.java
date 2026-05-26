@@ -11,12 +11,10 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.*;
 import my_app.db.repositories.*;
-import my_app.screens.components.Components;
+import my_app.domain.components.Components;
 //import javafx.scene.control.*;
-import javafx.scene.control.*;
 import megalodonte.*;
 import megalodonte.components.*;
-import megalodonte.props.*;
 
 import java.sql.SQLException;
 import java.util.List;
