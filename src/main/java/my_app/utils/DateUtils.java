@@ -1,9 +1,6 @@
 package my_app.utils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
@@ -44,6 +41,22 @@ public class DateUtils {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime()
                 .format(BR_FORMATTER);
+    }
+
+    public static String localDateTimeToBrazilianDateTime(LocalDateTime dataHora) {
+        if (dataHora == null) return "";
+        long millis = localDateTimeParaMillis(dataHora);
+        return millisToBrazilianDateTime(millis);
+    }
+
+    public static long localDateTimeParaMillis(LocalDateTime dataHora, ZoneId zoneId) {
+        return dataHora.atZone(zoneId)
+                .toInstant()
+                .toEpochMilli();
+    }
+
+    public static long localDateTimeParaMillis(LocalDateTime dataHora) {
+        return localDateTimeParaMillis(dataHora, ZoneId.systemDefault());
     }
 
 

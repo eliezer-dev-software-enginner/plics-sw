@@ -67,6 +67,20 @@ dependencies {
 
     implementation("com.dorkbox:SystemTray:4.4")
 
+    implementation("io.github.sproket:persism:2.3")
+    implementation("org.flywaydb:flyway-core:10.15.0")
+
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.38")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    //logs
+    implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("ch.qos.logback:logback-classic:1.5.18")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.13.1")
+
     //componentes gemfx
     //implementation("com.dlsc.gemsfx:gemsfx:2.16.0")
 

@@ -1,17 +1,15 @@
 package my_app.services;
 
-import my_app.db.models.ContasPagarModel;
+import my_app.db.models_old.ContasPagarModel;
 import my_app.db.dto.ContasPagarDto;
-import my_app.db.models.CompraModel;
-import my_app.db.models.FornecedorModel;
-import my_app.db.repositories.ContasPagarRepository;
-import my_app.db.repositories.ComprasRepository;
-import my_app.db.repositories.FornecedorRepository;
+import my_app.db.models_old.CompraModel;
+import my_app.db.repositories_old.ContasPagarRepository;
+import my_app.db.repositories_old.ComprasRepository;
+import my_app.db.repositories_old.FornecedorRepository;
 import my_app.domain.Parcela;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -186,17 +184,17 @@ public class ContasPagarService {
             WHERE data_pagamento BETWEEN ? AND ? AND status = 'PAGO'
             """;
         
-        try (Connection conn = my_app.db.DB.getInstance().connection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, dataInicioMes);
-            ps.setLong(2, dataFimMes);
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    BigDecimal total = rs.getBigDecimal("total");
-                    return total != null ? total : BigDecimal.ZERO;
-                }
-            }
-        }
+//        try (Connection conn = my_app.db.DB.getInstance().connection();
+//             PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setLong(1, dataInicioMes);
+//            ps.setLong(2, dataFimMes);
+//            try (var rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    BigDecimal total = rs.getBigDecimal("total");
+//                    return total != null ? total : BigDecimal.ZERO;
+//                }
+//            }
+//        }
         return BigDecimal.ZERO;
     }
 

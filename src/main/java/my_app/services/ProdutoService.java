@@ -1,8 +1,8 @@
 package my_app.services;
 
 import my_app.db.dto.ProdutoDto;
-import my_app.db.models.ProdutoModel;
-import my_app.db.repositories.ProdutoRepository;
+import my_app.db.models_old.ProdutoModel;
+import my_app.db.repositories_old.ProdutoRepository;
 
 public class ProdutoService {
     private final ProdutoRepository repo = new ProdutoRepository();

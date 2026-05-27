@@ -13,7 +13,7 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.theme.Theme;
 import megalodonte.theme.ThemeManager;
 import megalodonte.v2.Show;
-import my_app.db.models.ContasPagarModel;
+import my_app.db.models_old.ContasPagarModel;
 import my_app.domain.ContratoTelaCrud;
 import my_app.domain.components.Components;
 //import javafx.scene.control.*;

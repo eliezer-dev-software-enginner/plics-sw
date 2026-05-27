@@ -16,7 +16,7 @@ import my_app.utils.Utils;
 
 import megalodonte.components.SimpleTable;
 import megalodonte.props.RowProps;
-import my_app.db.models.VendaModel;
+import my_app.db.models_old.VendaModel;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final VendaMercadoriaScreenViewModel vm;

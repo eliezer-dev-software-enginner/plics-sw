@@ -4,11 +4,11 @@ import my_app.db.DB;
 import my_app.db.dto.ContaAreceberDto;
 import my_app.db.dto.PedidoDto;
 import my_app.db.dto.PedidoItemDto;
-import my_app.db.models.PedidoModel;
-import my_app.db.repositories.ContasAReceberRepository;
-import my_app.db.repositories.PedidoItemRepository;
-import my_app.db.repositories.PedidoRepository;
-import my_app.db.repositories.ProdutoRepository;
+import my_app.db.models_old.PedidoModel;
+import my_app.db.repositories_old.ContasAReceberRepository;
+import my_app.db.repositories_old.PedidoItemRepository;
+import my_app.db.repositories_old.PedidoRepository;
+import my_app.db.repositories_old.ProdutoRepository;
 import my_app.screens.pdvScreen.ItemVenda;
 
 import java.math.BigDecimal;
@@ -37,7 +37,7 @@ public final class PDVService {
             boolean isFiado
     ) throws SQLException {
 
-        Connection conn = DB.getInstance().connection();
+        Connection conn = DB.production().connection();
         conn.setAutoCommit(false);
 
         try {

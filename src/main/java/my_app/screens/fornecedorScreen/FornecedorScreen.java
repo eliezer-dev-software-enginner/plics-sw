@@ -7,7 +7,7 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.FornecedorModel;
+import my_app.db.models_old.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;

@@ -1,105 +1,164 @@
 package my_app.db.repositories;
 
 import my_app.db.DB;
-import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
+import net.sf.persism.Session;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
 class CategoriaRepositoryTest {
-    private CategoriaRepository repo;
+
+    private static final Logger log =
+            LoggerFactory.getLogger(CategoriaRepositoryTest.class);
+
+    Session session;
+    CategoriaRepository repository;
 
     @BeforeEach
-    void setup() throws Exception {
-        DB.reset();
-        DB.getInstance("jdbc:sqlite::memory:");
-        DBInitializer.init();
-        repo = new CategoriaRepository();
+    void setUp() throws Exception {
+        String testUrl =  "jdbc:sqlite:file:testdb?mode=memory&cache=shared";
+        Connection connection =
+                DriverManager.getConnection(testUrl);
+
+        Flyway.configure()
+                .dataSource(testUrl,"","")
+                .locations("classpath:flyway_migrations")
+                .load()
+                .migrate();
+
+        session = new Session(connection);
+
+        repository = new CategoriaRepository(session);
+        log.info("Banco de teste inicializado");
     }
 
+    @AfterEach
+    void tearDown() throws Exception {
+        session.close();
+    }
 
     @Test
     void salvar() throws SQLException {
-        var dto = new CategoriaDto("cat1");
-        var salvo = repo.salvar(dto);
 
-        var encontrado = repo.buscarById(salvo.id);
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Categoria Teste");
+        model.setDataCriacao(LocalDateTime.now());
 
-        assertNotNull(encontrado);
-        assertEquals("cat1", encontrado.nome);
-        assertNotNull(salvo.id);
+        CategoriaModel salvo = repository.salvar(model);
+
+        log.info("Categoria salva com id={}", salvo.getId());
+
+        assertNotNull(salvo);
+        assertNotNull(salvo.getId());
+        assertEquals("Categoria Teste", salvo.getNome());
     }
 
     @Test
     void listar() throws SQLException {
-        {
-            // Verifica se existe a categoria padrão "Geral"
-            var listaInicial = repo.listar();
-            assertTrue(
-                    listaInicial.stream().anyMatch(p -> p.nome.equals("Geral"))
-            );
 
-            var dto1 = new CategoriaDto("categ1");
-            var dto2 = new CategoriaDto("categ2");
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Listagem");
+        model.setDataCriacao(LocalDateTime.now());
 
-            repo.salvar(dto1);
-            repo.salvar(dto2);
+        repository.salvar(model);
 
-            var lista = repo.listar();
+        List<CategoriaModel> lista = repository.listar();
 
-            // Deve ter a categoria "Geral" mais as 2 novas categorias
-            assertEquals(listaInicial.size() + 2, lista.size());
-            assertTrue(
-                    lista.stream().anyMatch(p -> p.nome.equals("Geral"))
-            );
-            assertTrue(
-                    lista.stream().anyMatch(p -> p.nome.equals("categ1"))
-            );
-            assertTrue(
-                    lista.stream().anyMatch(p -> p.nome.equals("categ2"))
-            );
-        }
+        lista.forEach(it ->
+                log.info("Categoria encontrada: {}", it.getNome())
+        );
 
+        assertNotNull(lista);
+        assertFalse(lista.isEmpty());
+
+        boolean encontrou = lista.stream()
+                .anyMatch(it -> it.getNome().equals("Listagem"));
+
+        assertTrue(encontrou);
     }
 
     @Test
     void atualizar() throws SQLException {
-        var dto = categoriaDtoFake();
-        var salvo = repo.salvar(dto);
 
-        salvo.nome = "cat2";
-        repo.atualizar(salvo);
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Original");
+        model.setDataCriacao(LocalDateTime.now());
 
-        var atualizado = repo.buscarById(salvo.id);
-        assertEquals("cat2", atualizado.nome);
+        CategoriaModel salvo = repository.salvar(model);
+
+        salvo.setNome("Atualizado");
+
+        repository.atualizar(salvo);
+
+        CategoriaModel atualizado =
+                repository.buscarById(salvo.getId());
+
+        log.info("Categoria atualizada para: {}",
+                atualizado.getNome());
+
+        assertNotNull(atualizado);
+
+        assertEquals("Atualizado",
+                atualizado.getNome());
     }
 
     @Test
-    void excluir() throws SQLException {
-        var dto = categoriaDtoFake();
-        var salvo = repo.salvar(dto);
+    void excluirById() throws SQLException {
 
-        repo.excluirById(salvo.id);
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Excluir");
+        model.setDataCriacao(LocalDateTime.now());
 
-        assertNull(repo.buscarById(salvo.id));
+        CategoriaModel salvo = repository.salvar(model);
+
+        repository.excluirById(salvo.getId());
+
+        CategoriaModel deleted =
+                repository.buscarById(salvo.getId());
+
+        log.info("Categoria removida id={}", salvo.getId());
+
+        assertNull(deleted);
     }
 
+    @Test
+    void buscarById() throws SQLException {
 
-    private CategoriaDto categoriaDtoFake() {
-        return new CategoriaDto("cat1");
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Busca");
+        model.setDataCriacao(LocalDateTime.now());
+
+        CategoriaModel salvo = repository.salvar(model);
+
+        CategoriaModel encontrado =
+                repository.buscarById(salvo.getId());
+
+        log.info("Categoria encontrada: {}",
+                encontrado.getNome());
+
+        assertNotNull(encontrado);
+
+        assertEquals(salvo.getId(),
+                encontrado.getId());
+
+        assertEquals("Busca",
+                encontrado.getNome());
     }
-
-    private CategoriaModel categoriaFake() {
-        var model = new CategoriaModel();
-        model.id = null; // Deixar o banco definir o ID autoincrement
-        model.nome = "cat1";
-        model.dataCriacao = System.currentTimeMillis();
-        return model;
-    }
-
-
 }

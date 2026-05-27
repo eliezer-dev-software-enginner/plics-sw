@@ -5,16 +5,16 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
-import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
-import my_app.db.repositories.CategoriaRepository;
+import my_app.db.services.CategoriaService;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.domain.components.Components;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class CategoriaScreenViewModel extends ViewModelScreenContract {
-    private final CategoriaRepository categoriaRepository;
+    private CategoriaService categoriaService;
 
     final ListState<CategoriaModel> categorias = ListState.of(List.of());
     final State<CategoriaModel> categoriaSelecionada = State.of(null);
@@ -22,20 +22,25 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
 
     public CategoriaScreenViewModel(ScreenContext ctx) {
         super(ctx);
-        categoriaRepository = new CategoriaRepository();
+        try {
+            categoriaService = new CategoriaService(getPersismSession());
+        } catch (SQLException e) {
+           UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
+            return;
+        }
         this.onInit();
     }
 
     @Override
     public void populateFromModel() {
         final var data = categoriaSelecionada.get();
-        if (data != null) nome.set(data.nome);
+        if (data != null) nome.set(data.getNome());
     }
 
     void loadCategorias() {
         Async.Run(() -> {
             try {
-                var list = categoriaRepository.listar();
+                var list = categoriaService.listar();
                 UI.runOnUi(() -> categorias.addAll(list));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar clientes"));
@@ -48,12 +53,12 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
         final var categoriaModel = categoriaSelecionada.get();
         if (categoriaModel == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir categoria " + categoriaModel.nome, () -> {
+        Components.ShowAlertAdvice("Deseja excluir categoria " + categoriaModel.getNome(), () -> {
             Async.Run(() -> {
                 try {
-                    categoriaRepository.excluirById(categoriaModel.id);
+                    categoriaService.excluirById(categoriaModel.getId());
                     UI.runOnUi(() -> {
-                        categorias.removeIf(it -> it.id.equals(categoriaModel.id));
+                        categorias.removeIf(it -> it.getId().equals(categoriaModel.getId()));
                         Components.ShowPopup(ctx, "Categoria excluída com sucesso");
                     });
                 } catch (Exception e) {
@@ -74,7 +79,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
 
         if (modoEdicao.get()) {
             if (categoriaSelecionada.get() == null) return;
-            asyncUpdate(categoriaSelecionada.get().id, nomeValue, categoriaSelecionada.get().dataCriacao);
+            asyncUpdate(categoriaSelecionada.get(), nomeValue);
         } else {
             asyncSalvar(nomeValue);
         }
@@ -85,15 +90,15 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
         nome.set("");
     }
 
-    private void asyncUpdate(long id, String nome, Long dataCriacao) {
+    private void asyncUpdate(CategoriaModel model, String nome) {
         try{
             validarNome(nome);
             Async.Run(() -> {
                 try {
-                    var model = new CategoriaModel().fromIdAndDtoAndMillis(id, new CategoriaDto(nome), dataCriacao);
-                    categoriaRepository.atualizar((CategoriaModel) model);
+                    model.setNome(nome);
+                    categoriaService.atualizar(model);
                     UI.runOnUi(() -> {
-                        categorias.updateIf(it -> it.id.equals(id), it -> (CategoriaModel) model);
+                        categorias.updateIf(it -> it.getId().equals(model.getId()), it -> model);
                         Components.ShowPopup(ctx, "Categoria atualizado com sucesso");
                         clearForm();
                     });
@@ -105,7 +110,6 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
         }catch (Exception e){
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
         }
-
     }
 
     private void asyncSalvar(String nome) {
@@ -114,7 +118,10 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
 
             Async.Run(() -> {
                 try {
-                    var model = categoriaRepository.salvar(new CategoriaDto(nome));
+                    var model = new CategoriaModel();
+                    model.setNome(nome);
+
+                    categoriaService.salvar(model);
                     UI.runOnUi(() -> {
                         categorias.add(model);
                         Components.ShowPopup(ctx, "Categoria cadastrado com sucesso");
@@ -133,10 +140,9 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
 
     private void validarNome(String nome) {
         for (CategoriaModel categoriaModel : categorias.get()) {
-            if(categoriaModel.nome.equals(nome)) {
+            if(categoriaModel.getNome().equals(nome.trim())) {
                 throw new RuntimeException("Esse nome já existe, use outro nome");
             }
-
         }
     }
 }

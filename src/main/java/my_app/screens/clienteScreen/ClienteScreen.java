@@ -11,7 +11,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models.ClienteModel;
+import my_app.db.models_old.ClienteModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;

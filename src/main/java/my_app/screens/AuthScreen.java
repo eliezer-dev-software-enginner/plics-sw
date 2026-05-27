@@ -14,8 +14,8 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.Main;
-import my_app.db.models.PreferenciasModel;
-import my_app.db.repositories.PreferenciasRepository;
+import my_app.db.models_old.PreferenciasModel;
+import my_app.db.repositories_old.PreferenciasRepository;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
 

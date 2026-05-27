@@ -5,10 +5,10 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
-import my_app.db.models.PedidoItemModel;
-import my_app.db.models.PedidoModel;
-import my_app.db.repositories.PedidoItemRepository;
-import my_app.db.repositories.PedidoRepository;
+import my_app.db.models_old.PedidoItemModel;
+import my_app.db.models_old.PedidoModel;
+import my_app.db.repositories_old.PedidoItemRepository;
+import my_app.db.repositories_old.PedidoRepository;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.domain.components.Components;
 
