@@ -36,7 +36,7 @@ public class Main {
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(ICON_PATH)));
     }
     static void main() {
-        MegalodonteApp.appName("PlicsSW"); // <-- antes do run
+        //MegalodonteApp.appName("PlicsSW"); // <-- antes do run
         MegalodonteApp.run(context -> {
             final var stage = context.javafxStage();
 
