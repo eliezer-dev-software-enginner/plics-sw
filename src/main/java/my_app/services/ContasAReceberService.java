@@ -1,11 +1,9 @@
 package my_app.services;
 
 import my_app.db.dto.ContaAreceberDto;
-import my_app.db.dto.ContasPagarDto;
-import my_app.db.models.VendaModel;
-import my_app.db.models.ContaAreceberModel;
-import my_app.db.models.VendaModel;
-import my_app.db.repositories.*;
+import my_app.db.models_old.VendaModel;
+import my_app.db.models_old.ContaAreceberModel;
+import my_app.db.repositories_old.*;
 import my_app.domain.Parcela;
 
 import java.math.BigDecimal;
@@ -184,17 +182,17 @@ public class ContasAReceberService {
             WHERE data_recebimento BETWEEN ? AND ? AND status = 'RECEBIDO'
             """;
         
-        try (Connection conn = my_app.db.DB.getInstance().connection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, dataInicioMes);
-            ps.setLong(2, dataFimMes);
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    BigDecimal total = rs.getBigDecimal("total");
-                    return total != null ? total : BigDecimal.ZERO;
-                }
-            }
-        }
+//        try (Connection conn = my_app.db.DB.getInstance().connection();
+//             PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setLong(1, dataInicioMes);
+//            ps.setLong(2, dataFimMes);
+//            try (var rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    BigDecimal total = rs.getBigDecimal("total");
+//                    return total != null ? total : BigDecimal.ZERO;
+//                }
+//            }
+//        }
         return BigDecimal.ZERO;
     }
 

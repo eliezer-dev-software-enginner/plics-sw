@@ -1,10 +1,9 @@
 package my_app.services;
 
 import my_app.db.dto.CompraDto;
-import my_app.db.models.CompraModel;
-import my_app.db.models.VendaModel;
-import my_app.db.repositories.ComprasRepository;
-import my_app.db.repositories.ProdutoRepository;
+import my_app.db.models_old.CompraModel;
+import my_app.db.repositories_old.ComprasRepository;
+import my_app.db.repositories_old.ProdutoRepository;
 
 import java.sql.SQLException;
 import java.util.function.Consumer;

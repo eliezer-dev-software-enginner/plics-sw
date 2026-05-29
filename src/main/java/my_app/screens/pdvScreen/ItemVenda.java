@@ -1,6 +1,6 @@
 package my_app.screens.pdvScreen;
 
-import my_app.db.models.ProdutoModel;
+import my_app.db.models_old.ProdutoModel;
 
 import java.math.BigDecimal;
 

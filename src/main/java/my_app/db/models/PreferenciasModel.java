@@ -1,32 +1,23 @@
 package my_app.db.models;
 
+import lombok.Getter;
+import lombok.Setter;
 import my_app.db.dto.PreferenciasDto;
 import my_app.domain.ModelBase;
 import my_app.domain.SqlField;
+import net.sf.persism.annotations.Table;
+@Setter
+@Getter
+@Table("preferencias")
+public class PreferenciasModel {
+    private long id;
+    private long data_criacao_millis;
+    private String tema;
+    private String login;
+    private String senha;
+    private Integer credenciaisHabilitadas;
+    private Integer primeiroAcesso;
 
-public class PreferenciasModel extends ModelBase<PreferenciasDto> {
-    @SqlField(name = "tema", type = "string")
-    public String tema;
-    @SqlField(name = "login", type = "string")
-    public String login;
-    @SqlField(name = "senha", type = "string")
-    public String senha;
-    @SqlField(name = "credenciais_habilitadas", type = "int")
-    public Integer credenciaisHabilitadas;
-    @SqlField(name = "primeiro_acesso", type = "int")
-    public Integer primeiroAcesso;
-
-    @Override
-    public PreferenciasModel fromIdAndDtoAndMillis(Long id, PreferenciasDto dto, long millis) {
-        this.id = id;
-        this.dataCriacao = millis;
-        this.tema = dto.tema();
-        this.login = dto.login();
-        this.senha = dto.senha();
-        this.credenciaisHabilitadas = dto.credentiaisHabilitadas();
-        this.primeiroAcesso = dto.primeiroAcesso();
-        return this;
-    }
 
     public boolean isFirstAccess(){
         return primeiroAcesso != null && primeiroAcesso == 1;

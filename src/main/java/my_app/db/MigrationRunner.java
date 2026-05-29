@@ -10,22 +10,24 @@ import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Deprecated(forRemoval = true)
 public final class MigrationRunner {
     private static final String MIGRATIONS_PATH = "migrations";
 
     private MigrationRunner() {}
 
     public static void run() {
-        try {
-            Connection conn = DB.getInstance().connection();
-            criarTabelaMigrations(conn);
-            List<String> arquivos = listarArquivos();
-            for (String arquivo : arquivos) {
-                aplicar(conn, arquivo);
-            }
-        } catch (SQLException | IOException | URISyntaxException e) {
-            throw new RuntimeException("Erro ao executar migrations", e);
-        }
+        throw new RuntimeException("Not implemeted anymore");
+//        try {
+//            Connection conn = DB.getInstance().connection();
+//            criarTabelaMigrations(conn);
+//            List<String> arquivos = listarArquivos();
+//            for (String arquivo : arquivos) {
+//                aplicar(conn, arquivo);
+//            }
+//        } catch (SQLException | IOException | URISyntaxException e) {
+//            throw new RuntimeException("Erro ao executar migrations", e);
+//        }
     }
 
     private static void criarTabelaMigrations(Connection conn) throws SQLException {

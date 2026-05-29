@@ -1,6 +1,5 @@
 package my_app;
 
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Set;
@@ -12,11 +11,12 @@ import megalodonte.application.MegalodonteApp;
 import megalodonte.router.v4.Router;
 import megalodonte.theme.ThemeManager;
 import my_app.core.Themes;
-import my_app.db.MigrationRunner;
-import my_app.db.repositories.PreferenciasRepository;
+import my_app.db.DB;
+import my_app.db.repositories_old.PreferenciasRepository;
 import my_app.hotreload.HotReload;
 import my_app.routes.AppRoutes;
 import my_app.utils.TrayManager;
+import org.flywaydb.core.Flyway;
 
 public class Main {
 
@@ -36,7 +36,7 @@ public class Main {
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(ICON_PATH)));
     }
     static void main() {
-        MegalodonteApp.appName("PlicsSW"); // <-- antes do run
+        //MegalodonteApp.appName("PlicsSW"); // <-- antes do run
         MegalodonteApp.run(context -> {
             final var stage = context.javafxStage();
 
@@ -78,9 +78,15 @@ public class Main {
     public static void initialize(Context context) {
         ThemeManager.setTheme(Themes.LIGHT);
 
-        MigrationRunner.run();
-
         try {
+//            Flyway.configure()
+//                    .dataSource(DB.url(), "", "")
+//                    .locations("classpath:migrations")
+           // .baselineOnMigrate(true)
+//                    .load()
+//                    .migrate();
+            //MigrationRunner.run();
+
             var prefs = new PreferenciasRepository().listar();
             if (!prefs.isEmpty()) {
                 var pref = prefs.getFirst();
