@@ -1,6 +1,6 @@
 package my_app.events;
 
-import my_app.db.models_old.ClienteModel;
+import my_app.db.models.ClienteModel;
 
 public final class ClienteEvents {
 

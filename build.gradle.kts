@@ -87,6 +87,19 @@ dependencies {
     //implementation("megalodonte:megalodonte-previewer-components:1.0.0")
 
     // Dependências JavaFX removidas (agora gerenciadas pelo bloco 'javafx { ... }')
+
+
+    // Flyway também para testes
+    testImplementation("org.flywaydb:flyway-core:10.15.0")
+
+    // SQLite também para testes
+    testImplementation("org.xerial:sqlite-jdbc:3.45.1.0")
+
+    // Persism também para testes
+    testImplementation("io.github.sproket:persism:2.3")
+
+    // SLF4J/Logback para testes
+    testImplementation("ch.qos.logback:logback-classic:1.5.18")
 }
 
 tasks.test {

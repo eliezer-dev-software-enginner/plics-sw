@@ -5,7 +5,7 @@ import megalodonte.v2.ListState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models_old.ClienteModel;
+import my_app.db.models.ClienteModel;
 import my_app.db.models_old.ProdutoModel;
 import my_app.db.repositories_old.ClienteRepository;
 import my_app.db.repositories_old.ProdutoRepository;
@@ -116,7 +116,7 @@ public class PDVScreenViewModel {
         Async.Run(() -> {
             try {
                 var list = clienteRepository.listar();
-                UI.runOnUi(() -> clientes.set(list));
+               // UI.runOnUi(() -> clientes.set(list));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar clientes: " + e.getMessage()));
             }
@@ -168,7 +168,7 @@ public class PDVScreenViewModel {
         }
 
         boolean fiado = isVendaFiada.get();
-        Long clienteId = clienteSelected.get() != null ? clienteSelected.get().id : null;
+        Integer clienteId = clienteSelected.get() != null ? clienteSelected.get().getId() : null;
 
         if (fiado && clienteId == null) {
             Components.ShowAlertError("Selecione um cliente para venda fiada.");
@@ -180,7 +180,7 @@ public class PDVScreenViewModel {
                 pdvService.finalizarVenda(
                         itensCarrinho.get(),
                         "À VISTA", // TODO: adicionar seletor de forma de pagamento
-                        clienteId,
+                        Long.valueOf(clienteId),
                         fiado
                 );
                 UI.runOnUi(() -> {

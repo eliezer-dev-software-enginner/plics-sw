@@ -11,7 +11,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models_old.ClienteModel;
+import my_app.db.models.ClienteModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
@@ -68,12 +68,12 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
         simpleTable.fromData(vm.clientes)
                 .header()
                 .columns()
-                .column("ID",            it -> it.id)
-                .column("Nome",          it -> it.nome)
-                .column("CPF/CNPJ",      it -> it.cpfCnpj.length() == 11
-                        ? Utils.formatCpf(it.cpfCnpj)
-                        : Utils.formatCnpj(it.cpfCnpj))
-                .column("Data de criação", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
+                .column("ID",            it -> it.getId())
+                .column("Nome",          it -> it.getNome())
+                .column("CPF/CNPJ",      it -> it.getCpfCnpj().length() == 11
+                        ? Utils.formatCpf(it.getCpfCnpj())
+                        : Utils.formatCnpj(it.getCpfCnpj()))
+                .column("Data de criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(it -> vm.clienteSelecionado.set(it));

@@ -119,7 +119,7 @@ public class PDVScreen implements ScreenComponent {
                 Show.when(vm.isVendaFiada, ()-> {
                     return new Column().children(
                             Components.FormTitle("Quem é o cliente?"),
-                            Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome,
+                            Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, f -> f.getNome(),
                                     true,"+ Criar cliente", vm::handleCriarCliente)
                     );
                 })
