@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS contas_pagar (
     numero_documento TEXT,
     tipo_documento TEXT,
     observacao TEXT,
-    data_criacao_millis INTEGER NOT NULL,
+    dataCriacao INTEGER NOT NULL,
     data_validade TEXT,
     FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id),
     FOREIGN KEY (compra_id) REFERENCES compras(id)

@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS contas_a_receber (
     numero_documento TEXT,
     tipo_documento TEXT,
     observacao TEXT,
-    data_criacao_millis INTEGER NOT NULL,
+    dataCriacao INTEGER NOT NULL,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
     FOREIGN KEY (venda_id) REFERENCES vendas(id)
 )

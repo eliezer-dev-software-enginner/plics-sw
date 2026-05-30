@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS vendas (
     desconto REAL DEFAULT 0,
     tipo_pagamento TEXT,
     observacao TEXT,
-    data_criacao_millis INTEGER NOT NULL,
+    dataCriacao INTEGER NOT NULL,
     data_venda REAL,
     data_validade REAL,
     numero_nota TEXT,

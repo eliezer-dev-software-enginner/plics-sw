@@ -2,6 +2,7 @@ package my_app.db.repositories;
 
 import my_app.db.DB;
 import net.sf.persism.Session;
+import net.sf.persism.annotations.Table;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -42,9 +43,10 @@ public abstract class BaseRepository<M> {
     }
 
     public M buscarById(long id) throws SQLException {
+        String tableName = modelClass().getAnnotation(Table.class).value();
         return session().fetch(
                 modelClass(),
-                sql("SELECT * FROM categorias WHERE id = ?"),
+                sql("SELECT * FROM " + tableName + " WHERE id = ?"),
                 params(id)
         );
     }

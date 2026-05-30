@@ -52,7 +52,7 @@ class ClienteRepositoryTest {
         cliente.setCpfCnpj("123.456.789-00");
         cliente.setCelular("(31) 99999-0000");
         cliente.setEmail("teste@email.com");
-        cliente.setIsPessoaFisica(true);
+        cliente.setPessoaFisica(true);
         cliente.setDataCriacao(LocalDateTime.now());
         return cliente;
     }
@@ -67,7 +67,7 @@ class ClienteRepositoryTest {
         assertNotNull(salvo.getId());
         assertEquals("João Silva", salvo.getNome());
         assertEquals("123.456.789-00", salvo.getCpfCnpj());
-        assertTrue(salvo.getIsPessoaFisica());
+        assertTrue(salvo.getPessoaFisica());
     }
 
     @Test

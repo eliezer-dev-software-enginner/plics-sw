@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS preferencias (
     login TEXT,
     senha TEXT,
     primeiro_acesso INTEGER NOT NULL DEFAULT 1,
-    data_criacao_millis REAL NOT NULL
+    dataCriacao REAL NOT NULL
 )

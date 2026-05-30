@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS produtos (
     validade INTEGER,
     comissao TEXT,
     garantia TEXT,
-    data_criacao_millis INTEGER,
+    dataCriacao INTEGER,
     total_liquido REAL NOT NULL,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 )

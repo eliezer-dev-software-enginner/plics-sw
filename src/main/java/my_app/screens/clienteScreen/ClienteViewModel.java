@@ -80,7 +80,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
         model.setCpfCnpj(cnpjCpfValue);
         model.setCelular(celularValue);
         model.setEmail(emailValue);
-        model.setIsPessoaFisica(tipoPessoaEhFisica.get());
+        model.setPessoaFisica(tipoPessoaEhFisica.get());
 
         return model;
     }

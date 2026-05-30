@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS licensas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     valor TEXT NOT NULL UNIQUE,
-    data_criacao_millis INTEGER NOT NULL
+    dataCriacao INTEGER NOT NULL
 )

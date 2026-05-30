@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS empresas (
     texto_responsabilidade TEXT,
     texto_termo_de_servico TEXT,
     logomarca TEXT,
-    data_criacao_millis INTEGER NOT NULL
+    dataCriacao INTEGER NOT NULL
 )

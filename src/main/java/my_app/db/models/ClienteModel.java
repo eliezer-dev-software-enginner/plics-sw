@@ -24,5 +24,6 @@ public class ClienteModel {
     private String cpfCnpj;
     private String celular;
     private String email;
-    private Boolean isPessoaFisica;
+    @Column(name = "isPessoaFisica")
+    private Boolean pessoaFisica;
 }

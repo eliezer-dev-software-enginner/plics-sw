@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS ordens_de_servico (
     checklist_relatorio TEXT,
     data_escolhida TEXT,
     total_liquido REAL NOT NULL,
-    data_criacao_millis REAL NOT NULL,
+    dataCriacao REAL NOT NULL,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
     FOREIGN KEY (tecnico_id) REFERENCES tecnicos(id)
 )

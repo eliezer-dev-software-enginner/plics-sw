@@ -11,6 +11,6 @@ CREATE TABLE IF NOT EXISTS compras (
     numero_nota TEXT,
     data_validade REAL,
     total_liquido REAL NOT NULL,
-    data_criacao_millis INTEGER NOT NULL,
+    dataCriacao INTEGER NOT NULL,
     FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id)
 )
