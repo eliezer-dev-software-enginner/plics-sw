@@ -1,5 +1,8 @@
 package my_app.db;
 
+import net.sf.persism.Session;
+import org.flywaydb.core.Flyway;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -44,5 +47,16 @@ public final class DB {
         new File(base).mkdirs();
 
         return base + File.separator + "erp.db";
+    }
+
+    public static Session getPersismSession() throws SQLException {
+        var db = DB.production();
+        Flyway.configure()
+                .dataSource(db.url(),"","")
+                .locations("classpath:flyway_migrations")
+                .load()
+                .migrate();
+
+        return new Session(db.connection());
     }
 }

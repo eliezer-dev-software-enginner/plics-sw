@@ -1,16 +1,17 @@
 package my_app.db.repositories;
 
-import my_app.db.dto.EmpresaDto;
-import my_app.db.models_old.EmpresaModel;
+import my_app.db.models.EmpresaModel;
+import net.sf.persism.Session;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+public class EmpresaRepository  extends BaseRepository<EmpresaModel>  {
 
-public class EmpresaRepository {
+    public EmpresaRepository(Session session) {
+        super(session);
+    }
 
+    @Override
+    protected Class<EmpresaModel> modelClass() {
+        return EmpresaModel.class;
+    }
 }
 

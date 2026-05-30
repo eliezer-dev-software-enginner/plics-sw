@@ -6,8 +6,6 @@ import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.ClienteDto;
-import my_app.db.models.CategoriaModel;
 import my_app.db.models.ClienteModel;
 import my_app.db.services.ClienteService;
 import my_app.domain.Data;
@@ -18,9 +16,6 @@ import my_app.domain.components.Components;
 import my_app.utils.Utils;
 
 import java.sql.SQLException;
-import java.util.List;
-
-import static my_app.utils.Utils.*;
 
 public class ClienteViewModel extends ViewModelScreenContract {
     private final ClienteService clienteService;

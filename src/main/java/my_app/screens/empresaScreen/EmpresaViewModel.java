@@ -1,0 +1,106 @@
+package my_app.screens.empresaScreen;
+
+import javafx.stage.FileChooser;
+import megalodonte.State;
+import megalodonte.base.UI;
+import megalodonte.base.async.Async;
+import megalodonte.router.v4.ScreenContext;
+import my_app.db.DB;
+import my_app.db.models.EmpresaModel;
+import my_app.db.repositories.EmpresaRepository;
+
+import java.io.File;
+import java.sql.SQLException;
+
+public class EmpresaViewModel {
+    private final ScreenContext ctx;
+    private final EmpresaRepository empresaRepository;
+
+    State<String> nome = State.of("");
+    State<String> celular = State.of("");
+    State<String> logoMarca = State.of("/logo_256x256.png");
+
+    State<String> cep = State.of("");
+    State<String> cidade = State.of("");
+    State<String> bairro = State.of("");
+    State<String> rua = State.of("");
+
+    State<String> localPagamento = State.of("");
+    State<String> textoResponsabilidade = State.of("");
+
+    public EmpresaViewModel(ScreenContext ctx) throws SQLException {
+        this.ctx = ctx;
+        empresaRepository = new EmpresaRepository(DB.getPersismSession());
+    }
+
+    public void fetchData() {
+        Async.Run(()->{
+            try {
+                var list = empresaRepository.listar();
+                if(!list.isEmpty()){
+                    var model = list.getFirst();
+
+                    UI.runOnUi(()->{
+                        nome.set(model.getNome());
+                        celular.set(model.getTelefone());
+                        logoMarca.set(model.getLogoMarca() != null ? model.getLogoMarca() : "/logo_256x256.png");
+                        cep.set(model.getCep());
+                        cidade.set(model.getCidade());
+                        bairro.set(model.getBairro());
+                        rua.set(model.getRua());
+                        localPagamento.set(model.getLocalPagamento());
+                        textoResponsabilidade.set(model.getTextoResponsabilidade());
+                    });
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao carregar categorias", e);
+            }
+        });
+    }
+
+    public void handleUpdateLogoMarca(){
+        var fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecionar imagem");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Text files", "*.png","*.jpg","*.jpeg"));
+
+        File arquivo = fileChooser.showOpenDialog(this.ctx.selfStage());
+        if(arquivo != null){
+            IO.println("abs: " + arquivo.getAbsolutePath());
+            String imagePath = arquivo.toURI().toString();
+            IO.println("uri: " + imagePath);
+
+            logoMarca.set(imagePath);
+        }
+    }
+
+    public void handleSave(){
+        var model = new EmpresaModel();
+        model.setId(1L);
+        model.setNome(nome.get());
+        model.setLogoMarca(logoMarca.get());
+        model.setCep(cep.get());
+        model.setBairro(bairro.get());
+        model.setRua(rua.get());
+        model.setCidade(cidade.get());
+        model.setLocalPagamento(localPagamento.get());
+        model.setTermoServico(textoResponsabilidade.get());
+        model.setTelefone(celular.get());
+        model.setTextoResponsabilidade(textoResponsabilidade.get());
+
+        Async.Run(()->{
+            try{
+                empresaRepository.atualizar(model);
+                UI.runOnUi(()-> {
+                    IO.println("Empresa atualizada com sucesso!");
+
+                });
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+}

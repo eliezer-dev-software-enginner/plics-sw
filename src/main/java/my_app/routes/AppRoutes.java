@@ -8,6 +8,7 @@ import my_app.screens.WelcomeScreen;
 import my_app.screens.categoriaScreen.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
 import my_app.screens.comprasScreen.ComprasScreen;
+import my_app.screens.empresaScreen.CadastroEmpresaScreen;
 import my_app.screens.fornecedorScreen.FornecedorScreen;
 import my_app.screens.homeScreen.HomeScreen;
 import my_app.screens.pdvScreen.PDVScreen;
@@ -17,6 +18,7 @@ import my_app.screens.pedidosScreen.PedidosScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;
 import my_app.screens.vendaScreen.VendaMercadoriaScreen;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 public class AppRoutes {
@@ -32,7 +34,13 @@ public class AppRoutes {
                 //ok
                 new Router.Route("fornecedores",ctx-> new FornecedorScreen(ctx), new RouteProps(1210, 650, "Gerenciamento de Fornecedores", true)),
                 //ok
-                new Router.Route("empresa",ctx-> new CadastroEmpresaScreen(ctx), new RouteProps(900, 650, "Informações da empresa", false)),
+                new Router.Route("empresa",ctx-> {
+                    try {
+                        return new CadastroEmpresaScreen(ctx);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, new RouteProps(900, 650, "Informações da empresa", false)),
                //ok
                 new Router.Route("compras",ctx-> new ComprasScreen(ctx), new RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
