@@ -3,7 +3,7 @@ package my_app.screens.homeScreen;
 import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import my_app.db.repositories.*;
+import my_app.db.repositories_old.*;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.utils.DateUtils;

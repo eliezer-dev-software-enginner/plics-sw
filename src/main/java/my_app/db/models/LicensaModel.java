@@ -1,19 +1,17 @@
 package my_app.db.models;
 
-import java.math.BigDecimal;
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.persism.annotations.Table;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+@Setter
+@Getter
+@Table("licensas")
 public class LicensaModel {
-        public Long id;
-        public String valor;
-
-        public Long dataCriacao;
-
-        public static LicensaModel fromResultSet(ResultSet rs) throws SQLException {
-            var p = new LicensaModel();
-            p.id = rs.getLong("id");
-            p.valor = rs.getString("valor");
-            return p;
-        }
+    private long id;
+    private long data_criacao_millis;
+        private String valor;
+        private Long dataCriacao;
 }

@@ -11,7 +11,7 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
-import my_app.db.models.ProdutoModel;
+import my_app.db.models_old.ProdutoModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
