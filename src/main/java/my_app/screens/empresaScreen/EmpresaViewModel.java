@@ -5,16 +5,15 @@ import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.DB;
 import my_app.db.models.EmpresaModel;
-import my_app.db.repositories.EmpresaRepository;
+import my_app.db.services.EmpresaService;
 
 import java.io.File;
 import java.sql.SQLException;
 
 public class EmpresaViewModel {
     private final ScreenContext ctx;
-    private final EmpresaRepository empresaRepository;
+    private final EmpresaService empresaService;
 
     State<String> nome = State.of("");
     State<String> celular = State.of("");
@@ -30,15 +29,14 @@ public class EmpresaViewModel {
 
     public EmpresaViewModel(ScreenContext ctx) throws SQLException {
         this.ctx = ctx;
-        empresaRepository = new EmpresaRepository(DB.getPersismSession());
+        empresaService = new EmpresaService();
     }
 
     public void fetchData() {
         Async.Run(()->{
             try {
-                var list = empresaRepository.listar();
-                if(!list.isEmpty()){
-                    var model = list.getFirst();
+                var model = empresaService.buscarUnico();
+                if(model != null){
 
                     UI.runOnUi(()->{
                         nome.set(model.getNome());
@@ -77,7 +75,7 @@ public class EmpresaViewModel {
 
     public void handleSave(){
         var model = new EmpresaModel();
-        model.setId(1L);
+        model.setId(1);
         model.setNome(nome.get());
         model.setLogoMarca(logoMarca.get());
         model.setCep(cep.get());
@@ -91,7 +89,7 @@ public class EmpresaViewModel {
 
         Async.Run(()->{
             try{
-                empresaRepository.atualizar(model);
+                empresaService.salvarOuAtualizar(model);
                 UI.runOnUi(()-> {
                     IO.println("Empresa atualizada com sucesso!");
 
