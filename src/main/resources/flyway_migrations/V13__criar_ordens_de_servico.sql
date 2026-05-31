@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS ordens_de_servico (
     tipo_pagamento TEXT,
     status TEXT,
     checklist_relatorio TEXT,
-    data_escolhida TEXT,
+    data_escolhida REAL,
     total_liquido REAL NOT NULL,
-    data_criacao_millis REAL NOT NULL,
+    dataCriacao TIMESTAMP NOT NULL,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
     FOREIGN KEY (tecnico_id) REFERENCES tecnicos(id)
 )

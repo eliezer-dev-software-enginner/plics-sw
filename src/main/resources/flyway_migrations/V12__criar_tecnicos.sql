@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS tecnicos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL UNIQUE,
-    data_criacao_millis INTEGER NOT NULL
+    dataCriacao TIMESTAMP NOT NULL
 )

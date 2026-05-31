@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     desconto REAL DEFAULT 0,
     observacao TEXT,
     is_fiado INTEGER DEFAULT 0,
-    data_criacao_millis INTEGER NOT NULL,
+    dataCriacao TIMESTAMP NOT NULL,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id)
 );
 
@@ -18,6 +18,6 @@ CREATE TABLE IF NOT EXISTS pedido_itens (
     preco_unitario REAL NOT NULL,
     desconto REAL DEFAULT 0,
     total_item REAL NOT NULL,
-    data_criacao_millis INTEGER NOT NULL,
+    dataCriacao TIMESTAMP NOT NULL,
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
 )

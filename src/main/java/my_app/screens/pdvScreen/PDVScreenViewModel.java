@@ -6,9 +6,9 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.ClienteModel;
-import my_app.db.models_old.ProdutoModel;
-import my_app.db.repositories_old.ClienteRepository;
-import my_app.db.repositories_old.ProdutoRepository;
+import my_app.db.models.ProdutoModel;
+import my_app.db.services.ClienteService;
+import my_app.db.services.ProdutoService;
 import my_app.events.ClienteEvents;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
@@ -24,8 +24,8 @@ import java.util.Map;
 public class PDVScreenViewModel {
 
     private final ScreenContext ctx;
-    private final ProdutoRepository produtoRepository;
-    private final ClienteRepository clienteRepository;
+    private final ProdutoService produtoService;
+    private final ClienteService clienteService;
     private final PDVService pdvService;
 
     // Cache de todos os produtos (lookup por código)
@@ -56,8 +56,12 @@ public class PDVScreenViewModel {
 
     public PDVScreenViewModel(ScreenContext ctx) {
         this.ctx = ctx;
-        this.produtoRepository = new ProdutoRepository();
-        this.clienteRepository = new ClienteRepository();
+        try {
+            this.produtoService = new ProdutoService();
+            this.clienteService = new ClienteService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         pdvService = new PDVService();
         this.onInit();
     }
@@ -92,17 +96,17 @@ public class PDVScreenViewModel {
     void loadProdutos() {
         Async.Run(() -> {
             try {
-                var list = produtoRepository.listar();
+                var list = produtoService.listar();
 
                 System.out.println("=== loadProdutos ===");
                 System.out.println("Lista retornada: " + list.size());
                 if (!list.isEmpty()) {
-                    System.out.println("Primeiro produto: " + list.get(0).descricao);
+                    System.out.println("Primeiro produto: " + list.get(0).getDescricao());
                 }
 
                 UI.runOnUi(() -> {
                     produtosCache.clear();
-                    list.forEach(p -> produtosCache.put(p.codigoBarras, p));
+                    list.forEach(p -> produtosCache.put(p.getCodigoBarras(), p));
                     System.out.println("Cache populado com: " + produtosCache.size() + " produtos");
                 });
             } catch (Exception e) {
@@ -115,7 +119,7 @@ public class PDVScreenViewModel {
     void loadClientes() {
         Async.Run(() -> {
             try {
-                var list = clienteRepository.listar();
+                var list = clienteService.listar();
                // UI.runOnUi(() -> clientes.set(list));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar clientes: " + e.getMessage()));
@@ -132,7 +136,7 @@ public class PDVScreenViewModel {
 
         // Se já existe no carrinho, incrementa a qtd
         var existente = itensCarrinho.get().stream()
-                .filter(i -> i.produto.codigoBarras.equals(codigo))
+                .filter(i -> i.produto.getCodigoBarras().equals(codigo))
                 .findFirst();
 
         if (existente.isPresent()) {

@@ -1,16 +1,29 @@
 package my_app.db.repositories;
 
-import my_app.db.dto.EmpresaDto;
-import my_app.db.models_old.EmpresaModel;
+import my_app.db.models.EmpresaModel;
+import net.sf.persism.Session;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
-public class EmpresaRepository {
+import static net.sf.persism.Parameters.params;
+import static net.sf.persism.SQL.sql;
 
+public class EmpresaRepository extends BaseRepository<EmpresaModel> {
+
+    public EmpresaRepository(Session session) {
+        super(session);
+    }
+
+    @Override
+    protected Class<EmpresaModel> modelClass() {
+        return EmpresaModel.class;
+    }
+
+    public EmpresaModel buscarUnico() throws SQLException {
+        return session().fetch(
+                EmpresaModel.class,
+                sql("SELECT * FROM empresas LIMIT 1")
+        );
+    }
 }
 

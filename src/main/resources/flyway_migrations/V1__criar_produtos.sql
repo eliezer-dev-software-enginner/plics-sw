@@ -7,14 +7,14 @@ CREATE TABLE IF NOT EXISTS produtos (
     unidade TEXT,
     categoria_id INTEGER,
     fornecedor_id INTEGER,
-    estoque INTEGER,
+    estoque REAL,
     observacoes TEXT,
     imagem TEXT,
     marca TEXT,
     validade INTEGER,
     comissao TEXT,
     garantia TEXT,
-    data_criacao_millis INTEGER,
+    dataCriacao TIMESTAMP,
     total_liquido REAL NOT NULL,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 )

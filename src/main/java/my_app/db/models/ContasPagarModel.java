@@ -2,50 +2,55 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import my_app.db.dto.ContasPagarDto;
-import my_app.domain.ModelBase;
+import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
-@Table("contas_a_pagar")
+@Table("contas_pagar")
 public class ContasPagarModel {
-    private long id;
-    private long data_criacao_millis;
+
+    @Column(primary = true)
+    private Integer id;
+
     private String descricao;
-    public BigDecimal valorOriginal;
+
+    @Column(name = "valor_original")
+    private BigDecimal valorOriginal;
+
+    @Column(name = "valor_pago")
     private BigDecimal valorPago;
+
+    @Column(name = "valor_restante")
     private BigDecimal valorRestante;
+
+    @Column(name = "data_vencimento")
     private Long dataVencimento;
+
+    @Column(name = "data_pagamento")
     private Long dataPagamento;
+
     private String status;
-    private Long fornecedorId;
-    private Long compraId;
+
+    @Column(name = "fornecedor_id")
+    private Integer fornecedorId;
+
+    @Column(name = "compra_id")
+    private Integer compraId;
+
+    @Column(name = "numero_documento")
     private String numeroDocumento;
+
+    @Column(name = "tipo_documento")
     private String tipoDocumento;
+
     private String observacao;
 
-    // Related objects (not stored in database)
-    private FornecedorModel fornecedor;
-    private CompraModel compra;
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
 
-    public boolean isQuitado() {
-        return "PAGO".equals(status);
-    }
-
-    public boolean isVencido() {
-        if (dataPagamento != null) return false;
-        return System.currentTimeMillis() > dataVencimento;
-    }
-
-    public boolean isPendente() {
-        return "PENDENTE".equals(status);
-    }
-
-    public boolean isParcial() {
-        return "PARCIAL".equals(status);
-    }
+    private transient FornecedorModel fornecedor;
 }

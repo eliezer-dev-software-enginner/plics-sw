@@ -7,13 +7,12 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models_old.PedidoItemModel;
-import my_app.db.models_old.PedidoModel;
+import my_app.db.models.PedidoItemModel;
+import my_app.db.models.PedidoModel;
 import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-// PedidosScreen.java
 public class PedidosScreen implements ScreenComponent {
 
     private final PedidosScreenViewModel vm;
@@ -44,12 +43,12 @@ public class PedidosScreen implements ScreenComponent {
                 .fromData(vm.pedidos)
                 .header()
                 .columns()
-                .column("ID",           it -> "#" + it.id)
-                .column("Cliente",      it -> it.clienteId != null ? it.clienteId.toString() : "Consumidor")
-                .column("Total",        it -> Utils.toBRLCurrency(it.totalLiquido))
-                .column("Pagamento",    it -> it.formaPagamento)
-                .column("Fiado?",       it -> it.isFiado ? "Sim" : "Não")
-                .column("Data",         it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
+                .column("ID",           it -> "#" + it.getId())
+                .column("Cliente",      it -> it.getClienteId() != null ? it.getClienteId().toString() : "Consumidor")
+                .column("Total",        it -> Utils.toBRLCurrency(it.getTotalLiquido()))
+                .column("Pagamento",    it -> it.getFormaPagamento())
+                .column("Fiado?",       it -> it.getFiado() != null && it.getFiado() == 1 ? "Sim" : "Não")
+                .column("Data",         it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onItemSelectChange(vm.pedidoSelecionado::set);
     }
@@ -61,10 +60,10 @@ public class PedidosScreen implements ScreenComponent {
                         .fromData(vm.itensDoPedidoSelecionado)
                         .header()
                         .columns()
-                        .column("Produto",   it -> it.produtoCod)
-                        .column("Qtd.",      it -> it.quantidade)
-                        .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.precoUnitario))
-                        .column("Total",     it -> Utils.toBRLCurrency(it.totalItem))
+                        .column("Produto",   it -> it.getProdutoCod())
+                        .column("Qtd.",      it -> it.getQuantidade())
+                        .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
+                        .column("Total",     it -> Utils.toBRLCurrency(it.getTotalItem()))
                         .build()
         );
     }

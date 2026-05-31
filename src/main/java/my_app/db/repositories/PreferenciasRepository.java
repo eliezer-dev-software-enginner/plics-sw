@@ -1,16 +1,16 @@
 package my_app.db.repositories;
 
-import my_app.db.dto.PreferenciasDto;
-import my_app.db.models_old.PreferenciasModel;
+import my_app.db.models.PreferenciasModel;
+import net.sf.persism.Session;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+public class PreferenciasRepository extends BaseRepository<PreferenciasModel> {
 
-public class PreferenciasRepository {
+    public PreferenciasRepository(Session session) {
+        super(session);
+    }
 
-
+    @Override
+    protected Class<PreferenciasModel> modelClass() {
+        return PreferenciasModel.class;
+    }
 }

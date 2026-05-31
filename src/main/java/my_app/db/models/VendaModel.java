@@ -2,35 +2,53 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import my_app.db.dto.VendaDto;
-import my_app.domain.ForeignKey;
-import my_app.domain.ModelBase;
+import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @Table("vendas")
 public class VendaModel {
-    private long id;
-    private long data_criacao_millis;
 
+    @Column(primary = true)
+    private Integer id;
+
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
+
+    @Column(name = "produto_cod")
     private String produtoCod;
-    private Long clienteId;
+
+    @Column(name = "cliente_id")
+    private Integer clienteId;
+
     private BigDecimal quantidade;
-    private BigDecimal desconto;
-    private String tipoPagamento;
-    private String observacao;
-    private long dataVenda;
-    private String numeroNota;
+
+    @Column(name = "preco_unitario")
     private BigDecimal precoUnitario;
+
+    @Column(name = "total_liquido")
     private BigDecimal totalLiquido;
+
+    private BigDecimal desconto;
+
+    @Column(name = "tipo_pagamento")
+    private String tipoPagamento;
+
+    private String observacao;
+
+    @Column(name = "data_venda")
+    private Long dataVenda;
+
+    @Column(name = "numero_nota")
+    private String numeroNota;
+
+    @Column(name = "data_validade")
     private Long dataValidade;
 
-    // composição (domínio)
-    private ProdutoModel produto;
-    private ClienteModel cliente;
+    private transient ProdutoModel produto;
+    private transient ClienteModel cliente;
 }

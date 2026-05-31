@@ -2,42 +2,56 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import my_app.db.dto.ContaAreceberDto;
-import my_app.domain.ForeignKey;
-import my_app.domain.ModelBase;
+import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @Table("contas_a_receber")
-public class ContaAreceberModel{
-    private long id;
-    private long data_criacao_millis;
+public class ContaAreceberModel {
+
+    @Column(primary = true)
+    private Integer id;
+
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
+
     private String descricao;
+
+    @Column(name = "valor_original")
     private BigDecimal valorOriginal;
+
+    @Column(name = "valor_recebido")
     private BigDecimal valorRecebido;
+
+    @Column(name = "valor_restante")
     private BigDecimal valorRestante;
+
+    @Column(name = "data_vencimento")
     private Long dataVencimento;
+
+    @Column(name = "data_recebimento")
     private Long dataRecebimento;
+
     private String status;
-    private Long clienteId;
-    private Long vendaId;
+
+    @Column(name = "cliente_id")
+    private Integer clienteId;
+
+    @Column(name = "venda_id")
+    private Integer vendaId;
+
+    @Column(name = "numero_documento")
     private String numeroDocumento;
+
+    @Column(name = "tipo_documento")
     private String tipoDocumento;
+
     private String observacao;
 
-    // Related objects (not stored in database)
-    private ClienteModel cliente;
-    private VendaModel venda;
-
-    public boolean isPendente() {
-        return "PENDENTE".equals(status);
-    }
-
-    public boolean isParcial() {
-        return "PARCIAL".equals(status);
-    }
+    private transient ClienteModel cliente;
+    private transient VendaModel venda;
 }

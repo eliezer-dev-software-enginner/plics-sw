@@ -2,19 +2,21 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import my_app.db.dto.TecnicoDto;
-import my_app.domain.ModelBase;
-import my_app.domain.SqlField;
+import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
+
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @Table("tecnicos")
 public class TecnicoModel {
-    private long id;
-    private long data_criacao_millis;
+
+    @Column(primary = true)
+    private Integer id;
+
     private String nome;
+
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
 }
-
-
-

@@ -96,8 +96,8 @@ public class PDVScreen implements ScreenComponent {
                     .fromData(vm.itensCarrinho)
                     .header()
                         .columns()
-                            .column("Cod",          it -> it.produto.codigoBarras)
-                            .column("Nome",          it -> it.produto.descricao)
+                            .column("Cod",          it -> it.produto.getCodigoBarras())
+                            .column("Nome",          it -> it.produto.getDescricao())
                             .editableColumn("Qtd.", it -> it.quantidade,
                                     (it, val) -> {
                                         try {
@@ -106,7 +106,7 @@ public class PDVScreen implements ScreenComponent {
                                             // valor inválido, ignora
                                         }
                                     })
-                            .column("Vlr. Unit.", it -> it.produto.precoVenda)
+                            .column("Vlr. Unit.", it -> it.produto.getPrecoVenda())
                             .column("Total", it -> it.totalItem())
                         .end()
                     .build()

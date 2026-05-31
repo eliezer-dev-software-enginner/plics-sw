@@ -1,49 +1,26 @@
 package my_app.db.repositories;
 
 import my_app.db.models.ClienteModel;
-import net.sf.persism.Session;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ClienteRepositoryTest {
+class ClienteRepositoryTest extends BaseRepositoryTest {
 
     private static final Logger log =
             LoggerFactory.getLogger(ClienteRepositoryTest.class);
 
-    Session session;
     ClienteRepository repository;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        String testUrl = "jdbc:sqlite:file:testdb?mode=memory&cache=shared";
-        Connection connection = DriverManager.getConnection(testUrl);
-
-        Flyway.configure()
-                .dataSource(testUrl, "", "")
-                .locations("classpath:flyway_migrations")
-                .load()
-                .migrate();
-
-        session = new Session(connection);
+    @Override
+    protected void initRepository() {
         repository = new ClienteRepository(session);
-        log.info("Banco de teste inicializado");
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        session.close();
     }
 
     private ClienteModel novoCliente(String nome) {
@@ -52,7 +29,7 @@ class ClienteRepositoryTest {
         cliente.setCpfCnpj("123.456.789-00");
         cliente.setCelular("(31) 99999-0000");
         cliente.setEmail("teste@email.com");
-        cliente.setIsPessoaFisica(true);
+        cliente.setPessoaFisica(true);
         cliente.setDataCriacao(LocalDateTime.now());
         return cliente;
     }
@@ -67,7 +44,7 @@ class ClienteRepositoryTest {
         assertNotNull(salvo.getId());
         assertEquals("João Silva", salvo.getNome());
         assertEquals("123.456.789-00", salvo.getCpfCnpj());
-        assertTrue(salvo.getIsPessoaFisica());
+        assertTrue(salvo.getPessoaFisica());
     }
 
     @Test

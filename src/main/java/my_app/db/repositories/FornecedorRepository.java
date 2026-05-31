@@ -1,14 +1,16 @@
 package my_app.db.repositories;
 
-import my_app.db.dto.FornecedorDto;
-import my_app.db.models_old.FornecedorModel;
+import my_app.db.models.FornecedorModel;
+import net.sf.persism.Session;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+public class FornecedorRepository extends BaseRepository<FornecedorModel> {
 
-public class FornecedorRepository {
+    public FornecedorRepository(Session session) {
+        super(session);
+    }
+
+    @Override
+    protected Class<FornecedorModel> modelClass() {
+        return FornecedorModel.class;
+    }
 }

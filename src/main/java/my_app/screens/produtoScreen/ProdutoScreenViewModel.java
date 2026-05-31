@@ -5,26 +5,25 @@ import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.ProdutoDto;
-import my_app.db.models_old.CategoriaModel;
-import my_app.db.models_old.FornecedorModel;
-import my_app.db.models_old.ProdutoModel;
-import my_app.db.repositories_old.CategoriaRepository;
-import my_app.db.repositories_old.FornecedorRepository;
-import my_app.db.repositories_old.ProdutoRepository;
+import my_app.db.models.CategoriaModel;
+import my_app.db.models.FornecedorModel;
+import my_app.db.models.ProdutoModel;
+import my_app.db.services.CategoriaService;
+import my_app.db.services.FornecedorService;
+import my_app.db.services.ProdutoService;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import my_app.services.ProdutoService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 public class ProdutoScreenViewModel extends ViewModelScreenContract {
-    private final ProdutoService service;
-    private final ProdutoRepository produtoRepository;
+
+    private final ProdutoService produtoService;
 
     public final ListState<ProdutoModel> produtos = ListState.of(List.of());
     public final State<String> codigoBarras = new State<>("");
@@ -32,7 +31,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public final State<String> precoCompra = new State<>("0");
     public final State<String> precoVenda = new State<>("0");
 
-    // depois vira ComputedState
     public final State<String> margem = new State<>("0");
     public final State<String> lucro = new State<>("0");
 
@@ -45,7 +43,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public final State<List<CategoriaModel>> categorias = new State<>(List.of());
     public final State<CategoriaModel> categoriaSelected = new State<>(null);
 
-    //TODO: BUSCAR FORNECEDORES DO BANCO
     public final State<List<FornecedorModel>> fornecedores = State.of(List.of());
     public final State<FornecedorModel> fornecedorSelected = new State<>(null);
 
@@ -59,38 +56,42 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
 
     public ProdutoScreenViewModel(ScreenContext ctx) {
         super(ctx);
-        service = new ProdutoService();
-        produtoRepository = new ProdutoRepository();
+        try {
+            produtoService = new ProdutoService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
     }
 
     public void loadInicial() {
         Async.Run(() -> {
             try {
-                var produtosList = produtoRepository.listar();
-                var fornecedorModelList = new FornecedorRepository().listar();
-                var categorias = new CategoriaRepository().listar();
+                var produtosList = produtoService.listar();
+                var fornecedorService = new FornecedorService();
+                var fornecedorModelList = fornecedorService.listar();
+                var categoriaService = new CategoriaService();
+                var categoriasList = categoriaService.listar();
 
                 UI.runOnUi(() -> {
                     this.produtos.addAll(produtosList);
-                    this.categorias.set(categorias);
-                    this.categoriaSelected.set(categorias.isEmpty() ? null : categorias.getFirst());
+                    this.categorias.set(categoriasList);
+                    this.categoriaSelected.set(categoriasList.isEmpty() ? null : categoriasList.getFirst());
 
                     this.fornecedores.set(fornecedorModelList);
                     this.fornecedorSelected.set(fornecedorModelList.isEmpty() ? null : fornecedorModelList.getFirst());
 
-                    for(var p :produtosList){
-                        var categoria = categorias.stream()
-                                .filter(it-> it.id.equals(p.categoriaId))
+                    for (var p : produtosList) {
+                        var cat = categoriasList.stream()
+                                .filter(it -> it.getId().equals(p.getCategoriaId()))
                                 .findFirst()
                                 .orElse(null);
-
-                        var fornecedor = fornecedorModelList.stream()
-                                .filter(it-> it.id.equals(p.fornecedorId))
+                        var forn = fornecedorModelList.stream()
+                                .filter(it -> it.getId().equals(p.getFornecedorId()))
                                 .findFirst()
                                 .orElse(null);
-
-                        p.categoria = categoria;
-                        p.fornecedor = fornecedor;
+                        p.setCategoria(cat);
+                        p.setFornecedor(forn);
                     }
                 });
             } catch (Exception e) {
@@ -99,71 +100,50 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         });
     }
 
-    public ProdutoDto toProduto() {
-        var p = new ProdutoDto();
-        p.codigoBarras = codigoBarras.get();
-        p.descricao = descricao.get();
-
-        p.precoCompra = Utils.deCentavosParaReal(precoCompra.get());
-        p.precoVenda = Utils.deCentavosParaReal(precoVenda.get());
-        p.unidade = unidadeSelected.get();
-        p.categoriaId = categoriaSelected.get() == null ? 1L : categoriaSelected.get().id;
-        p.fornecedorId = fornecedorSelected.get() == null ? 1L : fornecedorSelected.get().id;
-        var estoqueField = estoque.get();
-        p.estoque = estoqueField == null || estoqueField.trim().isEmpty()? BigDecimal.ZERO: new BigDecimal(estoqueField);
-        p.observacoes = observacoes.get();
-        p.imagem = imagem.get();
-        p.marca = marca.get();
-
-        p.validade = validade.isNull()? null: DateUtils.localDateParaMillis(validade.get());
-        p.garantia = garantia.get();
-        p.totalLiquido = p.precoVenda.subtract(p.precoCompra);
-        return p;
-    }
-
-
     @Override
     public void handleClickMenuDelete() {
         ProdutoModel produtoModel = produtoSelected.get();
         if (produtoModel == null) return;
 
-        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?".formatted(produtoModel.descricao, produtoModel.codigoBarras);
+        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?"
+                .formatted(produtoModel.getDescricao(), produtoModel.getCodigoBarras());
         Components.ShowAlertAdvice(bodyMessage, () -> {
             Async.Run(() -> {
                 try {
-                    excluir();
-                    //vm.refreshProdutos();
+                    produtoService.excluirById(produtoModel.getId());
                     UI.runOnUi(() -> {
                         clearForm();
                         Components.ShowPopup(ctx, "Produto excluído com sucesso");
                     });
                 } catch (Exception e) {
-                    UI.runOnUi(()-> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
                 }
             });
         });
     }
 
+    @Override
     public void handleAddOrUpdate() {
-        var dto = toProduto();
-
-        if(perecivelSelected.get().equals("Sim") && validade.isNull()) {
+        if (perecivelSelected.get().equals("Sim") && validade.isNull()) {
             Components.ShowAlertError("Escolha a data de validade");
             return;
         }
 
         if (modoEdicao.get()) {
-            asyncAtualizar(ctx, dto);
-        }else{
-            asyncSalvar(ctx, dto);
+            asyncAtualizar();
+        } else {
+            asyncSalvar();
         }
     }
 
-    private void asyncAtualizar(ScreenContext ctx, ProdutoDto dto) {
+    private void asyncAtualizar() {
         Async.Run(() -> {
             try {
-                service.atualizar((ProdutoModel) new ProdutoModel().fromIdAndDto(produtoSelected.get().id, dto));
-                var produtosList = produtoRepository.listar();
+                var selecionado = produtoSelected.get();
+                fillModelFromForm(selecionado);
+                produtoService.atualizar(selecionado);
+
+                var produtosList = produtoService.listar();
                 UI.runOnUi(() -> {
                     this.produtos.clear();
                     this.produtos.addAll(produtosList);
@@ -176,16 +156,19 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         });
     }
 
-    private void asyncSalvar(ScreenContext ctx, ProdutoDto dto) {
+    private void asyncSalvar() {
         Async.Run(() -> {
             try {
-                var produtoModel = service.salvar(dto);
-                produtoModel.dataCriacao = System.currentTimeMillis();
-                produtoModel.categoria = categoriaSelected.get();
-                produtoModel.fornecedor = fornecedorSelected.get();
+                var model = new ProdutoModel();
+                fillModelFromForm(model);
+                model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
+
+                var salvo = produtoService.salvar(model);
+                salvo.setCategoria(categoriaSelected.get());
+                salvo.setFornecedor(fornecedorSelected.get());
 
                 UI.runOnUi(() -> {
-                    produtos.add(produtoModel);
+                    produtos.add(salvo);
                     Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
                     clearForm();
                 });
@@ -195,6 +178,26 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         });
     }
 
+    private void fillModelFromForm(ProdutoModel model) {
+        model.setCodigoBarras(codigoBarras.get());
+        model.setDescricao(descricao.get());
+        model.setPrecoCompra(Utils.deCentavosParaReal(precoCompra.get()));
+        model.setPrecoVenda(Utils.deCentavosParaReal(precoVenda.get()));
+        model.setUnidade(unidadeSelected.get());
+        model.setCategoriaId(categoriaSelected.get() == null ? 1 : categoriaSelected.get().getId());
+        model.setFornecedorId(fornecedorSelected.get() == null ? 1 : fornecedorSelected.get().getId());
+        var estoqueField = estoque.get();
+        model.setEstoque(estoqueField == null || estoqueField.trim().isEmpty() ? BigDecimal.ZERO : new BigDecimal(estoqueField));
+        model.setObservacoes(observacoes.get());
+        model.setImagem(imagem.get());
+        model.setMarca(marca.get());
+        model.setValidade(validade.isNull() ? null : DateUtils.localDateParaMillis(validade.get()));
+        model.setGarantia(garantia.get());
+        model.setComissao(comissao.get());
+        model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
+    }
+
+    @Override
     public void clearForm() {
         codigoBarras.set("");
         descricao.set("");
@@ -212,43 +215,28 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         imagem.set("/assets/produto-generico.png");
     }
 
-    //TODO: usar a exclusão da FornecedorScreenViewModel, pois esta não mostra aviso
-    public void excluir() throws Exception {
-        Long id = produtoSelected.get().id;
-        service.excluir(id);
-        produtos.removeIf(it -> it.id.equals(id));
+    @Override
+    public void populateFromModel() {
+        if (produtoSelected.get() == null) return;
+        final var model = produtoSelected.get();
+
+        codigoBarras.set(model.getCodigoBarras());
+        descricao.set(model.getDescricao());
+        precoCompra.set(Utils.deRealParaCentavos(model.getPrecoCompra()));
+        precoVenda.set(Utils.deRealParaCentavos(model.getPrecoVenda()));
+        comissao.set(model.getComissao());
+        garantia.set(model.getGarantia());
+        marca.set(model.getMarca());
+        unidadeSelected.set(model.getUnidade());
+        estoque.set(Utils.quantidadeTratada(model.getEstoque()));
+
+        validade.set(model.getValidade() != null ? DateUtils.millisParaLocalDate(model.getValidade()) : null);
+        perecivelSelected.set(model.getValidade() != null && model.getValidade() > 0 ? "Sim" : "Não");
+        observacoes.set(model.getObservacoes());
+        imagem.set(model.getImagem());
     }
 
     public ScreenContext getCtx() {
         return ctx;
     }
-
-    public void populateFromModel() {
-        if(produtoSelected.get() == null) return;
-        final var model = produtoSelected.get();
-
-        codigoBarras.set(model.codigoBarras);
-        descricao.set(model.descricao);
-        precoCompra.set(Utils.deRealParaCentavos( model.precoCompra));
-        precoVenda.set(Utils.deRealParaCentavos( model.precoVenda));
-        //margem.set(model.);
-        //lucro.set("0");
-        comissao.set(model.comissao);
-        garantia.set(model.garantia);
-        marca.set(model.marca);
-        unidadeSelected.set(model.unidade);
-        estoque.set(Utils.quantidadeTratada(model.estoque));
-
-        validade.set(model.validade != null ? DateUtils.millisParaLocalDate(model.validade) : null);
-        perecivelSelected.set(model.validade != null && model.validade > 0? "Sim": "Não");
-        observacoes.set(model.observacoes);
-        imagem.set(model.imagem);
-    }
-
-    @Override
-    public State<Boolean> modoEdicaoState() {
-        return modoEdicao;
-    }
-
 }
-

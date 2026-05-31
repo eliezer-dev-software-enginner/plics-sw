@@ -11,12 +11,10 @@ import megalodonte.application.MegalodonteApp;
 import megalodonte.router.v4.Router;
 import megalodonte.theme.ThemeManager;
 import my_app.core.Themes;
-import my_app.db.DB;
-import my_app.db.repositories_old.PreferenciasRepository;
+import my_app.db.services.PreferenciasService;
 import my_app.hotreload.HotReload;
-import my_app.routes.AppRoutes;
+import my_app.core.AppRoutes;
 import my_app.utils.TrayManager;
-import org.flywaydb.core.Flyway;
 
 public class Main {
 
@@ -87,11 +85,11 @@ public class Main {
 //                    .migrate();
             //MigrationRunner.run();
 
-            var prefs = new PreferenciasRepository().listar();
+            var prefs = new PreferenciasService().listar();
             if (!prefs.isEmpty()) {
                 var pref = prefs.getFirst();
-                // ThemeManager.setTheme(pref.tema.equals("Claro")? Themes.LIGHT: Themes.DARK);
-                askCredentials = pref.credenciaisHabilitadas == 1;
+                // ThemeManager.setTheme(pref.getTema().equals("Claro")? Themes.LIGHT: Themes.DARK);
+                askCredentials = pref.getCredenciaisHabilitadas() == 1;
                 forceAccessRoute = pref.isFirstAccess();
             }
         } catch (SQLException e) {

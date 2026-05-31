@@ -1,16 +1,16 @@
 package my_app.db.repositories;
 
-import my_app.db.dto.TecnicoDto;
-import my_app.db.models_old.TecnicoModel;
+import my_app.db.models.TecnicoModel;
+import net.sf.persism.Session;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+public class TecnicoRepository extends BaseRepository<TecnicoModel> {
 
-public class TecnicoRepository {
+    public TecnicoRepository(Session session) {
+        super(session);
+    }
 
+    @Override
+    protected Class<TecnicoModel> modelClass() {
+        return TecnicoModel.class;
+    }
 }
-

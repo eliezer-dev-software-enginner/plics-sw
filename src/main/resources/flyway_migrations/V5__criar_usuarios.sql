@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nome TEXT NOT NULL,
     senha TEXT NOT NULL,
     cargo TEXT NOT NULL,
-    data_criacao_millis INTEGER NOT NULL
+    dataCriacao INTEGER NOT NULL
 )

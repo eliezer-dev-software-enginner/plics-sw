@@ -2,26 +2,35 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import my_app.db.dto.PedidoDto;
-import my_app.domain.ModelBase;
+import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @Table("pedidos")
 public class PedidoModel {
-    private long id;
-    private long data_criacao_millis;
+
+    @Column(primary = true)
+    private Integer id;
+
+    @Column(name = "cliente_id")
     private Long clienteId;
+
+    @Column(name = "forma_pagamento")
     private String formaPagamento;
+
+    @Column(name = "total_liquido")
     private BigDecimal totalLiquido;
+
     private BigDecimal desconto;
     private String observacao;
-    private boolean isFiado;
 
-    private List<PedidoItemModel> itens; // composição, não vem do banco diretamente
+    @Column(name = "is_fiado")
+    private Integer fiado;
+
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
 }
