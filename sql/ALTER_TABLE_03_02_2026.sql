@@ -1,1 +1,0 @@
-ALTER TABLE vendas ADD COLUMN data_validade REAL;
