@@ -1,8 +1,8 @@
 package my_app.services;
 
-import my_app.db.models_old.ContasPagarModel;
 import my_app.db.dto.ContasPagarDto;
-import my_app.db.models_old.CompraModel;
+import my_app.db.models.CompraModel;
+import my_app.db.models_old.ContasPagarModel;
 import my_app.db.repositories_old.ContasPagarRepository;
 import my_app.db.repositories_old.ComprasRepository;
 import my_app.db.repositories_old.FornecedorRepository;
@@ -133,7 +133,7 @@ public class ContasPagarService {
     }
 
     public void gerarContasDeCompra(CompraModel compra, List<Parcela> parcelas) throws SQLException {
-        if (compra == null || compra.id == null) {
+        if (compra == null) {
             throw new IllegalStateException("Compra inválida");
         }
 
@@ -143,18 +143,18 @@ public class ContasPagarService {
 
         for (Parcela parcela : parcelas) {
             ContasPagarDto dto = new ContasPagarDto(
-                    "Parcela " + parcela.numero() + " - Compra #" + compra.id,
+                    "Parcela " + parcela.numero() + " - Compra #" + compra.getId(),
                     parcela.valor(),
                     BigDecimal.ZERO,
                     parcela.valor(),
                     parcela.dataVencimento(),
                     null,
                     "PENDENTE",
-                    compra.fornecedorId,
-                    compra.id,
+                    compra.getFornecedorId(),
+                    compra.getId(),
                     "PARC/" + parcela.numero(),
                     "DUPLICATA",
-                    "Gerado automaticamente da compra #" + compra.id
+                    "Gerado automaticamente da compra #" + compra.getId()
             );
             repo.salvar(dto);
         }
