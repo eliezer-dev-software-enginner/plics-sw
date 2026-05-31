@@ -4,11 +4,12 @@ import shutil
 import os
 
 ROOT = Path(__file__).resolve().parent.parent
+UPDATER_DIR = ROOT / "plics-sw-updater"
 
 APP_NAME = "Plics SW"
 APP_VERSION = "1.0.3"
 MAIN_CLASS = "my_app.Main"
-ICON_PATH = "src/main/resources/assets/app_ico.png"
+ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
 JAVAFX_VERSION = "25.0.1"
 
 
@@ -62,6 +63,15 @@ def run_jlink(temp_dir: Path):
         ],
         cwd=ROOT, check=True
     )
+
+
+def build_updater(temp_dir: Path):
+    gradlew = UPDATER_DIR / ("gradlew.bat" if os.name == "nt" else "gradlew")
+    subprocess.run([str(gradlew), "shadowJar"], cwd=UPDATER_DIR, check=True)
+    jars = list((UPDATER_DIR / "build" / "libs").glob("*.jar"))
+    if not jars:
+        raise FileNotFoundError("Nenhum JAR do updater encontrado em plics-sw-updater/build/libs/")
+    shutil.copy(jars[0], temp_dir / "updater.jar")
 
 
 def copy_natives(temp_dir: Path):

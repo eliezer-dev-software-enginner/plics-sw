@@ -31,3 +31,11 @@
 - Evita bugs de copy-paste (como o TecnicoModel em ProdutoEvents)
 - Fácil de estender para novas entidades sem criar novas classes de evento
 - Package `events` movido para dentro de `core` (organização consistente)
+
+---
+
+## 2026-05-31: Updater incluso no pacote de distribuição
+
+**Problema:** O plics-sw-updater era um projeto separado sem integração com os scripts de empacotamento, impossibilitando que o instalador já incluísse o utilitário de atualização.
+
+**Decisão:** Adicionar `build_updater()` em `scripts/config.py` que compila o `plics-sw-updater` e copia o JAR resultante para `temp_dir/updater.jar`. Ambos os scripts (`create-msi.py` e `create-deb.py`) chamam essa função antes do jlink/jpackage. O smoke test (execução da aplicação gerada) foi adicionado ao `create-msi.py` seguindo o mesmo padrão já existente no `create-deb.py`.

@@ -12,10 +12,13 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
+import my_app.Main;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class HomeScreen implements ScreenComponent {
@@ -97,6 +100,32 @@ public class HomeScreen implements ScreenComponent {
         );
     }
 
+    private void buscarAtualizacao() {
+        try {
+            var codeSource = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
+            var updaterJar = Paths.get(codeSource).getParent().resolve("updater.jar").toString();
+
+            if (!new File(updaterJar).exists()) {
+                System.err.println("updater.jar não encontrado em: " + updaterJar);
+                return;
+            }
+
+            var javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+            var pid = ProcessHandle.current().pid();
+
+            new ProcessBuilder(
+                    javaBin, "-jar", updaterJar,
+                    "--pid", String.valueOf(pid),
+                    "--version", "v" + Main.APP_VERSION,
+                    "--owner", "eliezer-dev-software-enginner",
+                    "--repo", "plics-sw"
+            ).inheritIO().start();
+        } catch (Exception e) {
+            System.err.println("Erro ao iniciar updater: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private Component menuBar(){
         return new MenuBar()
                 .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow("preferencias",e->{})))
@@ -113,6 +142,7 @@ public class HomeScreen implements ScreenComponent {
                         .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
                         .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
                         .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow("info-update",e->{}))
+                        .item("Buscar atualização", this::buscarAtualizacao)
                 );
     }
 

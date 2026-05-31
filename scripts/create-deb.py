@@ -10,15 +10,18 @@ if not os.access(gradlew, os.X_OK):
 
 temp_dir = prepare_temp()
 
-print("[1/5] 📦 Gerando fat JAR...")
+print("[1/6] 📦 Gerando fat JAR da aplicação...")
 run_gradle("clean", "shadowJar")
 jar_file = find_jar()
 shutil.copy(jar_file, temp_dir / "app.jar")
 
-print("[2/5] 📚 Copiando JavaFX modules...")
+print("[2/6] 📦 Gerando fat JAR do updater...")
+build_updater(temp_dir)
+
+print("[3/6] 📚 Copiando JavaFX modules...")
 copy_javafx(temp_dir)
 
-print("[3/5] ⚙️  Gerando runtime com jlink...")
+print("[4/6] ⚙️  Gerando runtime com jlink...")
 run_jlink(temp_dir)
 copy_natives(temp_dir)
 
@@ -29,14 +32,14 @@ subprocess.run(
     cwd=ROOT
 )
 
-print("[4/5] 🎁 Gerando pacote .deb...")
+print("[5/6] 🎁 Gerando pacote .deb...")
 run_jpackage(temp_dir, "deb", [
     "--linux-shortcut",
     "--linux-menu-group", "Office",
     "--linux-package-name", APP_NAME.lower().replace(" ", "-"),
 ])
 
-print("[5/5] 📝 Renomeando pacote...")
+print("[6/6] 📝 Renomeando pacote...")
 final = rename_output("deb")
 print(f"\n✅ Pacote .deb criado: {final}")
 print(f"   Para instalar: sudo dpkg -i {final}")

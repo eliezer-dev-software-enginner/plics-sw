@@ -16,3 +16,8 @@
 ## Pendências
 - Implementar testes de repository para telas que ainda não possuem (ex: CompraRepository)
 - Refatorar telas que ainda usam padrão antigo (se houver)
+
+## Concluído (empacotamento)
+- `scripts/config.py`: adicionado `UPDATER_DIR` e `build_updater()`
+- `scripts/create-msi.py`: updater.jar incluso no pacote; smoke test adicionado
+- `scripts/create-deb.py`: updater.jar incluso no pacote
