@@ -1,24 +1,23 @@
 package my_app.db.models;
 
-import my_app.db.dto.CategoriaDto;
-import my_app.db.dto.FornecedorDto;
-import my_app.domain.ModelBase;
-import my_app.domain.SqlField;
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.persism.annotations.Column;
+import net.sf.persism.annotations.Table;
+import org.jetbrains.annotations.NotNull;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 
-public class CategoriaModel extends ModelBase<CategoriaDto> {
-    @SqlField(name = "nome", type = "string")
-    public String nome;
+@Setter
+@Getter
+@Table("categorias")
+public class CategoriaModel {
 
-    @Override
-    public CategoriaModel fromIdAndDtoAndMillis(Long id, CategoriaDto dto, long millis) {
-        this.id = id;
-        this.dataCriacao = millis;
-        this.nome = dto.nome();
-        return this;
-    }
+  @Column(primary = true)
+  private Integer id;
+
+  private LocalDateTime dataCriacao;
+  private String nome;
 }
 
 

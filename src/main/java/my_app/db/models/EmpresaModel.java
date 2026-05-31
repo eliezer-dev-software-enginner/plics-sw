@@ -1,45 +1,49 @@
 package my_app.db.models;
 
-import my_app.db.dto.EmpresaDto;
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.persism.annotations.Column;
+import net.sf.persism.annotations.Table;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@Table("empresas")
 public class EmpresaModel {
-    public Long id;
-    public String nome;
-    public String cpfCnpj;
-    public String telefone;
-    public String cep;
-    public String cidade;
-    public String rua;
-    public String bairro;
-    public String localPagamento;
-    public String textoResponsabilidade;
-    public String termoServico;
-    public String logoMarca;
-    public Long dataCriacao;
 
-    public EmpresaModel() {}
+    @Column(primary = true)
+    private Integer id;
 
+    private String nome;
+    private String cpfCnpj;
 
-    public static EmpresaModel fromResultSet(ResultSet rs) throws SQLException {
-        var model = new EmpresaModel();
+    @Column(name = "celular")
+    private String telefone;
 
-        model.id = rs.getLong("id");
-        model.nome = rs.getString("nome");
-        model.cpfCnpj = rs.getString("cpfCnpj");
-        model.telefone = rs.getString("celular");
-        model.cep = rs.getString("endereco_cep");
-        model.cidade = rs.getString("endereco_cidade");
-        model.rua = rs.getString("endereco_rua");
-        model.bairro = rs.getString("endereco_bairro");
-        model.localPagamento = rs.getString("local_pagamento");
-        model.textoResponsabilidade = rs.getString("texto_responsabilidade");
-        model.termoServico = rs.getString("texto_termo_de_servico");
-        model.logoMarca = rs.getString("logomarca");
+    @Column(name = "endereco_cep")
+    private String cep;
 
-        model.dataCriacao = rs.getLong("data_criacao");
-        return model;
-    }
+    @Column(name = "endereco_cidade")
+    private String cidade;
+
+    @Column(name = "endereco_rua")
+    private String rua;
+
+    @Column(name = "endereco_bairro")
+    private String bairro;
+
+    @Column(name = "local_pagamento")
+    private String localPagamento;
+
+    @Column(name = "texto_responsabilidade")
+    private String textoResponsabilidade;
+
+    @Column(name = "texto_termo_de_servico")
+    private String termoServico;
+
+    @Column(name = "logomarca")
+    private String logoMarca;
+
+    private LocalDateTime dataCriacao;
 }

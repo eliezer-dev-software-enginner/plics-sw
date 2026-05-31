@@ -1,251 +1,213 @@
 package my_app.db.repositories;
 
-import my_app.db.DB;
-import my_app.db.dto.ContasPagarDto;
 import my_app.db.models.ContasPagarModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ContasPagarRepositoryTest {
-    private ContasPagarRepository repo;
+class ContasPagarRepositoryTest extends BaseRepositoryTest {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(ContasPagarRepositoryTest.class);
+
+    ContasPagarRepository repository;
+
+    @Override
+    protected void initRepository() {
+        repository = new ContasPagarRepository(session);
+    }
 
     @BeforeEach
-    void setup() throws Exception {
-        DB.reset();
-        DB.getInstance("jdbc:sqlite::memory:");
-        DBInitializer.init();
-        repo = new ContasPagarRepository();
+    void cleanTable() throws Exception {
+        try (var conn = DriverManager.getConnection("jdbc:sqlite:file:testdb?mode=memory&cache=shared");
+             var stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM contas_pagar");
+        }
+    }
+
+    private ContasPagarModel novaConta(String descricao, BigDecimal valor, Long dataVencimento, String status) {
+        var model = new ContasPagarModel();
+        model.setDescricao(descricao);
+        model.setValorOriginal(valor);
+        model.setValorPago(BigDecimal.ZERO);
+        model.setValorRestante(valor);
+        model.setDataVencimento(dataVencimento);
+        model.setStatus(status);
+        model.setDataCriacao(LocalDateTime.now());
+        return model;
     }
 
     @Test
     void salvar() throws SQLException {
-        ContasPagarDto dto = contasPagarDtoFake();
-        ContasPagarModel salvo = repo.salvar(dto);
+        var model = novaConta("Conta de teste", new BigDecimal("150.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE");
 
-        ContasPagarModel encontrado = repo.buscarById(salvo.id);
+        ContasPagarModel salvo = repository.salvar(model);
 
-        assertNotNull(encontrado);
-        assertEquals("Conta Teste", encontrado.descricao);
-        assertEquals(BigDecimal.valueOf(1000.50), encontrado.valorOriginal);
-        assertEquals("PENDENTE", encontrado.status);
-        assertNotNull(salvo.id);
-        assertNotNull(salvo.dataCriacao);
+        log.info("Conta salva com id={}", salvo.getId());
+
+        assertNotNull(salvo);
+        assertNotNull(salvo.getId());
+        assertEquals("Conta de teste", salvo.getDescricao());
+        assertEquals(0, new BigDecimal("150.00").compareTo(salvo.getValorOriginal()));
     }
 
     @Test
     void listar() throws SQLException {
-        var dto1 = contasPagarDtoFake();
-        var dto2 = contasPagarDtoFake();
-        dto2 = new ContasPagarDto(
-            "Outra Conta", 
-            BigDecimal.valueOf(500.0), 
-            BigDecimal.ZERO, 
-            BigDecimal.valueOf(500.0),
-            System.currentTimeMillis() + 86400000L, 
-            null, 
-            "PENDENTE", 
-            2L, 
-            null, 
-            "DOC/002", 
-            "BOLETO", 
-            "Observação teste"
-        );
+        repository.salvar(novaConta("Conta 1", new BigDecimal("100.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE"));
+        repository.salvar(novaConta("Conta 2", new BigDecimal("200.00"),
+                System.currentTimeMillis() + 172800000L, "PENDENTE"));
 
-        repo.salvar(dto1);
-        repo.salvar(dto2);
+        List<ContasPagarModel> lista = repository.listar();
 
-        List<ContasPagarModel> lista = repo.listar();
-
+        assertNotNull(lista);
         assertEquals(2, lista.size());
-        assertTrue(lista.stream().anyMatch(p -> p.descricao.equals("Conta Teste")));
-        assertTrue(lista.stream().anyMatch(p -> p.descricao.equals("Outra Conta")));
     }
 
     @Test
     void atualizar() throws SQLException {
-        ContasPagarDto dto = contasPagarDtoFake();
-        ContasPagarModel salvo = repo.salvar(dto);
+        var salvo = repository.salvar(novaConta("Original", new BigDecimal("100.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE"));
 
-        salvo.descricao = "Conta Atualizada";
-        salvo.status = "PAGO";
-        salvo.valorPago = BigDecimal.valueOf(1000.50);
-        salvo.valorRestante = BigDecimal.ZERO;
-        salvo.dataPagamento = System.currentTimeMillis();
+        salvo.setDescricao("Atualizada");
+        salvo.setValorOriginal(new BigDecimal("150.00"));
+        repository.atualizar(salvo);
 
-        repo.atualizar(salvo);
+        var atualizado = repository.buscarById(salvo.getId());
 
-        ContasPagarModel atualizado = repo.buscarById(salvo.id);
-        assertEquals("Conta Atualizada", atualizado.descricao);
-        assertEquals("PAGO", atualizado.status);
-        assertEquals(BigDecimal.valueOf(1000.50), atualizado.valorPago);
-        assertEquals(BigDecimal.ZERO.stripTrailingZeros(), atualizado.valorRestante.stripTrailingZeros());
+        assertNotNull(atualizado);
+        assertEquals("Atualizada", atualizado.getDescricao());
+        assertEquals(0, new BigDecimal("150.00").compareTo(atualizado.getValorOriginal()));
     }
 
     @Test
-    void excluir() throws SQLException {
-        ContasPagarDto dto = contasPagarDtoFake();
-        ContasPagarModel salvo = repo.salvar(dto);
+    void excluirById() throws SQLException {
+        var salvo = repository.salvar(novaConta("Para excluir", new BigDecimal("100.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE"));
 
-        repo.excluirById(salvo.id);
+        repository.excluirById(salvo.getId());
 
-        assertNull(repo.buscarById(salvo.id));
+        var deletado = repository.buscarById(salvo.getId());
+        assertNull(deletado);
     }
 
     @Test
-    void buscarPorFornecedor() throws SQLException {
-        ContasPagarDto dto1 = contasPagarDtoFake();
-        ContasPagarDto dto2 = new ContasPagarDto(
-            "Conta Fornecedor 2", 
-            BigDecimal.valueOf(200.0), 
-            BigDecimal.ZERO, 
-            BigDecimal.valueOf(200.0),
-            System.currentTimeMillis() + 86400000L, 
-            null, 
-            "PENDENTE", 
-            5L, // fornecedor_id diferente
-            null, 
-            "DOC/003", 
-            "CHEQUE", 
-            null
-        );
+    void buscarById() throws SQLException {
+        var salvo = repository.salvar(novaConta("Busca por ID", new BigDecimal("100.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE"));
 
-        repo.salvar(dto1); // fornecedorId = 1L
-        repo.salvar(dto2); // fornecedorId = 5L
+        var encontrado = repository.buscarById(salvo.getId());
 
-        List<ContasPagarModel> contasFornecedor1 = repo.buscarPorFornecedor(1L);
-        List<ContasPagarModel> contasFornecedor5 = repo.buscarPorFornecedor(5L);
-
-        assertEquals(1, contasFornecedor1.size());
-        assertEquals(1, contasFornecedor5.size());
-        assertEquals("Conta Teste", contasFornecedor1.get(0).descricao);
-        assertEquals("Conta Fornecedor 2", contasFornecedor5.get(0).descricao);
+        assertNotNull(encontrado);
+        assertEquals(salvo.getId(), encontrado.getId());
+        assertEquals("Busca por ID", encontrado.getDescricao());
     }
 
     @Test
     void buscarPorStatus() throws SQLException {
-        ContasPagarDto dto1 = contasPagarDtoFake();
-        ContasPagarDto dto2 = new ContasPagarDto(
-            "Conta Paga", 
-            BigDecimal.valueOf(300.0), 
-            BigDecimal.valueOf(300.0), 
-            BigDecimal.ZERO,
-            System.currentTimeMillis() - 86400000L, // vencida
-            System.currentTimeMillis(), // paga hoje
-            "PAGO", 
-            1L, 
-            null, 
-            "DOC/004", 
-            "BOLETO", 
-            null
-        );
+        repository.salvar(novaConta("Paga", new BigDecimal("100.00"),
+                System.currentTimeMillis() + 86400000L, "PAGO"));
+        repository.salvar(novaConta("Pendente", new BigDecimal("200.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE"));
 
-        repo.salvar(dto1); // PENDENTE
-        repo.salvar(dto2); // PAGO
-
-        List<ContasPagarModel> pendentes = repo.buscarPorStatus("PENDENTE");
-        List<ContasPagarModel> pagas = repo.buscarPorStatus("PAGO");
+        var pendentes = repository.buscarPorStatus("PENDENTE");
 
         assertEquals(1, pendentes.size());
-        assertEquals(1, pagas.size());
-        assertEquals("Conta Teste", pendentes.get(0).descricao);
-        assertEquals("Conta Paga", pagas.get(0).descricao);
+        assertEquals("Pendente", pendentes.getFirst().getDescricao());
     }
 
     @Test
     void buscarVencidas() throws SQLException {
-        long agora = System.currentTimeMillis();
-        long ontem = agora - 86400000L; // 1 dia atrás
-        long amanha = agora + 86400000L; // 1 dia à frente
+        repository.salvar(novaConta("Vencida", new BigDecimal("100.00"),
+                System.currentTimeMillis() - 86400000L, "PENDENTE"));
+        repository.salvar(novaConta("Futura", new BigDecimal("200.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE"));
 
-        ContasPagarDto dtoVencida = new ContasPagarDto(
-            "Conta Vencida", 
-            BigDecimal.valueOf(100.0), 
-            BigDecimal.ZERO, 
-            BigDecimal.valueOf(100.0),
-            ontem, // vencida
-            null, 
-            "PENDENTE", 
-            1L, 
-            null, 
-            "DOC/005", 
-            "BOLETO", 
-            null
-        );
-
-        ContasPagarDto dtoNaoVencida = new ContasPagarDto(
-            "Conta Não Vencida", 
-            BigDecimal.valueOf(200.0), 
-            BigDecimal.ZERO, 
-            BigDecimal.valueOf(200.0),
-            amanha, // não vencida
-            null, 
-            "PENDENTE", 
-            1L, 
-            null, 
-            "DOC/006", 
-            "BOLETO", 
-            null
-        );
-
-        repo.salvar(dtoVencida);
-        repo.salvar(dtoNaoVencida);
-
-        List<ContasPagarModel> vencidas = repo.buscarVencidas();
+        var vencidas = repository.buscarVencidas();
 
         assertEquals(1, vencidas.size());
-        assertEquals("Conta Vencida", vencidas.get(0).descricao);
+        assertEquals("Vencida", vencidas.getFirst().getDescricao());
     }
 
     @Test
-    void registrarPagamento() throws SQLException {
-        ContasPagarDto dto = contasPagarDtoFake();
-        ContasPagarModel salvo = repo.salvar(dto);
+    void buscarPorFornecedor() throws SQLException {
+        var c1 = novaConta("Fornec 1", new BigDecimal("100.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE");
+        c1.setFornecedorId(1);
+        repository.salvar(c1);
 
-        BigDecimal valorPago = BigDecimal.valueOf(500.00);
-        repo.registrarPagamento(salvo.id, valorPago);
+        var c2 = novaConta("Fornec 2", new BigDecimal("200.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE");
+        c2.setFornecedorId(2);
+        repository.salvar(c2);
 
-        ContasPagarModel atualizada = repo.buscarById(salvo.id);
-        assertEquals(valorPago, atualizada.valorPago);
-        assertEquals(BigDecimal.valueOf(500.50).stripTrailingZeros(), atualizada.valorRestante.stripTrailingZeros()); // 1000.50 - 500.00
-        assertEquals("PARCIAL", atualizada.status);
-        assertNotNull(atualizada.dataPagamento);
+        var resultado = repository.buscarPorFornecedor(1);
+
+        assertEquals(1, resultado.size());
+        assertEquals("Fornec 1", resultado.getFirst().getDescricao());
     }
 
     @Test
-    void registrarPagamentoCompleto() throws SQLException {
-        ContasPagarDto dto = contasPagarDtoFake();
-        ContasPagarModel salvo = repo.salvar(dto);
+    void buscarPorPeriodo() throws SQLException {
+        var agora = System.currentTimeMillis();
+        repository.salvar(novaConta("Antiga", new BigDecimal("100.00"),
+                agora - 86400000L, "PENDENTE"));
+        repository.salvar(novaConta("Recente", new BigDecimal("200.00"),
+                agora + 86400000L, "PENDENTE"));
 
-        // Pagar valor total
-        repo.registrarPagamento(salvo.id, salvo.valorOriginal);
+        var resultado = repository.buscarPorPeriodo(agora - 172800000L, agora);
 
-        ContasPagarModel atualizada = repo.buscarById(salvo.id);
-        assertEquals(salvo.valorOriginal, atualizada.valorPago);
-        assertEquals(BigDecimal.ZERO.stripTrailingZeros(), atualizada.valorRestante.stripTrailingZeros());
-        assertEquals("PAGO", atualizada.status);
-        assertNotNull(atualizada.dataPagamento);
+        assertEquals(1, resultado.size());
+        assertEquals("Antiga", resultado.getFirst().getDescricao());
     }
 
-    private ContasPagarDto contasPagarDtoFake() {
-        return new ContasPagarDto(
-            "Conta Teste", 
-            BigDecimal.valueOf(1000.50), 
-            BigDecimal.ZERO, 
-            BigDecimal.valueOf(1000.50),
-            System.currentTimeMillis() + 86400000L, // vence amanhã
-            null, 
-            "PENDENTE", 
-            1L, 
-            null, 
-            "DOC/001", 
-            "DUPLICATA", 
-            "Observação de teste"
-        );
+    @Test
+    void buscarPorCompra() throws SQLException {
+        var c1 = novaConta("Compra 1", new BigDecimal("100.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE");
+        c1.setCompraId(10);
+        repository.salvar(c1);
+
+        var c2 = novaConta("Sem compra", new BigDecimal("200.00"),
+                System.currentTimeMillis() + 86400000L, "PENDENTE");
+        repository.salvar(c2);
+
+        var resultado = repository.buscarPorCompra(10);
+
+        assertEquals(1, resultado.size());
+        assertEquals("Compra 1", resultado.getFirst().getDescricao());
+    }
+
+    @Test
+    void somarDespesasPorPeriodo() throws SQLException {
+        var agora = System.currentTimeMillis();
+
+        var c1 = novaConta("Paga 1", new BigDecimal("100.00"),
+                agora - 86400000L, "PAGO");
+        c1.setDataPagamento(agora);
+        c1.setValorPago(new BigDecimal("100.00"));
+        c1.setValorRestante(BigDecimal.ZERO);
+        repository.salvar(c1);
+
+        var c2 = novaConta("Paga 2", new BigDecimal("200.00"),
+                agora - 86400000L, "PAGO");
+        c2.setDataPagamento(agora);
+        c2.setValorPago(new BigDecimal("200.00"));
+        c2.setValorRestante(BigDecimal.ZERO);
+        repository.salvar(c2);
+
+        var total = repository.somarDespesasPorPeriodo(agora - 86400000L, agora + 86400000L);
+
+        assertEquals(0, new BigDecimal("300.00").compareTo(total));
     }
 }

@@ -1,107 +1,98 @@
 package my_app.screens.contasAReceberScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.ListState;
 import megalodonte.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
+import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.ContaAreceberDto;
+import megalodonte.v2.ListState;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.ContaAreceberModel;
-import my_app.db.repositories.ContasAReceberRepository;
-import my_app.db.repositories.ClienteRepository;
-import my_app.db.repositories.VendaRepository;
+import my_app.db.services.ClienteService;
+import my_app.db.services.ContaAreceberService;
+import my_app.domain.components.Components;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModel;
-import my_app.domain.components.Components;
-import my_app.services.ContasAReceberService;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ContasAReceberScreenViewModel extends ViewModel {
-    private final ContasAReceberRepository repository = new ContasAReceberRepository();
-    private final ClienteRepository clienteRepository = new ClienteRepository();
-    private final ContasAReceberService service = new ContasAReceberService(new VendaRepository(), clienteRepository);
+public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
 
-    // Lists for dropdowns
-    public final List<String> statusOptions = List.of("TODOS", "PENDENTE", "PAGO", "PARCIAL", "ATRASADO", "CANCELADO");
-    public final List<String> tipoDocumentoOptions = List.of("DUPLICATA", "BOLETO", "NOTA FISCAL", "CHEQUE", "OUTRO");
-    
-    // Observable list for table
+    private final ContaAreceberService contaService;
+    private final ClienteService clienteService;
+
     public final ListState<ContaAreceberModel> contas = ListState.of(List.of());
-    
-    // Form states
+
     public final State<String> descricao = State.of("");
-    public final State<String> valorOriginal = State.of("0"); // in cents
-    public final State<BigDecimal> valorRecebido = State.of(BigDecimal.ZERO);
+    public final State<String> valorOriginal = State.of("0");
+    public final State<String> valorRecebimento = State.of("0");
+
     public final State<LocalDate> dataVencimento = State.of(LocalDate.now());
     public final State<LocalDate> dataRecebimento = State.of(null);
+
     public final State<String> status = State.of("PENDENTE");
     public final State<String> tipoDocumento = State.of("DUPLICATA");
     public final State<String> numeroDocumento = State.of("");
     public final State<String> observacao = State.of("");
-    
-    // Related data
+
     public final State<List<ClienteModel>> clientes = State.of(List.of());
     public final State<ClienteModel> clienteSelected = State.of(null);
     public final State<ContaAreceberModel> contaSelected = State.of(null);
-    public final State<String> statusOptionSelected = State.of(statusOptions.getFirst());
-    
-    // UI states
-    public final State<Boolean> modoEdicao = State.of(false);
-    public final State<Boolean> modoRecebimento = State.of(false);
-    public final State<String> valorRecebimento = State.of("0");
-    
-    // Computed states
-    public final ComputedState<String> btnText = ComputedState.of(() -> 
-        modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
-        
-    public final ComputedState<String> btnRecebimentoText = ComputedState.of(() -> 
-        modoRecebimento.get() ? "Registrar Recebimento" : "Pagar", modoRecebimento);
-        
-    public final ComputedState<Boolean> formValido = ComputedState.of(() -> {
-        return !descricao.get().trim().isEmpty() && 
-               !valorOriginal.get().equals("0") && 
-               clienteSelected.get() != null &&
-               dataVencimento.get() != null;
-    }, descricao, valorOriginal, clienteSelected, dataVencimento);
-    
-    public final ComputedState<Boolean> recebimentoValido = ComputedState.of(() -> {
-        // Para o botão "Pagar", só verifica se há conta selecionada
-        // A validação do valor acontece no momento do registro do recebimento
-        return contaSelected.get() != null;
-    }, contaSelected);
 
-    
-    // Business logic methods
+    public final State<Boolean> modoRecebimento = State.of(false);
+
+    public final List<String> statusOptions = List.of("TODOS", "PENDENTE", "PAGO", "PARCIAL", "ATRASADO", "CANCELADO");
+    public final List<String> tipoDocumentoOptions = List.of("DUPLICATA", "BOLETO", "NOTA FISCAL", "CHEQUE", "OUTRO");
+    public final State<String> statusOptionSelected = State.of(statusOptions.getFirst());
+
+    public final ComputedState<String> btnRecebimentoText = ComputedState.of(() ->
+            modoRecebimento.get() ? "Registrar Recebimento" : "Receber", modoRecebimento);
+
+    public final ComputedState<Boolean> formValido = ComputedState.of(() ->
+            !descricao.get().trim().isEmpty() &&
+                    !valorOriginal.get().equals("0") &&
+                    clienteSelected.get() != null &&
+                    dataVencimento.get() != null, descricao, valorOriginal, clienteSelected, dataVencimento);
+
+    public ContasAReceberScreenViewModel(ScreenContext ctx) {
+        super(ctx);
+        try {
+            contaService = new ContaAreceberService();
+            clienteService = new ClienteService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
     public void loadInicial() {
         Async.Run(() -> {
             try {
-                var contasList = repository.listar();
-                var clienteList = clienteRepository.listar();
-                
-                // Load related clientes for each conta
+                var contasList = contaService.listar();
+                var clientesList = clienteService.listar();
+
                 for (var conta : contasList) {
-                    if (conta.clienteId != null) {
-                        var cliente = clienteList.stream()
-                            .filter(f -> f.id.equals(conta.clienteId))
-                            .findFirst()
-                            .orElse(null);
-                        conta.cliente = cliente;
+                    if (conta.getClienteId() != null) {
+                        clientesList.stream()
+                                .filter(c -> c.getId().equals(conta.getClienteId()))
+                                .findFirst()
+                                .ifPresent(conta::setCliente);
                     }
                 }
 
+                final var clientesCopy = List.copyOf(clientesList);
+
                 UI.runOnUi(() -> {
                     contas.addAll(contasList);
-                    clientes.set(clienteList);
-                    if (!clienteList.isEmpty()) {
-                        clienteSelected.set(clienteList.getFirst());
+                    clientes.set(clientesCopy);
+                    if (!clientesCopy.isEmpty()) {
+                        clienteSelected.set(clientesCopy.getFirst());
                     }
                 });
             } catch (Exception e) {
@@ -109,30 +100,21 @@ public class ContasAReceberScreenViewModel extends ViewModel {
             }
         });
     }
-    
+
     public void loadPorStatus(String statusFiltro) {
         Async.Run(() -> {
             try {
                 List<ContaAreceberModel> contasFiltradas;
                 if ("TODOS".equals(statusFiltro)) {
-                    contasFiltradas = repository.listar();
+                    contasFiltradas = contaService.listar();
                 } else {
-                    contasFiltradas = repository.buscarPorStatus(statusFiltro);
+                    contasFiltradas = contaService.buscarPorStatus(statusFiltro);
                 }
-                
-                // Load related clientes
-                var clientesList = clienteRepository.listar();
-                for (var conta : contasFiltradas) {
-                    if (conta.clienteId != null) {
-                        var cliente = clientesList.stream()
-                            .filter(f -> f.id.equals(conta.clienteId))
-                            .findFirst()
-                            .orElse(null);
-                        conta.cliente = cliente;
-                    }
-                }
-                
+
+                attachClientes(contasFiltradas);
+
                 UI.runOnUi(() -> {
+                    contas.clear();
                     contas.addAll(contasFiltradas);
                 });
             } catch (Exception e) {
@@ -140,25 +122,15 @@ public class ContasAReceberScreenViewModel extends ViewModel {
             }
         });
     }
-    
+
     public void loadVencidas() {
         Async.Run(() -> {
             try {
-                var contasVencidas = repository.buscarVencidas();
-                
-                // Load related clientes
-                var clientesList = clienteRepository.listar();
-                for (var conta : contasVencidas) {
-                    if (conta.clienteId != null) {
-                        ClienteModel cliente = clientesList.stream()
-                            .filter(f -> f.id.equals(conta.clienteId))
-                            .findFirst()
-                            .orElse(null);
-                        conta.cliente = cliente;
-                    }
-                }
-                
+                var contasVencidas = contaService.buscarVencidas();
+                attachClientes(contasVencidas);
+
                 UI.runOnUi(() -> {
+                    contas.clear();
                     contas.addAll(contasVencidas);
                 });
             } catch (Exception e) {
@@ -166,255 +138,246 @@ public class ContasAReceberScreenViewModel extends ViewModel {
             }
         });
     }
-    
-    public ContaAreceberDto toDto() {
-        return new ContaAreceberDto(
-            descricao.get(),
-            Utils.deCentavosParaReal(valorOriginal.get()),
-            valorRecebido.get(),
-            Utils.deCentavosParaReal(valorOriginal.get()).subtract(valorRecebido.get()),
-            DateUtils.localDateParaMillis(dataVencimento.get()),
-            dataRecebimento.get() != null ? DateUtils.localDateParaMillis(dataRecebimento.get()) : null,
-            status.get(),
-            clienteSelected.get() != null ? clienteSelected.get().id : null,
-            null, // vendaId - can be set later if linked to a purchase
-            numeroDocumento.get(),
-            tipoDocumento.get(),
-            observacao.get()
-        );
-    }
-    
-    public void salvarOuAtualizar(ScreenContext ctx) {
-        if (!formValido.get()) {
-            UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
-            return;
-        }
-        
-        var dto = toDto();
-        
-        if (modoEdicao.get()) {
-            // Update logic
-            Async.Run(() -> {
-                try {
-                    final var modelAtualizada = new ContaAreceberModel().fromIdAndDto(contaSelected.get().id, dto);
-                    repository.atualizar((ContaAreceberModel) modelAtualizada);
-                    UI.runOnUi(() -> {
-                        // Update item in observable list
-                        int index = contas.indexOf(contaSelected.get());
-                        if (index >= 0) {
-                            contas.set(index, (ContaAreceberModel) modelAtualizada);
-                        }
-                        Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
-                        limparFormulario();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
-                }
-            });
-        } else {
-            // Save logic
-            Async.Run(() -> {
-                try {
-                    var contaSalva = repository.salvar(dto);
-                UI.runOnUi(() -> {
-                    contas.add(contaSalva);
-                    Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
-                    limparFormulario();
-                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar: " + e.getMessage()));
-                }
-            });
-        }
-    }
-    
-    public void registrarRecebimento(ScreenContext ctx) {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar recebimento"));
-            return;
-        }
-        
-        BigDecimal valorRecebimentoBig = Utils.deCentavosParaReal(valorRecebimento.get());
-        
-        // Validar valor do recebimento
-        if (valorRecebimentoBig.compareTo(BigDecimal.ZERO) <= 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Informe um valor de recebimento maior que zero"));
-            return;
-        }
-        
-        if (valorRecebimentoBig.compareTo(contaSelected.get().valorRestante) > 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Valor do recebimento não pode ser maior que o valor restante"));
-            return;
-        }
-        
-        Async.Run(() -> {
-            try {
-                service.registrarRecebimento(contaSelected.get().id, valorRecebimentoBig);
-                UI.runOnUi(() -> {
-                    // Update the item in the list
-                    try {
-                        var contaAtualizada = repository.buscarById(contaSelected.get().id);
-                        int index = contas.indexOf(contaSelected.get());
-                        if (index >= 0) {
-                            contas.set(index, contaAtualizada);
-                        }
-                        Components.ShowPopup(ctx, "Recebimento registrado com sucesso!");
-                        valorRecebimento.set("0");
-                        modoRecebimento.set(false);
-                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                    } catch (Exception ex) {
-                        Components.ShowAlertError("Erro ao atualizar lista: " + ex.getMessage());
-                    }
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar recebimento: " + e.getMessage()));
-            }
-        });
-    }
-    
-    public void quitarConta(ScreenContext ctx) {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
-            return;
-        }
-        
-        Async.Run(() -> {
-            try {
-                service.registrarRecebimento(contaSelected.get().id, contaSelected.get().valorRestante);
-                UI.runOnUi(() -> {
-                    try {
-                        // Update the item in the list
-                        var contaAtualizada = repository.buscarById(contaSelected.get().id);
-                        int index = contas.indexOf(contaSelected.get());
-                        if (index >= 0) {
-                            contas.set(index, contaAtualizada);
-                        }
-                        Components.ShowPopup(ctx, "Conta quitada com sucesso!");
-                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                    } catch (Exception ex) {
-                        Components.ShowAlertError("Erro ao atualizar lista: " + ex.getMessage());
-                    }
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
-            }
-        });
-    }
-    
-    public void excluir(ScreenContext ctx) {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para excluir"));
-            return;
-        }
-        
-        Async.Run(() -> {
-            try {
-                service.excluir(contaSelected.get().id);
-                UI.runOnUi(() -> {
-                    contas.remove(contaSelected.get());
-                    Components.ShowPopup(ctx, "Conta excluída com sucesso!");
-                    limparFormulario();
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
-            }
-        });
-    }
-    
-    public void editar() {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para editar"));
-            return;
-        }
-        
+
+    @Override
+    public void populateFromModel() {
+        if (contaSelected.get() == null) return;
         var conta = contaSelected.get();
-        descricao.set(conta.descricao);
-        valorOriginal.set(Utils.deRealParaCentavos(conta.valorOriginal));
-        valorRecebido.set(conta.valorRecebido);
-        dataVencimento.set(DateUtils.millisParaLocalDate(conta.dataVencimento));
-        dataRecebimento.set(conta.dataRecebimento != null ? DateUtils.millisParaLocalDate(conta.dataRecebimento) : null);
-        status.set(conta.status);
-        tipoDocumento.set(conta.tipoDocumento);
-        numeroDocumento.set(conta.numeroDocumento);
-        observacao.set(conta.observacao);
-        
-        // Find and set cliente by ID
-        if (conta.clienteId != null) {
-            Async.Run(() -> {
-                try {
-                    ClienteModel cliente = clienteRepository.buscarById(conta.clienteId);
-                    UI.runOnUi(() -> clienteSelected.set(cliente));
-                } catch (Exception e) {
-                    System.err.println("Erro ao buscar cliente: " + e.getMessage());
-                }
-            });
+
+        descricao.set(conta.getDescricao());
+        valorOriginal.set(Utils.deRealParaCentavos(conta.getValorOriginal()));
+        dataVencimento.set(DateUtils.millisParaLocalDate(conta.getDataVencimento()));
+        dataRecebimento.set(conta.getDataRecebimento() != null ? DateUtils.millisParaLocalDate(conta.getDataRecebimento()) : null);
+        status.set(conta.getStatus());
+        tipoDocumento.set(conta.getTipoDocumento());
+        numeroDocumento.set(conta.getNumeroDocumento());
+        observacao.set(conta.getObservacao());
+
+        if (conta.getClienteId() != null) {
+            clientes.get().stream()
+                    .filter(c -> c.getId().equals(conta.getClienteId()))
+                    .findFirst()
+                    .ifPresent(clienteSelected::set);
         }
-        
-        modoEdicao.set(true);
     }
-    
-    public void limparFormulario() {
+
+    @Override
+    public void clearForm() {
         descricao.set("");
         valorOriginal.set("0");
-        valorRecebido.set(BigDecimal.ZERO);
         dataVencimento.set(LocalDate.now());
         dataRecebimento.set(null);
         status.set("PENDENTE");
         tipoDocumento.set("DUPLICATA");
         numeroDocumento.set("");
         observacao.set("");
-        modoEdicao.set(false);
-        valorRecebimento.set("0");
         modoRecebimento.set(false);
+        valorRecebimento.set("0");
         contaSelected.set(null);
-        
         if (!clientes.get().isEmpty()) {
             clienteSelected.set(clientes.get().getFirst());
         }
     }
-    
-    public void carregarParaEdicao(ContaAreceberModel conta) {
-        if (conta == null) return;
-        
-        descricao.set(conta.descricao);
-        valorOriginal.set(Utils.deRealParaCentavos(conta.valorOriginal));
-        valorRecebido.set(conta.valorRecebido);
-        dataVencimento.set(DateUtils.millisParaLocalDate(conta.dataVencimento));
-        dataRecebimento.set(conta.dataRecebimento != null ? DateUtils.millisParaLocalDate(conta.dataRecebimento) : null);
-        status.set(conta.status);
-        tipoDocumento.set(conta.tipoDocumento);
-        numeroDocumento.set(conta.numeroDocumento);
-        observacao.set(conta.observacao);
-        
-        // Find and set cliente by ID
-        if (conta.clienteId != null) {
+
+    @Override
+    public void handleAddOrUpdate() {
+        if (!formValido.get()) {
+            UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
+            return;
+        }
+
+        if (modoEdicao.get()) {
+            asyncAtualizar();
+        } else {
+            asyncSalvar();
+        }
+    }
+
+    @Override
+    public void handleClickMenuDelete() {
+        var selected = contaSelected.get();
+        if (selected == null) return;
+
+        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> {
             Async.Run(() -> {
                 try {
-                    ClienteModel cliente = clienteRepository.buscarById(conta.clienteId);
-                    UI.runOnUi(() -> clienteSelected.set(cliente));
+                    contaService.excluir(selected.getId());
+                    UI.runOnUi(() -> {
+                        contas.removeIf(c -> c.getId().equals(selected.getId()));
+                        Components.ShowPopup(ctx, "Conta excluída com sucesso!");
+                        clearForm();
+                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    });
                 } catch (Exception e) {
-                    System.err.println("Erro ao buscar cliente: " + e.getMessage());
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
                 }
             });
-        }
-        
-        modoEdicao.set(true);
+        });
     }
-    
+
+    public void registrarRecebimento(ScreenContext ctx) {
+        var selected = contaSelected.get();
+        if (selected == null) {
+            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar recebimento"));
+            return;
+        }
+
+        var valorRecebimentoBig = Utils.deCentavosParaReal(valorRecebimento.get());
+
+        if (valorRecebimentoBig.compareTo(BigDecimal.ZERO) <= 0) {
+            UI.runOnUi(() -> Components.ShowAlertError("Informe um valor de recebimento maior que zero"));
+            return;
+        }
+
+        if (valorRecebimentoBig.compareTo(selected.getValorRestante()) > 0) {
+            UI.runOnUi(() -> Components.ShowAlertError("Valor do recebimento não pode ser maior que o valor restante"));
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                contaService.registrarRecebimento(selected.getId(), valorRecebimentoBig);
+                var updated = contaService.buscarById(selected.getId());
+
+                if (updated.getClienteId() != null) {
+                    clientes.get().stream()
+                            .filter(c -> c.getId().equals(updated.getClienteId()))
+                            .findFirst()
+                            .ifPresent(updated::setCliente);
+                }
+
+                UI.runOnUi(() -> {
+                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    Components.ShowPopup(ctx, "Recebimento registrado com sucesso!");
+                    valorRecebimento.set("0");
+                    modoRecebimento.set(false);
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar recebimento: " + e.getMessage()));
+            }
+        });
+    }
+
+    public void quitarConta(ScreenContext ctx) {
+        var selected = contaSelected.get();
+        if (selected == null) {
+            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                contaService.registrarRecebimento(selected.getId(), selected.getValorRestante());
+                var updated = contaService.buscarById(selected.getId());
+
+                if (updated.getClienteId() != null) {
+                    clientes.get().stream()
+                            .filter(c -> c.getId().equals(updated.getClienteId()))
+                            .findFirst()
+                            .ifPresent(updated::setCliente);
+                }
+
+                UI.runOnUi(() -> {
+                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    Components.ShowPopup(ctx, "Conta quitada com sucesso!");
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void asyncSalvar() {
+        Async.Run(() -> {
+            try {
+                var model = new ContaAreceberModel();
+                fillModelFromForm(model, true);
+                var salvo = contaService.salvar(model);
+                salvo.setCliente(clienteSelected.get());
+
+                UI.runOnUi(() -> {
+                    contas.add(salvo);
+                    Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
+                    clearForm();
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void asyncAtualizar() {
+        Async.Run(() -> {
+            try {
+                var selected = contaSelected.get();
+                if (selected == null) return;
+                fillModelFromForm(selected, false);
+                contaService.atualizar(selected);
+                selected.setCliente(clienteSelected.get());
+
+                UI.runOnUi(() -> {
+                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
+                    Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void fillModelFromForm(ContaAreceberModel model, boolean isNew) {
+        model.setDescricao(descricao.get());
+        model.setValorOriginal(Utils.deCentavosParaReal(valorOriginal.get()));
+        model.setDataVencimento(DateUtils.localDateParaMillis(dataVencimento.get()));
+        model.setDataRecebimento(dataRecebimento.get() != null ? DateUtils.localDateParaMillis(dataRecebimento.get()) : null);
+        model.setStatus(status.get());
+        model.setClienteId(clienteSelected.get() != null ? clienteSelected.get().getId() : null);
+        model.setVendaId(null);
+        model.setNumeroDocumento(numeroDocumento.get());
+        model.setTipoDocumento(tipoDocumento.get());
+        model.setObservacao(observacao.get());
+
+        if (isNew) {
+            model.setValorRecebido(BigDecimal.ZERO);
+            if (model.getValorOriginal() != null) {
+                model.setValorRestante(model.getValorOriginal());
+            }
+        } else {
+            if (model.getValorOriginal() != null && model.getValorRecebido() != null) {
+                var restante = model.getValorOriginal().subtract(model.getValorRecebido());
+                model.setValorRestante(restante.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : restante);
+            }
+        }
+    }
+
     public BigDecimal getTotalEmAberto() {
         try {
-            return service.getTotalEmAberto();
+            return contaService.getTotalEmAberto();
         } catch (Exception e) {
             return BigDecimal.ZERO;
         }
     }
-    
+
     public BigDecimal getTotalVencidas() {
         try {
-            return service.getTotalVencidas();
+            return contaService.getTotalVencidas();
         } catch (Exception e) {
             return BigDecimal.ZERO;
+        }
+    }
+
+    private void attachClientes(List<ContaAreceberModel> contasList) {
+        for (var conta : contasList) {
+            if (conta.getClienteId() != null) {
+                clientes.get().stream()
+                        .filter(c -> c.getId().equals(conta.getClienteId()))
+                        .findFirst()
+                        .ifPresent(conta::setCliente);
+            }
         }
     }
 }

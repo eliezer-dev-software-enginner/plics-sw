@@ -1,62 +1,37 @@
 package my_app.db.models;
 
-import my_app.db.dto.FornecedorDto;
-import my_app.domain.ModelBase;
-import my_app.domain.SqlField;
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.persism.annotations.Column;
+import net.sf.persism.annotations.Table;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 
-public class FornecedorModel extends ModelBase<FornecedorDto> {
-    @SqlField(name = "nome", type = "string")
-    public String nome;
+@Setter
+@Getter
+@Table("fornecedores")
+public class FornecedorModel {
 
-    @SqlField(name = "cpf_cnpj", type = "string")
-    public String cpfCnpj;
+    @Column(primary = true)
+    private Integer id;
 
-    @SqlField(name = "celular", type = "string")
-    public String celular;
+    private LocalDateTime dataCriacao;
 
-    @SqlField(name = "inscricao_estadual", type = "string")
-    public String inscricaoEstadual;
+    private String nome;
+    private String cpfCnpj;
+    private String celular;
 
-    @SqlField(name = "email", type = "string")
-    public String email;
+    @Column(name = "inscricao_estadual")
+    private String inscricaoEstadual;
 
-    @SqlField(name = "uf_selected", type = "string")
-    public String ufSelected;
+    private String email;
 
-    @SqlField(name = "cidade", type = "string")
-    public String cidade;
+    @Column(name = "uf_selected")
+    private String ufSelected;
 
-    @SqlField(name = "bairro", type = "string")
-    public String bairro;
-
-    @SqlField(name = "rua", type = "string")
-    public String rua;
-
-    @SqlField(name = "numero", type = "string")
-    public String numero;
-
-    @SqlField(name = "observacao", type = "string")
-    public String observacao;
-
-
-    @Override
-    public FornecedorModel fromIdAndDtoAndMillis(Long id, FornecedorDto dto, long millis) {
-        this.id = id;
-        this.dataCriacao = millis;
-        this.nome = dto.nome();
-        this.cpfCnpj = dto.cpfCnpj();
-        this.celular = dto.celular();
-        this.email = dto.email();
-        this.inscricaoEstadual = dto.inscricaoEstadual();
-        this.ufSelected = dto.ufSelected();
-        this.cidade = dto.cidade();
-        this.bairro = dto.bairro();
-        this.rua = dto.rua();
-        this.numero = dto.numero();
-        this.observacao = dto.observacao();
-        return this;
-    }
+    private String cidade;
+    private String bairro;
+    private String rua;
+    private String numero;
+    private String observacao;
 }

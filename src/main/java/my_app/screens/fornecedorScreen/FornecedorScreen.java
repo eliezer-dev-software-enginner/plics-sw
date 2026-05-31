@@ -2,20 +2,17 @@ package my_app.screens.fornecedorScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Card;
-import megalodonte.components.SpacerVertical;
+import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
-import megalodonte.props.ColumnProps;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.utils.related.TextVariant;
 import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import megalodonte.components.*;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
-import megalodonte.utils.related.TextVariant;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
@@ -25,9 +22,10 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     public FornecedorScreen(ScreenContext ctx) {
         this.ctx = ctx;
-        this.vm = new FornecedorScreenViewModel(ctx);}
+        this.vm = new FornecedorScreenViewModel(ctx);
+    }
 
-    public void onMount(){
+    public void onMount() {
         vm.loadFornecedores();
     }
 
@@ -42,20 +40,19 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(new Row(new RowProps().centerHorizontally())
                                 .r_child(new Text("Cadastro de Fornecedor", (TextProps) new TextProps().variant(TextVariant.SUBTITLE).bold())))
                         .c_child(new SpacerVertical(20))
-                        .c_child(informacoesPessoais()
-                        )
+                        .c_child(informacoesPessoais())
                         .c_child(new SpacerVertical(20))
                         .c_child(new Column().c_child(Components.FormTitle("Endereço")))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.SelectColumn("UF", Data.ufList, vm.ufSelected, it->it))
-                                .r_child(Components.InputColumn("Cidade", vm.cidade,""))
+                                .r_child(Components.SelectColumn("UF", Data.ufList, vm.ufSelected, it -> it))
+                                .r_child(Components.InputColumn("Cidade", vm.cidade, ""))
                                 .r_child(Components.InputColumn("Bairro", vm.bairro, ""))
                                 .r_child(Components.InputColumn("Rua", vm.rua, ""))
                                 .r_child(Components.InputColumnNumeric("Número", vm.numero, ""))
                         )
                         .c_child(new SpacerVertical(20))
                         .c_child(new LineHorizontal())
-                        .c_child(Components.TextAreaColumn("Observação", vm.observacao,""))
+                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, ""))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)));
     }
@@ -79,37 +76,37 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
         return new SimpleTable<FornecedorModel>()
                 .fromData(vm.fornecedores)
                 .header().columns()
-                    .column("ID", it-> it.id)
-                    .column("Nome", it->it.nome)
-                    .column("Telefone", it-> Utils.formatPhone(it.celular))
-                    .column("CNPJ", it->it.cpfCnpj)
-                    .column("Email", it->it.email)
-                    .column("Data de Criação", it->DateUtils.millisToBrazilianDateTime(it.dataCriacao))
-                    .end()
+                .column("ID", it -> it.getId())
+                .column("Nome", it -> it.getNome())
+                .column("Telefone", it -> Utils.formatPhone(it.getCelular()))
+                .column("CNPJ", it -> it.getCpfCnpj())
+                .column("Email", it -> it.getEmail())
+                .column("Data de Criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .end()
                 .build()
                 .onItemSelectChange(vm.fornecedorSelected::set)
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemDoubleClick(it-> {
-                    Components.ShowModal( ItemDetails(it), this.ctx, 550);
+                .onItemDoubleClick(it -> {
+                    Components.ShowModal(ItemDetails(it), this.ctx, 550);
                 });
     }
 
-    Component ItemDetails(FornecedorModel model){
+    Component ItemDetails(FornecedorModel model) {
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes do fornecedor", new TextProps().variant(TextVariant.SUBTITLE)))
                 .c_child(new SpacerVertical(20))
-                .c_child(Components.TextWithDetails("ID: ", model.id))
-                .c_child(Components.TextWithDetails("Nome: ", model.nome))
-                .c_child(Components.TextWithDetails("CNPJ: ", model.cpfCnpj))
-                .c_child(Components.TextWithDetails("Telefone: ", model.celular))
-                .c_child(Components.TextWithDetails("Inscrição estadual: ", model.inscricaoEstadual))
-                .c_child(Components.TextWithDetails("Email: ", model.email))
-                .c_child(Components.TextWithDetails("UF: ", model.ufSelected))
-                .c_child(Components.TextWithDetails("Cidade: ", model.cidade))
-                .c_child(Components.TextWithDetails("Bairro: ", model.bairro))
-                .c_child(Components.TextWithDetails("Rua: ", model.rua))
-                .c_child(Components.TextWithDetails("Número: ", model.numero))
-                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.millisToBrazilianDateTime(model.dataCriacao)))
-                .c_child(Components.TextWithDetails("Observação: ", model.observacao,true));
+                .c_child(Components.TextWithDetails("ID: ", model.getId()))
+                .c_child(Components.TextWithDetails("Nome: ", model.getNome()))
+                .c_child(Components.TextWithDetails("CNPJ: ", model.getCpfCnpj()))
+                .c_child(Components.TextWithDetails("Telefone: ", model.getCelular()))
+                .c_child(Components.TextWithDetails("Inscrição estadual: ", model.getInscricaoEstadual()))
+                .c_child(Components.TextWithDetails("Email: ", model.getEmail()))
+                .c_child(Components.TextWithDetails("UF: ", model.getUfSelected()))
+                .c_child(Components.TextWithDetails("Cidade: ", model.getCidade()))
+                .c_child(Components.TextWithDetails("Bairro: ", model.getBairro()))
+                .c_child(Components.TextWithDetails("Rua: ", model.getRua()))
+                .c_child(Components.TextWithDetails("Número: ", model.getNumero()))
+                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
+                .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }
 }

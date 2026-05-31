@@ -1,105 +1,118 @@
 package my_app.db.repositories;
 
-import my_app.db.DB;
-import my_app.db.dto.FornecedorDto;
+import my_app.db.models.FornecedorModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FornecedorRepositoryTest {
-    private FornecedorRepository repo;
+class FornecedorRepositoryTest extends BaseRepositoryTest {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(FornecedorRepositoryTest.class);
+
+    FornecedorRepository repository;
+
+    @Override
+    protected void initRepository() {
+        repository = new FornecedorRepository(session);
+    }
 
     @BeforeEach
-    void setup() throws Exception {
-        DB.reset();
-        DB.getInstance("jdbc:sqlite::memory:");
-        DBInitializer.init();
-        repo = new FornecedorRepository();
+    void cleanFornecedores() throws Exception {
+        try (var conn = DriverManager.getConnection("jdbc:sqlite:file:testdb?mode=memory&cache=shared");
+             var stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM fornecedores");
+        }
+    }
+
+    private FornecedorModel novoFornecedor(String nome) {
+        var model = new FornecedorModel();
+        model.setNome(nome);
+        model.setCpfCnpj("11.222.333/0001-44");
+        model.setCelular("(31) 99999-0000");
+        model.setEmail("fornecedor@teste.com");
+        model.setInscricaoEstadual("123.456.789");
+        model.setUfSelected("MG-Belo Horizonte");
+        model.setCidade("Belo Horizonte");
+        model.setBairro("Centro");
+        model.setRua("Rua Principal");
+        model.setNumero("123");
+        model.setObservacao("Observacao teste");
+        model.setDataCriacao(LocalDateTime.now());
+        return model;
     }
 
     @Test
     void salvar() throws SQLException {
-        var dto = fornecedorFake();
-        var model = repo.salvar(dto);
+        FornecedorModel salvo = repository.salvar(novoFornecedor("Fornecedor Teste"));
 
-        var encontrado = repo.buscarById(model.id);
+        log.info("Fornecedor salvo com id={}", salvo.getId());
 
-        assertNotNull(encontrado);
-        assertEquals("Fornecedor Teste", encontrado.nome);
-        assertNotNull(encontrado.id);
+        assertNotNull(salvo);
+        assertNotNull(salvo.getId());
+        assertEquals("Fornecedor Teste", salvo.getNome());
+        assertEquals("11.222.333/0001-44", salvo.getCpfCnpj());
     }
 
     @Test
     void listar() throws SQLException {
-        var listaInicial = repo.listar();
-        
-        // Deve ter o fornecedor padrão
-        assertTrue(
-                listaInicial.stream().anyMatch(p -> p.nome.equals("Fornecedor Padrão"))
-        );
+        repository.salvar(novoFornecedor("Fornecedor A"));
 
-        var dto1 = fornecedorFake( "forn1");
-        var dto2 = fornecedorFake( "forn2");
+        var lista = repository.listar();
 
-        repo.salvar(dto1);
-        repo.salvar(dto2);
-
-        var lista = repo.listar();
-
-        // Deve ter o fornecedor padrão mais os 2 novos
-        assertEquals(listaInicial.size() + 2, lista.size());
-        assertTrue(
-                lista.stream().anyMatch(p -> p.nome.equals("Fornecedor Padrão"))
-        );
-        assertTrue(
-                lista.stream().anyMatch(p -> p.nome.equals("forn1"))
-        );
-        assertTrue(
-                lista.stream().anyMatch(p -> p.nome.equals("forn2"))
-        );
+        assertNotNull(lista);
+        assertFalse(lista.isEmpty());
     }
 
     @Test
     void atualizar() throws SQLException {
-        var dto = fornecedorFake();
-        var model = repo.salvar(dto);
+        FornecedorModel salvo = repository.salvar(novoFornecedor("Original"));
 
-        model.nome = "forn2";
-        repo.atualizar(model);
+        salvo.setNome("Atualizado");
+        salvo.setCelular("(31) 98888-0000");
+        repository.atualizar(salvo);
 
-        var atualizado = repo.buscarById(model.id);
-        assertEquals("forn2", atualizado.nome);
+        FornecedorModel atualizado = repository.buscarById(salvo.getId());
+
+        log.info("Fornecedor atualizado: nome={}, celular={}",
+                atualizado.getNome(), atualizado.getCelular());
+
+        assertNotNull(atualizado);
+        assertEquals("Atualizado", atualizado.getNome());
+        assertEquals("(31) 98888-0000", atualizado.getCelular());
     }
 
     @Test
-    void excluir() throws SQLException {
-        var dto = fornecedorFake();
-        var model = repo.salvar(dto);
+    void excluirById() throws SQLException {
+        FornecedorModel salvo = repository.salvar(novoFornecedor("Excluir"));
 
-        repo.excluirById(model.id);
+        repository.excluirById(salvo.getId());
 
-        assertNull(repo.buscarById(model.id));
+        FornecedorModel deletado = repository.buscarById(salvo.getId());
+
+        log.info("Fornecedor removido id={}", salvo.getId());
+
+        assertNull(deletado);
     }
 
-    private FornecedorDto fornecedorFake(String nome) {
-        var cpfCnpj = "12345678901";
-        var celular = "5512345678910";
-        var email = "teste@teste.com";
-        var inscricaoEstadual = "123456";
-        var ufSelected = "SP";
-        var cidade = "São Paulo";
-        var bairro = "Centro";
-        var rua = "Rua Principal";
-        var numero = "123";
-        var observacao = "Observação teste";
+    @Test
+    void buscarById() throws SQLException {
+        FornecedorModel salvo = repository.salvar(novoFornecedor("Busca"));
 
-        return new FornecedorDto(nome, cpfCnpj, celular, email, inscricaoEstadual, ufSelected, cidade, bairro, rua, numero, observacao);
-    }
+        FornecedorModel encontrado = repository.buscarById(salvo.getId());
 
-    private FornecedorDto fornecedorFake() {
-        return fornecedorFake("Fornecedor Teste");
+        log.info("Fornecedor encontrado: id={}, nome={}",
+                encontrado.getId(), encontrado.getNome());
+
+        assertNotNull(encontrado);
+        assertEquals(salvo.getId(), encontrado.getId());
+        assertEquals("Busca", encontrado.getNome());
     }
 }

@@ -1,72 +1,55 @@
 package my_app.db.models;
 
-import my_app.db.dto.CompraDto;
-import my_app.db.dto.OrdemServicoDto;
-import my_app.db.dto.TecnicoDto;
-import my_app.domain.ForeignKey;
-import my_app.domain.ModelBase;
-import my_app.domain.SqlField;
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.persism.annotations.Column;
+import net.sf.persism.annotations.Table;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 
-public class OrdemServicoModel extends ModelBase<OrdemServicoDto> {
+@Setter
+@Getter
+@Table("ordens_de_servico")
+public class OrdemServicoModel {
 
-    @SqlField(name = "cliente_id", type = "long")
-    public long clienteId;
+    @Column(primary = true)
+    private Integer id;
 
-    @SqlField(name = "tecnico_id", type = "long")
-    public long tecnicoId;
+    @Column(name = "cliente_id")
+    private Integer clienteId;
 
-    @SqlField(name = "equipamento", type = "string")
-    public String equipamento;
+    @Column(name = "tecnico_id")
+    private Integer tecnicoId;
 
-    @SqlField(name = "mao_de_obra_valor", type = "big-decimal")
-    public BigDecimal maoDeObraValor;
+    @Column(name = "numero_os")
+    private Long numeroOs;
 
-    @SqlField(name = "pecas_valor", type = "big-decimal")
-    public BigDecimal pecas_valor;
+    private String equipamento;
 
-    @SqlField(name = "tipo_pagamento", type = "string")
-    public String tipoPagamento;
+    @Column(name = "mao_de_obra_valor")
+    private BigDecimal maoDeObraValor;
 
-    @SqlField(name = "status", type = "string")
-    public String status;
+    @Column(name = "pecas_valor")
+    private BigDecimal pecasValor;
 
-    @SqlField(name = "checklist_relatorio", type = "string")
-    public String checklistRelatorio;
+    @Column(name = "tipo_pagamento")
+    private String tipoPagamento;
 
-    @SqlField(name = "data_escolhida", type = "long")
-    public long dataEscolhida;
+    private String status;
 
-    @SqlField(name = "total_liquido", type = "big-decimal")
-    public BigDecimal totalLiquido;
+    @Column(name = "checklist_relatorio")
+    private String checklistRelatorio;
 
-    @SqlField(name = "numero_os", type = "long")
-    public long numeroOs;
+    @Column(name = "data_escolhida")
+    private Long dataEscolhida;
 
-    public ClienteModel cliente;
-    public TecnicoModel tecnico;
+    @Column(name = "total_liquido")
+    private BigDecimal totalLiquido;
 
-    public OrdemServicoModel() {}
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
 
-    @Override
-    public OrdemServicoModel fromIdAndDtoAndMillis(Long id, OrdemServicoDto dto, long millis) {
-        this.id = id;
-        this.dataCriacao = millis;
-        this.clienteId = dto.clienteId();
-       this.tecnicoId = dto.tecnicoId();
-       this.equipamento = dto.equipamento();
-       this.maoDeObraValor = dto.mao_de_obra_valor();
-       this.pecas_valor = dto.pecas_valor();
-       this.tipoPagamento = dto.tipoPagamento();
-       this.checklistRelatorio = dto.checklist_relatorio();
-       this.dataEscolhida = dto.data_escolhida();
-       this.totalLiquido = dto.totalLiquido();
-       this.status = dto.status();
-       this.numeroOs = dto.numeroOs();
-        return this;
-    }
-
+    private transient ClienteModel cliente;
+    private transient TecnicoModel tecnico;
 }

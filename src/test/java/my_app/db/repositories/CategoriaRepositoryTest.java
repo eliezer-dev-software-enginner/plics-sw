@@ -1,105 +1,133 @@
 package my_app.db.repositories;
 
-import my_app.db.DB;
-import my_app.db.dto.CategoriaDto;
 import my_app.db.models.CategoriaModel;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CategoriaRepositoryTest {
-    private CategoriaRepository repo;
+class CategoriaRepositoryTest extends BaseRepositoryTest {
 
-    @BeforeEach
-    void setup() throws Exception {
-        DB.reset();
-        DB.getInstance("jdbc:sqlite::memory:");
-        DBInitializer.init();
-        repo = new CategoriaRepository();
+    private static final Logger log =
+            LoggerFactory.getLogger(CategoriaRepositoryTest.class);
+
+    CategoriaRepository repository;
+
+    @Override
+    protected void initRepository() {
+        repository = new CategoriaRepository(session);
     }
-
 
     @Test
     void salvar() throws SQLException {
-        var dto = new CategoriaDto("cat1");
-        var salvo = repo.salvar(dto);
 
-        var encontrado = repo.buscarById(salvo.id);
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Categoria Teste");
+        model.setDataCriacao(LocalDateTime.now());
 
-        assertNotNull(encontrado);
-        assertEquals("cat1", encontrado.nome);
-        assertNotNull(salvo.id);
+        CategoriaModel salvo = repository.salvar(model);
+
+        log.info("Categoria salva com id={}", salvo.getId());
+
+        assertNotNull(salvo);
+        assertNotNull(salvo.getId());
+        assertEquals("Categoria Teste", salvo.getNome());
     }
 
     @Test
     void listar() throws SQLException {
-        {
-            // Verifica se existe a categoria padrão "Geral"
-            var listaInicial = repo.listar();
-            assertTrue(
-                    listaInicial.stream().anyMatch(p -> p.nome.equals("Geral"))
-            );
 
-            var dto1 = new CategoriaDto("categ1");
-            var dto2 = new CategoriaDto("categ2");
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Listagem");
+        model.setDataCriacao(LocalDateTime.now());
 
-            repo.salvar(dto1);
-            repo.salvar(dto2);
+        repository.salvar(model);
 
-            var lista = repo.listar();
+        List<CategoriaModel> lista = repository.listar();
 
-            // Deve ter a categoria "Geral" mais as 2 novas categorias
-            assertEquals(listaInicial.size() + 2, lista.size());
-            assertTrue(
-                    lista.stream().anyMatch(p -> p.nome.equals("Geral"))
-            );
-            assertTrue(
-                    lista.stream().anyMatch(p -> p.nome.equals("categ1"))
-            );
-            assertTrue(
-                    lista.stream().anyMatch(p -> p.nome.equals("categ2"))
-            );
-        }
+        lista.forEach(it ->
+                log.info("Categoria encontrada: {}", it.getNome())
+        );
 
+        assertNotNull(lista);
+        assertFalse(lista.isEmpty());
+
+        boolean encontrou = lista.stream()
+                .anyMatch(it -> it.getNome().equals("Listagem"));
+
+        assertTrue(encontrou);
     }
 
     @Test
     void atualizar() throws SQLException {
-        var dto = categoriaDtoFake();
-        var salvo = repo.salvar(dto);
 
-        salvo.nome = "cat2";
-        repo.atualizar(salvo);
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Original");
+        model.setDataCriacao(LocalDateTime.now());
 
-        var atualizado = repo.buscarById(salvo.id);
-        assertEquals("cat2", atualizado.nome);
+        CategoriaModel salvo = repository.salvar(model);
+
+        salvo.setNome("Atualizado");
+
+        repository.atualizar(salvo);
+
+        CategoriaModel atualizado =
+                repository.buscarById(salvo.getId());
+
+        log.info("Categoria atualizada para: {}",
+                atualizado.getNome());
+
+        assertNotNull(atualizado);
+
+        assertEquals("Atualizado",
+                atualizado.getNome());
     }
 
     @Test
-    void excluir() throws SQLException {
-        var dto = categoriaDtoFake();
-        var salvo = repo.salvar(dto);
+    void excluirById() throws SQLException {
 
-        repo.excluirById(salvo.id);
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Excluir");
+        model.setDataCriacao(LocalDateTime.now());
 
-        assertNull(repo.buscarById(salvo.id));
+        CategoriaModel salvo = repository.salvar(model);
+
+        repository.excluirById(salvo.getId());
+
+        CategoriaModel deleted =
+                repository.buscarById(salvo.getId());
+
+        log.info("Categoria removida id={}", salvo.getId());
+
+        assertNull(deleted);
     }
 
+    @Test
+    void buscarById() throws SQLException {
 
-    private CategoriaDto categoriaDtoFake() {
-        return new CategoriaDto("cat1");
+        CategoriaModel model = new CategoriaModel();
+        model.setNome("Busca");
+        model.setDataCriacao(LocalDateTime.now());
+
+        CategoriaModel salvo = repository.salvar(model);
+
+        CategoriaModel encontrado =
+                repository.buscarById(salvo.getId());
+
+        log.info("Categoria encontrada: {}",
+                encontrado.getNome());
+
+        assertNotNull(encontrado);
+
+        assertEquals(salvo.getId(),
+                encontrado.getId());
+
+        assertEquals("Busca",
+                encontrado.getNome());
     }
-
-    private CategoriaModel categoriaFake() {
-        var model = new CategoriaModel();
-        model.id = null; // Deixar o banco definir o ID autoincrement
-        model.nome = "cat1";
-        model.dataCriacao = System.currentTimeMillis();
-        return model;
-    }
-
-
 }

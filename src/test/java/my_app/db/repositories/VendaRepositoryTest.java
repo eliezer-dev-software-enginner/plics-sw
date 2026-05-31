@@ -1,218 +1,171 @@
 package my_app.db.repositories;
 
-import my_app.db.DB;
-import my_app.db.dto.VendaDto;
+import my_app.db.models.VendaModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class VendaRepositoryTest {
-    private VendaRepository repo;
-    private ProdutoRepository produtoRepo;
-    private ClienteRepository clienteRepo;
+class VendaRepositoryTest extends BaseRepositoryTest {
+
+    private static final Logger log = LoggerFactory.getLogger(VendaRepositoryTest.class);
+
+    VendaRepository repository;
+
+    @Override
+    protected void initRepository() {
+        repository = new VendaRepository(session);
+    }
 
     @BeforeEach
-    void setup() throws Exception {
-        DB.reset();
-        DB.getInstance("jdbc:sqlite::memory:");
-        DBInitializer.init();
-        repo = new VendaRepository();
-        produtoRepo = new ProdutoRepository();
-        clienteRepo = new ClienteRepository();
+    void cleanTable() throws Exception {
+        try (var conn = DriverManager.getConnection("jdbc:sqlite:file:testdb?mode=memory&cache=shared");
+             var stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM vendas");
+        }
+    }
+
+    private VendaModel novaVenda(String produtoCod, BigDecimal quantidade, BigDecimal totalLiquido) {
+        var model = new VendaModel();
+        model.setProdutoCod(produtoCod);
+        model.setClienteId(1);
+        model.setQuantidade(quantidade);
+        model.setPrecoUnitario(new BigDecimal("10.00"));
+        model.setTotalLiquido(totalLiquido);
+        model.setDesconto(BigDecimal.ZERO);
+        model.setTipoPagamento("A VISTA");
+        model.setObservacao("teste");
+        model.setDataCriacao(LocalDateTime.now());
+        model.setDataVenda(System.currentTimeMillis());
+        return model;
     }
 
     @Test
     void salvar() throws SQLException {
-        // Given
-        var produto = criarProdutoFake();
-        var produtoSalvo = produtoRepo.salvar(produto);
-        
-        var cliente = criarClienteFake();
-        var clienteSalvo = clienteRepo.salvar(cliente);
-        
-        var dto = vendaDtoFake(produtoSalvo.id, clienteSalvo.id);
-        
-        // When
-        var salvo = repo.salvar(dto);
-        
-        // Then
-        var encontrado = repo.buscarById(salvo.id);
-        
-        assertNotNull(encontrado);
-        assertEquals(produtoSalvo.id, encontrado.produtoId);
-        assertEquals(clienteSalvo.id, encontrado.clienteId);
-        assertEquals(0, dto.quantidade().compareTo(encontrado.quantidade));
-        assertEquals(0, dto.precoUnitario().compareTo(encontrado.precoUnitario));
-        assertEquals(0, dto.valorTotal().compareTo(encontrado.valorTotal));
-        assertNotNull(salvo.id);
-        assertNotNull(salvo.dataCriacao);
+        var model = novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00"));
+
+        var salvo = repository.salvar(model);
+
+        log.info("Venda salva com id={}", salvo.getId());
+
+        assertNotNull(salvo);
+        assertNotNull(salvo.getId());
+        assertEquals("COD001", salvo.getProdutoCod());
+        assertEquals(0, new BigDecimal("20.00").compareTo(salvo.getTotalLiquido()));
     }
 
     @Test
     void listar() throws SQLException {
-        // Given
-        var produto = criarProdutoFake();
-        var produtoSalvo = produtoRepo.salvar(produto);
-        
-        var cliente = criarClienteFake();
-        var clienteSalvo = clienteRepo.salvar(cliente);
-        
-        var dto1 = vendaDtoFake(produtoSalvo.id, clienteSalvo.id);
-        var dto2 = vendaDtoFake(produtoSalvo.id, clienteSalvo.id);
-        
-        repo.salvar(dto1);
-        repo.salvar(dto2);
-        
-        // When
-        var lista = repo.listar();
-        
-        // Then
+        repository.salvar(novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00")));
+        repository.salvar(novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00")));
+
+        var lista = repository.listar();
+
+        assertNotNull(lista);
         assertEquals(2, lista.size());
     }
 
     @Test
     void atualizar() throws SQLException {
-        // Given
-        var produto = criarProdutoFake();
-        var produtoSalvo = produtoRepo.salvar(produto);
-        
-        var cliente = criarClienteFake();
-        var clienteSalvo = clienteRepo.salvar(cliente);
-        
-        var dto = vendaDtoFake(produtoSalvo.id, clienteSalvo.id);
-        var salvo = repo.salvar(dto);
-        
-        // When
-        salvo.quantidade = new BigDecimal("15");
-        salvo.valorTotal = new BigDecimal("149.85");
-        repo.atualizar(salvo);
-        
-        // Then
-        var atualizado = repo.buscarById(salvo.id);
-        assertEquals(0, new BigDecimal("15").compareTo(atualizado.quantidade));
-        assertEquals(0, new BigDecimal("149.85").compareTo(atualizado.valorTotal));
+        var salvo = repository.salvar(novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00")));
+
+        salvo.setQuantidade(new BigDecimal("5"));
+        salvo.setTotalLiquido(new BigDecimal("50.00"));
+        repository.atualizar(salvo);
+
+        var atualizado = repository.buscarById(salvo.getId());
+
+        assertNotNull(atualizado);
+        assertEquals(0, new BigDecimal("5").compareTo(atualizado.getQuantidade()));
+        assertEquals(0, new BigDecimal("50.00").compareTo(atualizado.getTotalLiquido()));
     }
 
     @Test
-    void excluir() throws SQLException {
-        // Given
-        var produto = criarProdutoFake();
-        var produtoSalvo = produtoRepo.salvar(produto);
-        
-        var cliente = criarClienteFake();
-        var clienteSalvo = clienteRepo.salvar(cliente);
-        
-        var dto = vendaDtoFake(produtoSalvo.id, clienteSalvo.id);
-        var salvo = repo.salvar(dto);
-        
-        // When
-        repo.excluirById(salvo.id);
-        
-        // Then
-        assertNull(repo.buscarById(salvo.id));
+    void excluirById() throws SQLException {
+        var salvo = repository.salvar(novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00")));
+
+        repository.excluirById(salvo.getId());
+
+        var deletado = repository.buscarById(salvo.getId());
+        assertNull(deletado);
     }
 
     @Test
-    void listarPorCliente() throws SQLException {
-        // Given
-        var produto = criarProdutoFake();
-        var produtoSalvo = produtoRepo.salvar(produto);
-        
-        var cliente1 = criarClienteFake();
-        var cliente1Salvo = clienteRepo.salvar(cliente1);
-        
-        var cliente2 = new my_app.db.dto.ClienteDto("Cliente Teste 2", "12345678902", "11987654321", "cliente2@email.com");
-        var cliente2Salvo = clienteRepo.salvar(cliente2);
-        
-        var dto1 = vendaDtoFake(produtoSalvo.id, cliente1Salvo.id);
-        var dto2 = vendaDtoFake(produtoSalvo.id, cliente1Salvo.id);
-        var dto3 = vendaDtoFake(produtoSalvo.id, cliente2Salvo.id);
-        
-        repo.salvar(dto1);
-        repo.salvar(dto2);
-        repo.salvar(dto3);
-        
-        // When
-        var listaCliente1 = repo.listarPorCliente(cliente1Salvo.id);
-        var listaCliente2 = repo.listarPorCliente(cliente2Salvo.id);
-        
-        // Then
-        assertEquals(2, listaCliente1.size());
-        assertEquals(1, listaCliente2.size());
+    void buscarById() throws SQLException {
+        var salvo = repository.salvar(novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00")));
+
+        var encontrado = repository.buscarById(salvo.getId());
+
+        assertNotNull(encontrado);
+        assertEquals(salvo.getId(), encontrado.getId());
+        assertEquals("COD001", encontrado.getProdutoCod());
     }
 
     @Test
-    void listarPorProduto() throws SQLException {
-        // Given
-        var produto1 = criarProdutoFake();
-        var produto1Salvo = produtoRepo.salvar(produto1);
-        
-        var produto2 = new my_app.db.dto.ProdutoDto();
-        produto2.codigoBarras = "7891234567891";
-        produto2.descricao = "Produto Teste 2";
-        produto2.precoCompra = new BigDecimal("8.00");
-        produto2.precoVenda = new BigDecimal("12.00");
-        produto2.categoriaId = 1L;
-        produto2.fornecedorId = 1L;
-        produto2.estoque = new BigDecimal("50");
-        
-        var produto2Salvo = produtoRepo.salvar(produto2);
-        
-        var cliente = criarClienteFake();
-        var clienteSalvo = clienteRepo.salvar(cliente);
-        
-        var dto1 = vendaDtoFake(produto1Salvo.id, clienteSalvo.id);
-        var dto2 = vendaDtoFake(produto1Salvo.id, clienteSalvo.id);
-        var dto3 = vendaDtoFake(produto2Salvo.id, clienteSalvo.id);
-        
-        repo.salvar(dto1);
-        repo.salvar(dto2);
-        repo.salvar(dto3);
-        
-        // When
-        var listaProduto1 = repo.listarPorProduto(produto1Salvo.id);
-        var listaProduto2 = repo.listarPorProduto(produto2Salvo.id);
-        
-        // Then
-        assertEquals(2, listaProduto1.size());
-        assertEquals(1, listaProduto2.size());
+    void buscarPorCliente() throws SQLException {
+        var v1 = novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00"));
+        v1.setClienteId(1);
+        repository.salvar(v1);
+
+        var v2 = novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00"));
+        v2.setClienteId(2);
+        repository.salvar(v2);
+
+        var resultado = repository.buscarPorCliente(1);
+
+        assertEquals(1, resultado.size());
+        assertEquals("COD001", resultado.getFirst().getProdutoCod());
     }
 
-    private VendaDto vendaDtoFake(Long produtoId, Long clienteId) {
-        return new VendaDto(
-            produtoId,
-            clienteId,
-            new BigDecimal("10"),
-            new BigDecimal("9.99"),
-            BigDecimal.ZERO,
-            new BigDecimal("99.90"),
-            "Dinheiro",
-            "Observação teste"
-        );
+    @Test
+    void somarVendasPorPeriodo() throws SQLException {
+        var agora = System.currentTimeMillis();
+
+        var v1 = novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00"));
+        v1.setTipoPagamento("A VISTA");
+        repository.salvar(v1);
+
+        var v2 = novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00"));
+        v2.setTipoPagamento("A VISTA");
+        repository.salvar(v2);
+
+        var total = repository.somarVendasPorPeriodo(agora - 86400000L, agora + 86400000L);
+
+        assertEquals(0, new BigDecimal("50.00").compareTo(total));
     }
 
-    private my_app.db.dto.ProdutoDto criarProdutoFake() {
-        var dto = new my_app.db.dto.ProdutoDto();
-        dto.codigoBarras = "7891234567890";
-        dto.descricao = "Produto Teste";
-        dto.precoCompra = new BigDecimal("5.00");
-        dto.precoVenda = new BigDecimal("9.99");
-        dto.categoriaId = 1L;
-        dto.fornecedorId = 1L;
-        dto.estoque = new BigDecimal("100");
-        return dto;
+    @Test
+    void somarVendasHoje() throws SQLException {
+        repository.salvar(novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00")));
+        repository.salvar(novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00")));
+
+        var total = repository.somarVendasHoje();
+
+        assertEquals(0, new BigDecimal("50.00").compareTo(total));
     }
 
-    private my_app.db.dto.ClienteDto criarClienteFake() {
-        return new my_app.db.dto.ClienteDto(
-            "Cliente Teste",
-            "12345678901",
-            "11912345678",
-            "cliente@email.com"
-        );
+    @Test
+    void somarVendasPorPeriodoIgnoraAPrazo() throws SQLException {
+        var agora = System.currentTimeMillis();
+
+        var v1 = novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00"));
+        v1.setTipoPagamento("A VISTA");
+        repository.salvar(v1);
+
+        var v2 = novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00"));
+        v2.setTipoPagamento("A PRAZO");
+        repository.salvar(v2);
+
+        var total = repository.somarVendasPorPeriodo(agora - 86400000L, agora + 86400000L);
+
+        assertEquals(0, new BigDecimal("20.00").compareTo(total));
     }
 }

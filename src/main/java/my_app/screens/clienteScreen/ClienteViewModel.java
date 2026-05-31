@@ -6,9 +6,8 @@ import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.ClienteDto;
 import my_app.db.models.ClienteModel;
-import my_app.db.repositories.ClienteRepository;
+import my_app.db.services.ClienteService;
 import my_app.domain.Data;
 import my_app.events.ClienteEvents;
 import my_app.events.EventBus;
@@ -16,14 +15,12 @@ import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.Utils;
 
-import java.util.List;
-
-import static my_app.utils.Utils.*;
+import java.sql.SQLException;
 
 public class ClienteViewModel extends ViewModelScreenContract {
-    private final ClienteRepository clienteRepository = new ClienteRepository();
+    private final ClienteService clienteService;
 
-    final ListState<ClienteModel> clientes = ListState.of(List.of());
+    final ListState<ClienteModel> clientes = ListState.ofEmpty();
     final State<ClienteModel> clienteSelecionado = State.of(null);
 
     final State<String> nome = new State<>("");
@@ -39,6 +36,12 @@ public class ClienteViewModel extends ViewModelScreenContract {
 
     public ClienteViewModel(ScreenContext ctx) {
         super(ctx);
+        try {
+            clienteService = new ClienteService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
         this.onInit();
     }
 
@@ -51,22 +54,37 @@ public class ClienteViewModel extends ViewModelScreenContract {
     public void populateFromModel() {
         final var data = clienteSelecionado.get();
         if (data == null) return;
-        nome.set(data.nome);
-        cnpjCpf.set(data.cpfCnpj);
-        celular.set(data.celular);
-        email.set(data.email);
+        nome.set(data.getNome());
+        cnpjCpf.set(data.getCpfCnpj());
+        celular.set(data.getCelular());
+        email.set(data.getEmail());
         tipoPessoaSelected.set(
-                Utils.isValidCpf(data.cpfCnpj)
+                Utils.isValidCpf(data.getCpfCnpj())
                         ? Data.tiposPessoaList.getFirst()
                         : Data.tiposPessoaList.getLast()
         );
     }
 
+    private ClienteModel getModelFromFields(ClienteModel model){
+        String nomeValue    = nome.get().trim();
+        String cnpjCpfValue = cnpjCpf.get().trim();
+        String celularValue = celular.get().trim();
+        String emailValue   = email.get().trim();
+
+        model.setNome(nomeValue);
+        model.setCpfCnpj(cnpjCpfValue);
+        model.setCelular(celularValue);
+        model.setEmail(emailValue);
+        model.setPessoaFisica(tipoPessoaEhFisica.get());
+
+        return model;
+    }
+
     void loadClientes() {
         Async.Run(() -> {
             try {
-                var list = clienteRepository.listar();
-                UI.runOnUi(() -> clientes.addAll(list));
+                var list = clienteService.listar();
+                UI.runOnUi(() -> clientes.set(list));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar clientes"));
             }
@@ -75,15 +93,15 @@ public class ClienteViewModel extends ViewModelScreenContract {
 
     @Override
     public void handleClickMenuDelete() {
-        final var cliente = clienteSelecionado.get();
-        if (cliente == null) return;
+        final var model = clienteSelecionado.get();
+        if (model == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir cliente " + cliente.nome, () -> {
+        Components.ShowAlertAdvice("Deseja excluir cliente " + model.getNome(), () -> {
             Async.Run(() -> {
                 try {
-                    clienteRepository.excluirById(cliente.id);
+                    clienteService.excluirById(model.getId());
                     UI.runOnUi(() -> {
-                        clientes.removeIf(it -> it.id.equals(cliente.id));
+                        clientes.removeIf(it -> it.getId().equals(model.getId()));
                         Components.ShowPopup(ctx, "Cliente excluído com sucesso");
                     });
                 } catch (Exception e) {
@@ -95,36 +113,33 @@ public class ClienteViewModel extends ViewModelScreenContract {
 
     @Override
     public void handleAddOrUpdate() {
-        String nomeValue    = nome.get().trim();
-        String cnpjCpfValue = cnpjCpf.get().trim();
-        String celularValue = celular.get().trim();
-        String emailValue   = email.get().trim();
-
-        if (nomeValue.isEmpty()) {
-            throw new RuntimeException("Nome é obrigatório");
-        }
-
-        if (!cnpjCpfValue.isEmpty()) {
-            if (tipoPessoaEhFisica.get() && !isValidCpf(cnpjCpfValue)) {
-                throw new RuntimeException("CPF inválido (deve conter 11 dígitos)");
-            } else if (!tipoPessoaEhFisica.get() && !isValidCnpj(cnpjCpfValue)) {
-                throw new RuntimeException("CNPJ inválido (deve conter 14 dígitos)");
+        Async.Run(() -> {
+            try {
+                if (modoEdicao.get()) {
+                    if(clienteSelecionado.get() == null)return;
+                    var model = getModelFromFields(clienteSelecionado.get());
+                    clienteService.atualizar(model);
+                    UI.runOnUi(() -> {
+                        clientes.updateIf(it -> it.getId().equals(model.getId()), it -> model);
+                        Components.ShowPopup(ctx, "Ciente atualizado com sucesso");
+                        clearForm();
+                    });
+                } else {
+                    var model = getModelFromFields(new ClienteModel());
+                    clienteService.salvar(model);
+                    UI.runOnUi(() -> {
+                        clientes.add(model);
+                        Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
+                        clearForm();
+                        EventBus.getInstance().publish(new ClienteEvents.Criado(model));
+                    });
+                }
+            } catch (IllegalArgumentException e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro inesperado: " + e.getMessage()));
             }
-        }
-
-        if (!emailValue.isEmpty() && !isValidEmail(emailValue)) {
-            throw new RuntimeException("Formato de e-mail inválido");
-        }
-        if (!celularValue.isEmpty() && !isValidPhone(celularValue)) {
-            throw new RuntimeException("Telefone inválido (informe DDD + Número)");
-        }
-
-        if (modoEdicao.get()) {
-            if (clienteSelecionado.get() == null) return;
-            asyncUpdate(clienteSelecionado.get().id, nomeValue, cnpjCpfValue, celularValue, emailValue);
-        } else {
-            asyncSalvar(nomeValue, cnpjCpfValue, celularValue, emailValue);
-        }
+        });
     }
 
     @Override
@@ -133,44 +148,5 @@ public class ClienteViewModel extends ViewModelScreenContract {
         cnpjCpf.set("");
         celular.set("");
         email.set("");
-    }
-
-    private void asyncUpdate(long id, String nome, String cnpjCpf, String celular, String email) {
-        Async.Run(() -> {
-            try {
-                var model = new ClienteModel().fromIdAndDto(id, new ClienteDto(nome, cnpjCpf, celular, email));
-                clienteRepository.atualizar((ClienteModel) model);
-                UI.runOnUi(() -> {
-                    clientes.updateIf(it -> it.id.equals(id), it -> (ClienteModel) model);
-                    Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
-                    clearForm();
-                });
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private void asyncSalvar(String nome, String cnpjCpf, String celular, String email) {
-        //Pode cadastrar com cnpj/cpf vazio
-        for (var model : clientes.get()) {
-            if(!cnpjCpf.isEmpty()){
-                if(cnpjCpf.equals(model.cpfCnpj.trim()))throw new RuntimeException("Já existe um cliente com este CNPJ/CPF");
-            }
-        }
-
-        Async.Run(() -> {
-            try {
-                var model = clienteRepository.salvar(new ClienteDto(nome, cnpjCpf, celular, email));
-                UI.runOnUi(() -> {
-                    clientes.add(model);
-                    Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
-                    clearForm();
-                    EventBus.getInstance().publish(new ClienteEvents.Criado(model));
-                });
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 }

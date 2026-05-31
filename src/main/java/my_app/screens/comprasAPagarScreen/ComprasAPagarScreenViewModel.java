@@ -1,425 +1,364 @@
 package my_app.screens.comprasAPagarScreen;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import megalodonte.ComputedState;
 import megalodonte.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
+import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.dto.ContasPagarDto;
+import megalodonte.v2.ListState;
 import my_app.db.models.ContasPagarModel;
 import my_app.db.models.FornecedorModel;
-import my_app.db.repositories.ContasPagarRepository;
-import my_app.db.repositories.FornecedorRepository;
-import my_app.events.DadosFinanceirosAtualizadosEvent;
-import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModel;
+import my_app.db.services.ContasPagarService;
+import my_app.db.services.FornecedorService;
 import my_app.domain.components.Components;
-import my_app.services.ContasPagarService;
-import my_app.utils.Utils;
+import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.utils.DateUtils;
+import my_app.utils.Utils;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ComprasAPagarScreenViewModel extends ViewModel {
-    private final ContasPagarRepository repository = new ContasPagarRepository();
-    private final FornecedorRepository fornecedorRepository = new FornecedorRepository();
-    private final ContasPagarService service = new ContasPagarService();
+public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
 
-    // Lists for dropdowns
-    public final List<String> statusOptions = List.of("TODOS", "PENDENTE", "PAGO", "PARCIAL", "ATRASADO", "CANCELADO");
-    public final List<String> tipoDocumentoOptions = List.of("DUPLICATA", "BOLETO", "NOTA FISCAL", "CHEQUE", "OUTRO");
-    
-    // Observable list for table
-    public final ObservableList<ContasPagarModel> contas = FXCollections.observableArrayList();
-    
-    // Form states
+    private final ContasPagarService contaService;
+    private final FornecedorService fornecedorService;
+
+    public final ListState<ContasPagarModel> contas = ListState.of(List.of());
+
     public final State<String> descricao = State.of("");
-    public final State<String> valorOriginal = State.of("0"); // in cents
-    public final State<BigDecimal> valorPago = State.of(BigDecimal.ZERO);
+    public final State<String> valorOriginal = State.of("0");
+    public final State<String> valorPagamento = State.of("0");
+
     public final State<LocalDate> dataVencimento = State.of(LocalDate.now());
     public final State<LocalDate> dataPagamento = State.of(null);
+
     public final State<String> status = State.of("PENDENTE");
     public final State<String> tipoDocumento = State.of("DUPLICATA");
     public final State<String> numeroDocumento = State.of("");
     public final State<String> observacao = State.of("");
-    
-    // Related data
+
     public final State<List<FornecedorModel>> fornecedores = State.of(List.of());
     public final State<FornecedorModel> fornecedorSelected = State.of(null);
     public final State<ContasPagarModel> contaSelected = State.of(null);
-    public final State<String> statusOptionSelected = State.of(statusOptions.getFirst());
-    
-    // UI states
-    public final State<Boolean> modoEdicao = State.of(false);
-    public final State<Boolean> modoPagamento = State.of(false);
-    public final State<String> valorPagamento = State.of("0");
-    
-    // Computed states
-    public final ComputedState<String> btnText = ComputedState.of(() -> 
-        modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
-        
-    public final ComputedState<String> btnPagamentoText = ComputedState.of(() -> 
-        modoPagamento.get() ? "Registrar Pagamento" : "Pagar", modoPagamento);
-        
-    public final ComputedState<Boolean> formValido = ComputedState.of(() -> {
-        return !descricao.get().trim().isEmpty() && 
-               !valorOriginal.get().equals("0") && 
-               fornecedorSelected.get() != null &&
-               dataVencimento.get() != null;
-    }, descricao, valorOriginal, fornecedorSelected, dataVencimento);
-    
-    public final ComputedState<Boolean> pagamentoValido = ComputedState.of(() -> {
-        // Para o botão "Pagar", só verifica se há conta selecionada
-        // A validação do valor acontece no momento do registro do pagamento
-        return contaSelected.get() != null;
-    }, contaSelected);
 
-    
-    // Business logic methods
+    public final State<Boolean> modoPagamento = State.of(false);
+
+    public final List<String> statusOptions = List.of("TODOS", "PENDENTE", "PAGO", "PARCIAL", "ATRASADO", "CANCELADO");
+    public final List<String> tipoDocumentoOptions = List.of("DUPLICATA", "BOLETO", "NOTA FISCAL", "CHEQUE", "OUTRO");
+    public final State<String> statusOptionSelected = State.of(statusOptions.getFirst());
+
+    public final ComputedState<String> btnPagamentoText = ComputedState.of(() ->
+            modoPagamento.get() ? "Registrar Pagamento" : "Pagar", modoPagamento);
+
+    public final ComputedState<Boolean> formValido = ComputedState.of(() ->
+            !descricao.get().trim().isEmpty() &&
+                    !valorOriginal.get().equals("0") &&
+                    fornecedorSelected.get() != null &&
+                    dataVencimento.get() != null, descricao, valorOriginal, fornecedorSelected, dataVencimento);
+
+    public final ComputedState<Boolean> pagamentoValido = ComputedState.of(() ->
+            contaSelected.get() != null, contaSelected);
+
+    public ComprasAPagarScreenViewModel(ScreenContext ctx) {
+        super(ctx);
+        try {
+            contaService = new ContasPagarService();
+            fornecedorService = new FornecedorService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
     public void loadInicial() {
         Async.Run(() -> {
             try {
-                var contasList = repository.listar();
-                var fornecedoresList = fornecedorRepository.listar();
-                
-                // Load related fornecedores for each conta
-                for (ContasPagarModel conta : contasList) {
-                    if (conta.fornecedorId != null) {
-                        FornecedorModel fornecedor = fornecedoresList.stream()
-                            .filter(f -> f.id.equals(conta.fornecedorId))
-                            .findFirst()
-                            .orElse(null);
-                        conta.fornecedor = fornecedor;
+                var contasList = contaService.listar();
+                var fornecedoresList = fornecedorService.listar();
+
+                for (var conta : contasList) {
+                    if (conta.getFornecedorId() != null) {
+                        fornecedoresList.stream()
+                                .filter(f -> f.getId().equals(conta.getFornecedorId()))
+                                .findFirst()
+                                .ifPresent(conta::setFornecedor);
                     }
                 }
 
-                contas.setAll(contasList);
-                fornecedores.set(fornecedoresList);
-                if (!fornecedoresList.isEmpty()) {
-                    fornecedorSelected.set(fornecedoresList.getFirst());
-                }
+                final var fornecedoresCopy = List.copyOf(fornecedoresList);
 
-//                UI.runOnUi(() -> {
-//                    contas.setAll(contasList);
-//                    fornecedores.set(fornecedoresList);
-//                    if (!fornecedoresList.isEmpty()) {
-//                        fornecedorSelected.set(fornecedoresList.getFirst());
-//                    }
-//                });
+                UI.runOnUi(() -> {
+                    contas.addAll(contasList);
+                    fornecedores.set(fornecedoresCopy);
+                    if (!fornecedoresCopy.isEmpty()) {
+                        fornecedorSelected.set(fornecedoresCopy.getFirst());
+                    }
+                });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
     }
-    
+
     public void loadPorStatus(String statusFiltro) {
         Async.Run(() -> {
             try {
                 List<ContasPagarModel> contasFiltradas;
                 if ("TODOS".equals(statusFiltro)) {
-                    contasFiltradas = repository.listar();
+                    contasFiltradas = contaService.listar();
                 } else {
-                    contasFiltradas = repository.buscarPorStatus(statusFiltro);
+                    contasFiltradas = contaService.buscarPorStatus(statusFiltro);
                 }
-                
-                // Load related fornecedores
-                var fornecedoresList = fornecedorRepository.listar();
-                for (ContasPagarModel conta : contasFiltradas) {
-                    if (conta.fornecedorId != null) {
-                        FornecedorModel fornecedor = fornecedoresList.stream()
-                            .filter(f -> f.id.equals(conta.fornecedorId))
-                            .findFirst()
-                            .orElse(null);
-                        conta.fornecedor = fornecedor;
-                    }
-                }
-                
+
+                attachFornecedores(contasFiltradas);
+
                 UI.runOnUi(() -> {
-                    contas.setAll(contasFiltradas);
+                    contas.clear();
+                    contas.addAll(contasFiltradas);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
     }
-    
+
     public void loadVencidas() {
         Async.Run(() -> {
             try {
-                var contasVencidas = repository.buscarVencidas();
-                
-                // Load related fornecedores
-                var fornecedoresList = fornecedorRepository.listar();
-                for (ContasPagarModel conta : contasVencidas) {
-                    if (conta.fornecedorId != null) {
-                        FornecedorModel fornecedor = fornecedoresList.stream()
-                            .filter(f -> f.id.equals(conta.fornecedorId))
-                            .findFirst()
-                            .orElse(null);
-                        conta.fornecedor = fornecedor;
-                    }
-                }
-                
+                var contasVencidas = contaService.buscarVencidas();
+                attachFornecedores(contasVencidas);
+
                 UI.runOnUi(() -> {
-                    contas.setAll(contasVencidas);
+                    contas.clear();
+                    contas.addAll(contasVencidas);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
     }
-    
-    public ContasPagarDto toDto() {
-        return new ContasPagarDto(
-            descricao.get(),
-            Utils.deCentavosParaReal(valorOriginal.get()),
-            valorPago.get(),
-            Utils.deCentavosParaReal(valorOriginal.get()).subtract(valorPago.get()),
-            DateUtils.localDateParaMillis(dataVencimento.get()),
-            dataPagamento.get() != null ? DateUtils.localDateParaMillis(dataPagamento.get()) : null,
-            status.get(),
-            fornecedorSelected.get() != null ? fornecedorSelected.get().id : null,
-            null, // compraId - can be set later if linked to a purchase
-            numeroDocumento.get(),
-            tipoDocumento.get(),
-            observacao.get()
-        );
-    }
-    
-    public void salvarOuAtualizar(ScreenContext ctx) {
-        if (!formValido.get()) {
-            UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
-            return;
-        }
-        
-        var dto = toDto();
-        
-        if (modoEdicao.get()) {
-            // Update logic
-            Async.Run(() -> {
-                try {
-                    ContasPagarModel modelAtualizada = (ContasPagarModel) new ContasPagarModel().fromIdAndDto(contaSelected.get().id, dto);
-                    repository.atualizar(modelAtualizada);
-                    UI.runOnUi(() -> {
-                        // Update item in observable list
-                        int index = contas.indexOf(contaSelected.get());
-                        if (index >= 0) {
-                            contas.set(index, modelAtualizada);
-                        }
-                        Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
-                        limparFormulario();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
-                }
-            });
-        } else {
-            // Save logic
-            Async.Run(() -> {
-                try {
-                    var contaSalva = repository.salvar(dto);
-                    UI.runOnUi(() -> {
-                        contas.add(contaSalva);
-                        Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
-                        limparFormulario();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar: " + e.getMessage()));
-                }
-            });
-        }
-    }
-    
-    public void registrarPagamento(ScreenContext ctx) {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar pagamento"));
-            return;
-        }
-        
-        BigDecimal valorPagamentoBig = Utils.deCentavosParaReal(valorPagamento.get());
-        
-        // Validar valor do pagamento
-        if (valorPagamentoBig.compareTo(BigDecimal.ZERO) <= 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Informe um valor de pagamento maior que zero"));
-            return;
-        }
-        
-        if (valorPagamentoBig.compareTo(contaSelected.get().valorRestante) > 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Valor do pagamento não pode ser maior que o valor restante"));
-            return;
-        }
-        
-        Async.Run(() -> {
-            try {
-                service.registrarPagamento(contaSelected.get().id, valorPagamentoBig);
-                UI.runOnUi(() -> {
-                    // Update the item in the list
-                    try {
-                        ContasPagarModel contaAtualizada = repository.buscarById(contaSelected.get().id);
-                        int index = contas.indexOf(contaSelected.get());
-                        if (index >= 0) {
-                            contas.set(index, contaAtualizada);
-                        }
-                        Components.ShowPopup(ctx, "Pagamento registrado com sucesso!");
-                        valorPagamento.set("0");
-                        modoPagamento.set(false);
-                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                    } catch (Exception ex) {
-                        Components.ShowAlertError("Erro ao atualizar lista: " + ex.getMessage());
-                    }
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar pagamento: " + e.getMessage()));
-            }
-        });
-    }
-    
-    public void quitarConta(ScreenContext ctx) {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
-            return;
-        }
-        
-        Async.Run(() -> {
-            try {
-                service.registrarPagamento(contaSelected.get().id, contaSelected.get().valorRestante);
-                UI.runOnUi(() -> {
-                    try {
-                        // Update the item in the list
-                        ContasPagarModel contaAtualizada = repository.buscarById(contaSelected.get().id);
-                        int index = contas.indexOf(contaSelected.get());
-                        if (index >= 0) {
-                            contas.set(index, contaAtualizada);
-                        }
-                        Components.ShowPopup(ctx, "Conta quitada com sucesso!");
-                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                    } catch (Exception ex) {
-                        Components.ShowAlertError("Erro ao atualizar lista: " + ex.getMessage());
-                    }
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
-            }
-        });
-    }
-    
-    public void excluir(ScreenContext ctx) {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para excluir"));
-            return;
-        }
-        
-        Async.Run(() -> {
-            try {
-                service.excluir(contaSelected.get().id);
-                UI.runOnUi(() -> {
-                    contas.remove(contaSelected.get());
-                    Components.ShowPopup(ctx, "Conta excluída com sucesso!");
-                    limparFormulario();
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
-            }
-        });
-    }
-    
-    public void editar() {
-        if (contaSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para editar"));
-            return;
-        }
-        
+
+    @Override
+    public void populateFromModel() {
+        if (contaSelected.get() == null) return;
         var conta = contaSelected.get();
-        descricao.set(conta.descricao);
-        valorOriginal.set(Utils.deRealParaCentavos(conta.valorOriginal));
-        valorPago.set(conta.valorPago);
-        dataVencimento.set(DateUtils.millisParaLocalDate(conta.dataVencimento));
-        dataPagamento.set(conta.dataPagamento != null ? DateUtils.millisParaLocalDate(conta.dataPagamento) : null);
-        status.set(conta.status);
-        tipoDocumento.set(conta.tipoDocumento);
-        numeroDocumento.set(conta.numeroDocumento);
-        observacao.set(conta.observacao);
-        
-        // Find and set fornecedor by ID
-        if (conta.fornecedorId != null) {
-            Async.Run(() -> {
-                try {
-                    FornecedorModel fornecedor = fornecedorRepository.buscarById(conta.fornecedorId);
-                    UI.runOnUi(() -> fornecedorSelected.set(fornecedor));
-                } catch (Exception e) {
-                    System.err.println("Erro ao buscar fornecedor: " + e.getMessage());
-                }
-            });
+
+        descricao.set(conta.getDescricao());
+        valorOriginal.set(Utils.deRealParaCentavos(conta.getValorOriginal()));
+        dataVencimento.set(DateUtils.millisParaLocalDate(conta.getDataVencimento()));
+        dataPagamento.set(conta.getDataPagamento() != null ? DateUtils.millisParaLocalDate(conta.getDataPagamento()) : null);
+        status.set(conta.getStatus());
+        tipoDocumento.set(conta.getTipoDocumento());
+        numeroDocumento.set(conta.getNumeroDocumento());
+        observacao.set(conta.getObservacao());
+
+        if (conta.getFornecedorId() != null) {
+            fornecedores.get().stream()
+                    .filter(f -> f.getId().equals(conta.getFornecedorId()))
+                    .findFirst()
+                    .ifPresent(fornecedorSelected::set);
         }
-        
-        modoEdicao.set(true);
     }
-    
-    public void limparFormulario() {
+
+    @Override
+    public void clearForm() {
         descricao.set("");
         valorOriginal.set("0");
-        valorPago.set(BigDecimal.ZERO);
         dataVencimento.set(LocalDate.now());
         dataPagamento.set(null);
         status.set("PENDENTE");
         tipoDocumento.set("DUPLICATA");
         numeroDocumento.set("");
         observacao.set("");
-        modoEdicao.set(false);
-        valorPagamento.set("0");
         modoPagamento.set(false);
+        valorPagamento.set("0");
         contaSelected.set(null);
-        
         if (!fornecedores.get().isEmpty()) {
             fornecedorSelected.set(fornecedores.get().getFirst());
         }
     }
-    
-    public void carregarParaEdicao(ContasPagarModel conta) {
-        if (conta == null) return;
-        
-        descricao.set(conta.descricao);
-        valorOriginal.set(Utils.deRealParaCentavos(conta.valorOriginal));
-        valorPago.set(conta.valorPago);
-        dataVencimento.set(DateUtils.millisParaLocalDate(conta.dataVencimento));
-        dataPagamento.set(conta.dataPagamento != null ? DateUtils.millisParaLocalDate(conta.dataPagamento) : null);
-        status.set(conta.status);
-        tipoDocumento.set(conta.tipoDocumento);
-        numeroDocumento.set(conta.numeroDocumento);
-        observacao.set(conta.observacao);
-        
-        // Find and set fornecedor by ID
-        if (conta.fornecedorId != null) {
+
+    @Override
+    public void handleAddOrUpdate() {
+        if (!formValido.get()) {
+            UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
+            return;
+        }
+
+        if (modoEdicao.get()) {
+            asyncAtualizar();
+        } else {
+            asyncSalvar();
+        }
+    }
+
+    @Override
+    public void handleClickMenuDelete() {
+        var selected = contaSelected.get();
+        if (selected == null) return;
+
+        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> {
             Async.Run(() -> {
                 try {
-                    FornecedorModel fornecedor = fornecedorRepository.buscarById(conta.fornecedorId);
-                    UI.runOnUi(() -> fornecedorSelected.set(fornecedor));
+                    contaService.excluir(selected.getId());
+                    UI.runOnUi(() -> {
+                        contas.removeIf(c -> c.getId().equals(selected.getId()));
+                        Components.ShowPopup(ctx, "Conta excluída com sucesso!");
+                        clearForm();
+                    });
                 } catch (Exception e) {
-                    System.err.println("Erro ao buscar fornecedor: " + e.getMessage());
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
                 }
             });
-        }
-        
-        modoEdicao.set(true);
+        });
     }
-    
-    public BigDecimal getTotalEmAberto() {
-        try {
-            return service.getTotalEmAberto();
-        } catch (Exception e) {
-            return BigDecimal.ZERO;
+
+    public void registrarPagamento(ScreenContext ctx) {
+        var selected = contaSelected.get();
+        if (selected == null) {
+            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar pagamento"));
+            return;
+        }
+
+        var valorPagamentoBig = Utils.deCentavosParaReal(valorPagamento.get());
+
+        if (valorPagamentoBig.compareTo(BigDecimal.ZERO) <= 0) {
+            UI.runOnUi(() -> Components.ShowAlertError("Informe um valor de pagamento maior que zero"));
+            return;
+        }
+
+        if (valorPagamentoBig.compareTo(selected.getValorRestante()) > 0) {
+            UI.runOnUi(() -> Components.ShowAlertError("Valor do pagamento não pode ser maior que o valor restante"));
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                contaService.registrarPagamento(selected.getId(), valorPagamentoBig);
+                var updated = contaService.buscarById(selected.getId());
+
+                if (updated.getFornecedorId() != null) {
+                    fornecedores.get().stream()
+                            .filter(f -> f.getId().equals(updated.getFornecedorId()))
+                            .findFirst()
+                            .ifPresent(updated::setFornecedor);
+                }
+
+                UI.runOnUi(() -> {
+                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    Components.ShowPopup(ctx, "Pagamento registrado com sucesso!");
+                    valorPagamento.set("0");
+                    modoPagamento.set(false);
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar pagamento: " + e.getMessage()));
+            }
+        });
+    }
+
+    public void quitarConta(ScreenContext ctx) {
+        var selected = contaSelected.get();
+        if (selected == null) {
+            UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                contaService.registrarPagamento(selected.getId(), selected.getValorRestante());
+                var updated = contaService.buscarById(selected.getId());
+
+                if (updated.getFornecedorId() != null) {
+                    fornecedores.get().stream()
+                            .filter(f -> f.getId().equals(updated.getFornecedorId()))
+                            .findFirst()
+                            .ifPresent(updated::setFornecedor);
+                }
+
+                UI.runOnUi(() -> {
+                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    Components.ShowPopup(ctx, "Conta quitada com sucesso!");
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void asyncSalvar() {
+        Async.Run(() -> {
+            try {
+                var model = new ContasPagarModel();
+                fillModelFromForm(model, true);
+                var salvo = contaService.salvar(model);
+                salvo.setFornecedor(fornecedorSelected.get());
+
+                UI.runOnUi(() -> {
+                    contas.add(salvo);
+                    Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void asyncAtualizar() {
+        Async.Run(() -> {
+            try {
+                var selected = contaSelected.get();
+                if (selected == null) return;
+                fillModelFromForm(selected, false);
+                contaService.atualizar(selected);
+                selected.setFornecedor(fornecedorSelected.get());
+
+                UI.runOnUi(() -> {
+                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
+                    Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void fillModelFromForm(ContasPagarModel model, boolean isNew) {
+        model.setDescricao(descricao.get());
+        model.setValorOriginal(Utils.deCentavosParaReal(valorOriginal.get()));
+        model.setDataVencimento(DateUtils.localDateParaMillis(dataVencimento.get()));
+        model.setDataPagamento(dataPagamento.get() != null ? DateUtils.localDateParaMillis(dataPagamento.get()) : null);
+        model.setStatus(status.get());
+        model.setFornecedorId(fornecedorSelected.get() != null ? fornecedorSelected.get().getId() : null);
+        model.setCompraId(null);
+        model.setNumeroDocumento(numeroDocumento.get());
+        model.setTipoDocumento(tipoDocumento.get());
+        model.setObservacao(observacao.get());
+
+        if (isNew) {
+            model.setValorPago(BigDecimal.ZERO);
+            if (model.getValorOriginal() != null) {
+                model.setValorRestante(model.getValorOriginal());
+            }
+        } else {
+            if (model.getValorOriginal() != null && model.getValorPago() != null) {
+                var restante = model.getValorOriginal().subtract(model.getValorPago());
+                model.setValorRestante(restante.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : restante);
+            }
         }
     }
-    
-    public BigDecimal getTotalVencidas() {
-        try {
-            return service.getTotalVencidas();
-        } catch (Exception e) {
-            return BigDecimal.ZERO;
+
+    private void attachFornecedores(List<ContasPagarModel> contasList) {
+        for (var conta : contasList) {
+            if (conta.getFornecedorId() != null) {
+                fornecedores.get().stream()
+                        .filter(f -> f.getId().equals(conta.getFornecedorId()))
+                        .findFirst()
+                        .ifPresent(conta::setFornecedor);
+            }
         }
     }
 }

@@ -1,29 +1,22 @@
 package my_app.db.models;
 
-import my_app.db.dto.TecnicoDto;
-import my_app.domain.ModelBase;
-import my_app.domain.SqlField;
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.persism.annotations.Column;
+import net.sf.persism.annotations.Table;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 
-public class TecnicoModel extends ModelBase<TecnicoDto> {
-    //TODO: adicionar mais pra frente id de quem criar esse tecnico: userId
+@Setter
+@Getter
+@Table("tecnicos")
+public class TecnicoModel {
 
-    @SqlField(name = "nome", type = "string")
-    public String nome;
+    @Column(primary = true)
+    private Integer id;
 
-    @Override
-    public TecnicoModel fromIdAndDtoAndMillis(Long id, TecnicoDto tecnicoDto, long millis) {
-        this.id = id;
-        this.dataCriacao = millis;
-        this.nome = tecnicoDto.nome();
-        this.dataCriacao = millis;
-        return this;
-    }
+    private String nome;
+
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
 }
-
-
-

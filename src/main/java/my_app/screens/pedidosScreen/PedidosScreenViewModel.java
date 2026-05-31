@@ -9,12 +9,16 @@ import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.db.repositories.PedidoItemRepository;
 import my_app.db.repositories.PedidoRepository;
+import my_app.db.services.PedidoService;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import net.sf.persism.Session;
+
+import java.sql.SQLException;
 
 public class PedidosScreenViewModel extends ViewModelScreenContract {
 
-    private final PedidoRepository pedidoRepository;
+    private final PedidoService pedidoService;
     private final PedidoItemRepository pedidoItemRepository;
 
     final ListState<PedidoModel> pedidos = ListState.ofEmpty();
@@ -23,9 +27,15 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
 
     public PedidosScreenViewModel(ScreenContext ctx) {
         super(ctx);
-        this.pedidoRepository = new PedidoRepository();
-        this.pedidoItemRepository = new PedidoItemRepository();
-        this.onInit();
+        try {
+            Session session = getPersismSession();
+            this.pedidoService = new PedidoService(session);
+            this.pedidoItemRepository = new PedidoItemRepository(session);
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+        onInit();
     }
 
     @Override
@@ -35,34 +45,30 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
                 itensDoPedidoSelecionado.clear();
                 return;
             }
-            loadItensDoPedido(pedido.id);
+            loadItensDoPedido(pedido.getId());
         });
     }
 
     @Override
     public void populateFromModel() {
-
     }
 
     @Override
     public void clearForm() {
-
     }
 
     @Override
     public void handleAddOrUpdate() {
-
     }
 
     @Override
     public void handleClickMenuDelete() {
-
     }
 
     void loadPedidos() {
         Async.Run(() -> {
             try {
-                var list = pedidoRepository.listar();
+                var list = pedidoService.listar();
                 UI.runOnUi(() -> pedidos.set(list));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -71,7 +77,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
         });
     }
 
-    private void loadItensDoPedido(Long pedidoId) {
+    private void loadItensDoPedido(Integer pedidoId) {
         Async.Run(() -> {
             try {
                 var itens = pedidoItemRepository.listarPorPedido(pedidoId);

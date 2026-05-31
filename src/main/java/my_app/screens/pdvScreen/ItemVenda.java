@@ -14,6 +14,6 @@ public class ItemVenda {
     }
 
     public BigDecimal totalItem() {
-        return produto.precoVenda.multiply(quantidade);
+        return produto.getPrecoVenda().multiply(quantidade);
     }
 }

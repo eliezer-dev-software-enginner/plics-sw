@@ -1,110 +1,56 @@
 package my_app.db.models;
 
-import my_app.db.dto.ProdutoDto;
-import my_app.domain.ForeignKey;
-import my_app.domain.ModelBase;
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.persism.annotations.Column;
+import net.sf.persism.annotations.Table;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.LocalDateTime;
 
-public class ProdutoModel extends ModelBase<ProdutoDto> {
-    //TODO: CODIGO DE BARRAS DEVERIA SER UMA TABELA, ONDE ELE É UNICO POR PRODUTO
+@Setter
+@Getter
+@Table("produtos")
+public class ProdutoModel {
 
-    // ainda string, mas já pensando em normalizar depois
-    public String codigoBarras;
-    public String descricao;
-    public BigDecimal precoCompra;
-    public BigDecimal precoVenda;
+    @Column(primary = true)
+    private Integer id;
 
-    public BigDecimal totalLiquido;
-    public String unidade;
-    public String marca;
-    //TODO: MOVER MARGEM PARA UMA TABELA PROPRIA
-    //public BigDecimal margem;
+    @Column(name = "codigo_barras")
+    private String codigoBarras;
 
-    // campo derivado (não vem do banco)
-    public BigDecimal lucro;
+    private String descricao;
 
-    @ForeignKey
-    public Long categoriaId;
-    @ForeignKey
-    public Long fornecedorId;
+    @Column(name = "preco_compra")
+    private BigDecimal precoCompra;
 
-    // composição (domínio)
-    public CategoriaModel categoria;
-    public FornecedorModel fornecedor;
+    @Column(name = "preco_venda")
+    private BigDecimal precoVenda;
 
-    public BigDecimal estoque;
-    public String observacoes;
-    public String imagem;
+    @Column(name = "total_liquido")
+    private BigDecimal totalLiquido;
 
-    public Long validade;
-    public String comissao;
-    public String garantia;
+    private String unidade;
+    private String marca;
 
-    @Override
-    public ProdutoModel fromIdAndDtoAndMillis(Long id, ProdutoDto dto, long millis) {
-        this.id = id;
-        this.dataCriacao = millis;
-        this.codigoBarras = dto.codigoBarras;
-        this.descricao = dto.descricao;
-        this.precoCompra = dto.precoCompra;
-        this.precoVenda = dto.precoVenda;
-        this.unidade = dto.unidade;
-        this.marca = dto.marca;
-        this.categoriaId = dto.categoriaId;
-        this.fornecedorId = dto.fornecedorId;
-        this.estoque = dto.estoque;
-        this.observacoes = dto.observacoes;
-        this.imagem = dto.imagem;
-        this.validade = dto.validade;
-        this.comissao = dto.comissao;
-        this.garantia = dto.garantia;
-        this.totalLiquido = dto.totalLiquido;
+    @Column(name = "categoria_id")
+    private Integer categoriaId;
 
-        // campo derivado (runtime)
-        if (this.precoCompra != null && this.precoVenda != null) {
-            this.lucro = this.precoVenda.subtract(this.precoCompra);
-        }
+    @Column(name = "fornecedor_id")
+    private Integer fornecedorId;
 
-        return this;
-    }
+    private BigDecimal estoque;
+    private String observacoes;
+    private String imagem;
 
-    @Override
-    public ProdutoModel fromResultSet(ResultSet rs) throws SQLException {
-        var p = new ProdutoModel();
-        p.id = rs.getLong("id");
-        p.codigoBarras = rs.getString("codigo_barras");
-        p.descricao = rs.getString("descricao");
-        p.precoCompra = rs.getBigDecimal("preco_compra");
-        p.precoVenda = rs.getBigDecimal("preco_venda");
-        //p.margem = rs.getBigDecimal("margem");
-        //p.lucro = rs.getBigDecimal("lucro");
-        p.unidade = rs.getString("unidade");
-        p.categoriaId = rs.getLong("categoria_id");
-        p.fornecedorId = rs.getLong("fornecedor_id");
-        p.estoque = rs.getBigDecimal("estoque");
-        p.observacoes = rs.getString("observacoes");
-        p.imagem = rs.getString("imagem");
-        p.marca = rs.getString("marca");
-        p.validade = rs.getLong("validade");
-        p.totalLiquido = rs.getBigDecimal("total_liquido");
+    private Long validade;
+    private String comissao;
+    private String garantia;
 
-        if (rs.wasNull()) {
-            p.validade = null;
-        }
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
 
-        p.comissao = rs.getString("comissao");
-        p.garantia = rs.getString("garantia");
-
-        // campo derivado (runtime)
-        if (p.precoCompra != null && p.precoVenda != null) {
-            p.lucro = p.precoVenda.subtract(p.precoCompra);
-        }
-
-        p.dataCriacao = rs.getLong("data_criacao");
-        return p;
-    }
-
+    // transient fields (runtime composition)
+    private transient my_app.db.models.CategoriaModel categoria;
+    private transient my_app.db.models.FornecedorModel fornecedor;
 }

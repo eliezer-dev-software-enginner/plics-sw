@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V10__criar_vendas.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V11__criar_contas_a_receber.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V12__criar_tecnicos.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V13__criar_ordens_de_servico.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V14__criar_preferencias.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V15__criar_pedidos.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V16__dados_padrao.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V1__criar_produtos.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V2__criar_categoria.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V3__criar_licensas.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V4__criar_fornecedores.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V5__criar_usuarios.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V6__criar_clientes.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V7__criar_compras.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V8__criar_empresas.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/flyway_migrations/V9__criar_contas_pagar.sql" dialect="GenericSQL" />
+  </component>
+</project>

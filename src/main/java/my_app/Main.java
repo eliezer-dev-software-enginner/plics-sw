@@ -1,6 +1,5 @@
 package my_app;
 
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Set;
@@ -12,11 +11,12 @@ import megalodonte.application.MegalodonteApp;
 import megalodonte.router.v4.Router;
 import megalodonte.theme.ThemeManager;
 import my_app.core.Themes;
-import my_app.db.MigrationRunner;
-import my_app.db.repositories.PreferenciasRepository;
+import my_app.db.DB;
+import my_app.db.services.PreferenciasService;
 import my_app.hotreload.HotReload;
-import my_app.routes.AppRoutes;
+import my_app.core.AppRoutes;
 import my_app.utils.TrayManager;
+import org.flywaydb.core.Flyway;
 
 public class Main {
 
@@ -78,14 +78,27 @@ public class Main {
     public static void initialize(Context context) {
         ThemeManager.setTheme(Themes.LIGHT);
 
-        MigrationRunner.run();
-
         try {
-            var prefs = new PreferenciasRepository().listar();
+            Flyway.configure()
+                    .dataSource(DB.production().url(), "", "")
+                    .locations("classpath:flyway_migrations")
+                    .baselineOnMigrate(true)
+                    .load()
+                    .migrate();
+
+//            Flyway.configure()
+//                    .dataSource(DB.url(), "", "")
+//                    .locations("classpath:migrations")
+           // .baselineOnMigrate(true)
+//                    .load()
+//                    .migrate();
+
+
+            var prefs = new PreferenciasService().listar();
             if (!prefs.isEmpty()) {
                 var pref = prefs.getFirst();
-                // ThemeManager.setTheme(pref.tema.equals("Claro")? Themes.LIGHT: Themes.DARK);
-                askCredentials = pref.credenciaisHabilitadas == 1;
+                // ThemeManager.setTheme(pref.getTema().equals("Claro")? Themes.LIGHT: Themes.DARK);
+                askCredentials = pref.getCredenciaisHabilitadas() == 1;
                 forceAccessRoute = pref.isFirstAccess();
             }
         } catch (SQLException e) {

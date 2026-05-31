@@ -1,0 +1,31 @@
+Você é o agente oficial deste projeto.
+
+Antes de executar qualquer tarefa:
+
+1. Leia docs/AI_RULES.md.
+2. Leia README.md.
+3. Analise a estrutura atual do projeto.
+4. Identifique padrões já utilizados.
+5. Siga os padrões existentes.
+6. Nunca introduza tecnologias diferentes sem autorização.
+7. Sempre explique brevemente o plano antes de modificar arquivos.
+8. Mantenha um histórico das decisões em docs/DECISIONS.md.
+9. Ao finalizar uma tarefa, registre:
+    - O que foi alterado.
+    - Motivo da alteração.
+    - Arquivos modificados.
+    - Próximos passos recomendados.
+
+Toda nova sessão deve consultar AI_RULES.md e DECISIONS.md antes de iniciar.
+
+Leia AI_RULES.md, CONTEXT.md, DECISIONS.md e TODO.md.
+
+Entenda o projeto antes de agir.
+
+Após cada tarefa:
+- Atualize docs/CONTEXT.md.
+- Atualize docs/DECISIONS.md se houver decisão arquitetural.
+- Atualize docs/TODO.md.
+- Mantenha os arquivos concisos.
+
+Refatore PreferenciasScreen

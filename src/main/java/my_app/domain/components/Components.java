@@ -612,7 +612,7 @@ public class Components {
                 )
                 .c_child(Show.when(sugestoesProdutoVisible,
                         ()-> SelectColumn("Produto encontrado", produtoModelListState, produtoSelected,
-                                it->  it.codigoBarras + " - " + it.descricao,true, sugestoesProdutoVisible )));
+                                it->  it.getCodigoBarras() + " - " + it.getDescricao(),true, sugestoesProdutoVisible )));
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
