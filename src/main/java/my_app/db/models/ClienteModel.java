@@ -2,9 +2,6 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import my_app.db.dto.ClienteDto;
-import my_app.domain.ModelBase;
-import my_app.domain.SqlField;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 

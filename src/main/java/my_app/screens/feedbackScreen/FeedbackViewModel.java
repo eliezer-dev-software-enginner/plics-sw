@@ -1,4 +1,4 @@
-package my_app.screens;
+package my_app.screens.feedbackScreen;
 
 import megalodonte.ComputedState;
 import megalodonte.State;
