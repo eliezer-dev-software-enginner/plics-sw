@@ -11,10 +11,12 @@ import megalodonte.application.MegalodonteApp;
 import megalodonte.router.v4.Router;
 import megalodonte.theme.ThemeManager;
 import my_app.core.Themes;
+import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
 import my_app.hotreload.HotReload;
 import my_app.core.AppRoutes;
 import my_app.utils.TrayManager;
+import org.flywaydb.core.Flyway;
 
 public class Main {
 
@@ -77,13 +79,20 @@ public class Main {
         ThemeManager.setTheme(Themes.LIGHT);
 
         try {
+            Flyway.configure()
+                    .dataSource(DB.production().url(), "", "")
+                    .locations("classpath:flyway_migrations")
+                    .baselineOnMigrate(true)
+                    .load()
+                    .migrate();
+
 //            Flyway.configure()
 //                    .dataSource(DB.url(), "", "")
 //                    .locations("classpath:migrations")
            // .baselineOnMigrate(true)
 //                    .load()
 //                    .migrate();
-            //MigrationRunner.run();
+
 
             var prefs = new PreferenciasService().listar();
             if (!prefs.isEmpty()) {
