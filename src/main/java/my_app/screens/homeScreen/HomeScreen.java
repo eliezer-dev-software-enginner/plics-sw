@@ -102,48 +102,6 @@ public class HomeScreen implements ScreenComponent {
         );
     }
 
-    private void buscarAtualizacao() {
-        try {
-            var updaterJar = encontrarUpdaterJar();
-            if (updaterJar == null) {
-                UI.runOnUi(() -> Components.ShowAlertError(
-                        "updater.jar não encontrado. Reinstale a aplicação."));
-                return;
-            }
-
-            var javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-            var pid = ProcessHandle.current().pid();
-
-            new ProcessBuilder(
-                    javaBin, "-jar", updaterJar,
-                    "--pid", String.valueOf(pid),
-                    "--version", "v" + Main.APP_VERSION,
-                    "--owner", "eliezer-dev-software-enginner",
-                    "--repo", "plics-sw"
-            ).start();
-        } catch (Exception e) {
-            UI.runOnUi(() -> Components.ShowAlertError(
-                    "Erro ao iniciar atualização: " + e.getMessage()));
-            e.printStackTrace();
-        }
-    }
-
-    private String encontrarUpdaterJar() {
-        try {
-            var codeSource = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
-            var path = Paths.get(codeSource).getParent().resolve("updater.jar").toString();
-            if (new File(path).exists()) return path;
-        } catch (Exception ignored) {}
-
-        var cwd = Paths.get("").toAbsolutePath().resolve("updater.jar").toString();
-        if (new File(cwd).exists()) return cwd;
-
-        var appDir = Paths.get("").toAbsolutePath().resolve("app").resolve("updater.jar").toString();
-        if (new File(appDir).exists()) return appDir;
-
-        return null;
-    }
-
     private Component menuBar(){
         return new MenuBar()
                 .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow("preferencias",e->{})))
@@ -160,7 +118,7 @@ public class HomeScreen implements ScreenComponent {
                         .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
                         .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
                         .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow("info-update",e->{}))
-                        .item("Buscar atualização", this::buscarAtualizacao)
+                       // .item("Buscar atualização", this::buscarAtualizacao)
                 );
     }
 
