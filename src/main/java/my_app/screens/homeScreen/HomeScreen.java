@@ -4,6 +4,7 @@ import megalodonte.State;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -13,6 +14,7 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.Main;
+import my_app.domain.components.Components;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -102,11 +104,10 @@ public class HomeScreen implements ScreenComponent {
 
     private void buscarAtualizacao() {
         try {
-            var codeSource = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
-            var updaterJar = Paths.get(codeSource).getParent().resolve("updater.jar").toString();
-
-            if (!new File(updaterJar).exists()) {
-                System.err.println("updater.jar não encontrado em: " + updaterJar);
+            var updaterJar = encontrarUpdaterJar();
+            if (updaterJar == null) {
+                UI.runOnUi(() -> Components.ShowAlertError(
+                        "updater.jar não encontrado. Reinstale a aplicação."));
                 return;
             }
 
@@ -119,11 +120,28 @@ public class HomeScreen implements ScreenComponent {
                     "--version", "v" + Main.APP_VERSION,
                     "--owner", "eliezer-dev-software-enginner",
                     "--repo", "plics-sw"
-            ).inheritIO().start();
+            ).start();
         } catch (Exception e) {
-            System.err.println("Erro ao iniciar updater: " + e.getMessage());
+            UI.runOnUi(() -> Components.ShowAlertError(
+                    "Erro ao iniciar atualização: " + e.getMessage()));
             e.printStackTrace();
         }
+    }
+
+    private String encontrarUpdaterJar() {
+        try {
+            var codeSource = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
+            var path = Paths.get(codeSource).getParent().resolve("updater.jar").toString();
+            if (new File(path).exists()) return path;
+        } catch (Exception ignored) {}
+
+        var cwd = Paths.get("").toAbsolutePath().resolve("updater.jar").toString();
+        if (new File(cwd).exists()) return cwd;
+
+        var appDir = Paths.get("").toAbsolutePath().resolve("app").resolve("updater.jar").toString();
+        if (new File(appDir).exists()) return appDir;
+
+        return null;
     }
 
     private Component menuBar(){
