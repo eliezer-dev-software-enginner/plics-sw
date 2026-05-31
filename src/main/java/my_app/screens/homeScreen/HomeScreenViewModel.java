@@ -8,8 +8,8 @@ import my_app.db.services.ContasPagarService;
 import my_app.db.services.VendaService;
 import my_app.db.services.CompraService;
 import my_app.db.services.PedidoService;
-import my_app.events.DadosFinanceirosAtualizadosEvent;
-import my_app.events.EventBus;
+import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EventBus;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 

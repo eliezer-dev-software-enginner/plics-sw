@@ -1,4 +1,4 @@
-package my_app.events;
+package my_app.core.events;
 
 public class DadosFinanceirosAtualizadosEvent {
     private static final DadosFinanceirosAtualizadosEvent INSTANCE = new DadosFinanceirosAtualizadosEvent();

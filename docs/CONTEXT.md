@@ -5,26 +5,16 @@
 - Persism (ORM) + SQLite
 - Flyway (migrations)
 - Padrão: Screen + ViewModel + Service + Repository
-
-## Screens refatoradas
-- categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen
-- homeScreen, pdvScreen, comprasAPagarScreen, contasAReceberScreen
-- pedidosScreen, produtoScreen, vendaScreen
-- preferenciasScreen
+- Events movidos para core/events com EntityEvent<T> genérico
 
 ## Última alteração
-- Refatoração do PedidosScreen:
-  - PedidoModel: @Column annotations, Integer id, LocalDateTime dataCriacao
-  - PedidoItemModel: @Column annotations, Integer id, LocalDateTime dataCriacao
-  - PedidoRepository: implementado com Persism (BaseRepository)
-  - PedidoItemRepository: implementado com Persism (BaseRepository + listarPorPedido)
-  - PedidoService: criado
-  - PedidosScreenViewModel: migrado para new models/repos, getters
-  - PedidosScreen: getters no lugar de field access direto
-  - Migration V15: dataCriacao INTEGER -> TIMESTAMP
-  - Testes de ambos os repositories criados e passando
+- Eventos movidos de `my_app.events` para `my_app.core.events`
+- Criado `EntityEvent<T>` genérico eliminando repetição de ClienteEvents, TecnicoEvents, ProdutoEvents
+- Bug fix: ProdutoEvents.java importava TecnicoModel ao invés de ProdutoModel (arquivo deletado)
+- EventBus e DadosFinanceirosAtualizadosEvent movidos para core/events
+- 8 ViewModels atualizados com novos imports e usos do EntityEvent
 
-## Screens refatoradas (lista completa)
+## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen
 - homeScreen, pdvScreen, comprasAPagarScreen, contasAReceberScreen
 - pedidosScreen, produtoScreen, vendaScreen

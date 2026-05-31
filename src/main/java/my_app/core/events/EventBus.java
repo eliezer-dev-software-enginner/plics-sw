@@ -1,4 +1,4 @@
-package my_app.events;
+package my_app.core.events;
 
 import java.util.ArrayList;
 import java.util.List;

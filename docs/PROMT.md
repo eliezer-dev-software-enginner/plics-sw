@@ -28,4 +28,4 @@ Após cada tarefa:
 - Atualize docs/TODO.md.
 - Mantenha os arquivos concisos.
 
-Refatore PreferenciasScreen
+mova events para dentro de core e eventos que tiverem a mesma estrutura, pense em uma solução para evitar a "repetição".
