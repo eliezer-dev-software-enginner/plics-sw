@@ -6,9 +6,13 @@
 - ProdutoScreen refatorada (Model, Repository, Service, ViewModel, Screen, Test, Migration V1)
 - TecnicoScreen refatorada (Model, Repository, Service, ViewModel, Screen, Test, Migration V12)
 - PedidosScreen refatorada (Model, Repository, Service, ViewModel, Screen, Test, Migration V15)
-- Eventos movidos para core/events com EntityEvent<T> genérico (elimina repetição ClienteEvents/TecnicoEvents/ProdutoEvents)
+- Eventos movidos para core/events com EntityEvent<T> genérico
+- Interfaces ContratoTelaCrud e ContratoTelaCrudV2 removidas (depreciadas)
+- FeedbackViewModel criado (compartilhado entre RelatarErroScreen e SugerirMelhoriaScreen)
+- InfoUpdateScreenViewModel criado
+- AuthScreen, Main, WelcomeScreen já utilizam PreferenciasService (padrão atual)
+- OrdemServicoScreen já refatorada com ViewModel (ContratoTelaCrudV3)
 
 ## Pendências
-- Refatorar AuthScreen, Main, WelcomeScreen para usar novo PreferenciasRepository
-- Refatorar OrdemServicoScreen, RelatarErroScreen, SugerirMelhoriaScreen, AuthScreen, InfoUpdateScreen seguindo padrão ViewModel
-- Implementar mais testes de repository para telas ainda não refatoradas
+- Implementar testes de repository para telas que ainda não possuem (ex: CompraRepository)
+- Refatorar telas que ainda usam padrão antigo (se houver)

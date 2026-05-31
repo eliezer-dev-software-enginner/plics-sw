@@ -1,6 +1,5 @@
 package my_app.screens;
 
-
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 import megalodonte.base.components.Component;
@@ -22,16 +21,18 @@ public class WelcomeScreen {
 
     private final Theme theme = ThemeManager.theme();
 
-    public Component render (){
+    public Component render() {
         return new Column(new ColumnProps().centerHorizontally()).c_child(
                 new Column(new ColumnProps().centerHorizontally().width(400)
                         .maxWidth(400).paddingTop(100).spacingOf(10))
                         .children(
                                 new Image("logo_256x256.png", new ImageProps().size(100))
-                                        .attachAnimation(it->{
+                                        .attachAnimation(it -> {
                                             ScaleTransition zoom = new ScaleTransition(Duration.millis(850), it.getNode());
-                                            zoom.setFromX(1.0); zoom.setFromY(1.0);  // Tamanho original
-                                            zoom.setToX(1.5); zoom.setToY(1.5);      // Aumenta 50%
+                                            zoom.setFromX(1.0);
+                                            zoom.setFromY(1.0);
+                                            zoom.setToX(1.5);
+                                            zoom.setToY(1.5);
                                             zoom.setAutoReverse(true);
                                             zoom.setCycleCount(2);
                                             return zoom;
@@ -51,24 +52,11 @@ public class WelcomeScreen {
         );
     }
 
-    private void handleClick(){
-//        try {
-//            var prefs = new PreferenciasRepository().listar();
-//            if (!prefs.isEmpty()) {
-//                var pref = prefs.getFirst();
-//                pref.primeiroAcesso = 0;
-//                new PreferenciasRepository().atualizar(pref);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        //router.navigateTo("home");
-        //router.navigateTo("entrar-com-credenciais");
-
+    private void handleClick() {
         ctx.navigate("entrar-com-credenciais");
     }
 
-    public Component textRow(){
+    public Component textRow() {
         return new Row(new RowProps().width(200).maxWidth(300).centerHorizontally().bgColor("yellow"))
                 .children(
                         new Text("usuário", new TextProps().variant(TextVariant.BODY)),

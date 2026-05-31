@@ -11,9 +11,9 @@ import my_app.domain.components.Components;
 
 import java.util.List;
 
-
 public class InfoUpdateScreen implements ScreenComponent {
     private final ScreenContext ctx;
+    private final InfoUpdateScreenViewModel vm;
 
     private record NotaAtualizacao(String title, String[] notes){}
 
@@ -32,6 +32,7 @@ public class InfoUpdateScreen implements ScreenComponent {
 
     public InfoUpdateScreen(ScreenContext ctx) {
         this.ctx = ctx;
+        this.vm = new InfoUpdateScreenViewModel();
     }
 
     public Component render() {
@@ -53,5 +54,4 @@ public class InfoUpdateScreen implements ScreenComponent {
                 new Card(container)
         );
     }
-
 }
