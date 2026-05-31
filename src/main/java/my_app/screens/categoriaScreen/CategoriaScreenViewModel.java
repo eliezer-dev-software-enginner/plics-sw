@@ -7,7 +7,7 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
 import my_app.db.models.CategoriaModel;
 import my_app.db.services.CategoriaService;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 
 import java.sql.SQLException;

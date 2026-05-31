@@ -11,7 +11,7 @@ import megalodonte.utils.related.TextVariant;
 import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;

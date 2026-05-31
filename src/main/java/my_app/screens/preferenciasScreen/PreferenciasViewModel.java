@@ -7,7 +7,7 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.PreferenciasModel;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 
 import java.sql.SQLException;
 

@@ -100,6 +100,11 @@ dependencies {
 
     // SLF4J/Logback para testes
     testImplementation("ch.qos.logback:logback-classic:1.5.18")
+
+
+    //jackson
+    implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
 }
 
 tasks.test {

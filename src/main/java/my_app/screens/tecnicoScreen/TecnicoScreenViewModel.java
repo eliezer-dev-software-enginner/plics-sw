@@ -10,7 +10,7 @@ import my_app.db.services.TecnicoService;
 import my_app.domain.components.Components;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 
 import java.sql.SQLException;
 import java.util.List;

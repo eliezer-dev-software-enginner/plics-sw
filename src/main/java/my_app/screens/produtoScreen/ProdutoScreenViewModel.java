@@ -11,7 +11,7 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.services.CategoriaService;
 import my_app.db.services.FornecedorService;
 import my_app.db.services.ProdutoService;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;

@@ -18,7 +18,7 @@ import my_app.domain.Parcela;
 import my_app.domain.states.TotaisState;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.services.ContasPagarService;
 import my_app.utils.DateUtils;

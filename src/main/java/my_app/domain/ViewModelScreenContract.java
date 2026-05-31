@@ -1,4 +1,4 @@
-package my_app.lifecycle.viewmodel.component;
+package my_app.domain;
 
 import megalodonte.ComputedState;
 import megalodonte.State;

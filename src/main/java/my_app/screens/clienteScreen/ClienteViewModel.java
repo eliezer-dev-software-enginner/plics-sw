@@ -11,7 +11,7 @@ import my_app.db.services.ClienteService;
 import my_app.domain.Data;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.Utils;
 
