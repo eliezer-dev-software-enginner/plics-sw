@@ -18,7 +18,7 @@ Antes de executar qualquer tarefa:
 
 Toda nova sessão deve consultar AI_RULES.md e DECISIONS.md antes de iniciar.
 
-Leia AI_RULES.md, CONTEXT.md, DECISIONS.md e TODO.md.
+Leia docs/AI_RULES.md, docs/CONTEXT.md, docs/DECISIONS.md e docs/TODO.md.
 
 Entenda o projeto antes de agir.
 
