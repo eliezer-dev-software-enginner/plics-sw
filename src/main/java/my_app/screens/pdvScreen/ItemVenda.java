@@ -1,6 +1,6 @@
 package my_app.screens.pdvScreen;
 
-import my_app.db.models_old.ProdutoModel;
+import my_app.db.models.ProdutoModel;
 
 import java.math.BigDecimal;
 
@@ -14,6 +14,6 @@ public class ItemVenda {
     }
 
     public BigDecimal totalItem() {
-        return produto.precoVenda.multiply(quantidade);
+        return produto.getPrecoVenda().multiply(quantidade);
     }
 }

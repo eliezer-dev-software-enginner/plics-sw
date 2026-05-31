@@ -10,7 +10,6 @@ import my_app.db.dto.CompraDto;
 import my_app.db.models.CompraModel;
 import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
-import my_app.db.repositories_old.ContasPagarRepository;
 import my_app.db.services.CompraService;
 import my_app.db.services.FornecedorService;
 import my_app.db.services.ProdutoService;
@@ -309,7 +308,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 try {
                     Long compraId = data.getId();
 
-                    new ContasPagarRepository().excluirPorCompraId(compraId);
+                    new ContasPagarService().excluirPorCompraId(compraId);
 
                     compraService.excluirById(compraId);
 

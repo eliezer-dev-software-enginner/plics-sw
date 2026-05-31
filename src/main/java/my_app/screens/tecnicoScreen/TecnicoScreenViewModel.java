@@ -11,7 +11,6 @@ import my_app.domain.components.Components;
 import my_app.events.EventBus;
 import my_app.events.TecnicoEvents;
 import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
-import my_app.utils.DateUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -56,9 +55,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 try {
                     tecnicoService.excluirById(model.getId());
 
-                    var oldModel = toOldModel(model);
-                    long idLong = oldModel.id;
-                    EventBus.getInstance().publish(new TecnicoEvents.Excluido(idLong));
+                    EventBus.getInstance().publish(new TecnicoEvents.Excluido(model.getId().longValue()));
 
                     UI.runOnUi(() -> {
                         tecnicos.removeIf(it -> it.getId().equals(model.getId()));
@@ -95,8 +92,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 model.setNome(value);
                 var salvo = tecnicoService.salvar(model);
 
-                var oldModel = toOldModel(salvo);
-                EventBus.getInstance().publish(new TecnicoEvents.Criado(oldModel));
+                EventBus.getInstance().publish(new TecnicoEvents.Criado(salvo));
 
                 UI.runOnUi(() -> {
                     tecnicos.add(salvo);
@@ -118,8 +114,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 original.setNome(value);
                 tecnicoService.atualizar(original);
 
-                var oldModel = toOldModel(original);
-                EventBus.getInstance().publish(new TecnicoEvents.Editado(oldModel));
+                EventBus.getInstance().publish(new TecnicoEvents.Editado(original));
 
                 UI.runOnUi(() -> {
                     tecnicos.updateIf(it -> it.getId().equals(original.getId()), it -> original);
@@ -130,16 +125,6 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar técnico: " + e.getMessage()));
             }
         });
-    }
-
-    private my_app.db.models_old.TecnicoModel toOldModel(TecnicoModel model) {
-        var old = new my_app.db.models_old.TecnicoModel();
-        old.id = model.getId().longValue();
-        old.nome = model.getNome();
-        old.dataCriacao = model.getDataCriacao() != null
-                ? DateUtils.localDateTimeParaMillis(model.getDataCriacao())
-                : System.currentTimeMillis();
-        return old;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package my_app.events;
 
-import my_app.db.models_old.TecnicoModel;
+import my_app.db.models.TecnicoModel;
 
 public final class TecnicoEvents {
 

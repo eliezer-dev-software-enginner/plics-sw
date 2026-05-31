@@ -1,4 +1,4 @@
-package my_app.routes;
+package my_app.core;
 
 import megalodonte.base.route.RouteProps;
 import megalodonte.router.v4.Router;

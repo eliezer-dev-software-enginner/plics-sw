@@ -13,7 +13,7 @@ import megalodonte.theme.ThemeManager;
 import my_app.core.Themes;
 import my_app.db.services.PreferenciasService;
 import my_app.hotreload.HotReload;
-import my_app.routes.AppRoutes;
+import my_app.core.AppRoutes;
 import my_app.utils.TrayManager;
 
 public class Main {

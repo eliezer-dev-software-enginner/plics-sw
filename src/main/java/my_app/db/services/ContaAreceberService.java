@@ -141,6 +141,12 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
         }
     }
 
+    public BigDecimal somarReceitasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        if (dataInicio >= dataFim)
+            throw new IllegalArgumentException("Data de início deve ser anterior à data de fim");
+        return contasAReceberRepository.somarReceitasPorPeriodo(dataInicio, dataFim);
+    }
+
     public void excluirPorVendaId(Integer vendaId) throws SQLException {
         contasAReceberRepository.excluirPorVendaId(vendaId);
     }

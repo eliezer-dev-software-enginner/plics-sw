@@ -6,9 +6,12 @@ import my_app.db.models.CompraModel;
 import my_app.db.repositories.ComprasRepository;
 import net.sf.persism.Session;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class CompraService extends BaseService<CompraModel> {
+
+    private final ComprasRepository comprasRepository;
 
     public CompraService() throws SQLException {
         this(DB.getPersismSession());
@@ -16,6 +19,7 @@ public class CompraService extends BaseService<CompraModel> {
 
     public CompraService(Session session) {
         super(new ComprasRepository(session));
+        this.comprasRepository = (ComprasRepository) repository;
     }
 
     public CompraModel salvar(CompraDto dto) throws SQLException {
@@ -43,6 +47,12 @@ public class CompraService extends BaseService<CompraModel> {
         model.setDataValidade(dto.dataValidade());
         model.setTotalLiquido(dto.totalLiquido());
         return model;
+    }
+
+    public BigDecimal somarComprasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        if (dataInicio >= dataFim)
+            throw new IllegalArgumentException("Data de início deve ser anterior à data de fim");
+        return comprasRepository.somarComprasPorPeriodo(dataInicio, dataFim);
     }
 
     public CompraModel toModel(CompraDto dto, long id, long dataCriacaoMillis) {

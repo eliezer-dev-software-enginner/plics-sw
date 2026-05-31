@@ -36,6 +36,12 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
         repository.atualizar(model);
     }
 
+    public BigDecimal somarDespesasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        if (dataInicio >= dataFim)
+            throw new IllegalArgumentException("Data de início deve ser anterior à data de fim");
+        return contasPagarRepository.somarDespesasPorPeriodo(dataInicio, dataFim);
+    }
+
     public void excluir(long id) throws SQLException {
         var conta = repository.buscarById(id);
         if (conta == null) throw new IllegalArgumentException("Conta a pagar não encontrada");
@@ -110,6 +116,10 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
 
     public List<ContasPagarModel> buscarPorCompra(Integer compraId) throws SQLException {
         return contasPagarRepository.buscarPorCompra(compraId);
+    }
+
+    public void excluirPorCompraId(Integer compraId) throws SQLException {
+        contasPagarRepository.excluirPorCompraId(compraId);
     }
 
     public BigDecimal getTotalEmAberto() throws SQLException {

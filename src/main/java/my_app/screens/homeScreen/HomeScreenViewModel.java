@@ -3,7 +3,11 @@ package my_app.screens.homeScreen;
 import megalodonte.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
-import my_app.db.repositories_old.*;
+import my_app.db.services.ContaAreceberService;
+import my_app.db.services.ContasPagarService;
+import my_app.db.services.VendaService;
+import my_app.db.services.CompraService;
+import my_app.db.services.PedidoService;
 import my_app.events.DadosFinanceirosAtualizadosEvent;
 import my_app.events.EventBus;
 import my_app.utils.DateUtils;
@@ -20,10 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 public class HomeScreenViewModel {
 
-    private final ContasAReceberRepository receitasRepo;
-    private final ContasPagarRepository despesasRepo;
-    private final VendaRepository vendaRepo;
-    private final ComprasRepository comprasRepo;
+    private final ContaAreceberService receitasService;
+    private final ContasPagarService despesasService;
+    private final VendaService vendaService;
+    private final CompraService compraService;
+    private final PedidoService pedidoService;
 
     public final State<String> receitas = new State<>("R$ 0,00");
     public final State<String> despesas = new State<>("R$ 0,00");
@@ -31,7 +36,6 @@ public class HomeScreenViewModel {
     public final State<String> mesAtual = new State<>("");
 
     public final State<String> vendasHoje = new State<>("R$ 0,00");
-    private final PedidoRepository pedidoRepo;
 
     public final State<Boolean> gifVisible = State.of(true);
     public State<String> currentGif = new State<>(null);
@@ -51,12 +55,15 @@ public class HomeScreenViewModel {
     List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
 
     public HomeScreenViewModel() {
-        receitasRepo = new ContasAReceberRepository();
-        despesasRepo = new ContasPagarRepository();
-        vendaRepo = new VendaRepository();
-        comprasRepo = new ComprasRepository();
-        pedidoRepo = new PedidoRepository();
-
+        try {
+            receitasService = new ContaAreceberService();
+            despesasService = new ContasPagarService();
+            vendaService = new VendaService();
+            compraService = new CompraService();
+            pedidoService = new PedidoService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         this.onInit();
     }
 
@@ -78,20 +85,20 @@ public class HomeScreenViewModel {
 
                 //BigDecimal totalHoje = pedidoRepo.somarPedidosHoje();só mostra vendas do pdv
 
-                BigDecimal totalPedidosHoje = pedidoRepo.somarPedidosHoje();
-                BigDecimal totalVendasHoje = vendaRepo.somarVendasHoje();
+                BigDecimal totalPedidosHoje = pedidoService.somarPedidosHoje();
+                BigDecimal totalVendasHoje = vendaService.somarVendasHoje();
                 BigDecimal totalHoje = totalPedidosHoje.add(totalVendasHoje);
 
                 long inicioMillis = DateUtils.localDateParaMillis(primeiroDia);
                 long fimMillis = DateUtils.localDateParaMillis(ultimoDia) + 86399999L;
 
-                BigDecimal receitasContas = receitasRepo.somarReceitasPorPeriodo(inicioMillis, fimMillis);
-                BigDecimal receitasVendas = vendaRepo.somarVendasPorPeriodo(inicioMillis, fimMillis);
-                BigDecimal receitasPedidos = pedidoRepo.somarPedidosPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal receitasContas = receitasService.somarReceitasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal receitasVendas = vendaService.somarVendasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal receitasPedidos = pedidoService.somarPedidosPorPeriodo(inicioMillis, fimMillis);
                 BigDecimal totalReceitas = receitasContas.add(receitasVendas).add(receitasPedidos);
 
-                BigDecimal despesasContas = despesasRepo.somarDespesasPorPeriodo(inicioMillis, fimMillis);
-                BigDecimal despesasCompras = comprasRepo.somarComprasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal despesasContas = despesasService.somarDespesasPorPeriodo(inicioMillis, fimMillis);
+                BigDecimal despesasCompras = compraService.somarComprasPorPeriodo(inicioMillis, fimMillis);
                 BigDecimal totalDespesas = despesasContas.add(despesasCompras);
 
                 BigDecimal lucro = totalReceitas.subtract(totalDespesas);
