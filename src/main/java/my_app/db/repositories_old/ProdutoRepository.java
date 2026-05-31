@@ -22,19 +22,6 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
         }
     }
 
-    public ProdutoModel buscarPorCodigoBarrasComCategoria(String codigo) throws SQLException {
-        ProdutoModel produto = buscarPorCodigoBarras(codigo);
-
-        if (produto == null || produto.categoriaId == null) {
-            return produto;
-        }
-
-        CategoriaRepository categoriaRepo = new CategoriaRepository();
-        produto.categoria = categoriaRepo.buscarById(produto.categoriaId);
-
-        return produto;
-    }
-
     @Override
     public ProdutoModel salvar(ProdutoDto p) throws SQLException {
         String sql = """
@@ -171,29 +158,6 @@ public class ProdutoRepository extends BaseRepository<ProdutoDto, ProdutoModel> 
             
             if (rowsAffected == 0) {
                 throw new SQLException("Falha ao atualizar estoque. Produto não encontrado: " + codigoBarras);
-            }
-        }
-    }
-
-    /**
-     * Define o estoque de um produto para um valor específico
-     * @param codigoBarras Código de barras do produto
-     * @param novoEstoque Novo valor do estoque
-     * @throws SQLException Em caso de erro na operação
-     */
-    public void definirEstoque(String codigoBarras, BigDecimal novoEstoque) throws SQLException {
-        if (novoEstoque.compareTo(BigDecimal.ZERO) < 0) {
-            throw new SQLException("Estoque não pode ser negativo: " + novoEstoque);
-        }
-
-        String sql = "UPDATE produtos SET estoque = ? WHERE codigo_barras = ?";
-        try (PreparedStatement ps = conn().prepareStatement(sql)) {
-            ps.setBigDecimal(1, novoEstoque);
-            ps.setString(2, codigoBarras);
-            int rowsAffected = ps.executeUpdate();
-            
-            if (rowsAffected == 0) {
-                throw new SQLException("Falha ao definir estoque. Produto não encontrado: " + codigoBarras);
             }
         }
     }

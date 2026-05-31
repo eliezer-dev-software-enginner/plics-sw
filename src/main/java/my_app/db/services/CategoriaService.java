@@ -6,9 +6,7 @@ import my_app.db.repositories.CategoriaRepository;
 import net.sf.persism.Session;
 
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class CategoriaService extends BaseService<CategoriaModel> {
 

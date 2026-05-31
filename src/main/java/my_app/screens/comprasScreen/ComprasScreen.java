@@ -58,7 +58,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
-                Components.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""), "Ex: Paraiso",true),
+                Components.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""), "Ex: Paraiso",true),
                 Components.InputColumnCurrency("Pc. de compra", vm.pcCompra)
         );
     }

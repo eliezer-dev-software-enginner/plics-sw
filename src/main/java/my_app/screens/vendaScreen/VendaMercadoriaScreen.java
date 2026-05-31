@@ -16,7 +16,7 @@ import my_app.utils.Utils;
 
 import megalodonte.components.SimpleTable;
 import megalodonte.props.RowProps;
-import my_app.db.models_old.VendaModel;
+import my_app.db.models.VendaModel;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final VendaMercadoriaScreenViewModel vm;
@@ -26,14 +26,10 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     }
 
     @Override
-    public void onMount() {
-        vm.fetchData();
-    }
+    public void onMount() { vm.fetchData(); }
 
     @Override
-    public Component render() {
-        return mainView(vm.focusState);
-    }
+    public Component render() { return mainView(vm.focusState); }
 
     @Override
     public Component form() {
@@ -50,6 +46,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate, vm::clearForm)
         );
     }
+
     private Row formSecondRow() {
         return new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.InputColumnCurrency("Pc. de venda", vm.pcVenda))
@@ -64,14 +61,13 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     private Row formFirstRow() {
         return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
                 Components.DatePickerColumn(vm.dataVenda, "Data de venda"),
-                Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, f -> f.nome, true),
+                Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, f -> f.getNome(), true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
-                //Components.InputColumnComFocusHandler("Código do produto", vm.codigo, "xxxxxxxx", vm::buscarProduto),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
                 Components.InputColumn("Quantidade", vm.qtd, "Ex: 2"),
                 Components.InputColumn("Descrição do produto",
-                        vm.produtoEncontrado.map(p -> p != null ? p.descricao : ""),
+                        vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""),
                         "Ex: Paraiso", true)
         );
     }
@@ -82,17 +78,15 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .fromData(vm.vendas)
                 .header()
                 .columns()
-                .column("ID", it -> it.id)
-                .column("Quantidade", it -> it.quantidade)
-                .column("Total líquido", it -> Utils.toBRLCurrency(it.totalLiquido))
-                .column("Data", it -> DateUtils.millisToBrazilianDateTime(it.dataCriacao))
+                .column("ID", it -> it.getId())
+                .column("Quantidade", it -> it.getQuantidade())
+                .column("Total líquido", it -> Utils.toBRLCurrency(it.getTotalLiquido()))
+                .column("Data", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(vm.vendaSelected::set);
     }
 
     @Override
-    public ViewModelScreenContract viewModel() {
-        return vm;
-    }
+    public ViewModelScreenContract viewModel() { return vm; }
 }

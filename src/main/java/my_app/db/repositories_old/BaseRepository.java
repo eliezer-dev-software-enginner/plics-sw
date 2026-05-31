@@ -1,7 +1,5 @@
 package my_app.db.repositories_old;
 
-import my_app.db.DB;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;

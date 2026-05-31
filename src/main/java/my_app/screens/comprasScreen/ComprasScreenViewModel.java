@@ -8,7 +8,9 @@ import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.CompraDto;
 import my_app.db.models_old.*;
+import my_app.db.models.ProdutoModel;
 import my_app.db.repositories_old.*;
+import my_app.db.services.ProdutoService;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
 import my_app.domain.states.TotaisState;
@@ -28,9 +30,9 @@ import java.util.List;
 
 public class ComprasScreenViewModel extends ViewModelScreenContract {
     private final ComprasRepository comprasRepository;
-    private final ProdutoRepository produtoRepository;
     private final FornecedorRepository fornecedorRepository;
     private final CompraMercadoriaService compraMercadoriaService;
+    private final ProdutoService produtoService;
 
     // --- Lista principal ---
     final ListState<CompraModel> compras = ListState.ofEmpty();
@@ -78,10 +80,14 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
     public ComprasScreenViewModel(ScreenContext ctx) {
         super(ctx);
-        this.produtoRepository = new ProdutoRepository();
+        try {
+            this.produtoService = new ProdutoService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         this.comprasRepository = new ComprasRepository();
         this.fornecedorRepository = new FornecedorRepository();
-        this.compraMercadoriaService = new CompraMercadoriaService(comprasRepository, produtoRepository);
+        this.compraMercadoriaService = new CompraMercadoriaService(comprasRepository, new ProdutoRepository());
         this.onInit();
     }
 
@@ -105,8 +111,8 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
             return;
         }
 
-        BigDecimal estoqueBase = produtoEncontrado.get().estoque != null ?
-                produtoEncontrado.get().estoque : BigDecimal.ZERO;
+        BigDecimal estoqueBase = produtoEncontrado.get().getEstoque() != null ?
+                produtoEncontrado.get().getEstoque() : BigDecimal.ZERO;
 
         IO.println("Estoque Base (anterior) " + estoqueBase.toString());
         estoqueAnterior.set(estoqueBase.toString());
@@ -127,8 +133,8 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         }
 
         var filtrados = produtoModelListState.get().stream()
-                .filter(p -> p.codigoBarras.contains(termo.trim())
-                        || p.descricao.toLowerCase().contains(termo.trim().toLowerCase()))
+                .filter(p -> p.getCodigoBarras().contains(termo.trim())
+                        || p.getDescricao().toLowerCase().contains(termo.trim().toLowerCase()))
                 .limit(8)
                 .toList();
 
@@ -137,16 +143,16 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
     void selecionarProduto(ProdutoModel produto) {
         if(produto!=null){
-            codigo.set(produto.codigoBarras);
-            pcCompra.set(Utils.deRealParaCentavos(produto.precoCompra));
-            estoqueAnterior.set(produto.estoque.toString());
+            codigo.set(produto.getCodigoBarras());
+            pcCompra.set(Utils.deRealParaCentavos(produto.getPrecoCompra()));
+            estoqueAnterior.set(produto.getEstoque().toString());
             sugestoesProduto.clear(); // fecha a lista após seleção
             atualizarEstoqueVisual();
         }
     }
     void reloadProdutos(){
         try {
-            var produtoList = produtoRepository.listar();
+            var produtoList = produtoService.listar();
             UI.runOnUi(()->  produtoModelListState.set(produtoList));
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -179,7 +185,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 var fornecedorModelList = fornecedorRepository.listar();
                 fornecedores.addAll(fornecedorModelList);//meu select fica preenchido
                 var listCompras = comprasRepository.listar();
-                var produtoList = produtoRepository.listar();
+                var produtoList = produtoService.listar();
 
                 UI.runOnUi(() -> {
                     produtoModelListState.set(produtoList);
@@ -329,7 +335,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
         Async.Run(() -> {
             try {
-                produtoRepository.atualizarEstoque(codigoBarras, quantidade);
+                produtoService.atualizarEstoque(codigoBarras, quantidade);
             } catch (SQLException e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao devolver estoque: " + e.getMessage()));
             }
@@ -354,7 +360,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
             try {
                 // Remove a quantidade do estoque (valor negativo)
                 BigDecimal quantidadeParaRemover = quantidade.negate();
-                produtoRepository.atualizarEstoque(codigoBarras, quantidadeParaRemover);
+                produtoService.atualizarEstoque(codigoBarras, quantidadeParaRemover);
                 IO.println("Estoque removido com sucesso para o produto: " + codigoBarras + " | Quantidade: " + quantidade);
                 reloadProdutos();
             } catch (SQLException e) {

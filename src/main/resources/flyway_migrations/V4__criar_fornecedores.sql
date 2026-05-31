@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS fornecedores (
     rua TEXT,
     numero TEXT,
     observacao TEXT,
-    dataCriacao INTEGER NOT NULL
+    dataCriacao TIMESTAMP NOT NULL
 )

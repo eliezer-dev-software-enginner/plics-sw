@@ -2,31 +2,54 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import my_app.db.dto.OrdemServicoDto;
-import my_app.domain.ModelBase;
-import my_app.domain.SqlField;
+import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @Table("ordens_de_servico")
 public class OrdemServicoModel {
-    private long id;
-    private long data_criacao_millis;
-    private long clienteId;
-    private long tecnicoId;
+
+    @Column(primary = true)
+    private Integer id;
+
+    @Column(name = "cliente_id")
+    private Integer clienteId;
+
+    @Column(name = "tecnico_id")
+    private Integer tecnicoId;
+
+    @Column(name = "numero_os")
+    private Long numeroOs;
+
     private String equipamento;
+
+    @Column(name = "mao_de_obra_valor")
     private BigDecimal maoDeObraValor;
 
-    private BigDecimal pecas_valor;
-    private String tipoPagamento;
-    private String status;
-    private String checklistRelatorio;
-    private long dataEscolhida;
-    private BigDecimal totalLiquido;
-    private long numeroOs;
+    @Column(name = "pecas_valor")
+    private BigDecimal pecasValor;
 
-    private ClienteModel cliente;
-    private TecnicoModel tecnico;
+    @Column(name = "tipo_pagamento")
+    private String tipoPagamento;
+
+    private String status;
+
+    @Column(name = "checklist_relatorio")
+    private String checklistRelatorio;
+
+    @Column(name = "data_escolhida")
+    private Long dataEscolhida;
+
+    @Column(name = "total_liquido")
+    private BigDecimal totalLiquido;
+
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
+
+    private transient ClienteModel cliente;
+    private transient TecnicoModel tecnico;
 }

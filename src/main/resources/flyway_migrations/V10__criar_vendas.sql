@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS vendas (
     desconto REAL DEFAULT 0,
     tipo_pagamento TEXT,
     observacao TEXT,
-    dataCriacao INTEGER NOT NULL,
+    dataCriacao TIMESTAMP NOT NULL,
     data_venda REAL,
     data_validade REAL,
     numero_nota TEXT,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id)
-)
+);
