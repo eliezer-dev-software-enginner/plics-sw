@@ -39,3 +39,28 @@
 **Problema:** O plics-sw-updater era um projeto separado sem integração com os scripts de empacotamento, impossibilitando que o instalador já incluísse o utilitário de atualização.
 
 **Decisão:** Adicionar `build_updater()` em `scripts/config.py` que compila o `plics-sw-updater` e copia o JAR resultante para `temp_dir/updater.jar`. Ambos os scripts (`create-msi.py` e `create-deb.py`) chamam essa função antes do jlink/jpackage. O smoke test (execução da aplicação gerada) foi adicionado ao `create-msi.py` seguindo o mesmo padrão já existente no `create-deb.py`.
+
+---
+
+## 2026-05-31: Correções no empacotamento MSI
+
+**Problema:** O script `create-msi.py` falhava com múltiplos erros:
+1. `JAVA_HOME` com `\bin` no final quebrava o Gradle
+2. `--java-options` com aspas literais inválidas para o `jpackage`
+3. Ícone `.png` rejeitado pelo MSI (exige `.ico`)
+4. Runtime mínimo (5 módulos fixos) causava "Failed to Launch JVM" por falta de módulos
+5. `copy_natives` procurava DLLs em `temp/lib/` mas estavam em `temp/bin/`
+6. `jdeps`, `jlink` e `jpackage` não estavam no PATH
+
+**Decisão:**
+1. Criada função `_java_home()` que remove `\bin` do `JAVA_HOME` automaticamente
+2. `--java-options` sem aspas literais
+3. `ICON_PATH` usa `.ico` no Windows
+4. `run_jlink` usa `jdeps --print-module-deps` para detectar módulos necessários dinamicamente, mais fallback com módulos essenciais (`java.logging`, `java.xml`, etc.)
+5. `copy_natives` busca DLLs em `temp/bin/` primeiro, com fallback para `temp/lib/`
+6. Todos os comandos JDK usam caminho absoluto via `_java_home()`
+
+**Benefícios:**
+- Geração do MSI funciona sem dependências de PATH ou configuração manual
+- Runtime inclui todos os módulos que a aplicação realmente precisa
+- Aplicação instalada inicia sem "Failed to Launch JVM"

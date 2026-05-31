@@ -21,3 +21,4 @@
 - `scripts/config.py`: adicionado `UPDATER_DIR` e `build_updater()`
 - `scripts/create-msi.py`: updater.jar incluso no pacote; smoke test adicionado
 - `scripts/create-deb.py`: updater.jar incluso no pacote
+- `scripts/config.py`: múltiplas correções — `_java_home()`, `jdeps` dinâmico, `copy_natives` busca em `temp/bin/`, `ICON_PATH` condicional, caminhos absolutos JDK

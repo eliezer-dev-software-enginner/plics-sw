@@ -4,10 +4,9 @@ import shutil
 import os
 
 ROOT = Path(__file__).resolve().parent.parent
-UPDATER_DIR = ROOT / "plics-sw-updater"
 
 APP_NAME = "Plics SW"
-APP_VERSION = "1.0.3"
+APP_VERSION = "1.0.4"
 MAIN_CLASS = "my_app.Main"
 ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
 JAVAFX_VERSION = "25.0.1"
@@ -23,9 +22,17 @@ def javafx_dir():
     return ROOT / f"java_fx_modules/{get_platform()}-{JAVAFX_VERSION}"
 
 
+def _java_home():
+    jh = Path(os.environ.get("JAVA_HOME", ""))
+    if jh.name == "bin":
+        jh = jh.parent
+    return str(jh)
+
+
 def run_gradle(*tasks):
     gradlew = ROOT / ("gradlew.bat" if os.name == "nt" else "gradlew")
-    subprocess.run([str(gradlew), *tasks], cwd=ROOT, check=True)
+    env = {**os.environ, "JAVA_HOME": _java_home()}
+    subprocess.run([str(gradlew), *tasks], cwd=ROOT, check=True, env=env)
 
 
 def find_jar():
@@ -51,33 +58,47 @@ def copy_javafx(temp_dir: Path):
 
 
 def run_jlink(temp_dir: Path):
-    jdk_jmods = Path(os.environ["JAVA_HOME"]) / "jmods"
+    jdk_jmods = Path(_java_home()) / "jmods"
     sep = ";" if os.name == "nt" else ":"
     module_path = f"{temp_dir / 'lib'}{sep}{jdk_jmods}"
+    app_jar = temp_dir / "app.jar"
+    java_bin = Path(_java_home()) / "bin"
+    jdeps_cmd = str(java_bin / "jdeps")
+    base_modules = {"javafx.controls", "java.sql", "jdk.zipfs", "java.logging", "java.xml"}
+    try:
+        jdeps = subprocess.run(
+            [jdeps_cmd, "--print-module-deps", "--ignore-missing-deps",
+             "--module-path", str(temp_dir / "lib"),
+             str(app_jar)],
+            capture_output=True, text=True, cwd=ROOT, check=True
+        )
+        lines = [l for l in jdeps.stdout.strip().splitlines() if not l.startswith("Warning:")]
+        found = set()
+        if lines:
+            found.update(lines[-1].split(","))
+        found.discard("")
+        modules = ",".join(sorted(base_modules | found))
+    except subprocess.CalledProcessError:
+        modules = ",".join(sorted(base_modules))
+    jlink_cmd = str(java_bin / "jlink")
     subprocess.run(
         [
-            "jlink",
+            jlink_cmd,
             "--module-path", module_path,
-            "--add-modules", "javafx.controls,javafx.base,javafx.graphics,java.sql,jdk.zipfs",
+            "--add-modules", modules,
+            "--no-header-files",
+            "--no-man-pages",
             "--output", str(temp_dir / "runtime")
         ],
         cwd=ROOT, check=True
     )
 
 
-def build_updater(temp_dir: Path):
-    gradlew = UPDATER_DIR / ("gradlew.bat" if os.name == "nt" else "gradlew")
-    subprocess.run([str(gradlew), "shadowJar"], cwd=UPDATER_DIR, check=True)
-    jars = list((UPDATER_DIR / "build" / "libs").glob("*.jar"))
-    if not jars:
-        raise FileNotFoundError("Nenhum JAR do updater encontrado em plics-sw-updater/build/libs/")
-    shutil.copy(jars[0], temp_dir / "updater.jar")
-
-
 def copy_natives(temp_dir: Path):
     ext = ".dll" if os.name == "nt" else ".so"
     target = "bin" if os.name == "nt" else "lib"
-    for native in (temp_dir / "lib").glob(f"*{ext}"):
+    source = temp_dir / "bin" if (temp_dir / "bin").exists() else temp_dir / "lib"
+    for native in source.glob(f"*{ext}"):
         dest = temp_dir / "runtime" / target / native.name
         dest.parent.mkdir(exist_ok=True)
         shutil.copy(native, dest)
@@ -85,9 +106,9 @@ def copy_natives(temp_dir: Path):
 
 def run_jpackage(temp_dir: Path, pkg_type: str, extra_args: list = None):
     shutil.rmtree(ROOT / "dist", ignore_errors=True)
-    lib_path = "$APPDIR/bin" if os.name == "nt" else "$APPDIR/lib"
+    jpackage_cmd = str(Path(_java_home()) / "bin" / "jpackage")
     cmd = [
-        "jpackage",
+        jpackage_cmd,
         "--input", str(temp_dir),
         "--name", APP_NAME,
         "--app-version", APP_VERSION,
@@ -96,7 +117,6 @@ def run_jpackage(temp_dir: Path, pkg_type: str, extra_args: list = None):
         "--dest", "dist",
         "--type", pkg_type,
         "--runtime-image", str(temp_dir / "runtime"),
-        "--java-options", f'"-Djava.library.path={lib_path}"',
         "--icon", str(ROOT / ICON_PATH),
     ]
     if extra_args:

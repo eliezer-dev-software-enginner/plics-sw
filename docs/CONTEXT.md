@@ -14,10 +14,9 @@
 - `scripts/create-deb.py`: gera instalador Linux (.deb) com updater incluso + smoke test
 
 ## Última alteração
-- Adicionado `build_updater()` em `scripts/config.py` que compila o plics-sw-updater
-- `create-msi.py` e `create-deb.py` agora empacotam updater.jar junto com app.jar
-- Smoke test (execução da aplicação gerada) adicionado ao `create-msi.py`
-- Steps renomeados de 5 para 6 nos scripts
+- Correções `scripts/config.py`: `_java_home()` sanitiza `JAVA_HOME`; `run_jlink` usa `jdeps` para detectar módulos; `copy_natives` busca DLLs em `temp/bin/`; `run_jpackage` sem `--java-options` desnecessário; comandos JDK usam caminho absoluto
+- `ICON_PATH` usa `.ico` no Windows (MSI rejeita `.png`)
+- MSI agora gera e executa corretamente sem "Failed to Launch JVM"
 
 ## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen
