@@ -8,7 +8,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import megalodonte.components.layout_components.Row;
 import my_app.utils.DateUtils;

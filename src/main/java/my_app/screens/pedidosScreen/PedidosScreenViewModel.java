@@ -8,9 +8,9 @@ import megalodonte.v2.ListState;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.db.repositories.PedidoItemRepository;
-import my_app.db.repositories.PedidoRepository;
 import my_app.db.services.PedidoService;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.db.DB;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import net.sf.persism.Session;
 
@@ -28,7 +28,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
     public PedidosScreenViewModel(ScreenContext ctx) {
         super(ctx);
         try {
-            Session session = getPersismSession();
+            Session session = DB.getPersismSession();
             this.pedidoService = new PedidoService(session);
             this.pedidoItemRepository = new PedidoItemRepository(session);
         } catch (SQLException e) {

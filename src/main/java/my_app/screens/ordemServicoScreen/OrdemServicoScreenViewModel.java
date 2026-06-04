@@ -13,9 +13,9 @@ import my_app.db.services.ClienteService;
 import my_app.db.services.OrdemServicoService;
 import my_app.db.services.TecnicoService;
 import my_app.domain.components.Components;
-import my_app.events.EventBus;
-import my_app.events.TecnicoEvents;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
+import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
@@ -69,11 +69,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
         }
 
         EventBus.getInstance().subscribe(event -> {
-            if (event instanceof TecnicoEvents.Criado) {
-                refreshTecnicos();
-            } else if (event instanceof TecnicoEvents.Editado) {
-                refreshTecnicos();
-            } else if (event instanceof TecnicoEvents.Excluido) {
+            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof TecnicoModel) {
                 refreshTecnicos();
             }
         });

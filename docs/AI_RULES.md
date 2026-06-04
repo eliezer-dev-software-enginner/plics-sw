@@ -13,7 +13,6 @@
 - Priorizar simplicidade.
 - as Screens dentro de my_app/screens sempre devem possuir sua ViewModel correspondente.
 - se a ViewModel correspondente ficar muito extensa, fragmente-a em uma service
-- my_app/db/models_old e my_app/db/repositories_old devem ser desconsideradas
 - sempre faça teste da repositorie cuja Screen tiver sido refatorada
 - alterações nas models devem refletir nas migrations dentro de /resources/flyway_migrations
 - dataCriacao nas models deve ser do tipo localDateTime e id deve ser do tipo Integer
@@ -28,4 +27,3 @@
 
 ## Após realizar as alterações faça commit
 - Use padrões: feat, refactor, test ou clean
-- O commit deve estar na branch existente: persism

@@ -1,0 +1,15 @@
+[
+  {
+    "version": "v1.0.3",
+    "notes": [
+      "Feat: Escolhe se cliente é físico ou juridico, isso habilita campo com base no tipo selecionado",
+      "Fix: Não permite dois clientes com o mesmo cpf ou cnpj",
+      "Fix: Correção em Ordem de serviço. Edição só é habilitado se clicar em uma célula.",
+      "Fix: Ao limpar formulário mantém o \"cliente padrão\" e tipo pagamento \"crédito\"",
+      "Fix: Alterações no Tecnico agora afetam a tela de Ordem de serviço dinamicamente",
+      "Fix: Data de visita em Ordem de Serviço não tem mais o horário 00:00",
+      "Fix: correção e validação completa na tela de Categorias",
+      "Fix: correção na exibição dos totais na tela de Compra de mercadoria"
+    ]
+  }
+]

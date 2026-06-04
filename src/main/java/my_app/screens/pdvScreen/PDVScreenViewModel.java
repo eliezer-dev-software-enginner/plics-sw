@@ -9,9 +9,9 @@ import my_app.db.models.ClienteModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.ProdutoService;
-import my_app.events.ClienteEvents;
-import my_app.events.DadosFinanceirosAtualizadosEvent;
-import my_app.events.EventBus;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EventBus;
 import my_app.domain.components.Components;
 import my_app.services.PDVService;
 import my_app.utils.Utils;
@@ -87,8 +87,8 @@ public class PDVScreenViewModel {
         });
 
         EventBus.getInstance().subscribe(event -> {
-            if(event instanceof ClienteEvents.Criado(ClienteModel clienteModel)){
-                clientes.add(clienteModel);
+            if(event instanceof EntityEvent<?> ee && ee.is(EntityEvent.EventType.CRIADO) && ee.entity() instanceof ClienteModel cm){
+                clientes.add(cm);
             }
         });
     }

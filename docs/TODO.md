@@ -6,8 +6,19 @@
 - ProdutoScreen refatorada (Model, Repository, Service, ViewModel, Screen, Test, Migration V1)
 - TecnicoScreen refatorada (Model, Repository, Service, ViewModel, Screen, Test, Migration V12)
 - PedidosScreen refatorada (Model, Repository, Service, ViewModel, Screen, Test, Migration V15)
+- Eventos movidos para core/events com EntityEvent<T> genérico
+- Interfaces ContratoTelaCrud e ContratoTelaCrudV2 removidas (depreciadas)
+- FeedbackViewModel criado (compartilhado entre RelatarErroScreen e SugerirMelhoriaScreen)
+- InfoUpdateScreenViewModel criado
+- AuthScreen, Main, WelcomeScreen já utilizam PreferenciasService (padrão atual)
+- OrdemServicoScreen já refatorada com ViewModel (ContratoTelaCrudV3)
 
 ## Pendências
-- Refatorar AuthScreen, Main, WelcomeScreen para usar novo PreferenciasRepository
-- Refatorar TecnicoScreen, OrdemServicoScreen, RelatarErroScreen, SugerirMelhoriaScreen, AuthScreen, InfoUpdateScreen seguindo padrão ViewModel
-- Implementar mais testes de repository para telas ainda não refatoradas
+- Implementar testes de repository para telas que ainda não possuem (ex: CompraRepository)
+- Refatorar telas que ainda usam padrão antigo (se houver)
+
+## Concluído (empacotamento)
+- `scripts/config.py`: adicionado `UPDATER_DIR` e `build_updater()`
+- `scripts/create-msi.py`: updater.jar incluso no pacote; smoke test adicionado
+- `scripts/create-deb.py`: updater.jar incluso no pacote
+- `scripts/config.py`: múltiplas correções — `_java_home()`, `jdeps` dinâmico, `copy_natives` busca em `temp/bin/`, `ICON_PATH` condicional, caminhos absolutos JDK

@@ -1,17 +1,8 @@
-package my_app.lifecycle.viewmodel.component;
+package my_app.domain;
 
 import megalodonte.ComputedState;
 import megalodonte.State;
-import megalodonte.base.UI;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.DB;
-import my_app.domain.components.Components;
-import net.sf.persism.Session;
-import org.flywaydb.core.Flyway;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public abstract class ViewModelScreenContract {
     protected final ScreenContext ctx;
@@ -25,13 +16,9 @@ public abstract class ViewModelScreenContract {
         this.ctx = ctx;
     }
 
-    protected void onInit() {
-        // ciclo de vida futuro
-    }
+    protected void onInit() {}
 
-    protected void onDispose() {
-        // limpeza futura
-    }
+    protected void onDispose() {}
 
     public abstract void populateFromModel();
     public abstract void clearForm();
@@ -42,19 +29,7 @@ public abstract class ViewModelScreenContract {
         return modoEdicao;
     }
 
-
     public void handleFocusChange(boolean focus) {
         focusState.set(focus);
-    }
-
-    protected Session getPersismSession() throws SQLException {
-        var db = DB.production();
-        Flyway.configure()
-                .dataSource(db.url(),"","")
-                .locations("classpath:flyway_migrations")
-                .load()
-                .migrate();
-
-        return new Session(db.connection());
     }
 }

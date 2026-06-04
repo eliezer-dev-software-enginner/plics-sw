@@ -8,9 +8,9 @@ import megalodonte.v2.ListState;
 import my_app.db.models.TecnicoModel;
 import my_app.db.services.TecnicoService;
 import my_app.domain.components.Components;
-import my_app.events.EventBus;
-import my_app.events.TecnicoEvents;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
+import my_app.domain.ViewModelScreenContract;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -55,7 +55,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 try {
                     tecnicoService.excluirById(model.getId());
 
-                    EventBus.getInstance().publish(new TecnicoEvents.Excluido(model.getId().longValue()));
+                    EventBus.getInstance().publish(EntityEvent.excluido(model.getId().longValue()));
 
                     UI.runOnUi(() -> {
                         tecnicos.removeIf(it -> it.getId().equals(model.getId()));
@@ -92,7 +92,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 model.setNome(value);
                 var salvo = tecnicoService.salvar(model);
 
-                EventBus.getInstance().publish(new TecnicoEvents.Criado(salvo));
+                EventBus.getInstance().publish(EntityEvent.criado(salvo));
 
                 UI.runOnUi(() -> {
                     tecnicos.add(salvo);
@@ -114,7 +114,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 original.setNome(value);
                 tecnicoService.atualizar(original);
 
-                EventBus.getInstance().publish(new TecnicoEvents.Editado(original));
+                EventBus.getInstance().publish(EntityEvent.editado(original));
 
                 UI.runOnUi(() -> {
                     tecnicos.updateIf(it -> it.getId().equals(original.getId()), it -> original);

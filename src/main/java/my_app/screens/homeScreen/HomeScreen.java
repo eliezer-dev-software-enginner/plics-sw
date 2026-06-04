@@ -4,6 +4,7 @@ import megalodonte.State;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -12,10 +13,14 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
+import my_app.Main;
+import my_app.domain.components.Components;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class HomeScreen implements ScreenComponent {
@@ -113,6 +118,7 @@ public class HomeScreen implements ScreenComponent {
                         .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
                         .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
                         .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow("info-update",e->{}))
+                       // .item("Buscar atualização", this::buscarAtualizacao)
                 );
     }
 

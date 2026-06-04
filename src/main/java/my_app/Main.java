@@ -19,7 +19,6 @@ import my_app.utils.TrayManager;
 import org.flywaydb.core.Flyway;
 
 public class Main {
-
     static HotReload hotReload;
     static boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
@@ -86,14 +85,6 @@ public class Main {
                     .load()
                     .migrate();
 
-//            Flyway.configure()
-//                    .dataSource(DB.url(), "", "")
-//                    .locations("classpath:migrations")
-           // .baselineOnMigrate(true)
-//                    .load()
-//                    .migrate();
-
-
             var prefs = new PreferenciasService().listar();
             if (!prefs.isEmpty()) {
                 var pref = prefs.getFirst();
@@ -105,14 +96,12 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        Router router = null;
         try {
-            router = new AppRoutes().defineRoutes(askCredentials, forceAccessRoute);
+            Router router = new AppRoutes().defineRoutes(askCredentials, forceAccessRoute);
+            context.useRouter(router);
+            context.useView(router.entrypoint());
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-
-        context.useRouter(router);
-        context.useView(router.entrypoint());
     }
 }

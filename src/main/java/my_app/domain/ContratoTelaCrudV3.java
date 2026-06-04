@@ -6,7 +6,6 @@ import megalodonte.base.components.Component;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
 import my_app.domain.components.Components;
 
 public interface ContratoTelaCrudV3 {

@@ -9,9 +9,9 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.ClienteModel;
 import my_app.db.services.ClienteService;
 import my_app.domain.Data;
-import my_app.events.ClienteEvents;
-import my_app.events.EventBus;
-import my_app.lifecycle.viewmodel.component.ViewModelScreenContract;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
+import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.Utils;
 
@@ -131,7 +131,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
                         clientes.add(model);
                         Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
                         clearForm();
-                        EventBus.getInstance().publish(new ClienteEvents.Criado(model));
+                        EventBus.getInstance().publish(EntityEvent.criado(model));
                     });
                 }
             } catch (IllegalArgumentException e) {
