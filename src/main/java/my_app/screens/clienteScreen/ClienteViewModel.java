@@ -2,7 +2,7 @@ package my_app.screens.clienteScreen;
 
 import megalodonte.ComputedState;
 import megalodonte.v2.ListState;
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;

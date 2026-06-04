@@ -1,8 +1,8 @@
 package my_app.domain;
 
-import megalodonte.State;
 import megalodonte.base.UI;
 import megalodonte.base.components.Component;
+import megalodonte.base.state.State;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;

@@ -9,9 +9,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
-import megalodonte.*;
+import megalodonte.ComputedState;
+import megalodonte.ForEachState;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
+import megalodonte.base.state.ReadableState;
+import megalodonte.base.state.State;
+import megalodonte.base.theme.ThemeInterface;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.Button;
 import megalodonte.components.DatePicker;
@@ -23,9 +28,8 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.ListState;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
 import my_app.domain.Parcela;
@@ -49,7 +53,7 @@ import static my_app.utils.Utils.*;
 
 public class Components {
 
-    public static Theme theme = ThemeManager.theme();
+    public static ThemeInterface theme = ThemeManager.theme();
 
     public static Component imageWithTextRow(String imgPath, String text) {
         return new Row().children(
@@ -306,7 +310,7 @@ public class Components {
                 .c_child(select);
     }
 
-    public static <T> Component SelectColumn(String label, megalodonte.v2.ListState<T> list, State<T> stateSelected, Function<T, String> display,
+    public static <T> Component SelectColumn(String label, ListState<T> list, State<T> stateSelected, Function<T, String> display,
                                              boolean compareById, ReadableState<Boolean> expandAutomatically) {
         var select = new Select<T>(selectProps)
                 .items(list)
@@ -327,13 +331,8 @@ public class Components {
                 .c_child(select);
     }
 
-    public static <T> Component SelectColumn(String label, megalodonte.v2.ListState<T> list, State<T> stateSelected, Function<T, String> display,
-                                             boolean compareById) {
-      return SelectColumn(label, list, stateSelected, display,compareById, null);
-    }
-
     public static <T> Component SelectColumnWithButton(
-            String label, megalodonte.v2.ListState<T> list, State<T> stateSelected,
+            String label,ListState<T> list, State<T> stateSelected,
             Function<T, String> display, boolean compareById,
             String btnText, Runnable handleClick) {
 
@@ -360,21 +359,6 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(select);
-    }
-
-    public static <T> Component SelectColumnWithButton(
-            String label, ListState<T> list, State<T> stateSelected,
-            Function<T, String> display, boolean compareById,
-            String btnText, Runnable handleClick) {
-
-        var rowProps = new RowProps().spacingOf(2)
-                .bottomVertically();
-
-        return new Row(rowProps)
-                .r_child(Components.SelectColumn(label, list, stateSelected, display, compareById))
-                .r_child(new Button(btnText, new ButtonProps().height(31)
-                        .textColor("#FFF")).onClick(handleClick)
-                ).r_child(new SpacerVertical(2));
     }
 
     public static Column TextColumn(String label, String value) {
@@ -594,7 +578,7 @@ public class Components {
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(new Input((State<String>) inputState,
                                 getInputProps(placeholder).borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().border()).borderRadius(theme.radius().sm())
+                                        .borderColor(theme.colors().border()).borderRadius(theme.border().radiusMd())
                         ).onEnter(onEnter)
                 );
     }
@@ -633,7 +617,7 @@ public class Components {
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-        return InputColumn(label, inputState, placeholder, disableInput, theme.border().width(), theme.radius().md(), theme.colors().border());
+        return InputColumn(label, inputState, placeholder, disableInput, theme.border().width(), theme.border().radiusMd(), theme.colors().border());
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {
@@ -658,7 +642,7 @@ public class Components {
         return new Row(new RowProps().bottomVertically())
                 .r_child(Components.InputColumn(label, inputState, ""))
                 .r_child(new Button(btnTitle, new ButtonProps().height(32).textColor("#FFF")
-                                .borderRadius(theme.radius().sm()).borderWidth(theme.border().width()).borderColor(theme.colors().primary())
+                                .borderRadius(theme.border().radiusSm()).borderWidth(theme.border().width()).borderColor(theme.colors().primary())
                         )
                                 .onClick(onClick)
                 );

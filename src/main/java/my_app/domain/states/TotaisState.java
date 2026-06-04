@@ -1,7 +1,7 @@
 package my_app.domain.states;
 
 import megalodonte.ComputedState;
-import megalodonte.State;
+import megalodonte.base.state.State;
 import my_app.utils.Utils;
 
 import java.math.BigDecimal;

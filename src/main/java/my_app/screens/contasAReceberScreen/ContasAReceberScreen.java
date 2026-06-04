@@ -3,6 +3,8 @@ package my_app.screens.contasAReceberScreen;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeInterface;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.Button;
 import megalodonte.components.layout_components.Column;
@@ -10,8 +12,6 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ContaAreceberModel;
@@ -23,7 +23,7 @@ import my_app.utils.Utils;
 
 public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final ContasAReceberScreenViewModel vm;
-    private final Theme theme = ThemeManager.theme();
+    private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
 
     public ContasAReceberScreen(ScreenContext ctx) {

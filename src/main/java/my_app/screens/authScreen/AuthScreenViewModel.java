@@ -1,6 +1,6 @@
 package my_app.screens.authScreen;
 
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;

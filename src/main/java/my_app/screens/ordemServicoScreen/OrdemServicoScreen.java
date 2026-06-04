@@ -2,14 +2,14 @@ package my_app.screens.ordemServicoScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeInterface;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import megalodonte.utils.related.TextVariant;
 import my_app.db.models.OrdemServicoModel;
 import my_app.domain.ContratoTelaCrudV3;
@@ -20,7 +20,7 @@ import my_app.utils.Utils;
 
 public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final OrdemServicoScreenViewModel vm;
-    private final Theme theme = ThemeManager.theme();
+    private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
 
     public OrdemServicoScreen(ScreenContext ctx) {

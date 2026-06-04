@@ -1,7 +1,7 @@
 package my_app.screens.ordemServicoScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;

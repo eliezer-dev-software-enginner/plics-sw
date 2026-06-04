@@ -1,7 +1,7 @@
 package my_app.screens.feedbackScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import my_app.domain.components.Components;

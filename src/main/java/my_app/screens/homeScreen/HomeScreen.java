@@ -1,6 +1,6 @@
 package my_app.screens.homeScreen;
 
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;

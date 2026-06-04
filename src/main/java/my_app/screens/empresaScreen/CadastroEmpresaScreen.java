@@ -8,8 +8,6 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.theme.Theme;
-import megalodonte.theme.ThemeManager;
 import my_app.domain.components.Components;
 import megalodonte.*;
 import megalodonte.components.*;

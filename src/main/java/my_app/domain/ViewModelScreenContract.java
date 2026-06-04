@@ -1,7 +1,7 @@
 package my_app.domain;
 
 import megalodonte.ComputedState;
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
 
 public abstract class ViewModelScreenContract {

@@ -1,6 +1,6 @@
 package my_app.screens.pdvScreen;
 
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.v2.ListState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;

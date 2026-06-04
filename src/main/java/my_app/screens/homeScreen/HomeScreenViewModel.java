@@ -1,6 +1,6 @@
 package my_app.screens.homeScreen;
 
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import my_app.db.services.ContaAreceberService;

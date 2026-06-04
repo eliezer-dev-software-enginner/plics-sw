@@ -1,7 +1,7 @@
 package my_app.screens.fornecedorScreen;
 
 import megalodonte.v2.ListState;
-import megalodonte.State;
+import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
