@@ -86,7 +86,7 @@ public class ContasPagarService {
             model.setValorRestante(parcela.valor());
             model.setDataVencimento(parcela.dataVencimento());
             model.setStatus("PENDENTE");
-            model.setFornecedorId(compra.getFornecedorId() != null ? compra.getFornecedorId().intValue() : null);
+            model.setFornecedorId(compra.getFornecedorId());
             model.setCompraId((int) compra.getId());
             model.setNumeroDocumento("PARC/" + parcela.numero());
             model.setTipoDocumento("DUPLICATA");

@@ -1,4 +1,4 @@
-package my_app.screens;
+package my_app.screens.welcomeScreen;
 
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
@@ -14,9 +14,11 @@ import megalodonte.utils.related.TextVariant;
 
 public class WelcomeScreen {
     private final ScreenContext ctx;
+    private final WelcomeScreenViewModel vm;
 
     public WelcomeScreen(ScreenContext ctx) {
         this.ctx = ctx;
+        this.vm = new WelcomeScreenViewModel(ctx);
     }
 
     private final ThemeInterface theme = ThemeManager.theme();

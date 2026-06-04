@@ -23,7 +23,7 @@ public class CompraModel {
     private String produtoCod;
 
     @Column(name = "fornecedor_id")
-    private Long fornecedorId;
+    private Integer fornecedorId;
 
     private BigDecimal quantidade;
     private BigDecimal descontoEmReais;

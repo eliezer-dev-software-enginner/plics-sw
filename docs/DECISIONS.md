@@ -74,3 +74,55 @@
 **Decisão:** Alterar `data_criacao` para `dataCriacao` no SQL raw de `ComprasRepository.somarComprasPorPeriodo()`.
 
 **Arquivo alterado:** `src/main/java/my_app/db/repositories/ComprasRepository.java:26`
+
+---
+
+## 2026-06-04: Alinhamento de tipos entre model e migration (Compras)
+
+**Problema:** A migration V7 usava `dataCriacao INTEGER`, `data_compra TEXT`, `preco_compra TEXT`, `desconto_em_reais TEXT`. Persism mapeia `INTEGER` do SQLite para `Integer` em Java (não `long`), e `TEXT` para `String` (não `long`/`BigDecimal`). Isso causava `NumberFormatException` e `IllegalArgumentException` em testes e potencialmente em produção.
+
+**Decisão:**
+1. Migration V7: `dataCriacao INTEGER` → `REAL`, `data_compra TEXT` → `REAL`, `preco_compra TEXT` → `REAL`, `desconto_em_reais TEXT` → `REAL`
+2. `CompraModel.fornecedorId` alterado de `Long` para `Integer` (consistente com `FornecedorModel`, `ProdutoModel`, `ContasPagarModel`)
+3. `CompraDto.fornecedorId` alterado de `Long` para `Integer`
+4. `ContasPagarService`: simplificado `setFornecedorId` (sem `.intValue()`)
+
+**Arquivos alterados:**
+- `src/main/resources/flyway_migrations/V7__criar_compras.sql`
+- `src/main/java/my_app/db/models/CompraModel.java`
+- `src/main/java/my_app/db/dto/CompraDto.java`
+- `src/main/java/my_app/services/ContasPagarService.java`
+- `src/main/java/my_app/screens/comprasScreen/ComprasScreenViewModel.java`
+
+---
+
+## 2026-06-04: WelcomeScreen movido para pacote próprio com ViewModel
+
+**Problema:** WelcomeScreen estava solto em `my_app.screens` sem ViewModel, violando a convenção do projeto.
+
+**Decisão:** Criar pacote `my_app.screens.welcomeScreen`, mover `WelcomeScreen` para dentro dele com uma `WelcomeScreenViewModel` (minimalista, sem lógica de negócio).
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/WelcomeScreen.java` → movido para `welcomeScreen/`
+- `src/main/java/my_app/screens/welcomeScreen/WelcomeScreenViewModel.java` (novo)
+- `src/main/java/my_app/core/AppRoutes.java` (import atualizado)
+
+---
+
+## 2026-06-04: PedidosScreenViewModel refatorado para usar PedidoItemService
+
+**Problema:** PedidosScreenViewModel usava `PedidoItemRepository` diretamente e geria `Session` manualmente, violando o padrão Service + Repository.
+
+**Decisão:** Substituir `PedidoItemRepository` + `Session` por `PedidoItemService`. Adicionado método `listarPorPedido()` em `PedidoItemService`.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/db/services/PedidoItemService.java` (adicionado `listarPorPedido`)
+- `src/main/java/my_app/screens/pedidosScreen/PedidosScreenViewModel.java` (refatorado)
+
+---
+
+## 2026-06-04: Testes de repository para ComprasRepository
+
+**Decisão:** Criar `ComprasRepositoryTest` com 6 testes (salvar, listar, atualizar, excluirById, buscarById, somarComprasPorPeriodo) seguindo o padrão dos demais testes do projeto.
+
+**Arquivo criado:** `src/test/java/my_app/db/repositories/ComprasRepositoryTest.java`

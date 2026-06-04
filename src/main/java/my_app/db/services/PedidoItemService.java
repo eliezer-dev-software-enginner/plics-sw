@@ -7,6 +7,7 @@ import net.sf.persism.Session;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PedidoItemService extends BaseService<PedidoItemModel> {
 
@@ -25,5 +26,9 @@ public class PedidoItemService extends BaseService<PedidoItemModel> {
     public PedidoItemModel salvar(PedidoItemModel model) throws SQLException {
         model.setDataCriacao(LocalDateTime.now());
         return repository.salvar(model);
+    }
+
+    public List<PedidoItemModel> listarPorPedido(Integer pedidoId) throws SQLException {
+        return pedidoItemRepository.listarPorPedido(pedidoId);
     }
 }

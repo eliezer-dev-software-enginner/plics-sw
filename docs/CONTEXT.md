@@ -14,10 +14,13 @@
 - `scripts/create-deb.py`: gera instalador Linux (.deb) com updater incluso + smoke test
 
 ## Última alteração
-- Fix: `ComprasRepository.java` — query usava `data_criacao` (snake_case) mas a coluna no banco é `dataCriacao` (camelCase) conforme migration V7
-- Correções `scripts/config.py`: `_java_home()` sanitiza `JAVA_HOME`; `run_jlink` usa `jdeps` para detectar módulos; `copy_natives` busca DLLs em `temp/bin/`; `run_jpackage` sem `--java-options` desnecessário; comandos JDK usam caminho absoluto
-- `ICON_PATH` usa `.ico` no Windows (MSI rejeita `.png`)
-- MSI agora gera e executa corretamente sem "Failed to Launch JVM"
+- Fix: `ComprasRepository.java` — query usava `data_criacao` (snake_case) mas a coluna no banco é `dataCriacao` (camelCase)
+- Fix: Migration V7 — tipos das colunas `dataCriacao` (INTEGER→REAL), `data_compra` (TEXT→REAL), `preco_compra`/`desconto_em_reais` (TEXT→REAL) para alinhar com o que Persism espera
+- Fix: `CompraModel.fornecedorId` alterado de `Long` para `Integer` (consistente com `FornecedorModel` e demais models)
+- `WelcomeScreen` movido para pacote `welcomeScreen` com `WelcomeScreenViewModel` criada
+- `PedidosScreenViewModel` refatorado: substitui `PedidoItemRepository` + Session manual por `PedidoItemService`
+- Adicionado `ComprasRepositoryTest` com 6 testes (CRUD + somarComprasPorPeriodo)
+- Adicionado `PedidoItemService.listarPorPedido()`
 
 ## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen
@@ -25,3 +28,4 @@
 - pedidosScreen, produtoScreen, vendaScreen
 - preferenciasScreen, tecnicoScreen
 - RelatarErroScreen, SugerirMelhoriaScreen, InfoUpdateScreen (ViewModel adicionadas)
+- welcomeScreen (ViewModel criada)

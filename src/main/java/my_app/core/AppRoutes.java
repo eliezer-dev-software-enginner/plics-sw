@@ -3,7 +3,7 @@ package my_app.core;
 import megalodonte.base.route.RouteProps;
 import megalodonte.router.v4.Router;
 import my_app.Main;
-import my_app.screens.WelcomeScreen;
+import my_app.screens.welcomeScreen.WelcomeScreen;
 import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
 import my_app.screens.feedbackScreen.RelatarErroScreen;
 import my_app.screens.feedbackScreen.SugerirMelhoriaScreen;

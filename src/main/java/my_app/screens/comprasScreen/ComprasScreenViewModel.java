@@ -218,7 +218,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         final var dto = new CompraDto(
                 codigo.get(),
                 Utils.deCentavosParaReal(pcCompra.get()),
-                fornecedorSelected.get().getId().longValue(),
+                fornecedorSelected.get().getId(),
                 new BigDecimal(qtd.get()),
                 Utils.deCentavosParaReal(descontoEmDinheiro.get()),
                 tipoPagamentoSelected.get(), observacao.get(),

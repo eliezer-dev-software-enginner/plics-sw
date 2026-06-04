@@ -12,10 +12,14 @@
 - InfoUpdateScreenViewModel criado
 - AuthScreen, Main, WelcomeScreen já utilizam PreferenciasService (padrão atual)
 - OrdemServicoScreen já refatorada com ViewModel (ContratoTelaCrudV3)
+- **ComprasRepositoryTest** criado com 6 testes (CRUD + somarComprasPorPeriodo)
+- **WelcomeScreen** movido para pacote `welcomeScreen` com ViewModel
+- **PedidosScreenViewModel** refatorado: substitui `PedidoItemRepository` por `PedidoItemService`
+- **Migration V7**: tipos alinhados (INTEGER/TEXT → REAL) para compatibilidade com Persism
+- **CompraModel.fornecedorId**: `Long` → `Integer` (consistente com demais models)
 
 ## Pendências
-- Implementar testes de repository para telas que ainda não possuem (ex: CompraRepository)
-- Refatorar telas que ainda usam padrão antigo (se houver)
+- (Nenhuma pendência identificada)
 
 ## Concluído (empacotamento)
 - `scripts/config.py`: adicionado `UPDATER_DIR` e `build_updater()`

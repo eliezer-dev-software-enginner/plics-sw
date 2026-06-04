@@ -7,19 +7,17 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
-import my_app.db.repositories.PedidoItemRepository;
+import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
-import my_app.db.DB;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import net.sf.persism.Session;
 
 import java.sql.SQLException;
 
 public class PedidosScreenViewModel extends ViewModelScreenContract {
 
     private final PedidoService pedidoService;
-    private final PedidoItemRepository pedidoItemRepository;
+    private final PedidoItemService pedidoItemService;
 
     final ListState<PedidoModel> pedidos = ListState.ofEmpty();
     final ListState<PedidoItemModel> itensDoPedidoSelecionado = ListState.ofEmpty();
@@ -28,9 +26,8 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
     public PedidosScreenViewModel(ScreenContext ctx) {
         super(ctx);
         try {
-            Session session = DB.getPersismSession();
-            this.pedidoService = new PedidoService(session);
-            this.pedidoItemRepository = new PedidoItemRepository(session);
+            this.pedidoService = new PedidoService();
+            this.pedidoItemService = new PedidoItemService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
@@ -80,7 +77,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
     private void loadItensDoPedido(Integer pedidoId) {
         Async.Run(() -> {
             try {
-                var itens = pedidoItemRepository.listarPorPedido(pedidoId);
+                var itens = pedidoItemService.listarPorPedido(pedidoId);
                 UI.runOnUi(() -> itensDoPedidoSelecionado.set(itens));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar itens: " + e.getMessage()));
