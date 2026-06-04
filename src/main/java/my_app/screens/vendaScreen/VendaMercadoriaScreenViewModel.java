@@ -80,17 +80,52 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     final TotaisState totais = new TotaisState(pcVenda, qtd, descontoEmDinheiro);
 
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
+        this(ctx, createVendaService(), createProdutoService(), createClienteService(), createContaAreceberService());
+    }
+
+    public VendaMercadoriaScreenViewModel(ScreenContext ctx, VendaService vendaService, ProdutoService produtoService, ClienteService clienteService, ContaAreceberService contaService) {
         super(ctx);
+        this.vendaService = vendaService;
+        this.produtoService = produtoService;
+        this.clienteService = clienteService;
+        this.contaService = contaService;
+        this.onInit();
+    }
+
+    private static VendaService createVendaService() {
         try {
-            this.vendaService = new VendaService();
-            this.produtoService = new ProdutoService();
-            this.clienteService = new ClienteService();
-            this.contaService = new ContaAreceberService();
+            return new VendaService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
-        this.onInit();
+    }
+
+    private static ProdutoService createProdutoService() {
+        try {
+            return new ProdutoService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ClienteService createClienteService() {
+        try {
+            return new ClienteService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ContaAreceberService createContaAreceberService() {
+        try {
+            return new ContaAreceberService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

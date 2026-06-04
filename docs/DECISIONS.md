@@ -126,3 +126,27 @@
 **Decisão:** Criar `ComprasRepositoryTest` com 6 testes (salvar, listar, atualizar, excluirById, buscarById, somarComprasPorPeriodo) seguindo o padrão dos demais testes do projeto.
 
 **Arquivo criado:** `src/test/java/my_app/db/repositories/ComprasRepositoryTest.java`
+
+---
+
+## 2026-06-04: Logging estruturado com SLF4J + appender de erros separado
+
+**Problema:** Apenas 1 arquivo de produção usava SLF4J. Os demais usavam `e.printStackTrace()` ou `System.out/err`, sem persistência de logs em arquivo.
+
+**Decisão:**
+1. `logback.xml`: adicionado appender `ERROR-FILE` que grava apenas eventos ERROR em `error.log` com retenção de 30 dias
+2. Substituídos todos os `printStackTrace` (11 arquivos) por `log.error("mensagem", e)`
+3. Adicionado Logger em `DB.java` para registrar conexões e erros de driver
+
+**Arquivos alterados:**
+- `src/main/resources/logback.xml`
+- `src/main/java/my_app/db/DB.java`
+- `src/main/java/my_app/domain/ContratoTelaCrudV3.java`
+- `src/main/java/my_app/hotreload/HotReload.java`
+- `src/main/java/my_app/hotreload/Reloader.java`
+- `src/main/java/my_app/screens/authScreen/AuthScreenViewModel.java`
+- `src/main/java/my_app/screens/comprasScreen/ComprasScreenViewModel.java`
+- `src/main/java/my_app/screens/pdvScreen/PDVScreenViewModel.java`
+- `src/main/java/my_app/screens/pedidosScreen/PedidosScreenViewModel.java`
+- `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreenViewModel.java`
+- `src/main/java/my_app/utils/TrayManager.java`

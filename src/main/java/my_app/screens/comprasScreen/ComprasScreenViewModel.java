@@ -37,6 +37,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     private final CompraService compraService;
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
+    private final ContasPagarService contasPagarService;
 
     // --- Lista principal ---
     final ListState<CompraModel> compras = ListState.ofEmpty();
@@ -83,15 +84,48 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     );
 
     public ComprasScreenViewModel(ScreenContext ctx) {
+        this(ctx, createCompraService(), createFornecedorService(), createProdutoService(), createContasPagarService());
+    }
+
+    public ComprasScreenViewModel(ScreenContext ctx, CompraService compraService, FornecedorService fornecedorService, ProdutoService produtoService, ContasPagarService contasPagarService) {
         super(ctx);
+        this.compraService = compraService;
+        this.fornecedorService = fornecedorService;
+        this.produtoService = produtoService;
+        this.contasPagarService = contasPagarService;
+        this.onInit();
+    }
+
+    private static CompraService createCompraService() {
         try {
-            this.compraService = new CompraService();
-            this.fornecedorService = new FornecedorService();
-            this.produtoService = new ProdutoService();
+            return new CompraService();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        this.onInit();
+    }
+
+    private static FornecedorService createFornecedorService() {
+        try {
+            return new FornecedorService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ProdutoService createProdutoService() {
+        try {
+            return new ProdutoService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ContasPagarService createContasPagarService() {
+        try {
+            return new ContasPagarService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -262,7 +296,6 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
                     if ("A PRAZO".equals(tipoPagamentoSelected.get()) && !parcelas.get().isEmpty()) {
                         try {
-                            ContasPagarService contasPagarService = new ContasPagarService();
                             List<Parcela> parcelasParaService = parcelas.get().stream()
                                     .map(p -> new Parcela(
                                             p.numero(),
@@ -270,7 +303,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                                             p.valor()
                                     ))
                                     .toList();
-                            contasPagarService.gerarContasDeCompra(compraSalva, parcelasParaService);
+                            this.contasPagarService.gerarContasDeCompra(compraSalva, parcelasParaService);
                         } catch (SQLException e) {
                             throw new RuntimeException("Erro ao gerar contas a pagar: " + e.getMessage());
                         }
@@ -312,7 +345,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 try {
                     Long compraId = data.getId();
 
-                    new ContasPagarService().excluirPorCompraId(compraId);
+                    contasPagarService.excluirPorCompraId(compraId);
 
                     compraService.excluirById(compraId);
 

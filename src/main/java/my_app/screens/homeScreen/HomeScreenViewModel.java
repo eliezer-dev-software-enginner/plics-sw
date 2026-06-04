@@ -59,16 +59,56 @@ public class HomeScreenViewModel {
     List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
 
     public HomeScreenViewModel() {
+        this(createContaAreceberService(), createContasPagarService(), createVendaService(), createCompraService(), createPedidoService());
+    }
+
+    public HomeScreenViewModel(ContaAreceberService receitasService, ContasPagarService despesasService, VendaService vendaService, CompraService compraService, PedidoService pedidoService) {
+        this.receitasService = receitasService;
+        this.despesasService = despesasService;
+        this.vendaService = vendaService;
+        this.compraService = compraService;
+        this.pedidoService = pedidoService;
+        this.onInit();
+    }
+
+    private static ContaAreceberService createContaAreceberService() {
         try {
-            receitasService = new ContaAreceberService();
-            despesasService = new ContasPagarService();
-            vendaService = new VendaService();
-            compraService = new CompraService();
-            pedidoService = new PedidoService();
+            return new ContaAreceberService();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        this.onInit();
+    }
+
+    private static ContasPagarService createContasPagarService() {
+        try {
+            return new ContasPagarService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static VendaService createVendaService() {
+        try {
+            return new VendaService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static CompraService createCompraService() {
+        try {
+            return new CompraService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static PedidoService createPedidoService() {
+        try {
+            return new PedidoService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void onInit() {

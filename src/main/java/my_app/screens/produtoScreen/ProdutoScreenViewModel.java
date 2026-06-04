@@ -24,6 +24,8 @@ import java.util.List;
 public class ProdutoScreenViewModel extends ViewModelScreenContract {
 
     private final ProdutoService produtoService;
+    private final FornecedorService fornecedorService;
+    private final CategoriaService categoriaService;
 
     public final ListState<ProdutoModel> produtos = ListState.of(List.of());
     public final State<String> codigoBarras = new State<>("");
@@ -55,9 +57,37 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public final State<String> perecivelSelected = new State<>("Não");
 
     public ProdutoScreenViewModel(ScreenContext ctx) {
+        this(ctx, createProdutoService(), createFornecedorService(), createCategoriaService());
+    }
+
+    public ProdutoScreenViewModel(ScreenContext ctx, ProdutoService produtoService, FornecedorService fornecedorService, CategoriaService categoriaService) {
         super(ctx);
+        this.produtoService = produtoService;
+        this.fornecedorService = fornecedorService;
+        this.categoriaService = categoriaService;
+    }
+
+    private static ProdutoService createProdutoService() {
         try {
-            produtoService = new ProdutoService();
+            return new ProdutoService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static FornecedorService createFornecedorService() {
+        try {
+            return new FornecedorService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static CategoriaService createCategoriaService() {
+        try {
+            return new CategoriaService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
@@ -68,9 +98,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         Async.Run(() -> {
             try {
                 var produtosList = produtoService.listar();
-                var fornecedorService = new FornecedorService();
                 var fornecedorModelList = fornecedorService.listar();
-                var categoriaService = new CategoriaService();
                 var categoriasList = categoriaService.listar();
 
                 UI.runOnUi(() -> {

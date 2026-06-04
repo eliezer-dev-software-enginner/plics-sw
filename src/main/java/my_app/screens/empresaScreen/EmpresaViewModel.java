@@ -28,8 +28,12 @@ public class EmpresaViewModel {
     State<String> textoResponsabilidade = State.of("");
 
     public EmpresaViewModel(ScreenContext ctx) throws SQLException {
+        this(ctx, new EmpresaService());
+    }
+
+    public EmpresaViewModel(ScreenContext ctx, EmpresaService empresaService) {
         this.ctx = ctx;
-        empresaService = new EmpresaService();
+        this.empresaService = empresaService;
     }
 
     public void fetchData() {

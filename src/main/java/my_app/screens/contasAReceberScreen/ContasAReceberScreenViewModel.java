@@ -61,10 +61,27 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                     dataVencimento.get() != null, descricao, valorOriginal, clienteSelected, dataVencimento);
 
     public ContasAReceberScreenViewModel(ScreenContext ctx) {
+        this(ctx, createContaAreceberService(), createClienteService());
+    }
+
+    public ContasAReceberScreenViewModel(ScreenContext ctx, ContaAreceberService contaService, ClienteService clienteService) {
         super(ctx);
+        this.contaService = contaService;
+        this.clienteService = clienteService;
+    }
+
+    private static ContaAreceberService createContaAreceberService() {
         try {
-            contaService = new ContaAreceberService();
-            clienteService = new ClienteService();
+            return new ContaAreceberService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ClienteService createClienteService() {
+        try {
+            return new ClienteService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);

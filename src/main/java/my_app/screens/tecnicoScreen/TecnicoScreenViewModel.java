@@ -24,9 +24,17 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
     public final State<String> nome = new State<>("");
 
     public TecnicoScreenViewModel(ScreenContext ctx) {
+        this(ctx, createTecnicoService());
+    }
+
+    public TecnicoScreenViewModel(ScreenContext ctx, TecnicoService tecnicoService) {
         super(ctx);
+        this.tecnicoService = tecnicoService;
+    }
+
+    private static TecnicoService createTecnicoService() {
         try {
-            tecnicoService = new TecnicoService();
+            return new TecnicoService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);

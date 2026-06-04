@@ -62,10 +62,27 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
             contaSelected.get() != null, contaSelected);
 
     public ComprasAPagarScreenViewModel(ScreenContext ctx) {
+        this(ctx, createContasPagarService(), createFornecedorService());
+    }
+
+    public ComprasAPagarScreenViewModel(ScreenContext ctx, ContasPagarService contaService, FornecedorService fornecedorService) {
         super(ctx);
+        this.contaService = contaService;
+        this.fornecedorService = fornecedorService;
+    }
+
+    private static ContasPagarService createContasPagarService() {
         try {
-            contaService = new ContasPagarService();
-            fornecedorService = new FornecedorService();
+            return new ContasPagarService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static FornecedorService createFornecedorService() {
+        try {
+            return new FornecedorService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);

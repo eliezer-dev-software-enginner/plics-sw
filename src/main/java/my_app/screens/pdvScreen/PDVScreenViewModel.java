@@ -58,15 +58,31 @@ public class PDVScreenViewModel {
 
 
     public PDVScreenViewModel(ScreenContext ctx) {
+        this(ctx, createProdutoService(), createClienteService(), new PDVService());
+    }
+
+    public PDVScreenViewModel(ScreenContext ctx, ProdutoService produtoService, ClienteService clienteService, PDVService pdvService) {
         this.ctx = ctx;
+        this.produtoService = produtoService;
+        this.clienteService = clienteService;
+        this.pdvService = pdvService;
+        this.onInit();
+    }
+
+    private static ProdutoService createProdutoService() {
         try {
-            this.produtoService = new ProdutoService();
-            this.clienteService = new ClienteService();
+            return new ProdutoService();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        pdvService = new PDVService();
-        this.onInit();
+    }
+
+    private static ClienteService createClienteService() {
+        try {
+            return new ClienteService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void onInit() {

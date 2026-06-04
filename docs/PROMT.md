@@ -28,4 +28,6 @@ Após cada tarefa:
 - Atualize docs/TODO.md.
 - Mantenha os arquivos concisos.
 
-mova events para dentro de core e eventos que tiverem a mesma estrutura, pense em uma solução para evitar a "repetição".
+Prompt:
+ao iniciar a aplicação em HomeSreenViewModel esta sendo lançada essa excessão:
+Caused by: java.sql.SQLException: [SQLITE_ERROR] SQL error or missing database (no such column: data_criacao) SQL: SELECT * FROM compras WHERE data_criacao BETWEEN ? AND ? params: [1780282800000, 1782874799999]

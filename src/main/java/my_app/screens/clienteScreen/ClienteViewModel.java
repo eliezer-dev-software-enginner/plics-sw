@@ -35,14 +35,22 @@ public class ClienteViewModel extends ViewModelScreenContract {
     );
 
     public ClienteViewModel(ScreenContext ctx) {
+        this(ctx, createClienteService());
+    }
+
+    public ClienteViewModel(ScreenContext ctx, ClienteService clienteService) {
         super(ctx);
+        this.clienteService = clienteService;
+        this.onInit();
+    }
+
+    private static ClienteService createClienteService() {
         try {
-            clienteService = new ClienteService();
+            return new ClienteService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
-        this.onInit();
     }
 
     @Override

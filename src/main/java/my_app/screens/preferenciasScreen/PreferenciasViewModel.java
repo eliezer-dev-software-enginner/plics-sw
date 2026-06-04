@@ -22,14 +22,22 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
     private PreferenciasModel prefLoaded;
 
     public PreferenciasViewModel(ScreenContext ctx) {
+        this(ctx, createPreferenciasService());
+    }
+
+    public PreferenciasViewModel(ScreenContext ctx, PreferenciasService preferenciasService) {
         super(ctx);
+        this.preferenciasService = preferenciasService;
+        this.onInit();
+    }
+
+    private static PreferenciasService createPreferenciasService() {
         try {
-            preferenciasService = new PreferenciasService();
+            return new PreferenciasService();
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
-        this.onInit();
     }
 
     void load() {
@@ -38,8 +46,8 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
                 var prefs = preferenciasService.listar();
                 if (!prefs.isEmpty()) {
                     var pref = prefs.getFirst();
-                    UI.runOnUi(() -> {
-                        prefLoaded = pref;
+                    prefLoaded = pref;
+                UI.runOnUi(() -> {
                         habilitarCredenciaisSelected.set(pref.getCredenciaisHabilitadas() == 1 ? "Sim" : "Não");
                         loginState.set(pref.getLogin());
                         passwordState.set(pref.getSenha());

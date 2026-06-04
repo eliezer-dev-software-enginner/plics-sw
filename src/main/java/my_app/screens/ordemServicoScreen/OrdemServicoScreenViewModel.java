@@ -58,21 +58,47 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
     }, maoDeObra, pecasValor);
 
     public OrdemServicoScreenViewModel(ScreenContext ctx) {
+        this(ctx, createOrdemServicoService(), createClienteService(), createTecnicoService());
+    }
+
+    public OrdemServicoScreenViewModel(ScreenContext ctx, OrdemServicoService service, ClienteService clienteService, TecnicoService tecnicoService) {
         super(ctx);
-        try {
-            service = new OrdemServicoService();
-            clienteService = new ClienteService();
-            tecnicoService = new TecnicoService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
+        this.service = service;
+        this.clienteService = clienteService;
+        this.tecnicoService = tecnicoService;
 
         EventBus.getInstance().subscribe(event -> {
             if (event instanceof EntityEvent<?> ee && ee.entity() instanceof TecnicoModel) {
                 refreshTecnicos();
             }
         });
+    }
+
+    private static OrdemServicoService createOrdemServicoService() {
+        try {
+            return new OrdemServicoService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ClienteService createClienteService() {
+        try {
+            return new ClienteService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static TecnicoService createTecnicoService() {
+        try {
+            return new TecnicoService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
     }
 
     public void loadInicial() {

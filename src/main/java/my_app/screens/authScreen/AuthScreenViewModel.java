@@ -26,8 +26,16 @@ public class AuthScreenViewModel {
     private PreferenciasModel prefRecuperada;
 
     public AuthScreenViewModel() {
+        this(createPreferenciasService());
+    }
+
+    public AuthScreenViewModel(PreferenciasService preferenciasService) {
+        this.preferenciasService = preferenciasService;
+    }
+
+    private static PreferenciasService createPreferenciasService() {
         try {
-            this.preferenciasService = new PreferenciasService();
+            return new PreferenciasService();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
