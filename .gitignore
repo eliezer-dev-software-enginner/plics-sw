@@ -48,6 +48,9 @@ build.gradle-funcionando_gera_fatjar.kts-draft
 *.txt
 *.db
 
+### Log files ###
+*.log
+
 ### Configurações de segurança ###
 # Arquivos de configuração com dados sensíveis
 app.properties

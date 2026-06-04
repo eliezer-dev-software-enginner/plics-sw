@@ -2,6 +2,8 @@ package my_app.hotreload;
 
 import javafx.application.Platform;
 import megalodonte.application.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -9,6 +11,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public class Reloader {
+
+    private static final Logger log = LoggerFactory.getLogger(Reloader.class);
     public void reload(Context context, String screenClassName, String classesPath) {
         Platform.runLater(() -> doReload(context, screenClassName, classesPath));
     }
@@ -41,12 +45,11 @@ public class Reloader {
             Method initMethod = mainClass.getMethod("initialize", Context.class);
             initMethod.invoke(null, context);
 
-            System.out.println("[UIReloader] UI reloaded via Main.initialize().");
+            log.info("UI reloaded via Main.initialize().");
             freshLoader.close();
 
         } catch (Exception e) {
-            System.err.println("[UIReloader] Error during UI reload process.");
-            e.printStackTrace();
+            log.error("Error during UI reload process", e);
         }
     }
 }

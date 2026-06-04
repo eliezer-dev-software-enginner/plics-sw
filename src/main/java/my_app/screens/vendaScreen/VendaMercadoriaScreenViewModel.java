@@ -22,6 +22,8 @@ import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -29,6 +31,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
+
+    private static final Logger log = LoggerFactory.getLogger(VendaMercadoriaScreenViewModel.class);
     private final VendaService vendaService;
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
@@ -177,7 +181,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 });
 
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error("Erro ao buscar vendas", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar vendas: " + e.getMessage()));
             }
         });

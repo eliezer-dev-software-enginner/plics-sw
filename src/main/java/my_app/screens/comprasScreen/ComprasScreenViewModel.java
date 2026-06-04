@@ -23,6 +23,8 @@ import my_app.domain.components.Components;
 import my_app.services.ContasPagarService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -30,6 +32,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ComprasScreenViewModel extends ViewModelScreenContract {
+
+    private static final Logger log = LoggerFactory.getLogger(ComprasScreenViewModel.class);
     private final CompraService compraService;
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
@@ -204,7 +208,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 });
 
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error("Erro ao buscar compras", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar compras: " + e.getMessage()));
             }
         });

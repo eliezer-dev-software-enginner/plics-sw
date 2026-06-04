@@ -7,10 +7,14 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.PreferenciasModel;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 public class AuthScreenViewModel {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthScreenViewModel.class);
     private final PreferenciasService preferenciasService;
 
     final State<Boolean> showLicensaState = State.of(true);
@@ -68,7 +72,7 @@ public class AuthScreenViewModel {
                 preferenciasService.atualizar(prefRecuperada);
                 UI.runOnUi(() -> ctx.navigate("home"));
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Erro ao fazer login", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao entrar: " + e.getMessage()));
             }
         });

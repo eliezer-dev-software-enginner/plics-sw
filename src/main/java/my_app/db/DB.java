@@ -2,6 +2,8 @@ package my_app.db;
 
 import net.sf.persism.Session;
 import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.Connection;
@@ -9,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class DB {
+
+    private static final Logger log = LoggerFactory.getLogger(DB.class);
 
     private final String url;
 
@@ -24,9 +28,11 @@ public final class DB {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
+            log.error("Driver SQLite não encontrado", e);
             throw new SQLException("SQLite driver não encontrado", e);
         }
 
+        log.info("Conectando ao banco: {}", url);
         return DriverManager.getConnection(url);
     }
 

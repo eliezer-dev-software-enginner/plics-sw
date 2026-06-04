@@ -7,8 +7,12 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
 import my_app.domain.components.Components;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface ContratoTelaCrudV3 {
+
+    Logger log = LoggerFactory.getLogger(ContratoTelaCrudV3.class);
 
     ViewModelScreenContract viewModel();
 
@@ -71,7 +75,7 @@ public interface ContratoTelaCrudV3 {
         try{
             viewModel().handleAddOrUpdate();
         }catch(Exception e){
-            e.printStackTrace();
+            log.error("Erro em handleAddOrUpdate", e);
             UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
         }
 

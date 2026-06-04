@@ -1,6 +1,8 @@
 package my_app.hotreload;
 
 import megalodonte.application.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
@@ -17,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 public class HotReload {
+
+    private static final Logger log = LoggerFactory.getLogger(HotReload.class);
 
     private Path sourcePath;
     private Path classesPath;
@@ -181,7 +185,7 @@ public class HotReload {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Erro no watch service", e);
         }
     }
 
@@ -278,10 +282,9 @@ public class HotReload {
                 // Passa o contexto, o nome da screen class e o classesPath
                 Method reloadWithScreen = reloaderClass.getMethod("reload", Context.class, String.class, String.class);
                 reloadWithScreen.invoke(reloader, reloadContext, screenClassName, classesPath.toString());
-                System.out.println("[HotReload] Reload finished.");
+                log.info("Reload finished.");
             } catch (Exception e) {
-                System.err.println("[HotReload] Error during reload execution.");
-                e.printStackTrace();
+                log.error("Error during reload execution", e);
             }
         });
     }

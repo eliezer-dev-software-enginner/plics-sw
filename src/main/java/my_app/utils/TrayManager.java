@@ -4,8 +4,12 @@ import dorkbox.systemTray.MenuItem;
 import dorkbox.systemTray.SystemTray;
 import javafx.application.Platform;
 import my_app.Main;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TrayManager {
+
+    private static final Logger log = LoggerFactory.getLogger(TrayManager.class);
 
     public static void setup(String tooltip) {
         try {
@@ -30,7 +34,7 @@ public class TrayManager {
             }));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Erro ao configurar system tray", e);
         }
     }
 }

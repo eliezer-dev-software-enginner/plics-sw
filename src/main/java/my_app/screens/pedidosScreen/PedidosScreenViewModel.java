@@ -11,10 +11,14 @@ import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 public class PedidosScreenViewModel extends ViewModelScreenContract {
+
+    private static final Logger log = LoggerFactory.getLogger(PedidosScreenViewModel.class);
 
     private final PedidoService pedidoService;
     private final PedidoItemService pedidoItemService;
@@ -68,7 +72,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
                 var list = pedidoService.listar();
                 UI.runOnUi(() -> pedidos.set(list));
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Erro ao carregar pedidos", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar pedidos: " + e.getMessage()));
             }
         });

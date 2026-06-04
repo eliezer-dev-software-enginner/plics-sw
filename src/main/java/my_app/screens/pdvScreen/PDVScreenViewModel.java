@@ -15,6 +15,8 @@ import my_app.core.events.EventBus;
 import my_app.domain.components.Components;
 import my_app.services.PDVService;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -23,6 +25,7 @@ import java.util.Map;
 
 public class PDVScreenViewModel {
 
+    private static final Logger log = LoggerFactory.getLogger(PDVScreenViewModel.class);
     private final ScreenContext ctx;
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
@@ -110,7 +113,7 @@ public class PDVScreenViewModel {
                     System.out.println("Cache populado com: " + produtosCache.size() + " produtos");
                 });
             } catch (Exception e) {
-                e.printStackTrace(); // <- isso é importante, pode estar engolindo exceção
+                log.error("Erro ao buscar produtos", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar produtos: " + e.getMessage()));
             }
         });
