@@ -2,10 +2,9 @@ package my_app.core;
 
 
 import megalodonte.base.theme.*;
-import megalodonte.theme.Theme;
 
 public class Themes {
-    public static final Theme DARK = new Theme() {
+    public static final ThemeInterface DARK = new ThemeInterface() {
         @Override
         public ThemeColors colors() {
 return new ThemeColors(
@@ -15,16 +14,7 @@ return new ThemeColors(
                 "#334155",                    // secondary
                 "#ffffff",                    // text primary
                 "#94a3b8",                    // text secondary
-                "#334155",                    // border,
-                
-                // Button colors
-                "#2563eb",                    // buttonPrimary
-                "#4b5563",                    // buttonSecondary (darker secondary for contrast)
-                "#10b981",                    // buttonSuccess
-                "#f59e0b",                    // buttonWarning
-                "#ef4444",                    // buttonDanger
-                "rgba(255,255,255,0.1)",   // buttonGhost (subtle white)
-                "#475569"                     // buttonDisabled
+                "#334155"                    // border,
             );
         }
 
@@ -39,17 +29,12 @@ return new ThemeColors(
         }
 
         @Override
-        public ThemeRadius radius() {
-            return new ThemeRadius(4, 8, 12);
-        }
-
-        @Override
         public ThemeBorder border() {
-            return new ThemeBorder(1);
+            return new ThemeBorder(1,4,8,12);
         }
     };
 
-    public static final Theme LIGHT = new Theme() {
+    public static final ThemeInterface LIGHT = new ThemeInterface() {
         @Override
         public ThemeColors colors() {
             return new ThemeColors(
@@ -59,16 +44,9 @@ return new ThemeColors(
                 "#e2e8f0",                    // secondary: Cinza claro para elementos secundários
                 "#0f172a",                    // text primary: Azul quase preto para máximo contraste
                 "#94a3b8",                    // text secondary: Cinza médio para textos de apoio
-                "#1B2432",                    // border: Cinza suave para divisórias e bordas,
+                "#1B2432"                   // border: Cinza suave para divisórias e bordas,
                 
-                // Button colors
-                "#2563eb",                    // buttonPrimary (same as primary)
-                "#64748b",                    // buttonSecondary (darker for better contrast)
-                "#10b981",                    // buttonSuccess
-                "#f59e0b",                    // buttonWarning
-                "#ef4444",                    // buttonDanger
-                "rgba(0,0,0,0.05)",        // buttonGhost (subtle black)
-                "#9ca3af"                     // buttonDisabled
+
             );
         }
 
@@ -82,14 +60,10 @@ return new ThemeColors(
             return new ThemeSpacing(4, 8, 12, 20, 32);
         }
 
-        @Override
-        public ThemeRadius radius() {
-            return new ThemeRadius(6, 10, 14); // Bordas um pouco mais arredondadas
-        }
 
         @Override
         public ThemeBorder border() {
-            return new ThemeBorder(1);
+            return new ThemeBorder(1,4,8,12);
         }
     };
 }
