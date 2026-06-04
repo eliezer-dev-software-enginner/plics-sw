@@ -16,7 +16,7 @@ public class CompraModel {
     @Column(primary = true)
     private long id;
 
-    @Column(name = "data_criacao")
+    @Column(name = "dataCriacao")
     private long dataCriacaoMillis;
 
     @Column(name = "produto_cod")

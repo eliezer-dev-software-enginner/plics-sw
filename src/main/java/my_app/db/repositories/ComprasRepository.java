@@ -23,7 +23,7 @@ public class ComprasRepository extends BaseRepository<CompraModel> {
     public BigDecimal somarComprasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
         var compras = session().query(
                 modelClass(),
-                sql("SELECT * FROM compras WHERE data_criacao BETWEEN ? AND ?"),
+                sql("SELECT * FROM compras WHERE dataCriacao BETWEEN ? AND ?"),
                 params(dataInicio, dataFim)
         );
         return compras.stream()

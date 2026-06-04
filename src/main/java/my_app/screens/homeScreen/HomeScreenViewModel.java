@@ -10,8 +10,11 @@ import my_app.db.services.CompraService;
 import my_app.db.services.PedidoService;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
+import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 public class HomeScreenViewModel {
 
+    private static final Logger log = LoggerFactory.getLogger(HomeScreenViewModel.class);
     private final ContaAreceberService receitasService;
     private final ContasPagarService despesasService;
     private final VendaService vendaService;
@@ -116,7 +120,10 @@ public class HomeScreenViewModel {
                     exibirGifNaUI(totalHoje);
                 });
             } catch (Exception e) {
+                e.printStackTrace();
+
                 UI.runOnUi(() -> {
+                    Components.ShowAlertError(e.getMessage());
                     this.receitas.set("Erro");
                     this.despesas.set("Erro");
                     this.lucroLiquido.set("Erro");

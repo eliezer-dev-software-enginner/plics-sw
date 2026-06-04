@@ -64,3 +64,13 @@
 - Geração do MSI funciona sem dependências de PATH ou configuração manual
 - Runtime inclui todos os módulos que a aplicação realmente precisa
 - Aplicação instalada inicia sem "Failed to Launch JVM"
+
+---
+
+## 2026-06-04: Correção de column name mismatch em ComprasRepository
+
+**Problema:** A query `SELECT * FROM compras WHERE data_criacao BETWEEN ? AND ?` usava snake_case `data_criacao`, mas a coluna foi criada no migration V7 como `dataCriacao` (camelCase). Isso causava `SQLException: no such column: data_criacao` ao carregar a HomeScreen.
+
+**Decisão:** Alterar `data_criacao` para `dataCriacao` no SQL raw de `ComprasRepository.somarComprasPorPeriodo()`.
+
+**Arquivo alterado:** `src/main/java/my_app/db/repositories/ComprasRepository.java:26`
