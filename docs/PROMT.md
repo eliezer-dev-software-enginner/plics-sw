@@ -29,5 +29,5 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-ao iniciar a aplicação em HomeSreenViewModel esta sendo lançada essa excessão:
-Caused by: java.sql.SQLException: [SQLITE_ERROR] SQL error or missing database (no such column: data_criacao) SQL: SELECT * FROM compras WHERE data_criacao BETWEEN ? AND ? params: [1780282800000, 1782874799999]
+lá no método "Entrar" em AuthScreenViewModel o usuario pode ter usado a licensa "QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ" até o dia 11 (inclusive), pois essa é uma licensa de teste. Após esse prazo essa licensa não estará mais válida e então ele não poderá acessar mais. Inclusive na HomeScreen no método onMount devemos verificar se a licensa salva é a de teste e se está vencida, se for o caso ele será redirecionado para a tela AuthScreen.
+E então após a implementação, crie testes.
