@@ -27,6 +27,17 @@ public class VendaService extends BaseService<VendaModel> {
     public VendaModel salvar(VendaModel model, boolean atualizarEstoque) throws SQLException {
         validar(model);
         model.setDataCriacao(LocalDateTime.now());
+
+        if (atualizarEstoque) {
+            var produto = produtoService.buscarPorCodigoBarras(model.getProdutoCod());
+            if (produto == null) throw new SQLException("Produto não encontrado: " + model.getProdutoCod());
+            var estoqueApos = produto.getEstoque().subtract(model.getQuantidade());
+            if (estoqueApos.compareTo(BigDecimal.ZERO) < 0) {
+                throw new SQLException("Estoque não pode ficar negativo. Estoque atual: " +
+                        produto.getEstoque() + ", Tentativa de subtrair: " + model.getQuantidade());
+            }
+        }
+
         var salvo = repository.salvar(model);
 
         if (atualizarEstoque) {
