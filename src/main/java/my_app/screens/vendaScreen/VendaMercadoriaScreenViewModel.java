@@ -143,7 +143,10 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             return;
         }
 
-        produtoEncontrado.set(null);
+        var selected = produtoEncontrado.get();
+        if (selected == null || !selected.getCodigoBarras().equals(termo.trim())) {
+            produtoEncontrado.set(null);
+        }
 
         var filtrados = produtoModelListState.get().stream()
                 .filter(p -> p.getCodigoBarras().contains(termo.trim())
