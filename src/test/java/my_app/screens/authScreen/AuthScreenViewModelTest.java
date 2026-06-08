@@ -36,4 +36,21 @@ class AuthScreenViewModelTest extends BaseViewModelTest {
         assertFalse(list.isEmpty());
         assertEquals("admin", list.getFirst().getLogin());
     }
+
+    @Test
+    void deveReconhecerLicencaProducaoComoValida() {
+        for (var licenca : AuthScreenViewModel.LICENCAS_PRODUCAO) {
+            assertFalse(vm.isLicensaTesteExpirada(licenca));
+        }
+    }
+
+    @Test
+    void deveReconhecerLicensaNulaComoNaoExpirada() {
+        assertFalse(vm.isLicensaTesteExpirada(null));
+    }
+
+    @Test
+    void deveReconhecerLicencaVaziaComoNaoExpirada() {
+        assertFalse(vm.isLicensaTesteExpirada(""));
+    }
 }

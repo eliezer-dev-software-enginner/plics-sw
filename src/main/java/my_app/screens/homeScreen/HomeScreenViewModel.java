@@ -5,6 +5,7 @@ import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ContasPagarService;
+import my_app.db.services.PreferenciasService;
 import my_app.db.services.VendaService;
 import my_app.db.services.CompraService;
 import my_app.db.services.PedidoService;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class HomeScreenViewModel {
 
     private static final Logger log = LoggerFactory.getLogger(HomeScreenViewModel.class);
+    private final PreferenciasService preferenciasService;
     private final ContaAreceberService receitasService;
     private final ContasPagarService despesasService;
     private final VendaService vendaService;
@@ -59,16 +61,25 @@ public class HomeScreenViewModel {
     List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
 
     public HomeScreenViewModel() {
-        this(createContaAreceberService(), createContasPagarService(), createVendaService(), createCompraService(), createPedidoService());
+        this(createPreferenciasService(), createContaAreceberService(), createContasPagarService(), createVendaService(), createCompraService(), createPedidoService());
     }
 
-    public HomeScreenViewModel(ContaAreceberService receitasService, ContasPagarService despesasService, VendaService vendaService, CompraService compraService, PedidoService pedidoService) {
+    public HomeScreenViewModel(PreferenciasService preferenciasService, ContaAreceberService receitasService, ContasPagarService despesasService, VendaService vendaService, CompraService compraService, PedidoService pedidoService) {
+        this.preferenciasService = preferenciasService;
         this.receitasService = receitasService;
         this.despesasService = despesasService;
         this.vendaService = vendaService;
         this.compraService = compraService;
         this.pedidoService = pedidoService;
         this.onInit();
+    }
+
+    private static PreferenciasService createPreferenciasService() {
+        try {
+            return new PreferenciasService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static ContaAreceberService createContaAreceberService() {
@@ -109,6 +120,19 @@ public class HomeScreenViewModel {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isLicensaTesteExpirada() {
+        try {
+            var prefs = preferenciasService.listar();
+            if (!prefs.isEmpty()) {
+                String saved = prefs.getFirst().getLicensa();
+                return "QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ".equals(saved) && LocalDate.now().getDayOfMonth() > 11;
+            }
+        } catch (Exception e) {
+            log.error("Erro ao verificar licença", e);
+        }
+        return false;
     }
 
     private void onInit() {

@@ -11,10 +11,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 
 public class AuthScreenViewModel {
 
     private static final Logger log = LoggerFactory.getLogger(AuthScreenViewModel.class);
+    public static final List<String> LICENCAS_PRODUCAO = List.of(
+            "984e2bb76c7b627641b6b7dc080f8e23",
+            "5fZl2OI7f2ksjc8YRzBRR0ycjsCzycXyrX"
+    );
+    static final String LICENSA_TESTE = "QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ";
+
     private final PreferenciasService preferenciasService;
 
     final State<Boolean> showLicensaState = State.of(true);
@@ -47,7 +55,10 @@ public class AuthScreenViewModel {
                 var prefs = preferenciasService.listar();
                 if (!prefs.isEmpty()) {
                     prefRecuperada = prefs.getFirst();
-                    UI.runOnUi(() -> showLicensaState.set(prefRecuperada.isFirstAccess()));
+                    UI.runOnUi(() -> {
+                        boolean expiredTest = isLicensaTesteExpirada(prefRecuperada.getLicensa());
+                        showLicensaState.set(prefRecuperada.isFirstAccess() || expiredTest);
+                    });
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -55,13 +66,29 @@ public class AuthScreenViewModel {
         });
     }
 
+    boolean isLicensaTesteExpirada(String licensa) {
+        return LICENSA_TESTE.equals(licensa) && LocalDate.now().getDayOfMonth() > 11;
+    }
+
     void entrar(ScreenContext ctx) {
         var licensaValue = licensaState.get().trim();
-        var licensaBase = "984e2bb76c7b627641b6b7dc080f8e23";
 
-        if (showLicensaState.get() && (licensaValue.isEmpty() || !licensaValue.equals(licensaBase))) {
-            Components.ShowAlertError("Licença inválida");
-            return;
+        if (showLicensaState.get()) {
+            if (licensaValue.isEmpty()) {
+                Components.ShowAlertError("Licença inválida");
+                return;
+            }
+            boolean isProducao = LICENCAS_PRODUCAO.contains(licensaValue);
+            boolean isTeste = licensaValue.equals(LICENSA_TESTE);
+            if (!isProducao && !isTeste) {
+                Components.ShowAlertError("Licença inválida");
+                return;
+            }
+            if (isTeste && LocalDate.now().getDayOfMonth() > 11) {
+                Components.ShowAlertError("Licença de teste expirada");
+                return;
+            }
+            prefRecuperada.setLicensa(licensaValue);
         }
 
         String loginValue = loginState.get().trim();

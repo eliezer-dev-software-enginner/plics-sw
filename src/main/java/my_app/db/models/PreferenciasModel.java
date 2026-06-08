@@ -26,6 +26,8 @@ public class PreferenciasModel {
     @Column(name = "primeiro_acesso")
     private Integer primeiroAcesso;
 
+    private String licensa;
+
     public boolean isFirstAccess() {
         return primeiroAcesso != null && primeiroAcesso == 1;
     }

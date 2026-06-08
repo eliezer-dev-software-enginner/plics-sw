@@ -21,6 +21,14 @@
 ## Pendências
 - (Nenhuma pendência identificada)
 
+## Concluído (licença de teste)
+- Migration V17: coluna `licensa` adicionada à tabela `preferencias`
+- `PreferenciasModel`: campo `licensa` adicionado
+- `AuthScreenViewModel`: aceita licença de teste até dia 11; salva licença no banco; exibe campo novamente se expirou
+- `HomeScreenViewModel`: método `isLicensaTesteExpirada()` adicionado
+- `HomeScreen.onMount()`: redireciona para AuthScreen se licença de teste expirou
+- Testes: `AuthScreenViewModelTest` e `HomeScreenViewModelTest` atualizados
+
 ## Concluído (empacotamento)
 - `scripts/config.py`: adicionado `UPDATER_DIR` e `build_updater()`
 - `scripts/create-msi.py`: updater.jar incluso no pacote; smoke test adicionado

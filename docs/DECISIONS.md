@@ -121,6 +121,28 @@
 
 ---
 
+## 2026-06-08: Licença de teste com validade até dia 11
+
+**Problema:** Usuários de teste usavam a licença `QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ` sem prazo de validade, e não havia mecanismo para expirá-la.
+
+**Decisão:**
+1. `AuthScreenViewModel`: aceitar tanto a licença de produção (`984e2bb76c7b627641b6b7dc080f8e23`) quanto a de teste (`QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ`). A de teste só é válida até o dia 11 do mês (inclusive).
+2. Salvar a licença utilizada no campo `licensa` da tabela `preferencias` (Migration V17).
+3. `AuthScreenViewModel.load()`: se a licença salva for a de teste e estiver expirada, exibir o campo de licença novamente para o usuário digitar uma válida.
+4. `HomeScreenViewModel.isLicensaTesteExpirada()`: método público que consulta a licença salva e a data atual.
+5. `HomeScreen.onMount()`: redirecionar para `AuthScreen` se a licença de teste expirou.
+
+**Arquivos alterados:**
+- `src/main/resources/flyway_migrations/V17__add_licensa_to_preferencias.sql` (novo)
+- `src/main/java/my_app/db/models/PreferenciasModel.java`
+- `src/main/java/my_app/screens/authScreen/AuthScreenViewModel.java`
+- `src/main/java/my_app/screens/homeScreen/HomeScreen.java`
+- `src/main/java/my_app/screens/homeScreen/HomeScreenViewModel.java`
+- `src/test/java/my_app/screens/authScreen/AuthScreenViewModelTest.java`
+- `src/test/java/my_app/screens/homeScreen/HomeScreenViewModelTest.java`
+
+---
+
 ## 2026-06-04: Testes de repository para ComprasRepository
 
 **Decisão:** Criar `ComprasRepositoryTest` com 6 testes (salvar, listar, atualizar, excluirById, buscarById, somarComprasPorPeriodo) seguindo o padrão dos demais testes do projeto.

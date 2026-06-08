@@ -14,13 +14,10 @@
 - `scripts/create-deb.py`: gera instalador Linux (.deb) com updater incluso + smoke test
 
 ## Última alteração
-- Fix: `ComprasRepository.java` — query usava `data_criacao` (snake_case) mas a coluna no banco é `dataCriacao` (camelCase)
-- Fix: Migration V7 — tipos das colunas `dataCriacao` (INTEGER→REAL), `data_compra` (TEXT→REAL), `preco_compra`/`desconto_em_reais` (TEXT→REAL) para alinhar com o que Persism espera
-- Fix: `CompraModel.fornecedorId` alterado de `Long` para `Integer` (consistente com `FornecedorModel` e demais models)
-- `WelcomeScreen` movido para pacote `welcomeScreen` com `WelcomeScreenViewModel` criada
-- `PedidosScreenViewModel` refatorado: substitui `PedidoItemRepository` + Session manual por `PedidoItemService`
-- Adicionado `ComprasRepositoryTest` com 6 testes (CRUD + somarComprasPorPeriodo)
-- Adicionado `PedidoItemService.listarPorPedido()`
+- **Licença de teste**: `AuthScreenViewModel` agora aceita a licença de teste `QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ` válida até o dia 11 do mês (inclusive). Após essa data, o acesso é bloqueado com mensagem "Licença de teste expirada".
+- **Redirecionamento**: `HomeScreen.onMount()` verifica se a licença salva é a de teste expirada e redireciona para `AuthScreen`.
+- **Campo `licensa`**: Adicionado à `PreferenciasModel` e à migration V17 para persistir a licença usada no login.
+- **Testes**: Adicionados testes para `AuthScreenViewModel` (licença produção, teste, nula/vazia) e `HomeScreenViewModel` (licença expirada/não expirada).
 
 ## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen
