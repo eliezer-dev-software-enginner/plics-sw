@@ -14,10 +14,9 @@
 - `scripts/create-deb.py`: gera instalador Linux (.deb) com updater incluso + smoke test
 
 ## Última alteração
-- **Licença de teste**: `AuthScreenViewModel` agora aceita a licença de teste `QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ` válida até o dia 11 do mês (inclusive). Após essa data, o acesso é bloqueado com mensagem "Licença de teste expirada".
-- **Redirecionamento**: `HomeScreen.onMount()` verifica se a licença salva é a de teste expirada e redireciona para `AuthScreen`.
-- **Campo `licensa`**: Adicionado à `PreferenciasModel` e à migration V17 para persistir a licença usada no login.
-- **Testes**: Adicionados testes para `AuthScreenViewModel` (licença produção, teste, nula/vazia) e `HomeScreenViewModel` (licença expirada/não expirada).
+- **PDV - NPE clienteId**: `PDVScreenViewModel.finalizarVenda()` agora usa o "CLIENTE PADRÃO" (id=1) quando nenhum cliente é selecionado em vendas à vista.
+- **PDV - dataCriacao em itens**: `PDVService.finalizarVenda()` agora seta `dataCriacao` nos itens do pedido, corrigindo `NOT NULL constraint failed: pedido_itens.dataCriacao`.
+- **PDV - outras correções**: `PedidoModel.clienteId` `Long`→`Integer`; `PDVService` ganhou construtor `Session`; `ContaAreceberService.gerarContasDeVenda()` seta `dataCriacao`; `PDVServiceTest` criado com 4 testes.
 
 ## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen

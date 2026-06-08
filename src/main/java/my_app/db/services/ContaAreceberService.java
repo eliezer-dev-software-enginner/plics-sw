@@ -137,6 +137,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
             model.setNumeroDocumento("PARC/" + parcela.numero());
             model.setTipoDocumento("DUPLICATA");
             model.setObservacao("Gerado automaticamente da venda #" + vendaId);
+            model.setDataCriacao(LocalDateTime.now());
             contasAReceberRepository.salvar(model);
         }
     }

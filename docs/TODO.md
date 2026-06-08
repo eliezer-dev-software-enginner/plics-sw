@@ -21,6 +21,15 @@
 ## Pendências
 - (Nenhuma pendência identificada)
 
+## Concluído (PDV)
+- **PDVScreenViewModel**: NPE em `finalizarVenda()` corrigido — usa "CLIENTE PADRÃO" (id=1) quando nenhum cliente é selecionado em vendas à vista
+- **PDVService**: `dataCriacao` adicionado aos itens do pedido para evitar `NOT NULL constraint failed: pedido_itens.dataCriacao`
+- **PDVService**: `clienteId` alterado de `Long` para `Integer` (consistente com demais models)
+- **PDVService**: adicionado construtor `PDVService(Session)` para testabilidade
+- **PedidoModel.clienteId**: `Long` → `Integer` (alinha com VendaModel, OrdemServicoModel, ContaAreceberModel)
+- **ContaAreceberService.gerarContasDeVenda()**: adicionado `dataCriacao` para evitar `NOT NULL constraint failed`
+- **PDVServiceTest**: criado com 4 testes (cliente padrão, sem cliente, fiado, não fiado)
+
 ## Concluído (licença de teste)
 - Migration V17: coluna `licensa` adicionada à tabela `preferencias`
 - `PreferenciasModel`: campo `licensa` adicionado

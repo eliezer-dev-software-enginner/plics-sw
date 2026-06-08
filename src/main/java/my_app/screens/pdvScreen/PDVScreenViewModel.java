@@ -198,12 +198,17 @@ public class PDVScreenViewModel {
             return;
         }
 
+        if (!fiado && clienteId == null) {
+            clienteId = 1; // CLIENTE PADRÃO (inserido pela migration V16)
+        }
+
+        final Integer finalClienteId = clienteId;
         Async.Run(() -> {
             try {
                 pdvService.finalizarVenda(
                         itensCarrinho.get(),
                         "À VISTA", // TODO: adicionar seletor de forma de pagamento
-                        Long.valueOf(clienteId),
+                        finalClienteId,
                         fiado
                 );
                 UI.runOnUi(() -> {
@@ -218,7 +223,7 @@ public class PDVScreenViewModel {
                     Components.ShowPopup(ctx, "Venda finalizada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao finalizar venda: " + e.getMessage()));
             }
         });

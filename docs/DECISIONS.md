@@ -1,5 +1,29 @@
 # Decisões Arquiteturais
 
+## 2026-06-08: PDV — cliente padrão para vendas à vista e dataCriacao em itens
+
+**Problema 1:** Ao clicar "Finalizar Venda" sem selecionar cliente (venda à vista), `clienteId` era `null` causando NPE em `Long.valueOf(clienteId)`.
+
+**Problema 2:** Ao corrigir o problema 1, o fluxo avançava e revelava que `dataCriacao` não era setado nos `PedidoItemModel`, causando `NOT NULL constraint failed: pedido_itens.dataCriacao`.
+
+**Decisão:**
+1. Quando `clienteId` é `null` e a venda não é fiada, usar `1` (ID do "CLIENTE PADRÃO" inserido pela migration V16).
+2. Adicionar `itemModel.setDataCriacao(LocalDateTime.now())` no loop de itens em `PDVService.finalizarVenda()`.
+3. Alinhar `PedidoModel.clienteId` de `Long` para `Integer` (consistente com `VendaModel`, `OrdemServicoModel`, `ContaAreceberModel`). SQLite retorna `INTEGER` como `Integer` no Java, e Persism não faz conversão automática `Integer → Long`.
+4. Adicionar `model.setDataCriacao(LocalDateTime.now())` em `ContaAreceberService.gerarContasDeVenda()` — mesma causa do problema 2, `dataCriacao` não era setado nas contas a receber.
+5. Adicionar construtor `PDVService(Session)` para permitir testes com session em memória.
+6. Criar `PDVServiceTest` com 4 testes: cliente padrão, cliente nulo, fiado gera contas, não fiado não gera contas.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/db/models/PedidoModel.java:20`
+- `src/main/java/my_app/db/dto/PedidoDto.java:6`
+- `src/main/java/my_app/services/PDVService.java:26,70`
+- `src/main/java/my_app/screens/pdvScreen/PDVScreenViewModel.java:211`
+- `src/main/java/my_app/db/services/ContaAreceberService.java:140`
+- `src/test/java/my_app/services/PDVServiceTest.java` (novo)
+
+---
+
 ## 2026-05-31: Remoção de interfaces ContratoTelaCrud depreciadas
 
 **Problema:** ContratoTelaCrud e ContratoTelaCrudV2 estavam marcadas como @Deprecated e sem nenhuma referência no código. Apenas ContratoTelaCrudV3 é utilizada atualmente.

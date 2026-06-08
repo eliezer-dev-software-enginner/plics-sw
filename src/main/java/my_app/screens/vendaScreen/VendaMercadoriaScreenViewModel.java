@@ -301,6 +301,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 UI.runOnUi(() -> {
                     vendas.removeIf(it -> it.getId().equals(vendaId));
                     Components.ShowPopup(ctx, "Venda e contas vinculadas excluídas!");
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (SQLException e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));

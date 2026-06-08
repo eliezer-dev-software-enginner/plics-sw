@@ -354,6 +354,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                     UI.runOnUi(() -> {
                         compras.removeIf(it -> it.getId() == compraId);
                         Components.ShowPopup(ctx, "Compra e contas vinculadas excluídas com sucesso!");
+                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     });
 
                 } catch (SQLException e) {

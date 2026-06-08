@@ -17,7 +17,7 @@ public class PedidoModel {
     private Integer id;
 
     @Column(name = "cliente_id")
-    private Long clienteId;
+    private Integer clienteId;
 
     @Column(name = "forma_pagamento")
     private String formaPagamento;

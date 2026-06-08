@@ -13,30 +13,39 @@ import net.sf.persism.Session;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public final class PDVService {
 
-    public PDVService() {}
+    private final Session session;
+
+    public PDVService() {
+        this.session = null;
+    }
+
+    public PDVService(Session session) {
+        this.session = session;
+    }
 
     public PedidoModel finalizarVenda(
             List<ItemVenda> itens,
             String formaPagamento,
-            Long clienteId,
+            Integer clienteId,
             boolean isFiado
     ) throws SQLException {
 
-        Session session = DB.getPersismSession();
+        var sess = session != null ? session : DB.getPersismSession();
         var result = new PedidoModel[1];
         var thrown = new SQLException[1];
 
-        session.withTransaction(() -> {
+        sess.withTransaction(() -> {
             try {
                 BigDecimal total = itens.stream()
                         .map(ItemVenda::totalItem)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                var pedidoService = new PedidoService(session);
+                var pedidoService = new PedidoService(sess);
                 var pedidoModel = new PedidoModel();
                 pedidoModel.setClienteId(clienteId);
                 pedidoModel.setFormaPagamento(formaPagamento);
@@ -45,8 +54,8 @@ public final class PDVService {
                 pedidoModel.setFiado(isFiado ? 1 : 0);
                 var pedido = pedidoService.salvar(pedidoModel);
 
-                var itemRepo = new PedidoItemRepository(session);
-                var produtoService = new ProdutoService(session);
+                var itemRepo = new PedidoItemRepository(sess);
+                var produtoService = new ProdutoService(sess);
 
                 for (ItemVenda item : itens) {
                     var itemModel = new PedidoItemModel();
@@ -56,16 +65,17 @@ public final class PDVService {
                     itemModel.setPrecoUnitario(item.produto.getPrecoVenda());
                     itemModel.setDesconto(BigDecimal.ZERO);
                     itemModel.setTotalItem(item.totalItem());
+                    itemModel.setDataCriacao(LocalDateTime.now());
                     itemRepo.salvar(itemModel);
 
                     produtoService.decrementarEstoque(item.produto.getCodigoBarras(), item.quantidade);
                 }
 
                 if (isFiado && clienteId != null) {
-                    var contaService = new ContaAreceberService(session);
+                    var contaService = new ContaAreceberService(sess);
                     long vencimento = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000);
                     var parcela = new Parcela(1, vencimento, total);
-                    contaService.gerarContasDeVenda(pedido.getId(), clienteId.intValue(), List.of(parcela));
+                    contaService.gerarContasDeVenda(pedido.getId(), clienteId, List.of(parcela));
                 }
 
                 result[0] = pedido;

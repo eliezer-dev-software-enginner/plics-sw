@@ -3,7 +3,7 @@ package my_app.db.dto;
 import java.math.BigDecimal;
 
 public record PedidoDto(
-        Long clienteId,
+        Integer clienteId,
         String formaPagamento,
         BigDecimal totalLiquido,
         BigDecimal desconto,

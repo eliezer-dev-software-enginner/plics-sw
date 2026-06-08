@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.0.4",
+    "notes": [
+      "Fix: PDV — NPE ao finalizar venda sem cliente; agora usa o CLIENTE PADRÃO",
+      "Fix: PDV — dataCriacao não era setado nos itens do pedido",
+      "Fix: PedidoModel.clienteId alterado de Long para Integer (compatibilidade Persism)",
+      "Fix: Contas a receber — dataCriacao não era setado ao gerar de venda fiada",
+      "Fix: HomeScreen agora atualiza ao excluir uma venda",
+      "Fix: HomeScreen agora atualiza ao excluir uma compra"
+    ]
+  },
+  {
     "version": "v1.0.3",
     "notes": [
       "Feat: Escolhe se cliente é físico ou juridico, isso habilita campo com base no tipo selecionado",
