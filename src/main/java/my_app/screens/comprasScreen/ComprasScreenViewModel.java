@@ -279,6 +279,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
                     UI.runOnUi(() -> {
                         Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
+                        modelAtualizada.setFornecedor(fornecedorSelected.get());
                         compras.updateIf(it -> it.getId() == selecionado.getId(), it -> modelAtualizada);
                         atualizarEstoqueAposOperacao(dto.produtoCod(), dto.quantidade());
                         reloadProdutos();
@@ -312,6 +313,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
                     UI.runOnUi(() -> {
                         IO.println("compra foi salva!");
+                        compraSalva.setFornecedor(fornecedorSelected.get());
                         compras.add(compraSalva);
                         Components.ShowPopup(ctx, "Sua compra de mercadoria foi salva com sucesso!");
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
