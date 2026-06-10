@@ -25,5 +25,8 @@
 - Analisar estrutura existente.
 - Não substituir funcionalidades sem autorização.
 
+## Ao alterar versão do app
+- Atualizar em: `gradle.properties`, `src/main/java/my_app/Main.java`, `scripts/config.py`, `src/main/resources/updates.json`
+
 ## Após realizar as alterações faça commit
 - Use padrões: feat, refactor, test ou clean

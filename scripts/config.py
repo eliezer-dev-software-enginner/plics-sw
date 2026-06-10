@@ -6,7 +6,7 @@ import os
 ROOT = Path(__file__).resolve().parent.parent
 
 APP_NAME = "Plics SW"
-APP_VERSION = "1.0.4"
+APP_VERSION = "1.0.5"
 MAIN_CLASS = "my_app.Main"
 ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
 JAVAFX_VERSION = "25.0.1"
