@@ -39,4 +39,4 @@ run_jpackage(temp_dir, "deb", [
 print("[5/5] 📝 Renomeando pacote...")
 final = rename_output("deb")
 print(f"\n✅ Pacote .deb criado: {final}")
-print(f"   Para instalar: sudo dpkg -i {final}")
+print(f"   Para instalar: sudo dpkg -i \"{final}\"")

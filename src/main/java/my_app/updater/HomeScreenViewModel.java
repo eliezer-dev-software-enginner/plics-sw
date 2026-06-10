@@ -11,6 +11,7 @@ import java.nio.file.StandardOpenOption;
 public class HomeScreenViewModel {
     State<String> updateStatus = new State("Iniciando...");
 
+    private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
     private static final Path LOG_FILE = Path.of(
         System.getProperty("java.io.tmpdir"), "plics-updater.log"
     );
@@ -33,8 +34,8 @@ public class HomeScreenViewModel {
             }
 
             String pidStr = args[0];
-            String msiPath = args[1];
-            log("Iniciando. PID=" + pidStr + " MSI=" + msiPath);
+            String pkgPath = args[1];
+            log("Iniciando. PID=" + pidStr + " PKG=" + pkgPath);
 
             long pid = Long.parseLong(pidStr);
             UI.runOnUi(() -> updateStatus.set("Aguardando aplicação fechar..."));
@@ -47,50 +48,90 @@ public class HomeScreenViewModel {
             UI.runOnUi(() -> updateStatus.set("Instalando atualização..."));
 
             try {
-                var tempDir = Files.createTempDirectory("plics-update-");
-                var logFile = tempDir.resolve("msi-result.txt");
-                var batchFile = tempDir.resolve("run-update.bat");
-
-                var msiLogFile = tempDir.resolve("msi-install.log");
-                String msiLog = msiLogFile.toAbsolutePath().toString().replace("\"", "\"\"");
-                String resultLog = logFile.toAbsolutePath().toString().replace("\"", "\"\"");
-                String msi = msiPath.replace("\"", "\"\"");
-                String script = "@echo off\r\n" +
-                    "setlocal enabledelayedexpansion\r\n" +
-                    "set MSI=" + msi + "\r\n" +
-                    "set LOG=" + msiLog + "\r\n" +
-                    "set RESULT=" + resultLog + "\r\n" +
-                    "set TRY=0\r\n" +
-                    "taskkill /f /im java.exe /im javaw.exe /im \"Plics SW.exe\" 2>nul\r\n" +
-                    "timeout /t 10 /nobreak >nul\r\n" +
-                    ":retry\r\n" +
-                    "msiexec /i \"!MSI!\" /quiet /log \"!LOG!\"\r\n" +
-                    "set EC=!ERRORLEVEL!\r\n" +
-                    "if !EC!==1603 (\r\n" +
-                    "  set /a TRY=TRY+1\r\n" +
-                    "  if !TRY! lss 3 (\r\n" +
-                    "    timeout /t 10 /nobreak >nul\r\n" +
-                    "    goto retry\r\n" +
-                    "  )\r\n" +
-                    ")\r\n" +
-                    "echo ExitCode=!EC! > \"!RESULT!\"\r\n" +
-                    "if !EC!==0 (\r\n" +
-                    "  msg \"%USERNAME%\" \"Plics SW atualizado! Voce ja pode abri-lo.\"\r\n" +
-                    ") else (\r\n" +
-                    "  msg \"%USERNAME%\" \"Erro na instalacao (code !EC!). Verifique os logs.\"\r\n" +
-                    ")\r\n";
-
-                Files.writeString(batchFile, script);
-                log("Script criado: " + batchFile);
-
-                new ProcessBuilder("cmd", "/c", batchFile.toAbsolutePath().toString())
-                    .start();
-                log("msiexec iniciado via script batch");
-                System.exit(0);
+                if (IS_WINDOWS) {
+                    runWindowsUpdate(pkgPath);
+                } else {
+                    runLinuxUpdate(pkgPath);
+                }
             } catch (IOException e) {
-                log("ERRO ao iniciar msiexec: " + e.getMessage());
+                log("ERRO: " + e.getMessage());
                 UI.runOnUi(() -> updateStatus.set("Erro: " + e.getMessage()));
             }
         }).start();
+    }
+
+    private void runWindowsUpdate(String msiPath) throws IOException {
+        var tempDir = Files.createTempDirectory("plics-update-");
+        var logFile = tempDir.resolve("msi-result.txt");
+        var batchFile = tempDir.resolve("run-update.bat");
+
+        var msiLogFile = tempDir.resolve("msi-install.log");
+        String msiLog = msiLogFile.toAbsolutePath().toString().replace("\"", "\"\"");
+        String resultLog = logFile.toAbsolutePath().toString().replace("\"", "\"\"");
+        String msi = msiPath.replace("\"", "\"\"");
+        String script = "@echo off\r\n" +
+            "setlocal enabledelayedexpansion\r\n" +
+            "set MSI=" + msi + "\r\n" +
+            "set LOG=" + msiLog + "\r\n" +
+            "set RESULT=" + resultLog + "\r\n" +
+            "set TRY=0\r\n" +
+            "taskkill /f /im java.exe /im javaw.exe /im \"Plics SW.exe\" 2>nul\r\n" +
+            "timeout /t 10 /nobreak >nul\r\n" +
+            ":retry\r\n" +
+            "msiexec /i \"!MSI!\" /quiet /log \"!LOG!\"\r\n" +
+            "set EC=!ERRORLEVEL!\r\n" +
+            "if !EC!==1603 (\r\n" +
+            "  set /a TRY=TRY+1\r\n" +
+            "  if !TRY! lss 3 (\r\n" +
+            "    timeout /t 10 /nobreak >nul\r\n" +
+            "    goto retry\r\n" +
+            "  )\r\n" +
+            ")\r\n" +
+            "echo ExitCode=!EC! > \"!RESULT!\"\r\n" +
+            "if !EC!==0 (\r\n" +
+            "  msg \"%USERNAME%\" \"Plics SW atualizado! Voce ja pode abri-lo.\"\r\n" +
+            ") else (\r\n" +
+            "  msg \"%USERNAME%\" \"Erro na instalacao (code !EC!). Verifique os logs.\"\r\n" +
+            ")\r\n";
+
+        Files.writeString(batchFile, script);
+        log("Script criado: " + batchFile);
+        new ProcessBuilder("cmd", "/c", batchFile.toAbsolutePath().toString()).start();
+        log("msiexec iniciado via script batch");
+        System.exit(0);
+    }
+
+    private void runLinuxUpdate(String debPath) throws IOException {
+        var tempDir = Files.createTempDirectory("plics-update-");
+        var resultFile = tempDir.resolve("result.txt");
+        var installLog = tempDir.resolve("install.log");
+        var scriptFile = tempDir.resolve("run-update.sh");
+
+        String script = "#!/bin/sh\n" +
+            "pkill -f \"Plics SW\" 2>/dev/null\n" +
+            "sleep 10\n" +
+            "PKG=\"" + debPath.replace("\"", "\\\"") + "\"\n" +
+            "LOG=\"" + installLog.toAbsolutePath().toString() + "\"\n" +
+            "RESULT=\"" + resultFile.toAbsolutePath().toString() + "\"\n" +
+            "for i in 1 2 3; do\n" +
+            "  pkexec env DISPLAY=\"$DISPLAY\" DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" \\\n" +
+            "    dpkg -i \"$PKG\" >\"$LOG\" 2>&1\n" +
+            "  EC=$?\n" +
+            "  if [ \"$EC\" -eq 0 ]; then break; fi\n" +
+            "  sleep 10\n" +
+            "done\n" +
+            "echo \"ExitCode=$EC\" > \"$RESULT\"\n" +
+            "if [ \"$EC\" -eq 0 ]; then\n" +
+            "  notify-send \"Plics SW\" \"Atualizacao concluida!\"\n" +
+            "else\n" +
+            "  notify-send \"Plics SW\" \"Erro na instalacao (codigo $EC). Verifique os logs.\"\n" +
+            "fi\n";
+
+        Files.writeString(scriptFile, script);
+        scriptFile.toFile().setExecutable(true);
+        log("Script criado: " + scriptFile);
+        new ProcessBuilder("bash", scriptFile.toAbsolutePath().toString()).start();
+        log("dpkg iniciado via script shell");
+        System.exit(0);
     }
 }

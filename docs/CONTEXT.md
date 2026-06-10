@@ -10,31 +10,37 @@
 
 ## Fluxo de atualização
 ```
- Plics SW instalado (MSI)
+ Plics SW instalado (MSI ou DEB)
        │
        └─ Menu "Suporte" > "Buscar atualização"
               │
-              ├─ [args.length >= 2] ── Usa updaterPath + msiPath fornecidos via CLI
+              ├─ [args.length >= 2] ── Usa updaterPath + pkgPath fornecidos via CLI
               │
               └─ [args.length < 2] ── Produção:
-                     ├─ Descobre "Plics SW Updater.exe" (mesmo diretório)
-                     └─ GitHub API → baixa MSI da última release
+                     ├─ Descobre "Plics SW Updater" (.exe no Windows, sem ext. no Linux)
+                     └─ GitHub API → baixa .msi (Windows) ou .deb (Linux)
               │
               ▼
-       Lança Plics SW Updater.exe <PID> <msiPath>  →  System.exit(0)
+       Lança updater <PID> <pkgPath>  →  System.exit(0)
               │
               ▼
        Aguarda PID morrer (onExit().join())
               │
               ▼
-       Cria run-update.bat e lança cmd /c:
-         taskkill (mata java.exe, javaw.exe, Plics SW.exe)
-         timeout 10s
-         msiexec /i <msi> /quiet (retry 3x c/ 10s se 1603)
-         msg.exe notifica usuário do resultado
+       ┌── Windows ── run-update.bat + cmd /c:
+       │    taskkill (mata java.exe, javaw.exe, Plics SW.exe)
+       │    timeout 10s
+       │    msiexec /i <msi> /quiet (retry 3x)
+       │    msg.exe notifica
+       │
+       └── Linux ── run-update.sh + bash:
+            pkill -f "Plics SW"
+            sleep 10
+            pkexec dpkg -i <deb> (retry 3x)
+            notify-send notifica
               │
               ▼
-       System.exit(0) — saída graciosa (libera handles de DLLs)
+       System.exit(0) — saída graciosa
 ```
 
 ## Scripts de empacotamento

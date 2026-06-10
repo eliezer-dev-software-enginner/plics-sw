@@ -1,5 +1,7 @@
 .gradle
 build/
+__pycache__/
+plics-sw-new-version-for-test/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

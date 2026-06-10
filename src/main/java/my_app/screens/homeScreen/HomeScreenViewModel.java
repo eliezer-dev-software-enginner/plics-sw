@@ -248,7 +248,7 @@ public class HomeScreenViewModel {
                     return;
                 }
                 try {
-                    msiPath = new UpdaterService().downloadLatestMsi();
+                    msiPath = new UpdaterService().downloadLatestPkg();
                 } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao baixar: " + e.getMessage()));
                     return;
@@ -281,15 +281,25 @@ public class HomeScreenViewModel {
     }
 
     private String discoverUpdaterPath() {
+        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+        String updaterName = isWindows ? "Plics SW Updater.exe" : "Plics SW Updater";
+
         var appPath = System.getProperty("jpackage.app-path");
         if (appPath != null) {
-            var updater = new File(new File(appPath).getParentFile(), "Plics SW Updater.exe");
+            var updater = new File(new File(appPath).getParentFile(), updaterName);
             if (updater.exists()) return updater.getAbsolutePath();
         }
-        var local = System.getenv("LOCALAPPDATA");
-        if (local != null) {
-            var updater = new File(local + "\\Plics SW\\Plics SW Updater.exe");
-            if (updater.exists()) return updater.getAbsolutePath();
+        if (isWindows) {
+            var local = System.getenv("LOCALAPPDATA");
+            if (local != null) {
+                var updater = new File(local + "\\Plics SW\\Plics SW Updater.exe");
+                if (updater.exists()) return updater.getAbsolutePath();
+            }
+        } else {
+            for (var dir : new String[]{"/opt/", "/usr/lib/", "/usr/local/lib/"}) {
+                var updater = new File(dir + "plics-sw/" + updaterName);
+                if (updater.exists()) return updater.getAbsolutePath();
+            }
         }
         return null;
     }

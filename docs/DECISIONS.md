@@ -37,6 +37,23 @@
 
 ---
 
+## 2026-06-10: Updater com suporte a Linux (pkexec + dpkg + notify-send)
+
+**Problema:** O updater era exclusivo Windows — usava `.bat`, `taskkill`, `msiexec`, `msg`, `cmd /c` e procurava por `.exe`. No Linux, o fluxo de update não funcionava.
+
+**Decisão:**
+1. `UpdaterService.findMsiAsset()` → `findPackageAsset()`: detecta SO e busca `.msi` (Windows) ou `.deb` (Linux) nos assets da release
+2. `HomeScreenViewModel.discoverUpdaterPath()`: no Linux, busca launcher sem `.exe` em `/opt/plics-sw/`, `/usr/lib/plics-sw/`, `/usr/local/lib/plics-sw/`
+3. `updater/HomeScreenViewModel`: bifurca por SO — Windows mantém `.bat` original, Linux gera `.sh` com `pkill`, `pkexec dpkg -i` (PolicyKit), `notify-send`
+4. GitHub Releases precisa conter ambos `.msi` e `.deb`
+
+**Arquivos alterados:**
+- `src/main/java/my_app/infra/UpdaterService.java`
+- `src/main/java/my_app/screens/homeScreen/HomeScreenViewModel.java`
+- `src/main/java/my_app/updater/HomeScreenViewModel.java`
+
+---
+
 ## 2026-06-10: Updater sai graciosamente para liberar handles de arquivo
 
 **Problema:** Após o app principal fechar, o updater criava o batch script e era morto via `taskkill /f`. O kill forçado não dava chance ao JVM de liberar handles dos DLLs carregados do runtime/bin (ex: `api-ms-win-core-console-l1-2-0.dll`), causando erro "Error writing to file" no msiexec.

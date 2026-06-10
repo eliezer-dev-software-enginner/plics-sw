@@ -42,11 +42,12 @@ public class UpdaterService {
         return compareVersions(latest, currentVersion) > 0;
     }
 
-    public String downloadLatestMsi() throws IOException, InterruptedException {
+    public String downloadLatestPkg() throws IOException, InterruptedException {
         var releaseJson = fetchLatestRelease();
-        var downloadUrl = findMsiAsset(releaseJson);
+        var downloadUrl = findPackageAsset(releaseJson);
         if (downloadUrl == null) {
-            throw new IOException("Nenhum asset .msi encontrado na última release");
+            var ext = isWindows() ? ".msi" : ".deb";
+            throw new IOException("Nenhum asset " + ext + " encontrado na última release");
         }
         return downloadToTemp(downloadUrl);
     }
@@ -79,18 +80,24 @@ public class UpdaterService {
         return response.body();
     }
 
-    private String findMsiAsset(String json) throws IOException {
+    private String findPackageAsset(String json) throws IOException {
         var root = mapper.readTree(json);
         var assets = root.get("assets");
         if (assets == null || !assets.isArray()) return null;
 
+        String targetExt = isWindows() ? ".msi" : ".deb";
+
         for (JsonNode asset : assets) {
             var name = asset.get("name").asText("");
-            if (name.endsWith(".msi")) {
+            if (name.endsWith(targetExt)) {
                 return asset.get("browser_download_url").asText();
             }
         }
         return null;
+    }
+
+    private static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
     private String downloadToTemp(String fileUrl) throws IOException, InterruptedException {

@@ -19,6 +19,9 @@
 - **CompraModel.fornecedorId**: `Long` → `Integer` (consistente com demais models)
 
 ## Concluído (Updater)
+- [x] **Suporte a Linux**: updater detecta SO e gera `.sh` com `pkill` + `pkexec dpkg -i` + `notify-send`
+- [x] `UpdaterService.findPackageAsset()`: busca `.deb` no Linux, `.msi` no Windows
+- [x] `discoverUpdaterPath()`: busca launcher Linux em `/opt/`, `/usr/lib/`, `/usr/local/lib/`
 - [x] Pacote `my_app.updater` com Main, HomeScreen, HomeScreenViewModel (batch taskkill + msiexec + msg)
 - [x] `my_app.infra.UpdaterService` com `getLatestVersion()`, `hasUpdate()`, `downloadLatestMsi()`
 - [x] `Main.java`: `public static void main(String[] args)` + `start()` + `onEvent()`
