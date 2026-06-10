@@ -5,9 +5,23 @@ import os
 
 ROOT = Path(__file__).resolve().parent.parent
 
+
+def _read_gradle_properties():
+    props = {}
+    with open(ROOT / "gradle.properties") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                k, _, v = line.partition("=")
+                props[k.strip()] = v.strip()
+    return props
+
+
+_gradle_props = _read_gradle_properties()
+
 APP_NAME = "Plics SW"
-APP_VERSION = "1.0.5"
-MAIN_CLASS = "my_app.Main"
+APP_VERSION = _gradle_props["appVersion"]
+MAIN_CLASS = _gradle_props["appMainClass"]
 ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
 JAVAFX_VERSION = "25.0.1"
 
