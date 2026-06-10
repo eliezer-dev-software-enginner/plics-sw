@@ -248,6 +248,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 UI.runOnUi(() -> {
                     vendas.updateIf(it -> it.getId().equals(selecionado.getId()), it -> selecionado);
                     Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
                     clearForm();
                 });

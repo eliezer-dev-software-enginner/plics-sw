@@ -281,6 +281,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                         Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
                         modelAtualizada.setFornecedor(fornecedorSelected.get());
                         compras.updateIf(it -> it.getId() == selecionado.getId(), it -> modelAtualizada);
+                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                         atualizarEstoqueAposOperacao(dto.produtoCod(), dto.quantidade());
                         reloadProdutos();
                         clearForm();
