@@ -18,8 +18,21 @@
 - **Migration V7**: tipos alinhados (INTEGER/TEXT → REAL) para compatibilidade com Persism
 - **CompraModel.fornecedorId**: `Long` → `Integer` (consistente com demais models)
 
+## Concluído (Updater)
+- [x] Pacote `my_app.updater` com Main, HomeScreen, HomeScreenViewModel (batch taskkill + msiexec + msg)
+- [x] `my_app.infra.UpdaterService` com `getLatestVersion()`, `hasUpdate()`, `downloadLatestMsi()`
+- [x] `Main.java`: `public static void main(String[] args)` + `start()` + `onEvent()`
+- [x] Menu "Buscar atualização" no HomeScreen com verificação de versão
+- [x] Scripts: `updater_config.py`, `create-msi-with-updater.py`, `create-deb-with-updater.py`
+- [x] Docs atualizados (README, CONTEXT, DECISIONS, TODO)
+- [x] **Corrigido deadlock do updater**: app principal agora fecha (`System.exit(0)`) após lançar o updater, permitindo que o `ph.onExit().join()` prossiga
+- [x] **Updater com saída graciosa**: updater chama `System.exit(0)` após lançar batch script para liberar handles de DLLs; removido updater do `taskkill` no script
+
 ## Pendências
-- (Nenhuma pendência identificada)
+- [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
+- [x] Testar desinstalação: MSI remove sem deixar processos presos ✅
+- [ ] Publicar megalodonte-base modificado (com suporte a `run(args, ...)`) no maven local se ainda não estiver
+- [ ] Configurar GitHub Releases para plics-sw com assets .msi
 
 ## Concluído (PDV)
 - **PDVScreenViewModel**: NPE em `finalizarVenda()` corrigido — usa "CLIENTE PADRÃO" (id=1) quando nenhum cliente é selecionado em vendas à vista

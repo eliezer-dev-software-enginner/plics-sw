@@ -58,6 +58,20 @@ Moderna, intuitiva e responsiva com navegação estruturada e componentes otimiz
 ./gradlew run
 ```
 
+### Atualização automática
+
+O Plics SW possui um sistema de atualização embutido. No menu "Suporte" > "Buscar atualização", o aplicativo:
+
+1. Descobre o executável do updater (`Plics SW Updater.exe`) no mesmo diretório
+2. Baixa o MSI da última release do GitHub
+3. Lança o updater que mata os processos Java, executa o MSI e notifica o usuário
+
+**Empacotamento com updater** (não altera os scripts originais):
+```bash
+python scripts/create-msi-with-updater.py   # Windows
+python scripts/create-deb-with-updater.py   # Linux
+```
+
 ## Versão
 
 **Versão:** 1.0.0  

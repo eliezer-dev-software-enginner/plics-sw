@@ -34,6 +34,10 @@ public class HomeScreen implements ScreenComponent {
         this.viewModel = new HomeScreenViewModel();
     }
 
+    private void buscarAtualizacao() {
+        viewModel.update();
+    }
+
     @Override
     public void onMount() {
         if (viewModel.isLicensaTesteExpirada()) {
@@ -122,7 +126,7 @@ public class HomeScreen implements ScreenComponent {
                         .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
                         .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
                         .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow("info-update",e->{}))
-                       // .item("Buscar atualização", this::buscarAtualizacao)
+                        .item("Buscar atualização", this::buscarAtualizacao)
                 );
     }
 

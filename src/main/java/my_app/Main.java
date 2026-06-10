@@ -34,9 +34,12 @@ public class Main {
     public static Image loadIcon() {
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(ICON_PATH)));
     }
-    static void main() {
-        //MegalodonteApp.appName("PlicsSW"); // <-- antes do run
-        MegalodonteApp.run(context -> {
+
+    public static void main(String[] args) {
+        MegalodonteApp.run(args, Main::start, Main::onEvent);
+    }
+
+    private static void start(Context context) {
             final var stage = context.javafxStage();
 
             final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
@@ -64,13 +67,12 @@ public class Main {
                 hotReload.start();
             }
             TrayManager.setup(BASE_TITLE);
+    }
 
-        }, ev->{
-            if(ev == MegalodonteApp.Event.CloseRequest){
-                System.out.println("Clicked on X - close application");
-                ListenerManager.disposeAll();
-            }
-        });
+    private static void onEvent(MegalodonteApp.Event ev) {
+        if (ev == MegalodonteApp.Event.CloseRequest) {
+            ListenerManager.disposeAll();
+        }
     }
 
     // mandatory for hotreload

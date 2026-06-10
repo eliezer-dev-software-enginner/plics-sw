@@ -1,5 +1,54 @@
 # Decisões Arquiteturais
 
+## 2026-06-10: Updater inline (mesmo JAR) via --add-launcher
+
+**Problema:** O updater do plics-sw era referenciado como subprojeto separado (`plics-sw-updater`), mas nunca foi implementado. O app-v1 do projeto `testes-atualizacao-app` demonstrou que é possível ter o updater dentro do próprio JAR usando `--add-launcher` do jpackage.
+
+**Decisão:** Copiar a implementação do `testes-atualizacao-app/app-v1` para o plics-sw:
+1. Pacote `my_app.updater` com Main, HomeScreen, HomeScreenViewModel (batch script com taskkill + msiexec + msg)
+2. `my_app.infra.UpdaterService` para download do MSI via GitHub Releases
+3. `Main.java`: adicionado `public static void main(String[] args)` que passa args para `MegalodonteApp.run(args, ...)`
+4. Menu "Buscar atualização" descomentado no HomeScreen
+5. Novos scripts `create-msi-with-updater.py` e `create-deb-with-updater.py` (não alteram os originais)
+
+**Arquivos criados:**
+- `src/main/java/my_app/updater/Main.java`
+- `src/main/java/my_app/updater/HomeScreen.java`
+- `src/main/java/my_app/updater/HomeScreenViewModel.java`
+- `src/main/java/my_app/infra/UpdaterService.java`
+- `scripts/updater_config.py`
+- `scripts/create-msi-with-updater.py`
+- `scripts/create-deb-with-updater.py`
+
+**Arquivos modificados:**
+- `src/main/java/my_app/Main.java`
+- `src/main/java/my_app/screens/homeScreen/HomeScreen.java`
+- `src/main/java/my_app/screens/homeScreen/HomeScreenViewModel.java`
+
+---
+
+## 2026-06-10: App principal fecha após lançar updater
+
+**Problema:** Ao clicar "Buscar atualização", o app principal lançava o updater (`Plics SW Updater.exe`) mas não fechava. O updater ficava travado em "Aguardando aplicação fechar" porque usava `ph.onExit().join()` esperando o PID do app principal morrer, e isso nunca acontecia.
+
+**Decisão:** Adicionar `System.exit(0)` logo após `pb.start()` bem-sucedido no método `HomeScreenViewModel.update()`. O updater roda em processo separado, portanto não é afetado pelo término do processo pai.
+
+**Arquivo alterado:** `src/main/java/my_app/screens/homeScreen/HomeScreenViewModel.java:276`
+
+---
+
+## 2026-06-10: Updater sai graciosamente para liberar handles de arquivo
+
+**Problema:** Após o app principal fechar, o updater criava o batch script e era morto via `taskkill /f`. O kill forçado não dava chance ao JVM de liberar handles dos DLLs carregados do runtime/bin (ex: `api-ms-win-core-console-l1-2-0.dll`), causando erro "Error writing to file" no msiexec.
+
+**Decisão:**
+1. Updater chama `System.exit(0)` após lançar o batch script — saída graciosa libera todos os handles.
+2. Removido `"Plics SW Updater.exe"` do `taskkill` no batch script — evita race condition entre kill forçado e `System.exit`.
+
+**Arquivo alterado:** `src/main/java/my_app/updater/HomeScreenViewModel.java:64,89`
+
+---
+
 ## 2026-06-08: PDV — cliente padrão para vendas à vista e dataCriacao em itens
 
 **Problema 1:** Ao clicar "Finalizar Venda" sem selecionar cliente (venda à vista), `clienteId` era `null` causando NPE em `Long.valueOf(clienteId)`.

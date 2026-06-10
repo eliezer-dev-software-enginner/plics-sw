@@ -1,7 +1,8 @@
 package my_app.screens.homeScreen;
 
-import megalodonte.base.state.State;
+import megalodonte.application.MegalodonteApp;
 import megalodonte.base.async.Async;
+import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ContasPagarService;
@@ -11,11 +12,16 @@ import my_app.db.services.CompraService;
 import my_app.db.services.PedidoService;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
+import my_app.Main;
 import my_app.domain.components.Components;
+import my_app.infra.UpdaterService;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -210,5 +216,81 @@ public class HomeScreenViewModel {
         }
 
         executor.schedule(()-> UI.runOnUi(()-> gifVisible.set(false)),10, TimeUnit.SECONDS);
+    }
+
+    public void update() {
+        new Thread(() -> {
+            String[] args = MegalodonteApp.getArgs();
+            String updaterPath;
+            String msiPath;
+
+            if (args.length >= 2) {
+                updaterPath = args[0];
+                msiPath = args[1];
+            } else {
+                try {
+                    var updater = new UpdaterService();
+                    if (!updater.hasUpdate(Main.APP_VERSION)) {
+                        UI.runOnUi(() -> Components.ShowAlertAdvice(
+                            "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
+                            () -> {}
+                        ));
+                        return;
+                    }
+                } catch (Exception e) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao verificar versão: " + e.getMessage()));
+                    return;
+                }
+
+                updaterPath = discoverUpdaterPath();
+                if (updaterPath == null) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Updater não encontrado"));
+                    return;
+                }
+                try {
+                    msiPath = new UpdaterService().downloadLatestMsi();
+                } catch (Exception e) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao baixar: " + e.getMessage()));
+                    return;
+                }
+            }
+
+            long pid = ProcessHandle.current().pid();
+
+            try {
+                ProcessBuilder pb;
+                if (updaterPath.endsWith(".jar")) {
+                    String javaBin = System.getProperty("java.home")
+                        + File.separator + "bin" + File.separator + "java";
+                    pb = new ProcessBuilder(
+                        javaBin, "-jar", updaterPath,
+                        String.valueOf(pid), msiPath
+                    );
+                } else {
+                    pb = new ProcessBuilder(
+                        updaterPath,
+                        String.valueOf(pid), msiPath
+                    );
+                }
+                pb.start();
+                System.exit(0);
+            } catch (IOException e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao lançar updater: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    private String discoverUpdaterPath() {
+        var appPath = System.getProperty("jpackage.app-path");
+        if (appPath != null) {
+            var updater = new File(new File(appPath).getParentFile(), "Plics SW Updater.exe");
+            if (updater.exists()) return updater.getAbsolutePath();
+        }
+        var local = System.getenv("LOCALAPPDATA");
+        if (local != null) {
+            var updater = new File(local + "\\Plics SW\\Plics SW Updater.exe");
+            if (updater.exists()) return updater.getAbsolutePath();
+        }
+        return null;
     }
 }
