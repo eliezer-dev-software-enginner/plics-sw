@@ -1,5 +1,15 @@
 [
   {
+    "version": "v1.0.5",
+    "notes": [
+      "Feat: Fluxo de atualização automática — app baixa, instala e reinicia com a nova versão",
+      "Fix: Preview de estoque após venda congelado na segunda venda (subscriber, nova sessão, opcaoEstoque reset)",
+      "Fix: Preview de estoque após compra congelado (subscriber, nova sessão)",
+      "Fix: Fornecedor vazio na tabela ao adicionar nova compra",
+      "Fix: Dados financeiros não atualizavam ao editar venda ou compra"
+    ]
+  },
+  {
     "version": "v1.0.4",
     "notes": [
       "Fix: PDV — NPE ao finalizar venda sem cliente; agora usa o CLIENTE PADRÃO",
