@@ -133,6 +133,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         qtd.subscribe(v -> atualizarEstoqueVisual());
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
 
+        produtoEncontrado.subscribe(v -> atualizarEstoqueVisual());
         codigo.subscribe(termo -> filtrarProdutos(termo));
 
         produtoEncontrado.subscribe(this::selecionarProduto);
@@ -188,7 +189,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
     void reloadProdutos() {
         try {
-            var produtoList = produtoService.listar();
+            var produtoList = new ProdutoService().listar();
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
         } catch (SQLException e) {
             throw new RuntimeException(e);

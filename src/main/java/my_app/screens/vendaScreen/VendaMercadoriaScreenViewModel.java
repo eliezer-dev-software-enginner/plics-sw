@@ -31,7 +31,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
-
     private static final Logger log = LoggerFactory.getLogger(VendaMercadoriaScreenViewModel.class);
     private final VendaService vendaService;
     private final ProdutoService produtoService;
@@ -132,6 +131,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     protected void onInit() {
         qtd.subscribe(v -> atualizarEstoqueVisual());
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
+        produtoEncontrado.subscribe(v -> atualizarEstoqueVisual());
         codigo.subscribe(termo -> filtrarProdutos(termo));
 
         produtoEncontrado.subscribe(this::selecionarProduto);
@@ -187,7 +187,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
 
     void reloadProdutos() {
         try {
-            var produtoList = produtoService.listar();
+            var produtoList = new ProdutoService().listar();
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -324,7 +324,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         if (!clientes.get().isEmpty()) {
             clienteSelected.set(clientes.get().getFirst());
         }
-        opcaoEstoqueSelected.set("Não");
         estoqueAnterior.set("0");
         estoqueAtual.set("0");
     }
