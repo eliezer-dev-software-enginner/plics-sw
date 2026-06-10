@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import stat
-import subprocess
 from config import *
 from updater_config import *
 
@@ -23,12 +22,7 @@ print("[3/5] Gerando runtime com jlink...")
 run_jlink(temp_dir)
 copy_natives(temp_dir)
 
-java_exe = temp_dir / "runtime" / "bin" / "java"
-subprocess.run(
-    [str(java_exe), "-Djava.library.path={}".format(temp_dir / "runtime" / "lib"),
-     "-cp", str(temp_dir / "app.jar"), MAIN_CLASS],
-    cwd=ROOT
-)
+smoke_test(temp_dir)
 
 print("[4/5] Gerando pacote .deb com updater...")
 

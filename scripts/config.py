@@ -138,6 +138,21 @@ def run_jpackage(temp_dir: Path, pkg_type: str, extra_args: list = None):
     subprocess.run(cmd, cwd=ROOT, check=True)
 
 
+def smoke_test(temp_dir):
+    java_exe = temp_dir / "runtime" / "bin" / "java"
+    proc = subprocess.Popen(
+        [str(java_exe), "-Djava.library.path={}".format(temp_dir / "runtime" / "lib"),
+         "-cp", str(temp_dir / "app.jar"), MAIN_CLASS],
+        cwd=ROOT
+    )
+    try:
+        proc.wait(timeout=5)
+        if proc.returncode != 0:
+            raise RuntimeError(f"Smoke test falhou (exit code {proc.returncode})")
+    except subprocess.TimeoutExpired:
+        proc.terminate()
+        proc.wait()
+
 def rename_output(pkg_type: str):
     dist_dir = ROOT / "dist"
     ext = f".{pkg_type}"
