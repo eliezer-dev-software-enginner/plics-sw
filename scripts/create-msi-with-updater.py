@@ -34,4 +34,5 @@ run_jpackage(temp_dir, "msi", [
 
 print("[5/5] Renomeando pacote...")
 final = rename_output("msi")
+shutil.rmtree(temp_dir, ignore_errors=True)
 print(f"\nMSI criado: {final}")

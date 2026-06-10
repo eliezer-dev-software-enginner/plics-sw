@@ -47,5 +47,6 @@ run_jpackage(temp_dir, "deb", [
 
 print("[5/5] Renomeando pacote...")
 final = rename_output("deb")
+shutil.rmtree(temp_dir, ignore_errors=True)
 print(f"\nPacote .deb criado: {final}")
 print(f"   Para instalar: sudo dpkg -i {final}")
