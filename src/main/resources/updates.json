@@ -3,6 +3,7 @@
     "version": "v1.0.5",
     "notes": [
       "Feat: Fluxo de atualização automática — app baixa, instala e reinicia com a nova versão",
+      "Feat: Suporte a update no Linux — pkexec + dpkg + notify-send",
       "Fix: Preview de estoque após venda congelado na segunda venda (subscriber, nova sessão, opcaoEstoque reset)",
       "Fix: Preview de estoque após compra congelado (subscriber, nova sessão)",
       "Fix: Fornecedor vazio na tabela ao adicionar nova compra",
