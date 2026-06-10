@@ -29,20 +29,21 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-ao clicar em Finalizar Venda sem ter selecionado "venda fiada", estou com esse erro abaixo, e acho que sei o problema, como não selecionei um cliente por não ter clicado em venda fiada, clente selecionado é nulo, mas na verdade era para ter usado o cliente padrão:
-Exception in thread "" java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "clienteId" is null
-at my_app.screens.pdvScreen.PDVScreenViewModel.lambda$finalizarVenda$0(PDVScreenViewModel.java:206)
-at java.base/java.util.concurrent.ThreadPerTaskExecutor$TaskRunner.run(ThreadPerTaskExecutor.java:291)
-at java.base/java.lang.VirtualThread.run(VirtualThread.java:456)
-Exception in thread "" java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "clienteId" is null
-at my_app.screens.pdvScreen.PDVScreenViewModel.lambda$finalizarVenda$0(PDVScreenViewModel.java:206)
-at java.base/java.util.concurrent.ThreadPerTaskExecutor$TaskRunner.run(ThreadPerTaskExecutor.java:291)
-at java.base/java.lang.VirtualThread.run(VirtualThread.java:456)
-Exception in thread "" java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "clienteId" is null
-at my_app.screens.pdvScreen.PDVScreenViewModel.lambda$finalizarVenda$0(PDVScreenViewModel.java:206)
-at java.base/java.util.concurrent.ThreadPerTaskExecutor$TaskRunner.run(ThreadPerTaskExecutor.java:291)
-at java.base/java.lang.VirtualThread.run(VirtualThread.java:456)
-Exception in thread "" java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "clienteId" is null
-at my_app.screens.pdvScreen.PDVScreenViewModel.lambda$finalizarVenda$0(PDVScreenViewModel.java:206)
-at java.base/java.util.concurrent.ThreadPerTaskExecutor$TaskRunner.run(ThreadPerTaskExecutor.java:291)
-at java.base/java.lang.VirtualThread.run(VirtualThread.java:456)
+ao tentar executar o script create-msi-with-updater.py dá erro:
+PS C:\Users\Usuário\hidden\plics-sw> python .\scripts\create-msi-with-updater.py
+Traceback (most recent call last):
+File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
+from updater_config import *
+ModuleNotFoundError: No module named 'updater_config'
+PS C:\Users\Usuário\hidden\plics-sw> python .\scripts\create-msi-with-updater.py
+Traceback (most recent call last):
+File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
+from updater_config import *
+ModuleNotFoundError: No module named 'updater_config'
+PS C:\Users\Usuário\hidden\plics-sw> cd scripts\
+PS C:\Users\Usuário\hidden\plics-sw\scripts> python create-msi-with-updater.py          
+Traceback (most recent call last):
+File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
+from updater_config import *
+ModuleNotFoundError: No module named 'updater_config'
+PS C:\Users\Usuário\hidden\plics-sw\scripts> 
