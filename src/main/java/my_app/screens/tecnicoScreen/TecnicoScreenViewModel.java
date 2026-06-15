@@ -116,7 +116,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
     private void asyncAtualizar(String value) {
         Async.Run(() -> {
             try {
-                var original = tecnicoSelected.get();
+                TecnicoModel original = tecnicoSelected.get();
                 if (original == null) return;
 
                 original.setNome(value);

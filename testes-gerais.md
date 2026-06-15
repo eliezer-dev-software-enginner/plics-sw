@@ -38,12 +38,12 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 ## TecnicoScreen
 
 | # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 79 | Cadastro técnico - Loja Roupas | Carlos Mecânico | Salvo com sucesso. | | |
-| 80 | Cadastro técnico - OS Geral | Tecnico Padrao | Salvo com sucesso. | | |
-| 81 | Nome vazio | (vazio) | Alerta: "Nome é obrigatório". | | |
-| 82 | Nome duplicado | Carlos Mecânico | Alerta: "Técnico já cadastrado". | | |
-| 83 | Excluir técnico com OS | (técnico vinculado) | Alerta: "Técnico possui ordens de serviço vinculadas". | | |
+|---|---------|------|-----------------|------|-----------|
+| 79 | Cadastro técnico - Loja Roupas | Carlos Mecânico | Salvo com sucesso. | | ok        |
+| 80 | Cadastro técnico - OS Geral | Tecnico Padrao | Salvo com sucesso. | |           |
+| 81 | Nome vazio | (vazio) | Alerta: "Nome é obrigatório". | | ok         |
+| 82 | Nome duplicado | Carlos Mecânico | Alerta: "Técnico já cadastrado". | |           |
+| 83 | Excluir técnico com OS | (técnico vinculado) | Alerta: "Técnico possui ordens de serviço vinculadas". | |           |
 
 ---
 
