@@ -22,7 +22,7 @@ Cada arquivo contém os testes específicos daquele perfil, incluindo dados de e
 
 ## Screens Cobertas
 
-1. [ClienteScreen](testes-loja-de-roupas.md#clientescreen) (Loja Roupas) / [PetShop](testes-petshop.md#clientescreen)
+1. [ClienteScreen](testes-gerais.md#clientescreen) (tests genéricos)
 2. [ProdutoScreen](testes-loja-de-roupas.md#produtoscreen) (Loja Roupas) / [PetShop](testes-petshop.md#produtoscreen) / [Lanchonete](testes-lanchonete.md#produtoscreen) / [Açougue](testes-acougue.md#produtoscreen)
 3. [CategoriaScreen](testes-gerais.md#categoriascreen)
 4. [FornecedorScreen](testes-loja-de-roupas.md#fornecedorscreen) (Loja Roupas) / [PetShop](testes-petshop.md#fornecedorscreen) / [Mercado](testes-mercado.md#fornecedorscreen)

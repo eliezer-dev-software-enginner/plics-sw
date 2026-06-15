@@ -16,16 +16,6 @@
 
 ---
 
-## ClienteScreen
-
-| # | Cenário | Nome | Tipo Pessoa | CPF/CNPJ | Celular | Email | Efeito Esperado | Erro/Inconsistência | Resultado |
-|---|---------|------|-------------|----------|---------|-------|-----------------|---------------------|---|
-| 10 | Cadastro válido - Pessoa Jurídica | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 99876-5432 | contato@petshopamigo.com.br | Salvo com sucesso. | | |
-| 11 | Cadastro válido - Pessoa Física | Ana Beatriz | Fisica | 222.333.444-55 | (21) 99777-6666 | ana@email.com | Salvo com sucesso. | | |
-| 12 | CNPJ duplicado | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 91234-5678 | outro@email.com | Alerta: "CNPJ já cadastrado". | | |
-
----
-
 ## CategoriaScreen
 
 | # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
