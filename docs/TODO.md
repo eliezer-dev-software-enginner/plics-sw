@@ -40,11 +40,23 @@
 - [x] Adicionado "g" (gramas) à lista `unidadesDeMedidaList` em `Data.java`
 - [x] Testes de produto, compra, venda e PDV com unidade "g" no perfil Açougue
 
+## Concluído (excluir todos os dados)
+- [x] Botão "Excluir todos os dados" na PreferenciasScreen (vermelho, destrutivo)
+- [x] Confirmação com alert antes de excluir
+- [x] Exclusão em todas as 16 tabelas com transação e FK desabilitado
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅
 - [ ] Publicar megalodonte-base modificado (com suporte a `run(args, ...)`) no maven local se ainda não estiver
 - [ ] Configurar GitHub Releases para plics-sw com assets .msi
+
+## Melhoria futura: Startup resiliente a erros
+- `Main.initialize()` não deve lançar exceção — sempre abrir uma janela, mesmo que seja uma tela de erro
+- Try-catch em cada etapa (Flyway, PreferenciasService, AppRoutes) com fallback para valores seguros
+- Nova `InitializationErrorScreen` com mensagem do erro e botões "Tentar novamente" / "Sair"
+- `DB.getPersismSession()` tratar falha do Flyway sem quebrar a aplicação
+- ViewModels tratar services opcionais (null) em vez de lançar NPE
 
 ## Concluído (PDV)
 - **PDVScreenViewModel**: NPE em `finalizarVenda()` corrigido — usa "CLIENTE PADRÃO" (id=1) quando nenhum cliente é selecionado em vendas à vista
