@@ -29,19 +29,11 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Quero que você crie um arquivo no root do projeto em markdown chamado testes. Onde eu como usuário vou poder testar o aplicativo. 
-Por exemplo, se eu for testar cliente, você vai fornecer nome de teste, dados que a tela ClienteScreen pede. E claro terá testes para validar as entradas, com efeito esperado. 
-No exemplo de cliente, poderia ter casos de uso: "Se preencher todos os campos" a aplicação deve aceitar". Se não preencher nome a aplicação não deve deixar. Deve mostrar alert. 
-Você pode simular alguns perfis de negócios para poder testar vários fluxos. Por exemplo, você pode criar testes para uma "loja de roupa", testes para uma "casa de ração", testes para "uma lanchonete", testes para um "açougue", testes para um "Mercado" e etc...
-Para cada teste posso ter um campo reservado para eu preencher se a aplicação teve algum erro, ou inconsistencia para poder resolver posteriormente.
 
+Nesse trecho abaixo na PreferenciasScreenViewModel, quero é mostrar um Popup que fica por cima das janelas de forma forçada, talvez precisemos obter a stage principal vinda do context principal da Main.java, veja se eu já possuo algum componente disso no arquivo Components.java.
+No popup quero exibir a mensagem: "Todos os dados foram excluídos com sucesso!" Feche o aplciativo e abra de novo para aplicar as mudanças. 
+E vai ter o botão "Fechar aplicativo".
 
-Nesse trecho abaixo na HomeScreen, após a navegação ser realizada o conteudo desenhado ainda é o da HomeScreen, analise para mim o porque isso está acontecendo:
-@Override
-public void onMount() {
-if (viewModel.isLicensaTesteExpirada()) {
-ctx.navigate("entrar-com-credenciais");
-return;
-}
-viewModel.calcularFinanceiroMesAtual();
-}
+UI.runOnUi(() -> {
+Components.ShowPopup(ctx, "Todos os dados foram excluídos com sucesso!");
+});

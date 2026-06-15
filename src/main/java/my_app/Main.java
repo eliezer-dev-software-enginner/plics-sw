@@ -72,8 +72,12 @@ public class Main {
 
     private static void onEvent(MegalodonteApp.Event ev) {
         if (ev == MegalodonteApp.Event.CloseRequest) {
-            ListenerManager.disposeAll();
+            handleClose();
+        }
+    }
 
+    public static void handleClose(){
+            ListenerManager.disposeAll();
             // Shutdown do SystemTray antes do Platform.exit
             // para evitar threads órfãs
             try {
@@ -85,7 +89,6 @@ public class Main {
 
             Platform.exit();
             // System.exit(0) como fallback se necessário
-        }
     }
 
     // mandatory for hotreload
