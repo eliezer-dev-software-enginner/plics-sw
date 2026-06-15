@@ -120,6 +120,7 @@ public class HomeScreen implements ScreenComponent {
                         .item("Clientes", ()-> ctx.router().spawnWindow("clientes",e->{}))
                         .item("Categorias", ()-> ctx.router().spawnWindow("categorias",e->{}))
                         .item("Produtos", ()-> ctx.router().spawnWindow("produtos",e->{}))
+                        .item("Técnicos", ()-> ctx.router().spawnWindow("tecnicos",e->{}))
                 )
                 .menu(new Menu("Gerencial")
                         .item("Empresa", ()-> ctx.router().spawnWindow("empresa",e->{}))
