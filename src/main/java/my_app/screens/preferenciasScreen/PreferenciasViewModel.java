@@ -5,6 +5,7 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
+import my_app.Main;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
 import my_app.db.DB;
@@ -100,7 +101,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
                     Components.ShowPopupForced(ctx,
                             "Todos os dados foram excluídos com sucesso!\n\nFeche o aplicativo e abra de novo para aplicar as mudanças.",
                             "Fechar aplicativo",
-                            Platform::exit
+                            Main::handleClose
                     );
                 });
             } catch (Exception e) {
