@@ -63,3 +63,8 @@
 - preferenciasScreen, tecnicoScreen
 - RelatarErroScreen, SugerirMelhoriaScreen, InfoUpdateScreen (ViewModel adicionadas)
 - welcomeScreen (ViewModel criada)
+
+## Documentação de testes
+- `testes.md` criado na raiz do projeto com 104 casos de teste distribuídos por 14 telas
+- 5 perfis de negócio simulados: Loja de Roupas, PetShop, Lanchonete, Açougue, Mercado
+- Cada caso de teste inclui campo para registro de erro/inconsistência

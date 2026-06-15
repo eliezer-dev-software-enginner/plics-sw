@@ -1,5 +1,25 @@
 # Decisões Arquiteturais
 
+## 2026-06-15: Navegação no onMount() da HomeScreen com Platform.runLater
+
+**Problema:** `HomeScreen.onMount()` chamava `ctx.navigate("entrar-com-credenciais")` diretamente quando a licença de teste expirava. Como `onMount()` é executado dentro de `Router.resolveWithStage()` (antes de `render()`), e o retorno de `resolveWithStage()` é consumido por `Context.useView()` — que seta o scene do stage — a navegação era anulada: o `useView()` sobrescrevia o scene da AuthScreen com o scene da HomeScreen.
+
+**Decisão:** Envolver `ctx.navigate()` em `Platform.runLater()` para adiar a navegação para depois do pulse atual do JavaFX, permitindo que o scene da HomeScreen seja criado primeiro e depois substituído pela AuthScreen.
+
+**Arquivo alterado:** `src/main/java/my_app/screens/homeScreen/HomeScreen.java:44-46`
+
+---
+
+## 2026-06-15: Adicionado "g" (gramas) às unidades de medida
+
+**Problema:** O perfil Açougue necessita de produtos vendidos em gramas (ex: bacon fatiado, linguiça), mas a lista de unidades não incluía "g".
+
+**Decisão:** Adicionar "g" à `unidadesDeMedidaList` em `Data.java`, entre "KG" e "ml", mantendo a ordem alfabética relativa.
+
+**Arquivo alterado:** `src/main/java/my_app/domain/Data.java:18`
+
+---
+
 ## 2026-06-10: Updater inline (mesmo JAR) via --add-launcher
 
 **Problema:** O updater do plics-sw era referenciado como subprojeto separado (`plics-sw-updater`), mas nunca foi implementado. O app-v1 do projeto `testes-atualizacao-app` demonstrou que é possível ter o updater dentro do próprio JAR usando `--add-launcher` do jpackage.

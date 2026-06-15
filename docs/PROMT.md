@@ -29,21 +29,19 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-ao tentar executar o script create-msi-with-updater.py dá erro:
-PS C:\Users\Usuário\hidden\plics-sw> python .\scripts\create-msi-with-updater.py
-Traceback (most recent call last):
-File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
-from updater_config import *
-ModuleNotFoundError: No module named 'updater_config'
-PS C:\Users\Usuário\hidden\plics-sw> python .\scripts\create-msi-with-updater.py
-Traceback (most recent call last):
-File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
-from updater_config import *
-ModuleNotFoundError: No module named 'updater_config'
-PS C:\Users\Usuário\hidden\plics-sw> cd scripts\
-PS C:\Users\Usuário\hidden\plics-sw\scripts> python create-msi-with-updater.py          
-Traceback (most recent call last):
-File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
-from updater_config import *
-ModuleNotFoundError: No module named 'updater_config'
-PS C:\Users\Usuário\hidden\plics-sw\scripts> 
+Quero que você crie um arquivo no root do projeto em markdown chamado testes. Onde eu como usuário vou poder testar o aplicativo. 
+Por exemplo, se eu for testar cliente, você vai fornecer nome de teste, dados que a tela ClienteScreen pede. E claro terá testes para validar as entradas, com efeito esperado. 
+No exemplo de cliente, poderia ter casos de uso: "Se preencher todos os campos" a aplicação deve aceitar". Se não preencher nome a aplicação não deve deixar. Deve mostrar alert. 
+Você pode simular alguns perfis de negócios para poder testar vários fluxos. Por exemplo, você pode criar testes para uma "loja de roupa", testes para uma "casa de ração", testes para "uma lanchonete", testes para um "açougue", testes para um "Mercado" e etc...
+Para cada teste posso ter um campo reservado para eu preencher se a aplicação teve algum erro, ou inconsistencia para poder resolver posteriormente.
+
+
+Nesse trecho abaixo na HomeScreen, após a navegação ser realizada o conteudo desenhado ainda é o da HomeScreen, analise para mim o porque isso está acontecendo:
+@Override
+public void onMount() {
+if (viewModel.isLicensaTesteExpirada()) {
+ctx.navigate("entrar-com-credenciais");
+return;
+}
+viewModel.calcularFinanceiroMesAtual();
+}

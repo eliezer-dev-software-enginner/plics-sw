@@ -31,6 +31,15 @@
 - [x] **Corrigido deadlock do updater**: app principal agora fecha (`System.exit(0)`) após lançar o updater, permitindo que o `ph.onExit().join()` prossiga
 - [x] **Updater com saída graciosa**: updater chama `System.exit(0)` após lançar batch script para liberar handles de DLLs; removido updater do `taskkill` no script
 
+## Concluído (testes.md)
+- [x] `testes.md` criado na raiz do plics-sw com 108 cenários de teste cobrindo 14 telas
+- [x] 5 perfis de negócio (Loja Roupas, PetShop, Lanchonete, Açougue, Mercado)
+- [x] Cada teste possui campo de erro/inconsistência para anotação manual
+
+## Concluído (unidade gramas)
+- [x] Adicionado "g" (gramas) à lista `unidadesDeMedidaList` em `Data.java`
+- [x] Testes de produto, compra, venda e PDV com unidade "g" no perfil Açougue
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

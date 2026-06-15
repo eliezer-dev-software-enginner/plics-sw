@@ -1,5 +1,6 @@
 package my_app.screens.homeScreen;
 
+import javafx.application.Platform;
 import megalodonte.base.state.State;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
@@ -41,7 +42,8 @@ public class HomeScreen implements ScreenComponent {
     @Override
     public void onMount() {
         if (viewModel.isLicensaTesteExpirada()) {
-            ctx.navigate("entrar-com-credenciais");
+            //ctx.navigate("entrar-com-credenciais");
+            Platform.runLater(() -> ctx.navigate("entrar-com-credenciais"));
             return;
         }
         viewModel.calcularFinanceiroMesAtual();
