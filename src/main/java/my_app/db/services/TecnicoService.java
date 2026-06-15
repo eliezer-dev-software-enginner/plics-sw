@@ -3,6 +3,7 @@ package my_app.db.services;
 import my_app.db.DB;
 import my_app.db.models.TecnicoModel;
 import my_app.db.repositories.TecnicoRepository;
+import net.sf.persism.PersismException;
 import net.sf.persism.Session;
 
 import java.sql.SQLException;
@@ -27,10 +28,8 @@ public class TecnicoService extends BaseService<TecnicoModel> {
         model.setDataCriacao(LocalDateTime.now());
         try {
             return repository.salvar(model);
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 19 && e.getMessage() != null && e.getMessage().contains("UNIQUE"))
-                throw new IllegalArgumentException("Já existe um técnico com este nome");
-            throw e;
+        } catch (PersismException e) {
+            throw tratarDuplicado(e);
         }
     }
 
@@ -39,11 +38,18 @@ public class TecnicoService extends BaseService<TecnicoModel> {
         validar(model);
         try {
             repository.atualizar(model);
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 19 && e.getMessage() != null && e.getMessage().contains("UNIQUE"))
-                throw new IllegalArgumentException("Já existe um técnico com este nome");
-            throw e;
+        } catch (PersismException e) {
+            throw tratarDuplicado(e);
         }
+    }
+
+    private RuntimeException tratarDuplicado(PersismException e) {
+        if (e.getCause() instanceof SQLException sqlEx
+                && sqlEx.getErrorCode() == 19
+                && sqlEx.getMessage() != null
+                && sqlEx.getMessage().contains("UNIQUE"))
+            return new IllegalArgumentException("Já existe um técnico com este nome");
+        return e;
     }
 
     private void validar(TecnicoModel model) {
