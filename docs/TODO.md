@@ -57,6 +57,14 @@
 - [x] **Migration V18**: UNIQUE INDEX condicional em `clientes.cpfCnpj` como safety net
 - [x] **ClienteServiceTest**: 4 novos testes (duplicado save, único save, mesmo CPF update, CPF de outro update) — total 13 testes, 0 falhas
 
+## Concluído (Correção edição Categoria)
+- [x] **CategoriaScreenViewModel**: capturar `editando` antes do `Async.Run()` — evita race condition que criava nova categoria em vez de atualizar
+- [x] **CategoriaService.validarNome()**: `long` → `Integer` + `!=` → `.equals()` — consistente com `CategoriaModel.id`
+- [x] **CategoriaScreenViewModel.clearForm()**: adicionado `modoEdicao.set(false)` — consistente com demais VMs
+- [x] **CategoriaScreenViewModel.handleAddOrUpdate()**: usar retorno de `categoriaService.salvar()` — garante objeto com ID na lista
+- [x] **CategoriaScreenViewModelTest.deveAtualizarCategoria()**: teste que cobre o cenário de erro (editar nome cria nova categoria)
+- [x] **AI_RULES.md**: adicionar regra para analisar `*.md` de testes no início da sessão
+
 ## Melhoria futura: Startup resiliente a erros
 - `Main.initialize()` não deve lançar exceção — sempre abrir uma janela, mesmo que seja uma tela de erro
 - Try-catch em cada etapa (Flyway, PreferenciasService, AppRoutes) com fallback para valores seguros

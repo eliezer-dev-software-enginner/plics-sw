@@ -23,6 +23,7 @@
 - Ler este arquivo.
 - Ler README.md.
 - Analisar estrutura existente.
+- Analisar arquivos de testes *.md (testes.md, testes-gerais.md, testes-*.md) por erros relatados e resolvê-los na sessão atual.
 - Não substituir funcionalidades sem autorização.
 
 ## Ao alterar versão do app

@@ -1,5 +1,26 @@
 # Decisões Arquiteturais
 
+## 2026-06-22: Correção de race condition na edição de Categoria
+
+**Problema:** `CategoriaScreenViewModel.handleAddOrUpdate()` verificava `modoEdicao.get()` dentro de `Async.Run()`. Como `ContratoTelaCrudV3.handleAddOrUpdate()` redefine `modoEdicao = false` imediatamente após chamar `viewModel().handleAddOrUpdate()`, a async task via `modoEdicao = false` e executava o branch `else` (criar) em vez de `if` (atualizar). Resultado: editar uma categoria criava uma nova em vez de atualizar a existente.
+
+**Decisão:**
+1. Capturar `boolean editando = modoEdicao.get()` antes de `Async.Run()`, usar o valor capturado dentro da async task.
+2. `validarNome()` em `CategoriaService`: parâmetro `long idAtual` → `Integer idAtual` e `!=` → `.equals()` para consistência com `CategoriaModel.id` (Integer).
+3. `clearForm()` agora reseta `modoEdicao.set(false)` (consistente com FornecedorScreenViewModel e TecnicoScreenViewModel).
+4. `categoriaService.salvar()`: usar retorno (`var salvo = ...`) em vez de ignorar, para garantir que o objeto com ID seja adicionado à lista.
+5. Teste `CategoriaScreenViewModelTest.deveAtualizarCategoria` cobre o cenário: cria "Masculino", edita para "Moda Masculina", verifica 1 registro com nome atualizado.
+6. `AI_RULES.md`: adicionada regra para analisar arquivos de testes `*.md` no início de cada sessão.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/categoriaScreen/CategoriaScreenViewModel.java`
+- `src/main/java/my_app/db/services/CategoriaService.java`
+- `src/test/java/my_app/screens/categoriaScreen/CategoriaScreenViewModelTest.java`
+- `docs/AI_RULES.md`
+- `testes-gerais.md` (registro do erro)
+
+---
+
 ## 2026-06-22: Validação de CPF/CNPJ duplicado em ClienteService
 
 **Problema:** Era possível cadastrar múltiplos clientes com o mesmo CPF/CNPJ, pois não havia validação de unicidade nem no banco nem na service.

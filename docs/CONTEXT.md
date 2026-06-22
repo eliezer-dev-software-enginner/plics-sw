@@ -52,12 +52,7 @@
 - `scripts/create-deb-with-updater.py`: gera DEB com updater via `--add-launcher`
 
 ## Última alteração
-- **Validação de CPF/CNPJ duplicado**: ClienteService agora valida unicidade de CPF/CNPJ. Migration V18 adiciona UNIQUE INDEX condicional. ClienteRepository ganhou `buscarPorCpfCnpj()`. ClienteServiceTest com 4 novos testes (13 testes no total).
-
-## Última alteração
-- **Updater com saída graciosa**: updater agora chama `System.exit(0)` após lançar o batch script, liberando handles de DLLs antes do msiexec. Removido updater do `taskkill` no script.
-- **App principal fecha após lançar updater**: adicionado `System.exit(0)` após `pb.start()` no `HomeScreenViewModel.update()`.
-- **Updater implementado**: pacote `my_app.updater` (Main, HomeScreen, HomeScreenViewModel) adaptado do projeto `testes-atualizacao-app/app-v1`. `Main.java` ganhou `public static void main(String[] args)`. "Buscar atualização" descomentado no menu HomeScreen. Novos scripts de empacotamento com `--add-launcher`.
+- **Correção de edição em Categoria**: `CategoriaScreenViewModel.handleAddOrUpdate()` verificava `modoEdicao.get()` dentro do `Async.Run()`, mas `ContratoTelaCrudV3` reseta `modoEdicao` para `false` imediatamente após chamar o método. Quando a async task executava, `modoEdicao` já era `false`, então o fluxo caía no `else` (criar) em vez de `if` (atualizar). Fix: capturar `boolean editando` antes do `Async.Run()` e usar o valor capturado. Também corrigido `validarNome()` em `CategoriaService` para usar `Integer` e `.equals()`. Adicionado `CategoriaScreenViewModelTest.deveAtualizarCategoria()`. `clearForm()` agora reseta `modoEdicao`.
 
 ## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen

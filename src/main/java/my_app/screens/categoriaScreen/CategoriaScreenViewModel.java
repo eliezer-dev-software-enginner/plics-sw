@@ -82,9 +82,10 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
 
     @Override
     public void handleAddOrUpdate() {
+        boolean editando = modoEdicao.get();
         Async.Run(() -> {
             try {
-                if (modoEdicao.get()) {
+                if (editando) {
                     var model = categoriaSelecionada.get();
                     if (model == null) return;
                     model.setNome(nome.get().trim());
@@ -101,9 +102,9 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
                 } else {
                     var model = new CategoriaModel();
                     model.setNome(nome.get().trim());
-                    categoriaService.salvar(model);
+                    var salvo = categoriaService.salvar(model);
                     UI.runOnUi(() -> {
-                        categorias.add(model);
+                        categorias.add(salvo);
                         Components.ShowPopup(ctx, "Categoria cadastrada com sucesso");
                         clearForm();
                     });
@@ -119,5 +120,6 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
     @Override
     public void clearForm() {
         nome.set("");
+        modoEdicao.set(false);
     }
 }

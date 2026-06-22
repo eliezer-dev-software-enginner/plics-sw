@@ -35,9 +35,9 @@ public class CategoriaService extends BaseService<CategoriaModel> {
         repository.atualizar(model);
     }
 
-    private void validarNome(String nome, long idAtual) throws SQLException {
+    private void validarNome(String nome, Integer idAtual) throws SQLException {
         boolean duplicado = repository.listar().stream()
-                .filter(c -> c.getId() != idAtual)
+                .filter(c -> !c.getId().equals(idAtual))
                 .anyMatch(c -> c.getNome().equalsIgnoreCase(nome.trim()));
 
         if (duplicado) throw new IllegalArgumentException("Já existe uma categoria com esse nome");
