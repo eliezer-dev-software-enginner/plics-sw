@@ -89,4 +89,50 @@ class ClienteServiceTest extends BaseServiceTest {
         c.setCelular("");
         assertDoesNotThrow(() -> clienteService.salvar(c));
     }
+
+    @Test
+    void deveLancarExcecaoQuandoCpfCnpjDuplicado() throws Exception {
+        var c1 = clienteValido();
+        c1.setCpfCnpj("123.456.789-00");
+        clienteService.salvar(c1);
+
+        var c2 = clienteValido();
+        c2.setCpfCnpj("123.456.789-00");
+        assertThrows(IllegalArgumentException.class, () -> clienteService.salvar(c2));
+    }
+
+    @Test
+    void devePermitirSalvarClienteComCpfCnpjUnico() throws Exception {
+        var c1 = clienteValido();
+        c1.setCpfCnpj("123.456.789-00");
+        clienteService.salvar(c1);
+
+        var c2 = clienteValido();
+        c2.setCpfCnpj("987.654.321-00");
+        assertDoesNotThrow(() -> clienteService.salvar(c2));
+    }
+
+    @Test
+    void devePermitirAtualizarClienteMantendoCpfCnpj() throws Exception {
+        var c = clienteValido();
+        c.setCpfCnpj("123.456.789-00");
+        var salvo = clienteService.salvar(c);
+
+        salvo.setNome("João Editado");
+        assertDoesNotThrow(() -> clienteService.atualizar(salvo));
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoCpfCnpjJaExisteEmOutroCliente() throws Exception {
+        var c1 = clienteValido();
+        c1.setCpfCnpj("123.456.789-00");
+        clienteService.salvar(c1);
+
+        var c2 = clienteValido();
+        c2.setCpfCnpj("987.654.321-00");
+        var salvo2 = clienteService.salvar(c2);
+
+        salvo2.setCpfCnpj("123.456.789-00");
+        assertThrows(IllegalArgumentException.class, () -> clienteService.atualizar(salvo2));
+    }
 }

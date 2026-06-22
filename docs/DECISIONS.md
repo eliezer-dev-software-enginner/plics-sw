@@ -1,5 +1,23 @@
 # Decisões Arquiteturais
 
+## 2026-06-22: Validação de CPF/CNPJ duplicado em ClienteService
+
+**Problema:** Era possível cadastrar múltiplos clientes com o mesmo CPF/CNPJ, pois não havia validação de unicidade nem no banco nem na service.
+
+**Decisão:**
+1. Adicionar `buscarPorCpfCnpj()` em `ClienteRepository` seguindo o padrão de `ProdutoRepository.buscarPorCodigoBarras()`.
+2. Adicionar validação em `ClienteService.validarCampos()`: se `cpfCnpj` não estiver vazio, verificar se outro cliente já possui o mesmo valor. Na criação (`model.getId() == null`), qualquer existente bloqueia. Na atualização, permite o mesmo cliente (mesmo ID) mas bloqueia se pertencer a outro.
+3. Migration V18: `UNIQUE INDEX` condicional (`WHERE cpfCnpj IS NOT NULL AND cpfCnpj != ''`) como safety net no banco, permitindo múltiplos clientes sem CPF/CNPJ.
+4. Testes: 4 novos casos — CPF duplicado no save, CPF único no save, manter o mesmo CPF no update, CPF de outro cliente no update.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/db/repositories/ClienteRepository.java` (adicionado `buscarPorCpfCnpj`)
+- `src/main/java/my_app/db/services/ClienteService.java` (validação, cast para ClienteRepository, imports limpos)
+- `src/main/resources/flyway_migrations/V18__add_unique_cpf_cnpj_clientes.sql` (novo)
+- `src/test/java/my_app/db/services/ClienteServiceTest.java` (4 novos testes)
+
+---
+
 ## 2026-06-15: ShowPopupForced — popup modal sempre-no-topo para ações destrutivas
 
 **Problema:** Após "Excluir todos os dados", o `ShowPopup` existente era auto-hide e não bloqueava o usuário. Era necessário um popup que ficasse forçadamente sobre todas as janelas, com mensagem clara e botão de ação (fechar app).

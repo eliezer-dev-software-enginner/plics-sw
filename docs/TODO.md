@@ -51,6 +51,12 @@
 - [ ] Publicar megalodonte-base modificado (com suporte a `run(args, ...)`) no maven local se ainda não estiver
 - [ ] Configurar GitHub Releases para plics-sw com assets .msi
 
+## Concluído (CPF/CNPJ duplicado)
+- [x] **ClienteRepository.buscarPorCpfCnpj()**: busca cliente por CPF/CNPJ (padrão `ProdutoRepository.buscarPorCodigoBarras`)
+- [x] **ClienteService.validarCampos()**: valida que CPF/CNPJ não está em uso por outro cliente (criação e atualização)
+- [x] **Migration V18**: UNIQUE INDEX condicional em `clientes.cpfCnpj` como safety net
+- [x] **ClienteServiceTest**: 4 novos testes (duplicado save, único save, mesmo CPF update, CPF de outro update) — total 13 testes, 0 falhas
+
 ## Melhoria futura: Startup resiliente a erros
 - `Main.initialize()` não deve lançar exceção — sempre abrir uma janela, mesmo que seja uma tela de erro
 - Try-catch em cada etapa (Flyway, PreferenciasService, AppRoutes) com fallback para valores seguros

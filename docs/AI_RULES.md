@@ -29,5 +29,21 @@
 - Atualizar em: `gradle.properties`, `src/main/java/my_app/Main.java`, `src/main/resources/updates.json`
 - `scripts/config.py` lê `gradle.properties` automaticamente
 
+## Ao executar testes (workaround para pipe closed / GradleWorkerMain)
+- O path `C:\Users\Usuário` contém `ç` (caractere não-ASCII). O Gradle gera arquivos `@` classpath que corrompem esse caractere, causando `ClassNotFoundException: GradleWorkerMain`.
+- **Workaround:** copiar o projeto para `C:\temp\plics` e rodar os testes de lá:
+```powershell
+# Limpar build anterior no destino
+Remove-Item -Recurse -Force -LiteralPath "C:\temp\plics" -ErrorAction SilentlyContinue
+# Copiar projeto (excluindo build .gradle)
+Copy-Item -Recurse -Force -LiteralPath "C:\Users\Usuário\hidden\megalodonte-context\plics-sw" -Destination "C:\temp\plics" -Exclude @('build', '.gradle')
+# Executar testes
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.3"
+$env:GRADLE_USER_HOME = "C:\temp\gradle"
+$env:TMP = "C:\temp"
+$env:TEMP = "C:\temp"
+& "C:\temp\plics\gradlew.bat" -p "C:\temp\plics" test --tests "<TestClass>" --no-daemon
+```
+
 ## Após realizar as alterações faça commit
 - Use padrões: feat, refactor, test ou clean
