@@ -127,9 +127,17 @@ public class ClienteViewModel extends ViewModelScreenContract {
                     if(clienteSelecionado.get() == null)return;
                     var model = getModelFromFields(clienteSelecionado.get());
                     clienteService.atualizar(model);
+                    ClienteModel finalModel = new ClienteModel();
+                    finalModel.setId(model.getId());
+                    finalModel.setNome(model.getNome());
+                    finalModel.setCpfCnpj(model.getCpfCnpj());
+                    finalModel.setCelular(model.getCelular());
+                    finalModel.setEmail(model.getEmail());
+                    finalModel.setPessoaFisica(model.getPessoaFisica());
+                    finalModel.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
-                        clientes.updateIf(it -> it.getId().equals(model.getId()), it -> model);
-                        Components.ShowPopup(ctx, "Ciente atualizado com sucesso");
+                        clientes.updateIf(it -> it.getId().equals(finalModel.getId()), it -> finalModel);
+                        Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                         clearForm();
                     });
                 } else {

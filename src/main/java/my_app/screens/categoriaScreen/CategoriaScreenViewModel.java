@@ -89,8 +89,12 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
                     if (model == null) return;
                     model.setNome(nome.get().trim());
                     categoriaService.atualizar(model);
+                    CategoriaModel atualizada = new CategoriaModel();
+                    atualizada.setId(model.getId());
+                    atualizada.setNome(model.getNome());
+                    atualizada.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
-                        categorias.updateIf(it -> it.getId().equals(model.getId()), it -> model);
+                        categorias.updateIf(it -> it.getId().equals(atualizada.getId()), it -> atualizada);
                         Components.ShowPopup(ctx, "Categoria atualizada com sucesso");
                         clearForm();
                     });

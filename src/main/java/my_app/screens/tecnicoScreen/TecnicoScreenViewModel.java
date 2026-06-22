@@ -124,8 +124,13 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
 
                 EventBus.getInstance().publish(EntityEvent.editado(original));
 
+                TecnicoModel atualizado = new TecnicoModel();
+                atualizado.setId(original.getId());
+                atualizado.setNome(original.getNome());
+                atualizado.setDataCriacao(original.getDataCriacao());
+
                 UI.runOnUi(() -> {
-                    tecnicos.updateIf(it -> it.getId().equals(original.getId()), it -> original);
+                    tecnicos.updateIf(it -> it.getId().equals(atualizado.getId()), it -> atualizado);
                     Components.ShowPopup(ctx, "Técnico atualizado com sucesso");
                     clearForm();
                 });
