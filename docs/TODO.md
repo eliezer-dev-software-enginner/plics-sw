@@ -31,11 +31,38 @@
 - [x] **Corrigido deadlock do updater**: app principal agora fecha (`System.exit(0)`) após lançar o updater, permitindo que o `ph.onExit().join()` prossiga
 - [x] **Updater com saída graciosa**: updater chama `System.exit(0)` após lançar batch script para liberar handles de DLLs; removido updater do `taskkill` no script
 
+## Concluído (testes.md)
+- [x] `testes.md` criado na raiz do plics-sw com 108 cenários de teste cobrindo 14 telas
+- [x] 5 perfis de negócio (Loja Roupas, PetShop, Lanchonete, Açougue, Mercado)
+- [x] Cada teste possui campo de erro/inconsistência para anotação manual
+
+## Concluído (unidade gramas)
+- [x] Adicionado "g" (gramas) à lista `unidadesDeMedidaList` em `Data.java`
+- [x] Testes de produto, compra, venda e PDV com unidade "g" no perfil Açougue
+
+## Concluído (excluir todos os dados)
+- [x] Botão "Excluir todos os dados" na PreferenciasScreen (vermelho, destrutivo)
+- [x] Confirmação com alert antes de excluir
+- [x] Exclusão em todas as 16 tabelas com transação e FK desabilitado
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅
 - [ ] Publicar megalodonte-base modificado (com suporte a `run(args, ...)`) no maven local se ainda não estiver
 - [ ] Configurar GitHub Releases para plics-sw com assets .msi
+
+## Concluído (CPF/CNPJ duplicado)
+- [x] **ClienteRepository.buscarPorCpfCnpj()**: busca cliente por CPF/CNPJ (padrão `ProdutoRepository.buscarPorCodigoBarras`)
+- [x] **ClienteService.validarCampos()**: valida que CPF/CNPJ não está em uso por outro cliente (criação e atualização)
+- [x] **Migration V18**: UNIQUE INDEX condicional em `clientes.cpfCnpj` como safety net
+- [x] **ClienteServiceTest**: 4 novos testes (duplicado save, único save, mesmo CPF update, CPF de outro update) — total 13 testes, 0 falhas
+
+## Melhoria futura: Startup resiliente a erros
+- `Main.initialize()` não deve lançar exceção — sempre abrir uma janela, mesmo que seja uma tela de erro
+- Try-catch em cada etapa (Flyway, PreferenciasService, AppRoutes) com fallback para valores seguros
+- Nova `InitializationErrorScreen` com mensagem do erro e botões "Tentar novamente" / "Sair"
+- `DB.getPersismSession()` tratar falha do Flyway sem quebrar a aplicação
+- ViewModels tratar services opcionais (null) em vez de lançar NPE
 
 ## Concluído (PDV)
 - **PDVScreenViewModel**: NPE em `finalizarVenda()` corrigido — usa "CLIENTE PADRÃO" (id=1) quando nenhum cliente é selecionado em vendas à vista

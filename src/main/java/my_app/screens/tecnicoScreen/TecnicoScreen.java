@@ -60,8 +60,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .column("Data criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onItemSelectChange(vm.tecnicoSelected::set)
-                .onChangeFocus(vm::handleFocusChange)
-                .onClickOutside(() -> vm.tecnicoSelected.set(null));
+                .onChangeFocus(vm::handleFocusChange);
 
         return simpleTable;
     }

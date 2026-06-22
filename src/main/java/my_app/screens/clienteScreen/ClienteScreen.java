@@ -70,6 +70,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .columns()
                 .column("ID",            it -> it.getId())
                 .column("Nome",          it -> it.getNome())
+                .column("Celular/Telefone",          it -> Utils.formatPhone(it.getCelular()))
                 .column("CPF/CNPJ",      it -> it.getCpfCnpj().length() == 11
                         ? Utils.formatCpf(it.getCpfCnpj())
                         : Utils.formatCnpj(it.getCpfCnpj()))

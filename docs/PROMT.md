@@ -29,21 +29,6 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-ao tentar executar o script create-msi-with-updater.py dá erro:
-PS C:\Users\Usuário\hidden\plics-sw> python .\scripts\create-msi-with-updater.py
-Traceback (most recent call last):
-File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
-from updater_config import *
-ModuleNotFoundError: No module named 'updater_config'
-PS C:\Users\Usuário\hidden\plics-sw> python .\scripts\create-msi-with-updater.py
-Traceback (most recent call last):
-File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
-from updater_config import *
-ModuleNotFoundError: No module named 'updater_config'
-PS C:\Users\Usuário\hidden\plics-sw> cd scripts\
-PS C:\Users\Usuário\hidden\plics-sw\scripts> python create-msi-with-updater.py          
-Traceback (most recent call last):
-File "C:\Users\Usuário\hidden\plics-sw\scripts\create-msi-with-updater.py", line 3, in <module>
-from updater_config import *
-ModuleNotFoundError: No module named 'updater_config'
-PS C:\Users\Usuário\hidden\plics-sw\scripts> 
+
+Em clientes está sendo possível cadastrar clientes com o mesmo cpf e cnpj. Veja se nos testes não teve esse caso de uso. Se não tiver, implemente.
+E garanta de cuidar disso na ClienteService.

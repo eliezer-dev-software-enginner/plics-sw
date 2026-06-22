@@ -50,4 +50,12 @@ public abstract class BaseRepository<M> {
                 params(id)
         );
     }
+
+    public void close() {
+        if (session != null) {
+            DB.unregister(session);
+            session.close();
+            session = null;
+        }
+    }
 }

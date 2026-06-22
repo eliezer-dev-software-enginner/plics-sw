@@ -1,5 +1,7 @@
 package my_app.domain.components;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -9,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.base.Animations;
@@ -146,6 +149,34 @@ public class Components {
         popup.getContent().add(label);
         popup.setAutoHide(true);
         popup.show(context.selfStage());
+    }
+
+    public static void ShowPopupForced(ScreenContext context, String message, String buttonText, Runnable onButtonClick) {
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(context.selfStage());
+        stage.initStyle(StageStyle.UTILITY);
+        stage.setAlwaysOnTop(true);
+        stage.setTitle("Aviso");
+
+        Label label = new Label(message);
+        label.setWrapText(true);
+        label.setStyle("-fx-text-fill: #333; -fx-font-size: 14px; -fx-text-alignment: center;");
+
+        javafx.scene.control.Button btn = new javafx.scene.control.Button(buttonText);
+        btn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-font-size: 14px; -fx-background-radius: 4px; -fx-cursor: hand;");
+        btn.setOnAction(e -> {
+            stage.close();
+            onButtonClick.run();
+        });
+
+        VBox vbox = new VBox(20, label, btn);
+        vbox.setPadding(new Insets(24));
+        vbox.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(vbox, 420, 200);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public static void ShowModal(Component ui, ScreenContext context, int height) {

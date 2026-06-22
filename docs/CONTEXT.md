@@ -52,6 +52,9 @@
 - `scripts/create-deb-with-updater.py`: gera DEB com updater via `--add-launcher`
 
 ## Última alteração
+- **Validação de CPF/CNPJ duplicado**: ClienteService agora valida unicidade de CPF/CNPJ. Migration V18 adiciona UNIQUE INDEX condicional. ClienteRepository ganhou `buscarPorCpfCnpj()`. ClienteServiceTest com 4 novos testes (13 testes no total).
+
+## Última alteração
 - **Updater com saída graciosa**: updater agora chama `System.exit(0)` após lançar o batch script, liberando handles de DLLs antes do msiexec. Removido updater do `taskkill` no script.
 - **App principal fecha após lançar updater**: adicionado `System.exit(0)` após `pb.start()` no `HomeScreenViewModel.update()`.
 - **Updater implementado**: pacote `my_app.updater` (Main, HomeScreen, HomeScreenViewModel) adaptado do projeto `testes-atualizacao-app/app-v1`. `Main.java` ganhou `public static void main(String[] args)`. "Buscar atualização" descomentado no menu HomeScreen. Novos scripts de empacotamento com `--add-launcher`.
@@ -63,3 +66,12 @@
 - preferenciasScreen, tecnicoScreen
 - RelatarErroScreen, SugerirMelhoriaScreen, InfoUpdateScreen (ViewModel adicionadas)
 - welcomeScreen (ViewModel criada)
+
+## Funcionalidades
+- **Excluir todos os dados**: botão destrutivo na PreferenciasScreen, apaga todas as 16 tabelas com confirmação e transação. Após exclusão, exibe popup modal sempre-no-topo com botão "Fechar aplicativo" que chama `Platform.exit()`.
+- **Components.ShowPopupForced**: Stage modal (`APPLICATION_MODAL`) com `setAlwaysOnTop(true)` para mensagens que exigem ação do usuário antes de continuar.
+
+## Documentação de testes
+- `testes.md` criado na raiz do projeto com 104 casos de teste distribuídos por 14 telas
+- 5 perfis de negócio simulados: Loja de Roupas, PetShop, Lanchonete, Açougue, Mercado
+- Cada caso de teste inclui campo para registro de erro/inconsistência

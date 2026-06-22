@@ -31,4 +31,8 @@ public abstract class BaseService<M> {
     public M buscarById(long id) throws SQLException {
         return repository.buscarById(id);
     }
+
+    public void close() {
+        repository.close();
+    }
 }

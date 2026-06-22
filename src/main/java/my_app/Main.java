@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Set;
 
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import megalodonte.ListenerManager;
 import megalodonte.application.Context;
@@ -60,10 +61,7 @@ public class Main {
                         .implementationClassName("my_app.hotreload.Reloader")
                         .screenClassName(null)
                         .reloadContext(context)
-                        .classesToExclude(Set.of(
-                                "my_app.Main",
-                                "my_app.Launcher"
-                        ));
+                        .classesToExclude(Set.of("my_app.Main"));
                 hotReload.start();
             }
             TrayManager.setup(BASE_TITLE);
@@ -71,8 +69,23 @@ public class Main {
 
     private static void onEvent(MegalodonteApp.Event ev) {
         if (ev == MegalodonteApp.Event.CloseRequest) {
-            ListenerManager.disposeAll();
+            handleClose();
         }
+    }
+
+    public static void handleClose(){
+            ListenerManager.disposeAll();
+            // Shutdown do SystemTray antes do Platform.exit
+            // para evitar threads órfãs
+            try {
+                var tray = dorkbox.systemTray.SystemTray.get();
+                if (tray != null) {
+                    tray.shutdown();
+                }
+            } catch (Exception ignored) {}
+
+            Platform.exit();
+            // System.exit(0) como fallback se necessário
     }
 
     // mandatory for hotreload

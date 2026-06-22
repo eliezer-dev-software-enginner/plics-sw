@@ -62,15 +62,15 @@ public class ClienteViewModel extends ViewModelScreenContract {
     public void populateFromModel() {
         final var data = clienteSelecionado.get();
         if (data == null) return;
-        nome.set(data.getNome());
-        cnpjCpf.set(data.getCpfCnpj());
-        celular.set(data.getCelular());
-        email.set(data.getEmail());
         tipoPessoaSelected.set(
                 Utils.isValidCpf(data.getCpfCnpj())
                         ? Data.tiposPessoaList.getFirst()
                         : Data.tiposPessoaList.getLast()
         );
+        nome.set(data.getNome());
+        cnpjCpf.set(data.getCpfCnpj());
+        celular.set(data.getCelular());
+        email.set(data.getEmail());
     }
 
     private ClienteModel getModelFromFields(ClienteModel model){
@@ -127,9 +127,17 @@ public class ClienteViewModel extends ViewModelScreenContract {
                     if(clienteSelecionado.get() == null)return;
                     var model = getModelFromFields(clienteSelecionado.get());
                     clienteService.atualizar(model);
+                    ClienteModel finalModel = new ClienteModel();
+                    finalModel.setId(model.getId());
+                    finalModel.setNome(model.getNome());
+                    finalModel.setCpfCnpj(model.getCpfCnpj());
+                    finalModel.setCelular(model.getCelular());
+                    finalModel.setEmail(model.getEmail());
+                    finalModel.setPessoaFisica(model.getPessoaFisica());
+                    finalModel.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
-                        clientes.updateIf(it -> it.getId().equals(model.getId()), it -> model);
-                        Components.ShowPopup(ctx, "Ciente atualizado com sucesso");
+                        clientes.updateIf(it -> it.getId().equals(finalModel.getId()), it -> finalModel);
+                        Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                         clearForm();
                     });
                 } else {

@@ -3,6 +3,7 @@ package my_app.db.services;
 import my_app.db.DB;
 import my_app.db.models.TecnicoModel;
 import my_app.db.repositories.TecnicoRepository;
+import net.sf.persism.PersismException;
 import net.sf.persism.Session;
 
 import java.sql.SQLException;
@@ -25,13 +26,30 @@ public class TecnicoService extends BaseService<TecnicoModel> {
     public TecnicoModel salvar(TecnicoModel model) throws SQLException {
         validar(model);
         model.setDataCriacao(LocalDateTime.now());
-        return repository.salvar(model);
+        try {
+            return repository.salvar(model);
+        } catch (PersismException e) {
+            throw tratarDuplicado(e);
+        }
     }
 
     @Override
     public void atualizar(TecnicoModel model) throws SQLException {
         validar(model);
-        repository.atualizar(model);
+        try {
+            repository.atualizar(model);
+        } catch (PersismException e) {
+            throw tratarDuplicado(e);
+        }
+    }
+
+    private RuntimeException tratarDuplicado(PersismException e) {
+        if (e.getCause() instanceof SQLException sqlEx
+                && sqlEx.getErrorCode() == 19
+                && sqlEx.getMessage() != null
+                && sqlEx.getMessage().contains("UNIQUE"))
+            return new IllegalArgumentException("Já existe um técnico com este nome");
+        return e;
     }
 
     private void validar(TecnicoModel model) {

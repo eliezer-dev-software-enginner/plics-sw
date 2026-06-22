@@ -116,7 +116,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
     private void asyncAtualizar(String value) {
         Async.Run(() -> {
             try {
-                var original = tecnicoSelected.get();
+                TecnicoModel original = tecnicoSelected.get();
                 if (original == null) return;
 
                 original.setNome(value);
@@ -124,8 +124,13 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
 
                 EventBus.getInstance().publish(EntityEvent.editado(original));
 
+                TecnicoModel atualizado = new TecnicoModel();
+                atualizado.setId(original.getId());
+                atualizado.setNome(original.getNome());
+                atualizado.setDataCriacao(original.getDataCriacao());
+
                 UI.runOnUi(() -> {
-                    tecnicos.updateIf(it -> it.getId().equals(original.getId()), it -> original);
+                    tecnicos.updateIf(it -> it.getId().equals(atualizado.getId()), it -> atualizado);
                     Components.ShowPopup(ctx, "Técnico atualizado com sucesso");
                     clearForm();
                 });
@@ -138,6 +143,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
     @Override
     public void clearForm() {
         nome.set("");
+        modoEdicao.set(false);
     }
 
     @Override

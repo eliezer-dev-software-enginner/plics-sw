@@ -7,11 +7,12 @@ import net.sf.persism.Session;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static my_app.utils.Utils.*;
 
 public class FornecedorService extends BaseService<FornecedorModel> {
+
+    private final FornecedorRepository fornecedorRepository;
 
     public FornecedorService() throws SQLException {
         this(DB.getPersismSession());
@@ -19,6 +20,7 @@ public class FornecedorService extends BaseService<FornecedorModel> {
 
     public FornecedorService(Session session) {
         super(new FornecedorRepository(session));
+        this.fornecedorRepository = (FornecedorRepository) repository;
     }
 
     @Override
@@ -43,6 +45,12 @@ public class FornecedorService extends BaseService<FornecedorModel> {
         if (cnpj != null && !cnpj.isBlank() && !isValidCnpj(cnpj))
             throw new IllegalArgumentException("CNPJ inválido (deve conter 14 dígitos)");
 
+        if (cnpj != null && !cnpj.isBlank()) {
+            var existente = fornecedorRepository.buscarPorCpfCnpj(cnpj);
+            if (existente != null && !existente.getId().equals(idAtual))
+                throw new IllegalArgumentException("Já existe um fornecedor com este CNPJ/CPF");
+        }
+
         String email = model.getEmail();
         if (email != null && !email.isBlank() && !isValidEmail(email))
             throw new IllegalArgumentException("Formato de e-mail inválido");
@@ -50,12 +58,5 @@ public class FornecedorService extends BaseService<FornecedorModel> {
         String celular = model.getCelular();
         if (celular != null && !celular.isBlank() && !isValidPhone(celular))
             throw new IllegalArgumentException("Telefone inválido (informe DDD + Número)");
-
-        List<FornecedorModel> existentes = repository.listar();
-        boolean cnpjDuplicado = existentes.stream()
-                .filter(f -> !f.getId().equals(idAtual))
-                .anyMatch(f -> cnpj != null && !cnpj.isBlank() && cnpj.equals(f.getCpfCnpj()));
-        if (cnpjDuplicado)
-            throw new IllegalArgumentException("Já existe um fornecedor com este CNPJ/CPF");
     }
 }

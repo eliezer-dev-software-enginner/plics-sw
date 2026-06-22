@@ -4,9 +4,12 @@ import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.v2.Show;
+import megalodonte.components.Button;
+import megalodonte.components.LineHorizontal;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
+import megalodonte.props.ButtonProps;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.Data;
@@ -40,7 +43,18 @@ public class PreferenciasScreen implements ScreenComponent {
                         Components.InputColumn("Senha", vm.passwordState, "")
                 )),
                 new SpacerVertical(10),
-                Components.ButtonCadastro("Salvar Preferências", vm::salvar)
+                Components.ButtonCadastro("Salvar Preferências", vm::salvar),
+                new SpacerVertical(30),
+                new LineHorizontal(),
+                new SpacerVertical(10),
+                new Text("Risco"),
+                new Button("Excluir todos os dados",
+                        new ButtonProps().fillWidth().height(31)
+                                .fontSize(14).textColor("white").bgColor("#dc2626"))
+                        .onClick(() -> Components.ShowAlertAdvice(
+                                "Tem certeza que deseja excluir todos os dados?",
+                                vm::deletarTodosDados
+                        ))
         );
     }
 }

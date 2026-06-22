@@ -129,8 +129,23 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
 
                 fornecedorService.atualizar(selecionado);
 
+                FornecedorModel atualizado = new FornecedorModel();
+                atualizado.setId(selecionado.getId());
+                atualizado.setNome(selecionado.getNome());
+                atualizado.setCpfCnpj(selecionado.getCpfCnpj());
+                atualizado.setCelular(selecionado.getCelular());
+                atualizado.setEmail(selecionado.getEmail());
+                atualizado.setInscricaoEstadual(selecionado.getInscricaoEstadual());
+                atualizado.setUfSelected(selecionado.getUfSelected());
+                atualizado.setCidade(selecionado.getCidade());
+                atualizado.setBairro(selecionado.getBairro());
+                atualizado.setRua(selecionado.getRua());
+                atualizado.setNumero(selecionado.getNumero());
+                atualizado.setObservacao(selecionado.getObservacao());
+                atualizado.setDataCriacao(selecionado.getDataCriacao());
+
                 UI.runOnUi(() -> {
-                    fornecedores.updateIf(f -> f.getId().equals(selecionado.getId()), f -> selecionado);
+                    fornecedores.updateIf(f -> f.getId().equals(atualizado.getId()), f -> atualizado);
                     Components.ShowPopup(ctx, "Fornecedor atualizado com sucesso");
                     clearForm();
                 });

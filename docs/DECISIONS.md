@@ -1,5 +1,78 @@
 # Decisões Arquiteturais
 
+## 2026-06-22: Validação de CPF/CNPJ duplicado em ClienteService
+
+**Problema:** Era possível cadastrar múltiplos clientes com o mesmo CPF/CNPJ, pois não havia validação de unicidade nem no banco nem na service.
+
+**Decisão:**
+1. Adicionar `buscarPorCpfCnpj()` em `ClienteRepository` seguindo o padrão de `ProdutoRepository.buscarPorCodigoBarras()`.
+2. Adicionar validação em `ClienteService.validarCampos()`: se `cpfCnpj` não estiver vazio, verificar se outro cliente já possui o mesmo valor. Na criação (`model.getId() == null`), qualquer existente bloqueia. Na atualização, permite o mesmo cliente (mesmo ID) mas bloqueia se pertencer a outro.
+3. Migration V18: `UNIQUE INDEX` condicional (`WHERE cpfCnpj IS NOT NULL AND cpfCnpj != ''`) como safety net no banco, permitindo múltiplos clientes sem CPF/CNPJ.
+4. Testes: 4 novos casos — CPF duplicado no save, CPF único no save, manter o mesmo CPF no update, CPF de outro cliente no update.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/db/repositories/ClienteRepository.java` (adicionado `buscarPorCpfCnpj`)
+- `src/main/java/my_app/db/services/ClienteService.java` (validação, cast para ClienteRepository, imports limpos)
+- `src/main/resources/flyway_migrations/V18__add_unique_cpf_cnpj_clientes.sql` (novo)
+- `src/test/java/my_app/db/services/ClienteServiceTest.java` (4 novos testes)
+
+---
+
+## 2026-06-15: ShowPopupForced — popup modal sempre-no-topo para ações destrutivas
+
+**Problema:** Após "Excluir todos os dados", o `ShowPopup` existente era auto-hide e não bloqueava o usuário. Era necessário um popup que ficasse forçadamente sobre todas as janelas, com mensagem clara e botão de ação (fechar app).
+
+**Decisão:** Criar `Components.ShowPopupForced(context, message, buttonText, onButtonClick)`:
+1. Stage com `Modality.APPLICATION_MODAL` + `setAlwaysOnTop(true)` — bloqueia qualquer interação até o botão ser clicado.
+2. `StageStyle.UTILITY` — janela minimalista, sem decoração extra.
+3. Recebe callback para a ação do botão (no caso, `Platform::exit`).
+4. `deletarTodosDados()` simplificado: remove re-insert de defaults, Session nova e event publishing, pois o app será fechado e tudo será recriado na próxima inicialização.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/domain/components/Components.java` (+ShowPopupForced)
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasViewModel.java` (simplificado deletarTodosDados)
+
+---
+
+## 2026-06-15: Navegação no onMount() da HomeScreen com Platform.runLater
+
+**Problema:** `HomeScreen.onMount()` chamava `ctx.navigate("entrar-com-credenciais")` diretamente quando a licença de teste expirava. Como `onMount()` é executado dentro de `Router.resolveWithStage()` (antes de `render()`), e o retorno de `resolveWithStage()` é consumido por `Context.useView()` — que seta o scene do stage — a navegação era anulada: o `useView()` sobrescrevia o scene da AuthScreen com o scene da HomeScreen.
+
+**Decisão:** Envolver `ctx.navigate()` em `Platform.runLater()` para adiar a navegação para depois do pulse atual do JavaFX, permitindo que o scene da HomeScreen seja criado primeiro e depois substituído pela AuthScreen.
+
+**Arquivo alterado:** `src/main/java/my_app/screens/homeScreen/HomeScreen.java:44-46`
+
+---
+
+## 2026-06-15: Opção "Excluir todos os dados" nas Preferências
+
+**Problema:** Não havia forma de limpar todos os dados do sistema sem recriar o banco manualmente.
+
+**Decisão:** Adicionar botão "Excluir todos os dados" na PreferenciasScreen, com fundo vermelho (`#dc2626`) para indicar ação destrutiva. A exclusão:
+1. Usa `Components.ShowAlertAdvice` como confirmação
+2. Fecha o service local (`preferenciasService.close()`)
+3. Chama `DB.closeAllSessions()` que fecha todas as Sessions abertas (inclusive as 6 do HomeScreenViewModel)
+4. Exclui o arquivo `erp.db` do disco via `DB.resolveDbPath()`
+5. Após exclusão, `DB.limparBanco()` executa `clean_db.sql` (DELETE de todas as 16 tabelas + re-insert dos dados padrão da V16). Recria o service, publica `DadosFinanceirosAtualizadosEvent` no EventBus (HomeScreen recalcula os cards zerados) e chama `load()`. Tudo no mesmo stage spawnado, sem navegação.
+
+**Problema resolvido:** O SQLite no Windows utiliza lock de arquivo por conexão. Como cada Service cria uma Session independente, era necessário fechar todas antes de deletar o arquivo. O `DB.java` agora rastreia todas as Sessions criadas via `getPersismSession()` em uma lista estática sincronizada.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasViewModel.java`
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasScreen.java`
+
+---
+
+## 2026-06-15: Adicionado "g" (gramas) às unidades de medida
+
+**Problema:** O perfil Açougue necessita de produtos vendidos em gramas (ex: bacon fatiado, linguiça), mas a lista de unidades não incluía "g".
+
+**Decisão:** Adicionar "g" à `unidadesDeMedidaList` em `Data.java`, entre "KG" e "ml", mantendo a ordem alfabética relativa.
+
+**Arquivo alterado:** `src/main/java/my_app/domain/Data.java:18`
+
+---
+
 ## 2026-06-10: Updater inline (mesmo JAR) via --add-launcher
 
 **Problema:** O updater do plics-sw era referenciado como subprojeto separado (`plics-sw-updater`), mas nunca foi implementado. O app-v1 do projeto `testes-atualizacao-app` demonstrou que é possível ter o updater dentro do próprio JAR usando `--add-launcher` do jpackage.
