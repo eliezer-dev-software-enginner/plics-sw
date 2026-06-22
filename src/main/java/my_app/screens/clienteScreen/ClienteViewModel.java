@@ -62,15 +62,15 @@ public class ClienteViewModel extends ViewModelScreenContract {
     public void populateFromModel() {
         final var data = clienteSelecionado.get();
         if (data == null) return;
-        nome.set(data.getNome());
-        cnpjCpf.set(data.getCpfCnpj());
-        celular.set(data.getCelular());
-        email.set(data.getEmail());
         tipoPessoaSelected.set(
                 Utils.isValidCpf(data.getCpfCnpj())
                         ? Data.tiposPessoaList.getFirst()
                         : Data.tiposPessoaList.getLast()
         );
+        nome.set(data.getNome());
+        cnpjCpf.set(data.getCpfCnpj());
+        celular.set(data.getCelular());
+        email.set(data.getEmail());
     }
 
     private ClienteModel getModelFromFields(ClienteModel model){

@@ -143,6 +143,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
     @Override
     public void clearForm() {
         nome.set("");
+        modoEdicao.set(false);
     }
 
     @Override

@@ -16,9 +16,9 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 | 6 | Todos campos opcionais vazios | Pedro Alves | Fisica | 111.222.333-44 | (vazio) | (vazio) | Salvo com sucesso (nome é único obrigatório). |                     | OK        |
 | 7 | Editar cliente existente | Maria Souza (alterar celular) | Fisica | 123.456.789-09 | (11) 99999-8888 | maria@email.com | Atualizado com sucesso. | | OK        |
 | 8 | Excluir cliente com vendas | (cliente com vínculo) | - | - | - | - | Alerta: "Cliente possui vendas vinculadas". Não exclui. |                     |           |
-| 9 | Cadastro válido - Pessoa Jurídica (PetShop) | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 99876-5432 | contato@petshopamigo.com.br | Salvo com sucesso. |                     |           |
-| 10 | Cadastro válido - Pessoa Física (PetShop) | Ana Beatriz | Fisica | 222.333.444-55 | (21) 99777-6666 | ana@email.com | Salvo com sucesso. |                     |           |
-| 11 | CNPJ duplicado | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 91234-5678 | outro@email.com | Alerta: "CNPJ já cadastrado". |                     |           |
+| 9 | Cadastro válido - Pessoa Jurídica (PetShop) | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 99876-5432 | contato@petshopamigo.com.br | Salvo com sucesso. |                     | OK        |
+| 10 | Cadastro válido - Pessoa Física (PetShop) | Ana Beatriz | Fisica | 222.333.444-55 | (21) 99777-6666 | ana@email.com | Salvo com sucesso. |                     | OK        |
+| 11 | CNPJ duplicado | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 91234-5678 | outro@email.com | Alerta: "CNPJ já cadastrado". |                     | OK         |
 
 ---
 

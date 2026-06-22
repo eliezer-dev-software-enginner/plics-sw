@@ -74,6 +74,7 @@ public interface ContratoTelaCrudV3 {
     default void handleAddOrUpdate() {
         try{
             viewModel().handleAddOrUpdate();
+            viewModel().modoEdicaoState().set(false);
         }catch(Exception e){
             log.error("Erro em handleAddOrUpdate", e);
             UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
