@@ -30,10 +30,5 @@ Após cada tarefa:
 
 Prompt:
 
-Nesse trecho abaixo na PreferenciasScreenViewModel, quero é mostrar um Popup que fica por cima das janelas de forma forçada, talvez precisemos obter a stage principal vinda do context principal da Main.java, veja se eu já possuo algum componente disso no arquivo Components.java.
-No popup quero exibir a mensagem: "Todos os dados foram excluídos com sucesso!" Feche o aplciativo e abra de novo para aplicar as mudanças. 
-E vai ter o botão "Fechar aplicativo".
-
-UI.runOnUi(() -> {
-Components.ShowPopup(ctx, "Todos os dados foram excluídos com sucesso!");
-});
+Em clientes está sendo possível cadastrar clientes com o mesmo cpf e cnpj. Veja se nos testes não teve esse caso de uso. Se não tiver, implemente.
+E garanta de cuidar disso na ClienteService.
