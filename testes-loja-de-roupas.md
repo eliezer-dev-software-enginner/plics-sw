@@ -18,16 +18,16 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
-| 13 | Cadastro válido produto simples | SKU001 | Camiseta Masculina M | UN | Malharia Silva | R$ 15,00 | R$ 39,90 | Masculino | Malharia Silva | 100 | Nao | - | Salvo com sucesso. | | |
-| 14 | Cadastro válido produto perecível | SKU002 | Vestido Feminino Algodão | UN | Tecidos ABC | R$ 35,00 | R$ 89,90 | Feminino | Tecidos ABC | 50 | Sim | 15/12/2026 | Salvo com sucesso. | | |
-| 15 | SKU duplicado | SKU001 | Jaqueta | UN | Avan Calçados | R$ 80,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | Alerta: "Código de barras já cadastrado". | | |
-| 16 | Descrição vazia | SKU003 | (vazio) | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Descrição é obrigatória". | | |
-| 17 | SKU vazio | (vazio) | Produto sem SKU | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Código de barras é obrigatório". | | |
-| 18 | Preço compra maior que venda | SKU004 | Calça Jeans | UN | Tecidos ABC | R$ 100,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | Alerta de margem negativa, mas salva? (Validar comportamento). | | |
-| 19 | Perecível sem validade | SKU005 | Leite | UN | Marca X | R$ 3,00 | R$ 5,00 | Alimentos | Malharia Silva | 50 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
-| 20 | Excluir produto vinculado a venda | (produto com venda) | - | - | - | - | - | - | - | - | - | - | Alerta: "Produto possui vendas vinculadas". | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro                                                                                          | Resultado |
+|---|---------|-----|-----------|-------|-------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|-----------------------------------------------------------------------------------------------|-----------|
+| 13 | Cadastro válido produto simples | SKU001 | Camiseta Masculina M | UN | Malharia Silva | R$ 15,00 | R$ 39,90 | Masculino | Malharia Silva | 100 | Nao | - | Salvo com sucesso. |                                                                                               | ok        |
+| 14 | Cadastro válido produto perecível | SKU002 | Vestido Feminino Algodão | UN | Tecidos ABC | R$ 35,00 | R$ 89,90 | Feminino | Tecidos ABC | 50 | Sim | 15/12/2026 | Salvo com sucesso. | For input string: "1797044400000"                                                             |           |
+| 15 | SKU duplicado | SKU001 | Jaqueta | UN | Avan Calçados | R$ 80,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | Alerta: "Código de barras já cadastrado". | Desmarquei "é perecível" para poder salvar esse produto, e o erro foi semelhante ao de cima. For input string: "1797044400000" |           |
+| 16 | Descrição vazia | SKU003 | (vazio) | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Descrição é obrigatória". |                                                                                               |           |
+| 17 | SKU vazio | (vazio) | Produto sem SKU | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Código de barras é obrigatório". |                                                                                               |           |
+| 18 | Preço compra maior que venda | SKU004 | Calça Jeans | UN | Tecidos ABC | R$ 100,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | Alerta de margem negativa, mas salva? (Validar comportamento). |                                                                                               |           |
+| 19 | Perecível sem validade | SKU005 | Leite | UN | Marca X | R$ 3,00 | R$ 5,00 | Alimentos | Malharia Silva | 50 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". |                                                                                               |           |
+| 20 | Excluir produto vinculado a venda | (produto com venda) | - | - | - | - | - | - | - | - | - | - | Alerta: "Produto possui vendas vinculadas". |                                                                                               |           |
 
 ---
 
