@@ -52,7 +52,7 @@
 - `scripts/create-deb-with-updater.py`: gera DEB com updater via `--add-launcher`
 
 ## Última alteração
-- **Correção de edição em Categoria**: `CategoriaScreenViewModel.handleAddOrUpdate()` verificava `modoEdicao.get()` dentro do `Async.Run()`, mas `ContratoTelaCrudV3` reseta `modoEdicao` para `false` imediatamente após chamar o método. Quando a async task executava, `modoEdicao` já era `false`, então o fluxo caía no `else` (criar) em vez de `if` (atualizar). Fix: capturar `boolean editando` antes do `Async.Run()` e usar o valor capturado. Também corrigido `validarNome()` em `CategoriaService` para usar `Integer` e `.equals()`. Adicionado `CategoriaScreenViewModelTest.deveAtualizarCategoria()`. `clearForm()` agora reseta `modoEdicao`.
+- **Validação de login/senha na PreferenciasScreen**: `PreferenciasViewModel.salvar()` não validava login e senha quando "Habilitar credenciais" estava ativo. Adicionado método `validar()` que retorna mensagem de erro ou null. `salvar()` agora chama `validar()` antes do `Async.Run()` — exibe alerta e retorna sem persistir se a validação falhar. 4 novos testes unitários para `validar()`.
 
 ## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen

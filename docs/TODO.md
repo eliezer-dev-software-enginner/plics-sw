@@ -45,6 +45,12 @@
 - [x] Confirmação com alert antes de excluir
 - [x] Exclusão em todas as 16 tabelas com transação e FK desabilitado
 
+## Concluído (validação login/senha PreferenciasScreen)
+- [x] **PreferenciasViewModel.validar()**: método que retorna mensagem de erro ou null para login/senha quando credenciais habilitadas
+- [x] **PreferenciasViewModel.salvar()**: chama `validar()` antes de `Async.Run()` — exibe alerta e retorna se falhar
+- [x] **PreferenciasViewModelTest**: 4 novos testes para `validar()` (credenciais desabilitadas, login vazio, senha vazia, ambos preenchidos)
+- [x] **testes-gerais.md**: cenários 105 e 106 marcados como OK
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

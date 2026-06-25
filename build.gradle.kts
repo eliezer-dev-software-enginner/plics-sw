@@ -117,6 +117,7 @@ application {
 
 
 tasks.shadowJar {
+    dependsOn(tasks.test)
     archiveBaseName.set(props.getProperty("appName"))
     archiveClassifier.set("")
     mergeServiceFiles() // equivalente ao ServicesResourceTransformer

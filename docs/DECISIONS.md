@@ -1,5 +1,22 @@
 # Decisões Arquiteturais
 
+## 2026-06-25: Validação de login/senha obrigatórios ao habilitar credenciais
+
+**Problema:** Na PreferenciasScreen, ao selecionar "Sim" em "Habilitar credenciais", os campos login e senha não eram validados. Era possível salvar preferências com login vazio ou senha vazia, resultando em credenciais inválidas.
+
+**Decisão:**
+1. Adicionar método `validar()` em `PreferenciasViewModel` que retorna mensagem de erro ou `null`.
+2. `salvar()` chama `validar()` antes do `Async.Run()` — se houver erro, exibe alerta e retorna sem persistir.
+3. Método `validar()` é público para testabilidade direta sem dependência de JavaFX.
+4. Testes: 4 novos casos — `validar()` retorna null com credenciais desabilitadas, retorna erro com login vazio, retorna erro com senha vazia, retorna null com ambos preenchidos.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasViewModel.java` (+validar(), refatorado salvar())
+- `src/test/java/my_app/screens/preferenciasScreen/PreferenciasViewModelTest.java` (+4 testes)
+- `testes-gerais.md` (cenários 105, 106 marcados como OK)
+
+---
+
 ## 2026-06-22: Correção de race condition na edição de Categoria
 
 **Problema:** `CategoriaScreenViewModel.handleAddOrUpdate()` verificava `modoEdicao.get()` dentro de `Async.Run()`. Como `ContratoTelaCrudV3.handleAddOrUpdate()` redefine `modoEdicao = false` imediatamente após chamar `viewModel().handleAddOrUpdate()`, a async task via `modoEdicao = false` e executava o branch `else` (criar) em vez de `if` (atualizar). Resultado: editar uma categoria criava uma nova em vez de atualizar a existente.

@@ -61,12 +61,12 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 ## PreferenciasScreen
 
-| # | Cenário | Habilitar Credenciais | Login | Senha | Efeito Esperado | Erro | Resultado |
-|---|---------|----------------------|-------|-------|-----------------|------|---|
-| 103 | Habilitar credenciais | Sim | admin | admin123 | Salvo. AuthScreen passa a exigir login. | | |
-| 104 | Desabilitar credenciais | Nao | - | - | Salvo. AuthScreen é pulada. | | |
-| 105 | Habilitar com login vazio | Sim | (vazio) | admin123 | Alerta: "Login é obrigatório". | | |
-| 106 | Habilitar com senha vazia | Sim | admin | (vazio) | Alerta: "Senha é obrigatória". | | |
+| # | Cenário | Habilitar Credenciais | Login | Senha | Efeito Esperado | Erro                                               | Resultado |
+|---|---------|----------------------|-------|-------|-----------------|----------------------------------------------------|-----------|
+| 103 | Habilitar credenciais | Sim | admin | admin123 | Salvo. AuthScreen passa a exigir login. |                                                    | ok        |
+| 104 | Desabilitar credenciais | Nao | - | - | Salvo. AuthScreen é pulada. |                                                    | ok         |
+| 105 | Habilitar com login vazio | Sim | (vazio) | admin123 | Alerta: "Login é obrigatório". | Login não era validado. Deixava salvar normalmente. | OK (fix: validar() em PreferenciasViewModel) |
+| 106 | Habilitar com senha vazia | Sim | admin | (vazio) | Alerta: "Senha é obrigatória". | Senha não era validada. Deixava salvar normalmente. | OK (fix: validar() em PreferenciasViewModel) |
 
 ---
 
