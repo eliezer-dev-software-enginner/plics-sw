@@ -51,6 +51,11 @@
 - [x] **PreferenciasViewModelTest**: 4 novos testes para `validar()` (credenciais desabilitadas, login vazio, senha vazia, ambos preenchidos)
 - [x] **testes-gerais.md**: cenários 105 e 106 marcados como OK
 
+## Concluído (padronização CategoriaScreen entre .md)
+- [x] **testes-gerais.md**: removidos testes de perfil (#33 Bovinos, #36 Masculino) — só validação genérica
+- [x] **testes-acougue.md**: adicionada seção CategoriaScreen (#33 Bovinos)
+- [x] **testes.md**: link CategoriaScreen listando todos os perfis
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

@@ -26,12 +26,10 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 | #  | Cenário                        | Nome | Efeito Esperado | Erro | Resultado                                                    |
 |----|--------------------------------|------|-----------------|------|--------------------------------------------------------------|
-| 33 | Cadastro válido - Açougue      | Bovinos | Salvo com sucesso. |      | OK                                                           |
-| 35 | Nome vazio                     | (vazio) | Alerta: "Nome é obrigatório". |      | OK                                                           |
-| 36 | Cadastro válido - Loja de Roupas             | Masculino |  Salvo com sucesso. |      | OK                                                           |
-| 37 | Excluir categoria com produtos | (categoria vinculada) | Alerta: "Categoria possui produtos vinculados". |      |                                                              |
-| 38 | Editar nome                    | Masculino -> Moda Masculina | Atualizado com sucesso. | OK   | Fix: race condition no modoEdicao dentro de Async.Run |
-| 39 | Nome duplicado                 | Masculino | Alerta: "Categoria já existe". | OK    |                                                              |
+| 33 | Nome vazio                     | (vazio) | Alerta: "Nome é obrigatório". |      | OK                                                           |
+| 34 | Excluir categoria com produtos | (categoria vinculada) | Alerta: "Categoria possui produtos vinculados". |      |                                                              |
+| 35 | Editar nome                    | Masculino -> Moda Masculina | Atualizado com sucesso. | OK   | Fix: race condition no modoEdicao dentro de Async.Run |
+| 36 | Nome duplicado                 | Masculino | Alerta: "Categoria já existe". | OK    |                                                              |
 
 ---
 

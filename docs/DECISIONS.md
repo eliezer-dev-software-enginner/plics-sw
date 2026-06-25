@@ -1,5 +1,23 @@
 # Decisões Arquiteturais
 
+## 2026-06-25: Padronização dos testes de CategoriaScreen entre arquivos .md
+
+**Problema:** `testes-gerais.md` misturava testes de validação genérica de CategoriaScreen com exemplos específicos de perfil (Bovinos/Açougue, Masculino/Loja), enquanto cada perfil também tinha sua própria seção CategoriaScreen — causando duplicação ("Masculino" em dois lugares) e lacuna (Açougue sem seção própria).
+
+**Decisão:**
+1. `testes-gerais.md#categoriascreen`: manter apenas testes de validação genérica (nome vazio, excluir com produtos, editar, duplicado).
+2. Cada perfil mantém sua própria seção CategoriaScreen com testes "Cadastro válido" específicos.
+3. Removido #33 (Bovinos) e #36 (Masculino) de `testes-gerais.md`.
+4. Adicionado #33 (Bovinos) em `testes-acougue.md#categoriascreen` (seção que não existia).
+5. `testes.md` atualizado para listar todos os perfis com CategoriaScreen.
+
+**Arquivos alterados:**
+- `testes-gerais.md` (removido #33/#36, reordenado #35→#33, #37→#34, #38→#35, #39→#36)
+- `testes-acougue.md` (+seção CategoriaScreen com #33 Bovinos)
+- `testes.md` (link CategoriaScreen agora listando todos os perfis)
+
+---
+
 ## 2026-06-25: Validação de login/senha obrigatórios ao habilitar credenciais
 
 **Problema:** Na PreferenciasScreen, ao selecionar "Sim" em "Habilitar credenciais", os campos login e senha não eram validados. Era possível salvar preferências com login vazio ou senha vazia, resultando em credenciais inválidas.
