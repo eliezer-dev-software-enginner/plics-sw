@@ -1,5 +1,21 @@
 # Decisões Arquiteturais
 
+## 2026-06-26: Correção do tipo da coluna `validade` em produtos (INTEGER → REAL)
+
+**Problema:** Ao cadastrar produto perecível com data de validade (ex: 15/12/2026), o valor epoch millis `1797044400000L` não cabia em `Integer`. Persism mapeia `INTEGER` do SQLite para `Integer` Java, e `Converter.convert()` tenta `Integer.parseInt("" + longValue)`, lançando `NumberFormatException: For input string: "1797044400000"`. Mesmo erro ocorria ao desmarcar "É perecível?" se o DatePicker ainda tivesse data residual.
+
+**Decisão:**
+1. Coluna `validade` alterada de `INTEGER` para `REAL` na migration V1 e V20. `REAL` é o mesmo tipo usado por `vendas.data_validade` e `compras.data_validade`, que também armazenam epoch millis em `Long` — Persism mapeia `REAL` para `Double`, e `Converter.convert()` trata `Long → Double` sem erro.
+2. `fillModelFromForm()` no `ProdutoScreenViewModel` só seta `validade` no model quando `perecivelSelected = "Sim"`. Impede que data residual do DatePicker seja enviada ao salvar com perecível desmarcado.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreenViewModel.java` (condicional no setValidade)
+- `src/main/resources/flyway_migrations/V1__criar_produtos.sql` (validade INTEGER → REAL)
+- `src/main/resources/flyway_migrations/V20__fix_validade_type_produtos.sql` (migração para bancos existentes)
+- `testes-loja-de-roupas.md` (cenários 14, 15 marcados como corrigidos)
+
+---
+
 ## 2026-06-25: Padronização dos testes de CategoriaScreen entre arquivos .md
 
 **Problema:** `testes-gerais.md` misturava testes de validação genérica de CategoriaScreen com exemplos específicos de perfil (Bovinos/Açougue, Masculino/Loja), enquanto cada perfil também tinha sua própria seção CategoriaScreen — causando duplicação ("Masculino" em dois lugares) e lacuna (Açougue sem seção própria).

@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS produtos (
+ALTER TABLE produtos RENAME TO produtos_old;
+
+CREATE TABLE produtos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     codigo_barras TEXT UNIQUE NOT NULL,
     descricao TEXT,
@@ -17,4 +19,8 @@ CREATE TABLE IF NOT EXISTS produtos (
     dataCriacao TIMESTAMP,
     total_liquido REAL NOT NULL,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
-)
+);
+
+INSERT INTO produtos SELECT * FROM produtos_old;
+
+DROP TABLE produtos_old

@@ -62,6 +62,13 @@
 - [ ] Publicar megalodonte-base modificado (com suporte a `run(args, ...)`) no maven local se ainda não estiver
 - [ ] Configurar GitHub Releases para plics-sw com assets .msi
 
+## Concluído (Correção validade produtos — INTEGER → REAL)
+- [x] **Root cause**: Persism mapeia `INTEGER` SQLite → `Integer` Java; `Converter.convert()` tenta `Integer.parseInt("1797044400000")` e lança `NumberFormatException`
+- [x] **V1 schema**: `validade INTEGER` → `validade REAL` (mesmo padrão de `vendas.data_validade` e `compras.data_validade`)
+- [x] **V20 migration**: recria tabela `produtos` com `validade REAL` para bancos existentes
+- [x] **`fillModelFromForm()`**: condicional `"Sim".equals(perecivelSelected.get())` antes de setar validade — evita data residual do DatePicker ao desmarcar "É perecível?"
+- [x] **testes-loja-de-roupas.md**: cenários 14 e 15 documentados com erro — erro resolvido
+
 ## Concluído (CPF/CNPJ duplicado)
 - [x] **ClienteRepository.buscarPorCpfCnpj()**: busca cliente por CPF/CNPJ (padrão `ProdutoRepository.buscarPorCodigoBarras`)
 - [x] **ClienteService.validarCampos()**: valida que CPF/CNPJ não está em uso por outro cliente (criação e atualização)

@@ -52,7 +52,8 @@
 - `scripts/create-deb-with-updater.py`: gera DEB com updater via `--add-launcher`
 
 ## Última alteração
-- **Validação de login/senha na PreferenciasScreen**: `PreferenciasViewModel.salvar()` não validava login e senha quando "Habilitar credenciais" estava ativo. Adicionado método `validar()` que retorna mensagem de erro ou null. `salvar()` agora chama `validar()` antes do `Async.Run()` — exibe alerta e retorna sem persistir se a validação falhar. 4 novos testes unitários para `validar()`.
+- **Correção do erro "For input string: 1797044400000" em produtos perecíveis**: A coluna `validade` da tabela `produtos` era `INTEGER`, mas Persism mapeia `INTEGER` do SQLite para `Integer` em Java. Como o valor armazenado é epoch millis (Long), o `Converter.convert()` do Persism tentava `Integer.parseInt("1797044400000")`, lançando `NumberFormatException`. Alterado para `REAL` (mesmo tipo usado por `vendas.data_validade` e `compras.data_validade`), que Persism mapeia para `Double` — compatível com `Long`. Adicionada migration V20 para converter tabelas existentes.
+- **`fillModelFromForm()` no ProdutoScreenViewModel**: Só seta `validade` no model quando perecível é "Sim". Evita que data residual do DatePicker seja salva ao desmarcar "É perecível?".
 
 ## Screens refatoradas
 - categoriaScreen, clienteScreen, comprasScreen, empresaScreen, fornecedorScreen

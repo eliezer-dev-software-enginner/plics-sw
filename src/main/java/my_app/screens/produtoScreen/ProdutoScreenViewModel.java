@@ -219,7 +219,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         model.setObservacoes(observacoes.get());
         model.setImagem(imagem.get());
         model.setMarca(marca.get());
-        model.setValidade(validade.isNull() ? null : DateUtils.localDateParaMillis(validade.get()));
+        model.setValidade("Sim".equals(perecivelSelected.get()) && !validade.isNull() ? DateUtils.localDateParaMillis(validade.get()) : null);
         model.setGarantia(garantia.get());
         model.setComissao(comissao.get());
         model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
