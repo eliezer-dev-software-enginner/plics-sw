@@ -34,6 +34,11 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 | 44 | Cadastro válido (PetShop) | Purina Pet | 44.444.444/0001-44 | (21) 95555-4444 | - | purina@pet.com | RJ | Rio de Janeiro | - | - | - | - | Salvo com sucesso. | | |
 | 45 | Email inválido (PetShop) | Royal Canin | 55.555.555/0001-55 | (21) 94444-3333 | - | email-errado | RJ | Rio de Janeiro | - | - | - | - | Alerta: "Email inválido". | | |
 | 46 | Cadastro válido (Mercado) | Alimentos Brasil | 66.666.666/0001-66 | (61) 93333-2222 | - | - | DF | Brasília | - | - | - | - | Salvo com sucesso. | | |
+| 47 | Cadastro válido (Loja Roupas) | Tecidos ABC | 77.777.777/0001-77 | (11) 96666-5555 | - | tecidos@abc.com | SP | São Paulo | - | - | - | - | Salvo com sucesso. | | |
+| 48 | Cadastro válido (PetShop) | PetBrasil | 88.888.888/0001-88 | (21) 93333-2222 | - | pet@brasil.com | RJ | Rio de Janeiro | - | - | - | - | Salvo com sucesso. | | |
+| 49 | Cadastro válido (Lanchonete) | Distribuidora Horizonte | 99.999.999/0001-99 | (61) 92222-1111 | - | horizonte@dist.com | DF | Brasília | - | - | - | - | Salvo com sucesso. | | |
+| 50 | Cadastro válido (Lanchonete) | RefriMax | 10.111.111/0001-11 | (61) 91111-0000 | - | refri@max.com | DF | Brasília | - | - | - | - | Salvo com sucesso. | | |
+| 51 | Cadastro válido (Açougue) | Frigorífico Paraná | 12.222.222/0001-22 | (41) 90000-1111 | - | frig@parana.com | PR | Curitiba | - | - | - | - | Salvo com sucesso. | | |
 
 ---
 
