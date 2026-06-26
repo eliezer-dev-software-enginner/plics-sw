@@ -29,6 +29,4 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-
-Em clientes está sendo possível cadastrar clientes com o mesmo cpf e cnpj. Veja se nos testes não teve esse caso de uso. Se não tiver, implemente.
-E garanta de cuidar disso na ClienteService.
+corrija os erros relatado no teste de roupas.

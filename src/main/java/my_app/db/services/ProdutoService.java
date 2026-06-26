@@ -24,6 +24,9 @@ public class ProdutoService extends BaseService<ProdutoModel> {
     @Override
     public ProdutoModel salvar(ProdutoModel model) throws SQLException {
         validar(model);
+
+        var produtoModel = produtoRepository.buscarPorCodigoBarras(model.getCodigoBarras().trim());
+        if(produtoModel != null)throw new IllegalArgumentException("Código de barras já cadastrado");
         model.setDataCriacao(LocalDateTime.now());
         return repository.salvar(model);
     }
