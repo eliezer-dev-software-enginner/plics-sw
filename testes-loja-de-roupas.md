@@ -31,11 +31,6 @@
 
 ---
 
-## CategoriaScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 30 | Cadastro válido - Loja Roupas | Masculino | Salvo com sucesso. | | |
 
 ---
 

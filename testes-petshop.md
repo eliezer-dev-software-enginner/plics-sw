@@ -16,14 +16,6 @@
 
 ---
 
-## CategoriaScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 31 | Cadastro válido - PetShop | Cachorros | Salvo com sucesso. | | |
-| 110 | Cadastro categoria Gatos | Gatos | Salvo com sucesso. | | |
-| 111 | Cadastro categoria Aves | Aves | Salvo com sucesso. | | |
-| 112 | Cadastro categoria Peixes | Peixes | Salvo com sucesso. | | |
 
 ---
 

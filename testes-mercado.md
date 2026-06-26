@@ -16,11 +16,6 @@
 
 ---
 
-## CategoriaScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 34 | Cadastro válido - Mercado | Alimentos | Salvo com sucesso. | | |
 
 ---
 

@@ -27,11 +27,6 @@
 
 ---
 
-## CategoriaScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 32 | Cadastro válido - Lanchonete | Bebidas | Salvo com sucesso. | | |
 
 ---
 

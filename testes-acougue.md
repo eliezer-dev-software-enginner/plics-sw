@@ -28,11 +28,6 @@
 
 ---
 
-## CategoriaScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|-----------|
-| 33 | Cadastro válido - Açougue | Bovinos | Salvo com sucesso. | | OK |
 
 ---
 
