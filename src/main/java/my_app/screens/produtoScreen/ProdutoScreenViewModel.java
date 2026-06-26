@@ -150,10 +150,21 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         });
     }
 
+    public String validar() {
+        if (perecivelSelected.get().equals("Sim") && validade.isNull()) {
+            return "Escolha a data de validade";
+        }
+        if (perecivelSelected.get().equals("Sim") && !validade.isNull() && validade.get().isBefore(LocalDate.now())) {
+            return "A data de validade deve ser maior ou igual à data atual";
+        }
+        return null;
+    }
+
     @Override
     public void handleAddOrUpdate() {
-        if (perecivelSelected.get().equals("Sim") && validade.isNull()) {
-            Components.ShowAlertError("Escolha a data de validade");
+        var erro = validar();
+        if (erro != null) {
+            Components.ShowAlertError(erro);
             return;
         }
 
