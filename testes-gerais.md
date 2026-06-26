@@ -39,6 +39,7 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 | 49 | Cadastro válido (Lanchonete) | Distribuidora Horizonte | 99.999.999/0001-99 | (61) 92222-1111 | - | horizonte@dist.com | DF | Brasília | - | - | - | - | Salvo com sucesso. | | |
 | 50 | Cadastro válido (Lanchonete) | RefriMax | 10.111.111/0001-11 | (61) 91111-0000 | - | refri@max.com | DF | Brasília | - | - | - | - | Salvo com sucesso. | | |
 | 51 | Cadastro válido (Açougue) | Frigorífico Paraná | 12.222.222/0001-22 | (41) 90000-1111 | - | frig@parana.com | PR | Curitiba | - | - | - | - | Salvo com sucesso. | | |
+| 52 | Excluir fornecedor vinculado a produto | Malharia Silva | - | - | - | - | - | - | - | - | - | - | Alerta: "Fornecedor possui produtos vinculados". | | |
 
 ---
 
