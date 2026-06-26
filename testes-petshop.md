@@ -33,12 +33,6 @@
 
 ---
 
-## FornecedorScreen
-
-| # | Cenário | Nome Fantasia | CNPJ | Celular | Email | Cidade | Efeito Esperado | Erro | Resultado |
-|---|---------|--------------|------|---------|-------|--------|-----------------|------|---|
-| 44 | Cadastro válido | Purina Pet | 44.444.444/0001-44 | (21) 95555-4444 | purina@pet.com | Rio de Janeiro | Salvo com sucesso. | | |
-| 45 | Email inválido | Royal Canin | 55.555.555/0001-55 | (21) 94444-3333 | email-errado | Rio de Janeiro | Alerta: "Email inválido". | | |
 
 ---
 

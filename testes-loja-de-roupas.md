@@ -34,15 +34,6 @@
 
 ---
 
-## FornecedorScreen
-
-| # | Cenário | Nome Fantasia | CNPJ | Celular | IE | Email | UF | Cidade | Bairro | Rua | Número | Obs | Efeito Esperado | Erro | Resultado |
-|---|---------|--------------|------|---------|----|-------|----|--------|--------|-----|--------|-----|-----------------|------|---|
-| 39 | Cadastro completo | Malharia Silva | 11.111.111/0001-11 | (11) 98888-7777 | 111.222.333.444 | silva@malharia.com | SP | São Paulo | Brás | Rua da Malharia | 123 | - | Salvo com sucesso. | | |
-| 40 | Cadastro mínimo obrigatório | Avan Calçados | 22.222.222/0001-22 | (11) 97777-6666 | - | - | SP | São Paulo | - | - | - | - | Salvo com sucesso (nome e CNPJ obrigatórios?). | | |
-| 41 | Nome vazio | (vazio) | 33.333.333/0001-33 | - | - | - | - | - | - | - | - | - | Alerta: "Nome é obrigatório". | | |
-| 42 | CNPJ duplicado | (CNPJ já existente) | 11.111.111/0001-11 | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". | | |
-| 43 | Editar dados do fornecedor | Malharia Silva (novo telefone) | - | (11) 99999-0000 | - | - | - | - | - | - | - | - | Atualizado com sucesso. | | |
 
 ---
 

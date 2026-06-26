@@ -19,11 +19,6 @@
 
 ---
 
-## FornecedorScreen
-
-| # | Cenário | Nome Fantasia | CNPJ | Celular | Cidade | Efeito Esperado | Erro | Resultado |
-|---|---------|--------------|------|---------|--------|-----------------|------|---|
-| 46 | Cadastro válido | Alimentos Brasil | 66.666.666/0001-66 | (61) 93333-2222 | Brasília | Salvo com sucesso. | | |
 
 ---
 

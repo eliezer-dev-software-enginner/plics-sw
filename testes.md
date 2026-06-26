@@ -25,7 +25,7 @@ Cada arquivo contém os testes específicos daquele perfil, incluindo dados de e
 1. [ClienteScreen](testes-gerais.md#clientescreen) (tests genéricos)
 2. [ProdutoScreen](testes-loja-de-roupas.md#produtoscreen) (Loja Roupas) / [PetShop](testes-petshop.md#produtoscreen) / [Lanchonete](testes-lanchonete.md#produtoscreen) / [Açougue](testes-acougue.md#produtoscreen)
 3. [CategoriaScreen](testes-gerais.md#categoriascreen) (validação genérica)
-4. [FornecedorScreen](testes-loja-de-roupas.md#fornecedorscreen) (Loja Roupas) / [PetShop](testes-petshop.md#fornecedorscreen) / [Mercado](testes-mercado.md#fornecedorscreen)
+4. [FornecedorScreen](testes-gerais.md#fornecedorscreen) (validação genérica)
 5. [VendaMercadoriaScreen](testes-loja-de-roupas.md#vendamercadoriascreen) (Loja Roupas) / [PetShop](testes-petshop.md#vendamercadoriascreen) / [Lanchonete](testes-lanchonete.md#vendamercadoriascreen) / [Açougue](testes-acougue.md#vendamercadoriascreen)
 6. [ComprasScreen](testes-loja-de-roupas.md#comprasscreen) (Loja Roupas) / [PetShop](testes-petshop.md#comprasscreen) / [Açougue](testes-acougue.md#comprasscreen)
 7. [ComprasAPagarScreen](testes-loja-de-roupas.md#comprasapagarscreen) (Loja Roupas) / [PetShop](testes-petshop.md#comprasapagarscreen)

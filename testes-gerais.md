@@ -22,6 +22,21 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 ---
 
+## FornecedorScreen
+
+| # | Cenário | Nome Fantasia | CNPJ | Celular | IE | Email | UF | Cidade | Bairro | Rua | Número | Obs | Efeito Esperado | Erro | Resultado |
+|---|---------|--------------|------|---------|----|-------|----|--------|--------|-----|--------|-----|-----------------|------|---|
+| 39 | Cadastro completo (Loja Roupas) | Malharia Silva | 11.111.111/0001-11 | (11) 98888-7777 | 111.222.333.444 | silva@malharia.com | SP | São Paulo | Brás | Rua da Malharia | 123 | - | Salvo com sucesso. | | |
+| 40 | Cadastro mínimo obrigatório (Loja Roupas) | Avan Calçados | 22.222.222/0001-22 | (11) 97777-6666 | - | - | SP | São Paulo | - | - | - | - | Salvo com sucesso (nome e CNPJ obrigatórios?). | | |
+| 41 | Nome vazio | (vazio) | 33.333.333/0001-33 | - | - | - | - | - | - | - | - | - | Alerta: "Nome é obrigatório". | | |
+| 42 | CNPJ duplicado | (CNPJ já existente) | 11.111.111/0001-11 | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". | | |
+| 43 | Editar dados do fornecedor | Malharia Silva (novo telefone) | - | (11) 99999-0000 | - | - | - | - | - | - | - | - | Atualizado com sucesso. | | |
+| 44 | Cadastro válido (PetShop) | Purina Pet | 44.444.444/0001-44 | (21) 95555-4444 | - | purina@pet.com | RJ | Rio de Janeiro | - | - | - | - | Salvo com sucesso. | | |
+| 45 | Email inválido (PetShop) | Royal Canin | 55.555.555/0001-55 | (21) 94444-3333 | - | email-errado | RJ | Rio de Janeiro | - | - | - | - | Alerta: "Email inválido". | | |
+| 46 | Cadastro válido (Mercado) | Alimentos Brasil | 66.666.666/0001-66 | (61) 93333-2222 | - | - | DF | Brasília | - | - | - | - | Salvo com sucesso. | | |
+
+---
+
 ## CategoriaScreen
 
 | #  | Cenário                        | Nome | Efeito Esperado | Erro | Resultado                                                    |
