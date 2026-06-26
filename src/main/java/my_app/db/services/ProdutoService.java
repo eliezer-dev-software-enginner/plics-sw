@@ -39,7 +39,7 @@ public class ProdutoService extends BaseService<ProdutoModel> {
 
     private void validar(ProdutoModel model) {
         if (model.getCodigoBarras() == null || model.getCodigoBarras().isBlank())
-            throw new IllegalArgumentException("Adicione código ao produto");
+            throw new IllegalArgumentException("Código de barras/SKU é obrigatório");
         if (model.getDescricao() == null || model.getDescricao().isBlank())
             throw new IllegalArgumentException("Adicione descrição ao produto");
         if (model.getUnidade() == null || model.getUnidade().isBlank())
