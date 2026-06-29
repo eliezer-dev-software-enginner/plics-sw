@@ -56,6 +56,15 @@
 - [x] **testes-acougue.md**: adicionada seção CategoriaScreen (#33 Bovinos)
 - [x] **testes.md**: link CategoriaScreen listando todos os perfis
 
+## Concluído (produtos sem cadastro válido)
+- [x] **testes-loja-de-roupas.md**: #18 SKU004→SKU006 (libera SKU004). Adicionados #143 (Jaqueta SKU003) e #144 (Calça Jeans SKU004) como cadastros válidos.
+- [x] **testes-mercado.md**: Adicionada seção ProdutoScreen com #145 (Arroz 5kg), #146 (Feijão 1kg), #147 (Óleo 900ml) para PDVScreen.
+- [x] **Demais perfis verificados (PetShop, Lanchonete, Açougue)**: todos os produtos usados em vendas já possuíam cadastro válido.
+
+## Concluído (clientes de perfil em testes-gerais.md)
+- [x] **testes-gerais.md ClienteScreen**: adicionados 12 clientes (#12-#23) que estavam faltando — João Pedro, Carla Lima, Carlos Mendes, Sofia Rocha, Luana Costa, Thiago Santos, José Moura, Renata Oliveira, Paulo Sérgio, Fernanda Lima, Ricardo Gomes, Juliana Costa
+- [x] **Fornecedores verificados**: todos os fornecedores usados em testes já estavam definidos — sem alteração necessária
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

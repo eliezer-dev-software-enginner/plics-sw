@@ -18,7 +18,19 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 | 8 | Excluir cliente com vendas | (cliente com vínculo) | - | - | - | - | Alerta: "Cliente possui vendas vinculadas". Não exclui. |                     |           |
 | 9 | Cadastro válido - Pessoa Jurídica (PetShop) | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 99876-5432 | contato@petshopamigo.com.br | Salvo com sucesso. |                     | OK        |
 | 10 | Cadastro válido - Pessoa Física (PetShop) | Ana Beatriz | Fisica | 222.333.444-55 | (21) 99777-6666 | ana@email.com | Salvo com sucesso. |                     | OK        |
-| 11 | CNPJ duplicado | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 91234-5678 | outro@email.com | Alerta: "CNPJ já cadastrado". |                     | OK         |
+| 11 | CNPJ duplicado | PetShop Amigo | Juridica | 98.765.432/0001-10 | (21) 91234-5678 | outro@email.com | Alerta: "CNPJ já cadastrado". |                     | OK        |
+| 12 | Cadastro válido (Loja Roupas) | João Pedro | Fisica | 987.654.321-01 | (11) 91234-5678 | joao.pedro@email.com | Salvo com sucesso. | | ok        |
+| 13 | Cadastro válido (Loja Roupas) | Carla Lima | Fisica | 333.444.555-66 | (11) 92345-6789 | carla.lima@email.com | Salvo com sucesso. | | ok        |
+| 14 | Cadastro válido (PetShop) | Carlos Mendes | Fisica | 444.555.666-77 | (21) 93456-7890 | carlos.mendes@email.com | Salvo com sucesso. | |           |
+| 15 | Cadastro válido (PetShop) | Sofia Rocha | Fisica | 555.666.777-89 | (21) 94567-8901 | sofia.rocha@email.com | Salvo com sucesso. | |           |
+| 16 | Cadastro válido (Lanchonete) | Luana Costa | Fisica | 666.777.888-99 | (31) 95678-9012 | luana.costa@email.com | Salvo com sucesso. | |           |
+| 17 | Cadastro válido (Lanchonete) | Thiago Santos | Fisica | 777.888.999-00 | (31) 96789-0123 | thiago.santos@email.com | Salvo com sucesso. | |           |
+| 18 | Cadastro válido (Açougue) | José Moura | Fisica | 555.666.777-88 | (41) 97890-1234 | jose.moura@email.com | Salvo com sucesso. | |           |
+| 19 | Cadastro válido (Açougue) | Renata Oliveira | Fisica | 999.000.111-22 | (41) 98901-2345 | renata.oliveira@email.com | Salvo com sucesso. | |           |
+| 20 | Cadastro válido (Açougue) | Paulo Sérgio | Fisica | 101.202.303-44 | (41) 99012-3456 | paulo.sergio@email.com | Salvo com sucesso. | |           |
+| 21 | Cadastro válido (Mercado) | Fernanda Lima | Fisica | 111.222.333-45 | (61) 90123-4567 | fernanda.lima@email.com | Salvo com sucesso. | |           |
+| 22 | Cadastro válido (Mercado) | Ricardo Gomes | Fisica | 222.333.444-56 | (61) 91234-5678 | ricardo.gomes@email.com | Salvo com sucesso. | |           |
+| 23 | Cadastro válido (Mercado) | Juliana Costa | Fisica | 303.404.505-66 | (61) 92345-6789 | juliana.costa@email.com | Salvo com sucesso. | |           |
 
 ---
 

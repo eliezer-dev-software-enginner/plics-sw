@@ -51,7 +51,18 @@
 - `scripts/create-msi-with-updater.py`: gera MSI com updater via `--add-launcher`
 - `scripts/create-deb-with-updater.py`: gera DEB com updater via `--add-launcher`
 
-## Última alteração
+## Últimas alterações
+
+### 2026-06-29: Produtos sem cadastro válido em testes de venda
+- `testes-loja-de-roupas.md`: SKU004 do #18 alterado para SKU006 (libera SKU004). Adicionados #143 (Jaqueta SKU003) e #144 (Calça Jeans SKU004) como cadastros válidos.
+- `testes-mercado.md`: Adicionada seção ProdutoScreen com #145 (Arroz 5kg), #146 (Feijão 1kg), #147 (Óleo 900ml).
+- Demais perfis verificados — nenhum outro arquivo .md apresenta o mesmo problema.
+
+### 2026-06-29: Clientes de perfil sem cadastro válido em testes-gerais.md
+- `testes-gerais.md` ClienteScreen: adicionados 12 clientes (#12-#23)
+
+---
+
 - **Correção do erro "For input string: 1797044400000" em produtos perecíveis**: A coluna `validade` da tabela `produtos` era `INTEGER`, mas Persism mapeia `INTEGER` do SQLite para `Integer` em Java. Como o valor armazenado é epoch millis (Long), o `Converter.convert()` do Persism tentava `Integer.parseInt("1797044400000")`, lançando `NumberFormatException`. Alterado para `REAL` (mesmo tipo usado por `vendas.data_validade` e `compras.data_validade`), que Persism mapeia para `Double` — compatível com `Long`. Adicionada migration V20 para converter tabelas existentes.
 - **`fillModelFromForm()` no ProdutoScreenViewModel**: Só seta `validade` no model quando perecível é "Sim". Evita que data residual do DatePicker seja salva ao desmarcar "É perecível?".
 
@@ -71,3 +82,4 @@
 - `testes.md` criado na raiz do projeto com 104 casos de teste distribuídos por 14 telas
 - 5 perfis de negócio simulados: Loja de Roupas, PetShop, Lanchonete, Açougue, Mercado
 - Cada caso de teste inclui campo para registro de erro/inconsistência
+- `testes-gerais.md` ClienteScreen: adicionados 12 clientes faltantes (#12-#23) que eram referenciados em testes de perfil mas não tinham cadastro válido definido (João Pedro, Carla Lima, Carlos Mendes, Sofia Rocha, Luana Costa, Thiago Santos, José Moura, Renata Oliveira, Paulo Sérgio, Fernanda Lima, Ricardo Gomes, Juliana Costa)

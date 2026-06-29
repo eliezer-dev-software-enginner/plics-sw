@@ -1,5 +1,33 @@
 # Decisões Arquiteturais
 
+## 2026-06-29: Produtos usados em vendas sem cadastro válido nos testes .md
+
+**Problema:** Em `testes-loja-de-roupas.md`, produtos como Jaqueta (SKU003) e Calça Jeans (SKU004) eram usados em testes de VendaMercadoriaScreen, ComprasScreen e PDVScreen, mas só existiam em testes negativos (#15 SKU duplicado, #16 descrição vazia, #18 preço compra > venda) que não os criavam. Em `testes-mercado.md`, não havia seção ProdutoScreen — os produtos Arroz, Feijão e Óleo usados em PDVScreen não eram definidos.
+
+**Decisão:**
+1. `testes-loja-de-roupas.md`: SKU004 do teste #18 alterado para SKU006 (libera SKU004 para uso). Adicionados #143 (Jaqueta SKU003) e #144 (Calça Jeans SKU004) como cadastros válidos.
+2. `testes-mercado.md`: Adicionada seção ProdutoScreen com #145 (Arroz 5kg), #146 (Feijão 1kg), #147 (Óleo 900ml) como cadastros válidos.
+3. Demais perfis (PetShop, Lanchonete, Açougue) verificados — todos os produtos usados em testes já possuíam cadastro válido.
+
+**Arquivos alterados:**
+- `testes-loja-de-roupas.md` (#18 SKU004→SKU006, +2 linhas #143-#144)
+- `testes-mercado.md` (+seção ProdutoScreen com #145-#147)
+
+---
+
+## 2026-06-29: Clientes de perfil sem cadastro válido em testes-gerais.md
+
+**Problema:** Clientes listados nos headers de perfis (ex: "João Pedro" em Loja de Roupas) eram usados em testes de Venda, PDV, OS etc. mas não possuíam um cadastro válido definido em `testes-gerais.md` ClienteScreen. O usuário não tinha instrução de como criá-los antes de usá-los.
+
+**Decisão:**
+1. Adicionar 12 novos cadastros válidos (#12-#23) em `testes-gerais.md` ClienteScreen, um para cada cliente faltante, com dados consistentes (CPF único, celular, email).
+2. Fornecedores não apresentam o mesmo problema — todos os fornecedores usados em testes já estão definidos em `testes-gerais.md` FornecedorScreen.
+
+**Arquivos alterados:**
+- `testes-gerais.md` (+12 linhas na tabela ClienteScreen)
+
+---
+
 ## 2026-06-26: Correção do tipo da coluna `validade` em produtos (INTEGER → REAL)
 
 **Problema:** Ao cadastrar produto perecível com data de validade (ex: 15/12/2026), o valor epoch millis `1797044400000L` não cabia em `Integer`. Persism mapeia `INTEGER` do SQLite para `Integer` Java, e `Converter.convert()` tenta `Integer.parseInt("" + longValue)`, lançando `NumberFormatException: For input string: "1797044400000"`. Mesmo erro ocorria ao desmarcar "É perecível?" se o DatePicker ainda tivesse data residual.
