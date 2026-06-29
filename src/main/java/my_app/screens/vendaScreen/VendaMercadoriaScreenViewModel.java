@@ -334,6 +334,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         tipoPagamentoSelecionado.set(Data.tiposPagamentoList.get(1));
         pcVenda.set("0");
         dataValidade.set(null);
+        descontoEmDinheiro.set("0");
         if (!clientes.get().isEmpty()) {
             clienteSelected.set(clientes.get().getFirst());
         }
