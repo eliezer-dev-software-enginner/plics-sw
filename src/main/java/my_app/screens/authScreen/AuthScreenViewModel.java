@@ -18,7 +18,7 @@ public class AuthScreenViewModel {
 
     private static final Logger log = LoggerFactory.getLogger(AuthScreenViewModel.class);
     public static final List<String> LICENCAS_PRODUCAO = List.of(
-            "984e2bb76c7b627641b6b7dc080f8e23",
+            "984e2bb76c7b627641b6b7dc080f8e23",//TODO: REMOVER NA 1.0.7
             "5fZl2OI7f2ksjc8YRzBRR0ycjsCzycXyrX",
             "o2OJI2OJ7EOSGXiUju6WE8zUZef1pZcfGSiqMk",
             "Fh0OofMRVVE30elP6KvES4AuBBEYcK8qZIyXzL",
