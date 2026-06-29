@@ -232,6 +232,18 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             return;
         }
 
+        var qtdStr = qtd.get().trim();
+        if (qtdStr.isEmpty()) {
+            Components.ShowAlertError("Quantidade é obrigatória!");
+            return;
+        }
+        try {
+            new BigDecimal(qtdStr);
+        } catch (NumberFormatException e) {
+            Components.ShowAlertError("Quantidade inválida!");
+            return;
+        }
+
         Async.Run(() -> {
             if (modoEdicao.get()) {
                 final var selecionado = vendaSelected.get();
