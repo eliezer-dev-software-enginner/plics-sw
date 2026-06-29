@@ -30,5 +30,4 @@ Após cada tarefa:
 
 Prompt:
 
-Em clientes está sendo possível cadastrar clientes com o mesmo cpf e cnpj. Veja se nos testes não teve esse caso de uso. Se não tiver, implemente.
-E garanta de cuidar disso na ClienteService.
+Eu identifiquei um erro ao fazer testes em Categoria, relatei lá no arquivo testes-gerais.md. Quero que você identifique o que está causando isso e adicione teste unitário para cobrir esse problema que houve. E após isso quero que você adicione às regras que você deve sempre analisar os arquivos de testes ".md" por erros relatados para poder resolver na sessão atual. Paramos no meio na última sessão.
