@@ -29,4 +29,4 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-corrija os erros relatado no teste de roupas.
+estou fazendo os testes manuais cadastrados em "testes-loja-de-roupas.md" estou agora na parte das vendas. E o que acontece é que clientes de exemplo como "João Pedro" não estão definidos para serem criados em "testes-gerais.md". Garanta que todos os clientes sejam definidos previamente para serem criados lá no arquivo de "testes-gerais". E após isso analise se outros arquivos de testes na extensão ".md" compartilham o mesmo problema e resolva para eles também. E após isso veja se com fornecedores também tem o mesmo problema.
