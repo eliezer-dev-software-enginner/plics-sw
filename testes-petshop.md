@@ -16,14 +16,6 @@
 
 ---
 
-## CategoriaScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 31 | Cadastro válido - PetShop | Cachorros | Salvo com sucesso. | | |
-| 110 | Cadastro categoria Gatos | Gatos | Salvo com sucesso. | | |
-| 111 | Cadastro categoria Aves | Aves | Salvo com sucesso. | | |
-| 112 | Cadastro categoria Peixes | Peixes | Salvo com sucesso. | | |
 
 ---
 
@@ -41,12 +33,6 @@
 
 ---
 
-## FornecedorScreen
-
-| # | Cenário | Nome Fantasia | CNPJ | Celular | Email | Cidade | Efeito Esperado | Erro | Resultado |
-|---|---------|--------------|------|---------|-------|--------|-----------------|------|---|
-| 44 | Cadastro válido | Purina Pet | 44.444.444/0001-44 | (21) 95555-4444 | purina@pet.com | Rio de Janeiro | Salvo com sucesso. | | |
-| 45 | Email inválido | Royal Canin | 55.555.555/0001-55 | (21) 94444-3333 | email-errado | Rio de Janeiro | Alerta: "Email inválido". | | |
 
 ---
 

@@ -94,7 +94,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     private static VendaService createVendaService() {
         try {
             return new VendaService();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
@@ -112,7 +112,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     private static ClienteService createClienteService() {
         try {
             return new ClienteService();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
@@ -121,7 +121,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     private static ContaAreceberService createContaAreceberService() {
         try {
             return new ContaAreceberService();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
@@ -189,7 +189,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         try {
             var produtoList = new ProdutoService().listar();
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -218,7 +218,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                     vendas.addAll(vendaList);
                 });
 
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error("Erro ao buscar vendas", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar vendas: " + e.getMessage()));
             }
@@ -232,6 +232,18 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             return;
         }
 
+        var qtdStr = qtd.get().trim();
+        if (qtdStr.isEmpty()) {
+            Components.ShowAlertError("Quantidade é obrigatória!");
+            return;
+        }
+        try {
+            new BigDecimal(qtdStr);
+        } catch (NumberFormatException e) {
+            Components.ShowAlertError("Quantidade inválida!");
+            return;
+        }
+
         Async.Run(() -> {
             if (modoEdicao.get()) {
                 final var selecionado = vendaSelected.get();
@@ -240,7 +252,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 fillModelFromForm(selecionado, false);
                 try {
                     vendaService.atualizar(selecionado);
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
                     return;
                 }
@@ -260,7 +272,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 VendaModel salvo;
                 try {
                     salvo = vendaService.salvar(model, atualizarEstoque);
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar venda: " + e.getMessage()));
                     return;
                 }
@@ -268,7 +280,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 if ("A PRAZO".equals(tipoPagamentoSelecionado.get()) && !parcelas.get().isEmpty()) {
                     try {
                         contaService.gerarContasDeVenda(salvo.getId(), salvo.getClienteId(), parcelas.get());
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         UI.runOnUi(() -> Components.ShowAlertError("Erro ao gerar contas: " + e.getMessage()));
                         return;
                     }
@@ -304,7 +316,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                     Components.ShowPopup(ctx, "Venda e contas vinculadas excluídas!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
         });
@@ -322,6 +334,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         tipoPagamentoSelecionado.set(Data.tiposPagamentoList.get(1));
         pcVenda.set("0");
         dataValidade.set(null);
+        descontoEmDinheiro.set("0");
         if (!clientes.get().isEmpty()) {
             clienteSelected.set(clientes.get().getFirst());
         }

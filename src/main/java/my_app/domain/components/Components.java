@@ -450,28 +450,27 @@ public class Components {
                     if (value == null || value.trim().isEmpty()) {
                         return OnChangeResult.of("", "");
                     }
-                    // Se já vier como número válido, só exibe
-                    return OnChangeResult.of(value.replace(".", ","), value);
+                    return OnChangeResult.of(formatarDecimal(value), value);
                 })
                 .onChange(value -> {
-                    // Permite apenas dígitos e separadores
-                    String cleaned = value.replaceAll("[^0-9.,]", "");
-
-                    // Garante no máximo uma vírgula ou ponto
-                    long separators = cleaned.chars()
-                            .filter(c -> c == ',' || c == '.')
-                            .count();
-
-                    if (separators > 1) {
-                        // Remove o último caractere digitado se criou separador duplicado
+                    if (value == null) value = "";
+                    String cleaned = value.replaceAll("[^0-9,]", "");
+                    int commaIdx = cleaned.indexOf(',');
+                    if (commaIdx >= 0 && commaIdx != cleaned.lastIndexOf(',')) {
                         cleaned = cleaned.substring(0, cleaned.length() - 1);
+                        commaIdx = cleaned.indexOf(',');
                     }
-
-                    // Normaliza: troca ponto por vírgula para exibição
-                    String display = cleaned.replace(".", ",");
-                    // Valor interno: vírgula por ponto (para parseDouble funcionar)
-                    String internal = cleaned.replace(",", ".");
-
+                    String intPart = commaIdx >= 0 ? cleaned.substring(0, commaIdx) : cleaned;
+                    String decPart = commaIdx >= 0 ? "," + cleaned.substring(commaIdx + 1) : "";
+                    String intTrimmed = intPart.isEmpty() ? "0" : intPart.replaceFirst("^0+(?!$)", "");
+                    StringBuilder fmt = new StringBuilder();
+                    int len = intTrimmed.length();
+                    for (int i = 0; i < len; i++) {
+                        if (i > 0 && (len - i) % 3 == 0) fmt.append('.');
+                        fmt.append(intTrimmed.charAt(i));
+                    }
+                    String display = fmt + decPart;
+                    String internal = intTrimmed + (commaIdx >= 0 ? "." + cleaned.substring(commaIdx + 1) : "");
                     return OnChangeResult.of(display, internal);
                 })
                 .lockCursorToEnd();
@@ -479,6 +478,24 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
+    }
+
+    private static String formatarDecimal(String value) {
+        if (value == null || value.trim().isEmpty()) return "";
+        String normalizado = value.replace(",", ".");
+        int dotIdx = normalizado.indexOf('.');
+        String intPart = dotIdx >= 0 ? normalizado.substring(0, dotIdx) : normalizado;
+        String decPart = dotIdx >= 0 ? normalizado.substring(dotIdx + 1) : "";
+        intPart = intPart.replaceAll("[^0-9]", "");
+        decPart = decPart.replaceAll("[^0-9]", "");
+        intPart = intPart.isEmpty() ? "0" : intPart.replaceFirst("^0+(?!$)", "");
+        StringBuilder fmt = new StringBuilder();
+        int len = intPart.length();
+        for (int i = 0; i < len; i++) {
+            if (i > 0 && (len - i) % 3 == 0) fmt.append('.');
+            fmt.append(intPart.charAt(i));
+        }
+        return decPart.isEmpty() ? fmt.toString() : fmt + "," + decPart;
     }
 
     public static Component InputColumnCnpj(String label, State<String> inputState) {

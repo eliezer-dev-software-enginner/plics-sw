@@ -1,5 +1,84 @@
 # Decisões Arquiteturais
 
+## 2026-06-29: Produtos usados em vendas sem cadastro válido nos testes .md
+
+**Problema:** Em `testes-loja-de-roupas.md`, produtos como Jaqueta (SKU003) e Calça Jeans (SKU004) eram usados em testes de VendaMercadoriaScreen, ComprasScreen e PDVScreen, mas só existiam em testes negativos (#15 SKU duplicado, #16 descrição vazia, #18 preço compra > venda) que não os criavam. Em `testes-mercado.md`, não havia seção ProdutoScreen — os produtos Arroz, Feijão e Óleo usados em PDVScreen não eram definidos.
+
+**Decisão:**
+1. `testes-loja-de-roupas.md`: SKU004 do teste #18 alterado para SKU006 (libera SKU004 para uso). Adicionados #143 (Jaqueta SKU003) e #144 (Calça Jeans SKU004) como cadastros válidos.
+2. `testes-mercado.md`: Adicionada seção ProdutoScreen com #145 (Arroz 5kg), #146 (Feijão 1kg), #147 (Óleo 900ml) como cadastros válidos.
+3. Demais perfis (PetShop, Lanchonete, Açougue) verificados — todos os produtos usados em testes já possuíam cadastro válido.
+
+**Arquivos alterados:**
+- `testes-loja-de-roupas.md` (#18 SKU004→SKU006, +2 linhas #143-#144)
+- `testes-mercado.md` (+seção ProdutoScreen com #145-#147)
+
+---
+
+## 2026-06-29: Clientes de perfil sem cadastro válido em testes-gerais.md
+
+**Problema:** Clientes listados nos headers de perfis (ex: "João Pedro" em Loja de Roupas) eram usados em testes de Venda, PDV, OS etc. mas não possuíam um cadastro válido definido em `testes-gerais.md` ClienteScreen. O usuário não tinha instrução de como criá-los antes de usá-los.
+
+**Decisão:**
+1. Adicionar 12 novos cadastros válidos (#12-#23) em `testes-gerais.md` ClienteScreen, um para cada cliente faltante, com dados consistentes (CPF único, celular, email).
+2. Fornecedores não apresentam o mesmo problema — todos os fornecedores usados em testes já estão definidos em `testes-gerais.md` FornecedorScreen.
+
+**Arquivos alterados:**
+- `testes-gerais.md` (+12 linhas na tabela ClienteScreen)
+
+---
+
+## 2026-06-26: Correção do tipo da coluna `validade` em produtos (INTEGER → REAL)
+
+**Problema:** Ao cadastrar produto perecível com data de validade (ex: 15/12/2026), o valor epoch millis `1797044400000L` não cabia em `Integer`. Persism mapeia `INTEGER` do SQLite para `Integer` Java, e `Converter.convert()` tenta `Integer.parseInt("" + longValue)`, lançando `NumberFormatException: For input string: "1797044400000"`. Mesmo erro ocorria ao desmarcar "É perecível?" se o DatePicker ainda tivesse data residual.
+
+**Decisão:**
+1. Coluna `validade` alterada de `INTEGER` para `REAL` na migration V1 e V20. `REAL` é o mesmo tipo usado por `vendas.data_validade` e `compras.data_validade`, que também armazenam epoch millis em `Long` — Persism mapeia `REAL` para `Double`, e `Converter.convert()` trata `Long → Double` sem erro.
+2. `fillModelFromForm()` no `ProdutoScreenViewModel` só seta `validade` no model quando `perecivelSelected = "Sim"`. Impede que data residual do DatePicker seja enviada ao salvar com perecível desmarcado.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreenViewModel.java` (condicional no setValidade)
+- `src/main/resources/flyway_migrations/V1__criar_produtos.sql` (validade INTEGER → REAL)
+- `src/main/resources/flyway_migrations/V20__fix_validade_type_produtos.sql` (migração para bancos existentes)
+- `testes-loja-de-roupas.md` (cenários 14, 15 marcados como corrigidos)
+
+---
+
+## 2026-06-25: Padronização dos testes de CategoriaScreen entre arquivos .md
+
+**Problema:** `testes-gerais.md` misturava testes de validação genérica de CategoriaScreen com exemplos específicos de perfil (Bovinos/Açougue, Masculino/Loja), enquanto cada perfil também tinha sua própria seção CategoriaScreen — causando duplicação ("Masculino" em dois lugares) e lacuna (Açougue sem seção própria).
+
+**Decisão:**
+1. `testes-gerais.md#categoriascreen`: manter apenas testes de validação genérica (nome vazio, excluir com produtos, editar, duplicado).
+2. Cada perfil mantém sua própria seção CategoriaScreen com testes "Cadastro válido" específicos.
+3. Removido #33 (Bovinos) e #36 (Masculino) de `testes-gerais.md`.
+4. Adicionado #33 (Bovinos) em `testes-acougue.md#categoriascreen` (seção que não existia).
+5. `testes.md` atualizado para listar todos os perfis com CategoriaScreen.
+
+**Arquivos alterados:**
+- `testes-gerais.md` (removido #33/#36, reordenado #35→#33, #37→#34, #38→#35, #39→#36)
+- `testes-acougue.md` (+seção CategoriaScreen com #33 Bovinos)
+- `testes.md` (link CategoriaScreen agora listando todos os perfis)
+
+---
+
+## 2026-06-25: Validação de login/senha obrigatórios ao habilitar credenciais
+
+**Problema:** Na PreferenciasScreen, ao selecionar "Sim" em "Habilitar credenciais", os campos login e senha não eram validados. Era possível salvar preferências com login vazio ou senha vazia, resultando em credenciais inválidas.
+
+**Decisão:**
+1. Adicionar método `validar()` em `PreferenciasViewModel` que retorna mensagem de erro ou `null`.
+2. `salvar()` chama `validar()` antes do `Async.Run()` — se houver erro, exibe alerta e retorna sem persistir.
+3. Método `validar()` é público para testabilidade direta sem dependência de JavaFX.
+4. Testes: 4 novos casos — `validar()` retorna null com credenciais desabilitadas, retorna erro com login vazio, retorna erro com senha vazia, retorna null com ambos preenchidos.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasViewModel.java` (+validar(), refatorado salvar())
+- `src/test/java/my_app/screens/preferenciasScreen/PreferenciasViewModelTest.java` (+4 testes)
+- `testes-gerais.md` (cenários 105, 106 marcados como OK)
+
+---
+
 ## 2026-06-22: Correção de race condition na edição de Categoria
 
 **Problema:** `CategoriaScreenViewModel.handleAddOrUpdate()` verificava `modoEdicao.get()` dentro de `Async.Run()`. Como `ContratoTelaCrudV3.handleAddOrUpdate()` redefine `modoEdicao = false` imediatamente após chamar `viewModel().handleAddOrUpdate()`, a async task via `modoEdicao = false` e executava o branch `else` (criar) em vez de `if` (atualizar). Resultado: editar uma categoria criava uma nova em vez de atualizar a existente.

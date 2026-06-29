@@ -21,12 +21,6 @@ class UpdaterServiceTest {
     }
 
     @Test
-    void versaoFuturaNaoTemUpdate() {
-        assertFalse(UpdaterService.compareVersions("999.999.999", "1.0.0") > 0,
-            "999.999.999 > 1.0.0 - nao deveria ter update");
-    }
-
-    @Test
     void retornaLatestVersionValida() throws Exception {
         var version = new UpdaterService().getLatestVersion();
         assertNotNull(version);

@@ -18,8 +18,12 @@ public class AuthScreenViewModel {
 
     private static final Logger log = LoggerFactory.getLogger(AuthScreenViewModel.class);
     public static final List<String> LICENCAS_PRODUCAO = List.of(
-            "984e2bb76c7b627641b6b7dc080f8e23",
-            "5fZl2OI7f2ksjc8YRzBRR0ycjsCzycXyrX"
+            "984e2bb76c7b627641b6b7dc080f8e23",//TODO: REMOVER NA 1.0.7
+            "5fZl2OI7f2ksjc8YRzBRR0ycjsCzycXyrX",
+            "o2OJI2OJ7EOSGXiUju6WE8zUZef1pZcfGSiqMk",
+            "Fh0OofMRVVE30elP6KvES4AuBBEYcK8qZIyXzL",
+            "5Zlix2GJbCqM2vYcxWSHk3E5YI8bf2ePHAxaWK",
+            "fBiO4l1qmTj3WdwhbU5At7UTAWiBuoBfk1FMXo"
     );
     static final String LICENSA_TESTE = "QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ";
 

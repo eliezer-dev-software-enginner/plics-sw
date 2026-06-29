@@ -20,7 +20,7 @@ class PreferenciasViewModelTest extends BaseViewModelTest {
 
     @Test
     void deveSalvarPreferencias() throws Exception {
-        var pref = new my_app.db.models.PreferenciasModel();
+        var pref = new PreferenciasModel();
         pref.setDataCriacaoMillis(System.currentTimeMillis());
         pref.setTema("padrão");
         pref.setLogin("admin");
@@ -43,6 +43,38 @@ class PreferenciasViewModelTest extends BaseViewModelTest {
         assertFalse(list.isEmpty());
         var atualizada = list.getFirst();
         assertEquals("novo_admin", atualizada.getLogin());
+    }
+
+    @Test
+    void validarDeveRetornarNullQuandoCredenciaisDesabilitadas() {
+        vm.habilitarCredenciaisSelected.set("Não");
+        vm.loginState.set("");
+        vm.passwordState.set("");
+        assertNull(vm.validar());
+    }
+
+    @Test
+    void validarDeveRetornarErroQuandoLoginVazio() {
+        vm.habilitarCredenciaisSelected.set("Sim");
+        vm.loginState.set("");
+        vm.passwordState.set("123");
+        assertEquals("Login é obrigatório", vm.validar());
+    }
+
+    @Test
+    void validarDeveRetornarErroQuandoSenhaVazia() {
+        vm.habilitarCredenciaisSelected.set("Sim");
+        vm.loginState.set("admin");
+        vm.passwordState.set("");
+        assertEquals("Senha é obrigatória", vm.validar());
+    }
+
+    @Test
+    void validarDeveRetornarNullQuandoAmbosPreenchidos() {
+        vm.habilitarCredenciaisSelected.set("Sim");
+        vm.loginState.set("admin");
+        vm.passwordState.set("123");
+        assertNull(vm.validar());
     }
 
 }

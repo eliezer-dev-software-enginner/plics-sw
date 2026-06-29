@@ -68,4 +68,46 @@ class ProdutoScreenViewModelTest extends BaseViewModelTest {
 
         assertEquals(0, produtoService.listar().size());
     }
+
+    @Test
+    void validarDeveRetornarErroQuandoValidadeMenorQueDataAtual() {
+        vm.perecivelSelected.set("Sim");
+        vm.validade.set(java.time.LocalDate.now().minusDays(1));
+
+        assertNotNull(vm.validar());
+    }
+
+    @Test
+    void validarDeveRetornarNullQuandoValidadeFutura() {
+        vm.perecivelSelected.set("Sim");
+        vm.validade.set(java.time.LocalDate.now().plusDays(30));
+
+        assertNull(vm.validar());
+    }
+
+    @Test
+    void validarDeveRetornarNullQuandoNaoPerecivel() {
+        vm.perecivelSelected.set("Não");
+        vm.validade.set(null);
+
+        assertNull(vm.validar());
+    }
+
+    @Test
+    void deveSalvarProdutoComValidadeFutura() throws Exception {
+        criarDependencias();
+        vm.codigoBarras.set("7891234567892");
+        vm.descricao.set("Produto Validade Futura");
+        vm.precoVenda.set("49.90");
+        vm.unidadeSelected.set("UN");
+        vm.perecivelSelected.set("Sim");
+        vm.validade.set(java.time.LocalDate.now().plusDays(30));
+
+        vm.handleAddOrUpdate();
+        waitForAsync();
+
+        var list = produtoService.listar();
+        assertEquals(1, list.size());
+        assertEquals("Produto Validade Futura", list.get(0).getDescricao());
+    }
 }

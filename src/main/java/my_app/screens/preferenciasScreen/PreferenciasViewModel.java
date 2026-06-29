@@ -69,17 +69,35 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
     }
 
     void salvar() {
+        var erro = validar();
+        if (erro != null) {
+            UI.runOnUi(() -> Components.ShowAlertError(erro));
+            return;
+        }
+
+        var habilitar = habilitarCredenciaisSelected.get().equals("Sim");
+        var login = loginState.get();
+        var senha = passwordState.get();
+
         Async.Run(() -> {
             try {
-                prefLoaded.setCredenciaisHabilitadas(habilitarCredenciaisSelected.get().equals("Sim") ? 1 : 0);
-                prefLoaded.setLogin(loginState.get());
-                prefLoaded.setSenha(passwordState.get());
+                prefLoaded.setCredenciaisHabilitadas(habilitar ? 1 : 0);
+                prefLoaded.setLogin(login);
+                prefLoaded.setSenha(senha);
                 preferenciasService.atualizar(prefLoaded);
                 UI.runOnUi(() -> Components.ShowPopup(ctx, "Preferências salvas com sucesso!"));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
+    }
+
+    String validar() {
+        var habilitar = habilitarCredenciaisSelected.get().equals("Sim");
+        if (!habilitar) return null;
+        if (loginState.get().isBlank()) return "Login é obrigatório";
+        if (passwordState.get().isBlank()) return "Senha é obrigatória";
+        return null;
     }
 
     void deletarTodosDados() {

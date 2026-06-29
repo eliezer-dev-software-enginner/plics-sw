@@ -24,6 +24,9 @@ public class ProdutoService extends BaseService<ProdutoModel> {
     @Override
     public ProdutoModel salvar(ProdutoModel model) throws SQLException {
         validar(model);
+
+        var produtoModel = produtoRepository.buscarPorCodigoBarras(model.getCodigoBarras().trim());
+        if(produtoModel != null)throw new IllegalArgumentException("Código de barras já cadastrado");
         model.setDataCriacao(LocalDateTime.now());
         return repository.salvar(model);
     }
@@ -36,7 +39,7 @@ public class ProdutoService extends BaseService<ProdutoModel> {
 
     private void validar(ProdutoModel model) {
         if (model.getCodigoBarras() == null || model.getCodigoBarras().isBlank())
-            throw new IllegalArgumentException("Adicione código ao produto");
+            throw new IllegalArgumentException("Código de barras/SKU é obrigatório");
         if (model.getDescricao() == null || model.getDescricao().isBlank())
             throw new IllegalArgumentException("Adicione descrição ao produto");
         if (model.getUnidade() == null || model.getUnidade().isBlank())

@@ -28,10 +28,13 @@
 
 ---
 
+
+---
+
 ## VendaMercadoriaScreen
 
 | # | Cenário | Data | Cliente | NF | Produto | Qtd | Preço unit. | Pagamento | Estoque | Efeito Esperado | Erro | Resultado |
-|---|---------|------|---------|----|---------|-----|------------|-----------|---------|-----------------|------|---|
+|---|---------|------|---------|----|---------|-----|------------|-----------|---------|-----------------|------|-----------|
 | 57 | Venda de produto em gramas | 15/06/2026 | José Moura | NF-AC-001 | Bacon fatiado (CAR003) | 500 | R$ 0,07/g | A VISTA | Sim | Venda registrada R$ 35,00 (500g x R$ 0,07/g). Estoque 5030 -> 4530 g. | | |
 | 107 | Venda de kg em gramas (conversão automática) | 15/06/2026 | José Moura | NF-AC-003 | Picanha (CAR001) | 0,300 | R$ 79,90/kg | A VISTA | Sim | Venda registrada com 0,300 kg de Picanha (R$ 79,90/kg = R$ 23,97). Deve converter 300g para 0,300 kg. Estoque 80 -> 79,7 kg. | | |
 

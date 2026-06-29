@@ -29,5 +29,4 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-
-Eu identifiquei um erro ao fazer testes em Categoria, relatei lá no arquivo testes-gerais.md. Quero que você identifique o que está causando isso e adicione teste unitário para cobrir esse problema que houve. E após isso quero que você adicione às regras que você deve sempre analisar os arquivos de testes ".md" por erros relatados para poder resolver na sessão atual. Paramos no meio na última sessão.
+estou fazendo os testes manuais cadastrados em "testes-loja-de-roupas.md" estou agora na parte das vendas. E o que acontece é que clientes de exemplo como "João Pedro" não estão definidos para serem criados em "testes-gerais.md". Garanta que todos os clientes sejam definidos previamente para serem criados lá no arquivo de "testes-gerais". E após isso analise se outros arquivos de testes na extensão ".md" compartilham o mesmo problema e resolva para eles também. E após isso veja se com fornecedores também tem o mesmo problema.

@@ -18,51 +18,39 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
-| 13 | Cadastro válido produto simples | SKU001 | Camiseta Masculina M | UN | Malharia Silva | R$ 15,00 | R$ 39,90 | Masculino | Malharia Silva | 100 | Nao | - | Salvo com sucesso. | | |
-| 14 | Cadastro válido produto perecível | SKU002 | Vestido Feminino Algodão | UN | Tecidos ABC | R$ 35,00 | R$ 89,90 | Feminino | Tecidos ABC | 50 | Sim | 15/12/2026 | Salvo com sucesso. | | |
-| 15 | SKU duplicado | SKU001 | Jaqueta | UN | Avan Calçados | R$ 80,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | Alerta: "Código de barras já cadastrado". | | |
-| 16 | Descrição vazia | SKU003 | (vazio) | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Descrição é obrigatória". | | |
-| 17 | SKU vazio | (vazio) | Produto sem SKU | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Código de barras é obrigatório". | | |
-| 18 | Preço compra maior que venda | SKU004 | Calça Jeans | UN | Tecidos ABC | R$ 100,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | Alerta de margem negativa, mas salva? (Validar comportamento). | | |
-| 19 | Perecível sem validade | SKU005 | Leite | UN | Marca X | R$ 3,00 | R$ 5,00 | Alimentos | Malharia Silva | 50 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
-| 20 | Excluir produto vinculado a venda | (produto com venda) | - | - | - | - | - | - | - | - | - | - | Alerta: "Produto possui vendas vinculadas". | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro                                                                                          | Resultado |
+|---|---------|-----|-----------|-------|-------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|-----------------------------------------------------------------------------------------------|-----------|
+| 13 | Cadastro válido produto simples | SKU001 | Camiseta Masculina M | UN | Malharia Silva | R$ 15,00 | R$ 39,90 | Masculino | Malharia Silva | 100 | Nao | - | Salvo com sucesso. |                                                                                               | ok        |
+| 14 | Cadastro válido produto perecível | SKU002 | Vestido Feminino Algodão | UN | Tecidos ABC | R$ 35,00 | R$ 89,90 | Feminino | Tecidos ABC | 50 | Sim | 15/12/2026 | Salvo com sucesso. | ~~For input string: "1797044400000"~~ Corrigido — validade REAL aceita Long. | ok        |
+| 15 | SKU duplicado | SKU001 | Jaqueta | UN | Avan Calçados | R$ 80,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | Alerta: "Código de barras já cadastrado". | ~~Desmarquei "é perecível" para poder salvar esse produto, e o erro foi semelhante ao de cima. For input string: "1797044400000"~~ Corrigido — fillModelFromForm só seta validade se perecível for "Sim". | ok        |
+| 16 | Descrição vazia | SKU003 | (vazio) | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Descrição é obrigatória". |                                                                                               | ok        |
+| 17 | SKU vazio | (vazio) | Produto sem SKU | UN | Generica | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Código de barras é obrigatório". |                                                                                               | ok        |
+| 18 | Preço compra maior que venda | SKU006 | Calça Jeans | UN | Tecidos ABC | R$ 100,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | Alerta de margem negativa, mas salva? (Validar comportamento). |                                                                                               |           |
+| 19 | Perecível sem validade | SKU005 | Camiseta Promocional | UN | Malharia Silva | R$ 15,00 | R$ 29,90 | Masculino | Malharia Silva | 50 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". |                                                                                               | ok        |
+| 20 | Excluir produto vinculado a venda | (produto com venda) | - | - | - | - | - | - | - | - | - | - | Alerta: "Produto possui vendas vinculadas". |                                                                                               |           |
+| 143 | Cadastro válido jaqueta | SKU003 | Jaqueta | UN | Avan Calçados | R$ 60,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | Salvo com sucesso. | | ok        |
+| 144 | Cadastro válido calça | SKU004 | Calça Jeans | UN | Tecidos ABC | R$ 40,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | Salvo com sucesso. | | ok        |
 
 ---
 
-## CategoriaScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 30 | Cadastro válido - Loja Roupas | Masculino | Salvo com sucesso. | | |
 
 ---
 
-## FornecedorScreen
-
-| # | Cenário | Nome Fantasia | CNPJ | Celular | IE | Email | UF | Cidade | Bairro | Rua | Número | Obs | Efeito Esperado | Erro | Resultado |
-|---|---------|--------------|------|---------|----|-------|----|--------|--------|-----|--------|-----|-----------------|------|---|
-| 39 | Cadastro completo | Malharia Silva | 11.111.111/0001-11 | (11) 98888-7777 | 111.222.333.444 | silva@malharia.com | SP | São Paulo | Brás | Rua da Malharia | 123 | - | Salvo com sucesso. | | |
-| 40 | Cadastro mínimo obrigatório | Avan Calçados | 22.222.222/0001-22 | (11) 97777-6666 | - | - | SP | São Paulo | - | - | - | - | Salvo com sucesso (nome e CNPJ obrigatórios?). | | |
-| 41 | Nome vazio | (vazio) | 33.333.333/0001-33 | - | - | - | - | - | - | - | - | - | Alerta: "Nome é obrigatório". | | |
-| 42 | CNPJ duplicado | (CNPJ já existente) | 11.111.111/0001-11 | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". | | |
-| 43 | Editar dados do fornecedor | Malharia Silva (novo telefone) | - | (11) 99999-0000 | - | - | - | - | - | - | - | - | Atualizado com sucesso. | | |
 
 ---
 
 ## VendaMercadoriaScreen
 
-| # | Cenário | Data | Cliente | NF | Produto | Qtd | Preço | Desc. | Pagamento | Estoque | Obs | Efeito Esperado | Erro | Resultado |
-|---|---------|------|---------|----|---------|-----|-------|-------|-----------|---------|-----|-----------------|------|---|
-| 47 | Venda à vista completa | 15/06/2026 | Maria Souza | NF001 | Camiseta M (SKU001) | 2 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Venda registrada. Estoque vai de 100 para 98. | | |
-| 48 | Venda com desconto | 15/06/2026 | João Pedro | NF002 | Calça Jeans (SKU004) | 1 | R$ 80,00 | R$ 10,00 | CREDITO | Sim | - | Venda registrada com total líquido R$ 70,00. | | |
-| 49 | Venda a prazo (parcelado) | 15/06/2026 | Carla Lima | - | Vestido (SKU002) | 1 | R$ 89,90 | R$ 0 | A PRAZO | Sim | - | Gera 3 parcelas no Contas a Receber. | | |
-| 50 | Produto sem estoque | 15/06/2026 | Maria Souza | - | Camiseta M | 500 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Alerta: "Estoque insuficiente". | | |
-| 51 | Cliente não selecionado | 15/06/2026 | (vazio) | - | Camiseta M | 1 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Alerta: "Selecione um cliente". | | |
-| 52 | Produto não encontrado | 15/06/2026 | Maria Souza | - | INEXISTENTE | 1 | - | - | - | - | - | Alerta: "Produto não encontrado". | | |
-| 53 | Venda sem refletir estoque | 15/06/2026 | Maria Souza | NF003 | Jaqueta (SKU003) | 1 | R$ 199,90 | R$ 0 | DEBITO | Nao | - | Venda registrada. Estoque permanece 30. | | |
-| 54 | Venda com observação | 15/06/2026 | João Pedro | NF004 | Camiseta M | 3 | R$ 39,90 | R$ 5,00 | PIX | Sim | "Presente" | Venda registrada com observação. | | |
+| # | Cenário | Data | Cliente | NF | Produto | Qtd | Preço | Desc. | Pagamento | Estoque | Obs | Efeito Esperado | Erro | Resultado                                                           |
+|---|---------|------|---------|----|---------|-----|-------|-------|-----------|---------|-----|-----------------|------|---------------------------------------------------------------------|
+| 47 | Venda à vista completa | 15/06/2026 | Maria Souza | NF001 | Camiseta M (SKU001) | 2 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Venda registrada. Estoque vai de 100 para 98. | | ok                                                                  |
+| 48 | Venda com desconto | 15/06/2026 | João Pedro | NF002 | Calça Jeans (SKU004) | 1 | R$ 80,00 | R$ 10,00 | CREDITO | Sim | - | Venda registrada com total líquido R$ 70,00. | | ok                                                                  |
+| 49 | Venda a prazo (parcelado) | 15/06/2026 | Carla Lima | - | Vestido (SKU002) | 1 | R$ 89,90 | R$ 0 | A PRAZO | Sim | - | Gera 3 parcelas no Contas a Receber. | ~~ArrayIndexOutOfBoundsException ao clicar "Adicionar" sem preencher quantidade.~~ Corrigido — validação de quantidade adicionada em handleAddOrUpdate(). | OK (fix: validação de quantidade em VendaMercadoriaScreenViewModel) |
+| 50 | Produto sem estoque | 15/06/2026 | Maria Souza | - | Camiseta M | 500 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Alerta: "Estoque insuficiente". | | ok                                                                  |
+| 51 | Cliente não selecionado | 15/06/2026 | (vazio) | - | Camiseta M | 1 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Alerta: "Selecione um cliente". | |                                                                     |
+| 52 | Produto não encontrado | 15/06/2026 | Maria Souza | - | INEXISTENTE | 1 | - | - | - | - | - | Alerta: "Produto não encontrado". | |                                                                     |
+| 53 | Venda sem refletir estoque | 15/06/2026 | Maria Souza | NF003 | Jaqueta (SKU003) | 1 | R$ 199,90 | R$ 0 | DEBITO | Nao | - | Venda registrada. Estoque permanece 30. | |                                                                     |
+| 54 | Venda com observação | 15/06/2026 | João Pedro | NF004 | Camiseta M | 3 | R$ 39,90 | R$ 5,00 | PIX | Sim | "Presente" | Venda registrada com observação. | |                                                                     |
 
 ---
 

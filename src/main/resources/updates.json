@@ -1,5 +1,23 @@
 [
   {
+    "version": "v1.0.6",
+    "notes": [
+      "Feat: InputColumnDecimal auto-formata com separador de milhar enquanto digita",
+      "Feat: Validar CPF/CNPJ duplicado ao cadastrar cliente e fornecedor",
+      "Feat: Validar login/senha obrigatórios ao habilitar credenciais",
+      "Feat: Validar data de validade não pode ser anterior à data atual",
+      "Feat: Capturar Exception genérica em vez de apenas SQLException na tela de venda",
+      "Fix: ArrayIndexOutOfBoundsException ao salvar venda com quantidade inválida",
+      "Fix: Race condition ao editar categoria criava nova em vez de atualizar",
+      "Fix: Ordem de população tipoPessoa/cnpjCpf causava erro ao editar cliente",
+      "Fix: Tabela não atualizava após editar categoria, cliente, fornecedor ou técnico",
+      "Fix: Coluna validade INTEGER→REAL para evitar NumberFormatException do Persism",
+      "Fix: Usar InputColumnDecimal no campo quantidade (rejeita caracteres não numéricos)",
+      "Fix: Limpar campo desconto em dinheiro após cadastrar venda",
+      "Fix: Tratar código de barras duplicado ao salvar produto"
+    ]
+  },
+  {
     "version": "v1.0.5",
     "notes": [
       "Feat: Fluxo de atualização automática — app baixa, instala e reinicia com a nova versão",

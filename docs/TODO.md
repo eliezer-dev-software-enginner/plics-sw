@@ -45,11 +45,38 @@
 - [x] Confirmação com alert antes de excluir
 - [x] Exclusão em todas as 16 tabelas com transação e FK desabilitado
 
+## Concluído (validação login/senha PreferenciasScreen)
+- [x] **PreferenciasViewModel.validar()**: método que retorna mensagem de erro ou null para login/senha quando credenciais habilitadas
+- [x] **PreferenciasViewModel.salvar()**: chama `validar()` antes de `Async.Run()` — exibe alerta e retorna se falhar
+- [x] **PreferenciasViewModelTest**: 4 novos testes para `validar()` (credenciais desabilitadas, login vazio, senha vazia, ambos preenchidos)
+- [x] **testes-gerais.md**: cenários 105 e 106 marcados como OK
+
+## Concluído (padronização CategoriaScreen entre .md)
+- [x] **testes-gerais.md**: removidos testes de perfil (#33 Bovinos, #36 Masculino) — só validação genérica
+- [x] **testes-acougue.md**: adicionada seção CategoriaScreen (#33 Bovinos)
+- [x] **testes.md**: link CategoriaScreen listando todos os perfis
+
+## Concluído (produtos sem cadastro válido)
+- [x] **testes-loja-de-roupas.md**: #18 SKU004→SKU006 (libera SKU004). Adicionados #143 (Jaqueta SKU003) e #144 (Calça Jeans SKU004) como cadastros válidos.
+- [x] **testes-mercado.md**: Adicionada seção ProdutoScreen com #145 (Arroz 5kg), #146 (Feijão 1kg), #147 (Óleo 900ml) para PDVScreen.
+- [x] **Demais perfis verificados (PetShop, Lanchonete, Açougue)**: todos os produtos usados em vendas já possuíam cadastro válido.
+
+## Concluído (clientes de perfil em testes-gerais.md)
+- [x] **testes-gerais.md ClienteScreen**: adicionados 12 clientes (#12-#23) que estavam faltando — João Pedro, Carla Lima, Carlos Mendes, Sofia Rocha, Luana Costa, Thiago Santos, José Moura, Renata Oliveira, Paulo Sérgio, Fernanda Lima, Ricardo Gomes, Juliana Costa
+- [x] **Fornecedores verificados**: todos os fornecedores usados em testes já estavam definidos — sem alteração necessária
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅
 - [ ] Publicar megalodonte-base modificado (com suporte a `run(args, ...)`) no maven local se ainda não estiver
 - [ ] Configurar GitHub Releases para plics-sw com assets .msi
+
+## Concluído (Correção validade produtos — INTEGER → REAL)
+- [x] **Root cause**: Persism mapeia `INTEGER` SQLite → `Integer` Java; `Converter.convert()` tenta `Integer.parseInt("1797044400000")` e lança `NumberFormatException`
+- [x] **V1 schema**: `validade INTEGER` → `validade REAL` (mesmo padrão de `vendas.data_validade` e `compras.data_validade`)
+- [x] **V20 migration**: recria tabela `produtos` com `validade REAL` para bancos existentes
+- [x] **`fillModelFromForm()`**: condicional `"Sim".equals(perecivelSelected.get())` antes de setar validade — evita data residual do DatePicker ao desmarcar "É perecível?"
+- [x] **testes-loja-de-roupas.md**: cenários 14 e 15 documentados com erro — erro resolvido
 
 ## Concluído (CPF/CNPJ duplicado)
 - [x] **ClienteRepository.buscarPorCpfCnpj()**: busca cliente por CPF/CNPJ (padrão `ProdutoRepository.buscarPorCodigoBarras`)
