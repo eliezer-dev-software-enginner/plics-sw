@@ -99,7 +99,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     private static CompraService createCompraService() {
         try {
             return new CompraService();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -107,7 +107,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     private static FornecedorService createFornecedorService() {
         try {
             return new FornecedorService();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -115,7 +115,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     private static ProdutoService createProdutoService() {
         try {
             return new ProdutoService();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -123,7 +123,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     private static ContasPagarService createContasPagarService() {
         try {
             return new ContasPagarService();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -191,7 +191,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         try {
             var produtoList = produtoService.listar();
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -242,7 +242,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                     compras.addAll(listCompras);
                 });
 
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error("Erro ao buscar compras", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar compras: " + e.getMessage()));
             }
@@ -286,7 +286,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                         reloadProdutos();
                         clearForm();
                     });
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar compra: " + e.getMessage()));
                 }
             } else {
@@ -307,7 +307,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                                     ))
                                     .toList();
                             this.contasPagarService.gerarContasDeCompra(compraSalva, parcelasParaService);
-                        } catch (SQLException e) {
+                        } catch (Exception e) {
                             throw new RuntimeException("Erro ao gerar contas a pagar: " + e.getMessage());
                         }
                     }
@@ -321,7 +321,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                         reloadProdutos();
                         clearForm();
                     });
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar compra: " + e.getMessage()));
                 }
             }
@@ -333,7 +333,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         Async.Run(() -> {
             try {
                 produtoService.atualizarEstoque(codigoBarras, quantidade);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar estoque: " + e.getMessage()));
             }
         });
@@ -361,7 +361,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     });
 
-                } catch (SQLException e) {
+                } catch (Exception e ) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir compra: " + e.getMessage()));
                 }
             });
@@ -384,6 +384,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         opcaoEstoqueSelected.set(Data.simNaoList.get(0));
         estoqueAnterior.set("0");
         estoqueAtual.set("0");
+        descontoEmDinheiro.set("0");
     }
 
     void removerEstoqueProduto(String codigoBarras, BigDecimal quantidade) {
@@ -398,7 +399,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 produtoService.atualizarEstoque(codigoBarras, quantidadeParaRemover);
                 IO.println("Estoque removido com sucesso para o produto: " + codigoBarras + " | Quantidade: " + quantidade);
                 reloadProdutos();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 IO.println("Erro ao remover estoque do produto " + codigoBarras + ": " + e.getMessage());
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao remover estoque: " + e.getMessage()));
             }

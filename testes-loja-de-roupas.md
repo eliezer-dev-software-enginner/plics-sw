@@ -49,19 +49,19 @@
 | 50 | Produto sem estoque | 15/06/2026 | Maria Souza | - | Camiseta M | 500 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Alerta: "Estoque insuficiente". | | ok                                                                  |
 | 51 | Cliente não selecionado | 15/06/2026 | (vazio) | - | Camiseta M | 1 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Alerta: "Selecione um cliente". | |                                                                     |
 | 52 | Produto não encontrado | 15/06/2026 | Maria Souza | - | INEXISTENTE | 1 | - | - | - | - | - | Alerta: "Produto não encontrado". | |                                                                     |
-| 53 | Venda sem refletir estoque | 15/06/2026 | Maria Souza | NF003 | Jaqueta (SKU003) | 1 | R$ 199,90 | R$ 0 | DEBITO | Nao | - | Venda registrada. Estoque permanece 30. | |                                                                     |
-| 54 | Venda com observação | 15/06/2026 | João Pedro | NF004 | Camiseta M | 3 | R$ 39,90 | R$ 5,00 | PIX | Sim | "Presente" | Venda registrada com observação. | |                                                                     |
+| 53 | Venda sem refletir estoque | 15/06/2026 | Maria Souza | NF003 | Jaqueta (SKU003) | 1 | R$ 199,90 | R$ 0 | DEBITO | Nao | - | Venda registrada. Estoque permanece 30. | | ok                                                                  |
+| 54 | Venda com observação | 15/06/2026 | João Pedro | NF004 | Camiseta M | 3 | R$ 39,90 | R$ 5,00 | PIX | Sim | "Presente" | Venda registrada com observação. | | ok                                                                  |
 
 ---
 
 ## ComprasScreen
 
 | # | Cenário | Data | Fornecedor | NF | Produto | Qtd | Preço | Desc. | Pagamento | Estoque | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------|----|---------|-----|-------|-------|-----------|---------|-----------------|------|---|
-| 58 | Compra à vista | 14/06/2026 | Malharia Silva | NF-COM-001 | Camiseta M | 50 | R$ 15,00 | R$ 0 | A VISTA | Sim | Estoque 100 -> 150. Custo registrado. | | |
-| 59 | Compra com desconto | 14/06/2026 | Tecidos ABC | NF-COM-002 | Vestido | 20 | R$ 35,00 | R$ 50,00 | A PRAZO | Sim | Compra registrada. Gera contas a pagar. | | |
-| 60 | Não refletir no estoque | 14/06/2026 | Avan Calçados | - | Jaqueta | 10 | R$ 80,00 | R$ 0 | A VISTA | Nao | Compra registrada. Estoque não alterado. | | |
-| 61 | Fornecedor não selecionado | 14/06/2026 | (vazio) | - | Camiseta M | 10 | R$ 15,00 | - | A VISTA | Sim | Alerta: "Selecione um fornecedor". | | |
+|---|---------|------|-----------|----|---------|-----|-------|-------|-----------|---------|-----------------|------|-----------|
+| 58 | Compra à vista | 14/06/2026 | Malharia Silva | NF-COM-001 | Camiseta M | 50 | R$ 15,00 | R$ 0 | A VISTA | Sim | Estoque 100 -> 150. Custo registrado. | | ok        |
+| 59 | Compra com desconto | 14/06/2026 | Tecidos ABC | NF-COM-002 | Vestido | 20 | R$ 35,00 | R$ 50,00 | A PRAZO | Sim | Compra registrada. Gera contas a pagar. | |           |
+| 60 | Não refletir no estoque | 14/06/2026 | Avan Calçados | - | Jaqueta | 10 | R$ 80,00 | R$ 0 | A VISTA | Nao | Compra registrada. Estoque não alterado. | |           |
+| 61 | Fornecedor não selecionado | 14/06/2026 | (vazio) | - | Camiseta M | 10 | R$ 15,00 | - | A VISTA | Sim | Alerta: "Selecione um fornecedor". | |           |
 
 ---
 
