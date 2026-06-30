@@ -56,12 +56,12 @@
 
 ## ComprasScreen
 
-| # | Cenário | Data | Fornecedor | NF | Produto | Qtd | Preço | Desc. | Pagamento | Estoque | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------|----|---------|-----|-------|-------|-----------|---------|-----------------|------|-----------|
-| 58 | Compra à vista | 14/06/2026 | Malharia Silva | NF-COM-001 | Camiseta M | 50 | R$ 15,00 | R$ 0 | A VISTA | Sim | Estoque 100 -> 150. Custo registrado. | | ok        |
-| 59 | Compra com desconto | 14/06/2026 | Tecidos ABC | NF-COM-002 | Vestido | 20 | R$ 35,00 | R$ 50,00 | A PRAZO | Sim | Compra registrada. Gera contas a pagar. | |           |
-| 60 | Não refletir no estoque | 14/06/2026 | Avan Calçados | - | Jaqueta | 10 | R$ 80,00 | R$ 0 | A VISTA | Nao | Compra registrada. Estoque não alterado. | |           |
-| 61 | Fornecedor não selecionado | 14/06/2026 | (vazio) | - | Camiseta M | 10 | R$ 15,00 | - | A VISTA | Sim | Alerta: "Selecione um fornecedor". | |           |
+| # | Cenário | Data | Fornecedor | NF | Produto | Qtd | Preço | Desc. | Pagamento | Estoque | Efeito Esperado | Erro                                                                                                                                                                         | Resultado |
+|---|---------|------|-----------|----|---------|-----|-------|-------|-----------|---------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| 58 | Compra à vista | 14/06/2026 | Malharia Silva | NF-COM-001 | Camiseta M | 50 | R$ 15,00 | R$ 0 | A VISTA | Sim | Estoque 100 -> 150. Custo registrado. |                                                                                                                                                                              | ok        |
+| 59 | Compra com desconto | 14/06/2026 | Tecidos ABC | NF-COM-002 | Vestido | 20 | R$ 35,00 | R$ 50,00 | A PRAZO | Sim | Compra registrada. Gera contas a pagar. | Não cliquei em "Gerar parcelas" e cliquei normalmente em "Adicionar", e então a compra foi registrada normalmente, deveria exibir um alert: "Você não gerou nenhuma parcela" |           |
+| 60 | Não refletir no estoque | 14/06/2026 | Avan Calçados | - | Jaqueta | 10 | R$ 80,00 | R$ 0 | A VISTA | Nao | Compra registrada. Estoque não alterado. |                                                                                                                                                                              |           |
+| 61 | Fornecedor não selecionado | 14/06/2026 | (vazio) | - | Camiseta M | 10 | R$ 15,00 | - | A VISTA | Sim | Alerta: "Selecione um fornecedor". |                                                                                                                                                                              |           |
 
 ---
 
