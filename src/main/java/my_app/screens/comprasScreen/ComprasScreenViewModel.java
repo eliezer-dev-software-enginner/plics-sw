@@ -303,7 +303,11 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                         produtoService.atualizarEstoque(dto.produtoCod(), dto.quantidade());
                     }
 
-                    if ("A PRAZO".equals(tipoPagamentoSelected.get()) && !parcelas.get().isEmpty()) {
+                    if ("A PRAZO".equals(tipoPagamentoSelected.get()) && parcelas.get().isEmpty()) {
+                        throw new IllegalArgumentException("Você deve gerar pelo menos uma parcela para vendas do tipo \"à prazo\".");
+                    }
+
+                    else if ("A PRAZO".equals(tipoPagamentoSelected.get()) && !parcelas.get().isEmpty()) {
                         try {
                             List<Parcela> parcelasParaService = parcelas.get().stream()
                                     .map(p -> new Parcela(
