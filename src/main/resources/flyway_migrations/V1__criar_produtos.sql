@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS produtos (
     observacoes TEXT,
     imagem TEXT,
     marca TEXT,
-    validade REAL,
+    validade INTEGER,
     comissao TEXT,
     garantia TEXT,
     dataCriacao TIMESTAMP,

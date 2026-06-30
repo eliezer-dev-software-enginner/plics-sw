@@ -1,7 +1,6 @@
 package my_app.db;
 
 import net.sf.persism.Session;
-import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,14 +62,7 @@ public final class DB {
     }
 
     public static Session getPersismSession() throws SQLException {
-        var db = DB.production();
-        Flyway.configure()
-                .dataSource(db.url(),"","")
-                .locations("classpath:flyway_migrations")
-                .load()
-                .migrate();
-
-        var session = new Session(db.connection());
+        var session = new Session(production().connection());
         register(session);
         return session;
     }

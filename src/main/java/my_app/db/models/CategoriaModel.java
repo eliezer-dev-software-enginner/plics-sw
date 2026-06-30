@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 

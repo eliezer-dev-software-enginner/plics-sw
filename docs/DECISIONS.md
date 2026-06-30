@@ -1,5 +1,66 @@
 # Decisões Arquiteturais
 
+## 2026-06-30: Vazamento de Sessions — conexões JDBC SQLite nunca fechadas
+
+**Problema:** Cada `Service` criava uma `Session` Persism (backed por conexão JDBC) que NUNCA era fechada. Durante uma sessão típica, ~12+ sessions acumulavam. Nem no shutdown do app as conexões eram liberadas. Além disso:
+- `ComprasScreenViewModel.reloadProdutos()` e `VendaMercadoriaScreenViewModel.reloadProdutos()` criavam `new ProdutoService()` a cada chamada, vazando uma session por operação.
+- `ClienteService()` e `EmpresaService()` usavam `new Session(DB.production().connection())`, SEM registrar em `activeSessions`, então nem `closeAllSessions()` conseguia fechá-las.
+- `closeAllSessions()` existia mas NUNCA era chamado (nem no shutdown).
+
+**Decisão:**
+1. `Main.handleClose()` agora chama `DB.closeAllSessions()` antes de `Platform.exit()`.
+2. `reloadProdutos()` reusa `produtoService` (já existente no ViewModel) em vez de criar nova instância.
+3. `ClienteService` e `EmpresaService` alterados para `DB.getPersismSession()` (registra em `activeSessions`).
+4. `CategoriaModel.java`: removido import não utilizado `org.jetbrains.annotations.NotNull`.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/Main.java` (+closeAllSessions no shutdown)
+- `src/main/java/my_app/screens/comprasScreen/ComprasScreenViewModel.java` (reloadProdutos reusa service)
+- `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreenViewModel.java` (reloadProdutos reusa service)
+- `src/main/java/my_app/db/services/ClienteService.java` (alinhado ao padrão)
+- `src/main/java/my_app/db/services/EmpresaService.java` (alinhado ao padrão)
+- `src/main/java/my_app/db/models/CategoriaModel.java` (import não utilizado removido)
+
+---
+
+## 2026-06-30: Correção do Flyway + SQLite — migrations modificadas e inicialização duplicada
+
+**Problema:** Ao lançar nova versão com novas migrations, Flyway lançava `FlywayValidateException`. A causa raiz foi dupla:
+
+1. **Migrations V1 e V7 foram alteradas após já terem sido aplicadas** em bancos de produção:
+   - V1: `validade INTEGER` → `REAL` (commit 95ad12b)
+   - V7: `preco_compra TEXT` → `REAL`, `desconto_em_reais TEXT` → `REAL`, `data_compra TEXT` → `REAL`, `dataCriacao INTEGER` → `REAL` (commit cd9aca5)
+   - Isso quebrou o checksum armazenado em `flyway_schema_history`, causando falha de validação ao executar `migrate()` em bancos existentes.
+
+2. **Flyway era inicializado em dois lugares**: `Main.initialize()` e `DB.getPersismSession()`, fazendo `migrate()` rodar múltiplas vezes desnecessariamente.
+
+**Decisão:**
+1. **Restaurar V1 e V7 ao estado original** (checksum do primeiro commit a1163cd):
+   - V1: `validade REAL` → `INTEGER` (V20 já existe para converter)
+   - V7: colunas restauradas para `TEXT`/`INTEGER`
+2. **Criar V21** para converter colunas da tabela `compras` de `TEXT`/`INTEGER` para `REAL` em bancos existentes (mesmo padrão do V20).
+3. **Adicionar `flyway.repair()`** antes de `flyway.migrate()` no startup — recalcula checksums automaticamente para qualquer banco, independente de qual versão das migrations foi aplicada originalmente. É a recomendação oficial do Flyway para cenários de checksum mismatch.
+4. **Remover inicialização do Flyway de `DB.getPersismSession()`** — Flyway é chamado uma única vez em `Main.initialize()`.
+5. **Alinhar `CategoriaService`** ao padrão dos demais Services (`DB.getPersismSession()` em vez de `new Session(DB.production().connection())`).
+
+**Boas práticas violadas (e agora corrigidas):**
+- **Imutabilidade de migrations**: toda migration aplicada a qualquer banco de produção NUNCA deve ser modificada. Correções de schema devem ser feitas em NOVAS migrations.
+- **Single responsibility**: `DB.getPersismSession()` misturava criação de sessão com migração de banco.
+- **Consistência**: `CategoriaService` usava padrão diferente dos demais Services para obter a Session.
+
+**Arquivos alterados:**
+- `src/main/resources/flyway_migrations/V1__criar_produtos.sql` (restaurado original)
+- `src/main/resources/flyway_migrations/V7__criar_compras.sql` (restaurado original)
+- `src/main/resources/flyway_migrations/V21__fix_types_compras.sql` (novo)
+- `src/main/java/my_app/Main.java` (+repair(), Flyway refatorado para var)
+- `src/main/java/my_app/db/DB.java` (Flyway removido de getPersismSession())
+- `src/main/java/my_app/db/services/CategoriaService.java` (alinhado ao padrão)
+- `docs/DECISIONS.md` (esta entrada)
+- `docs/CONTEXT.md` (atualizado)
+- `docs/TODO.md` (atualizado)
+
+---
+
 ## 2026-06-29: Produtos usados em vendas sem cadastro válido nos testes .md
 
 **Problema:** Em `testes-loja-de-roupas.md`, produtos como Jaqueta (SKU003) e Calça Jeans (SKU004) eram usados em testes de VendaMercadoriaScreen, ComprasScreen e PDVScreen, mas só existiam em testes negativos (#15 SKU duplicado, #16 descrição vazia, #18 preço compra > venda) que não os criavam. Em `testes-mercado.md`, não havia seção ProdutoScreen — os produtos Arroz, Feijão e Óleo usados em PDVScreen não eram definidos.

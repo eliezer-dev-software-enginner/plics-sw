@@ -91,7 +91,12 @@ public class Components {
         var qtdParcelas = State.of("1");
 
         Runnable handleGerarParcelas = () -> {
-            var list = Parcela.gerarParcelas(dtPrimeiraParcela.get(), Integer.parseInt(qtdParcelas.get()), Double.parseDouble(totalLiquido.get()));
+            int qtd = Integer.parseInt(qtdParcelas.get());
+            if(qtd < 1){
+                Components.ShowAlertError("Quantidade de parcelas inválida: " + qtd + ". Informe um valor maior que zero.");
+                return;
+            }
+            var list = Parcela.gerarParcelas(dtPrimeiraParcela.get(), qtd, Double.parseDouble(totalLiquido.get()));
             parcelas.set(list);
         };
 
@@ -102,7 +107,7 @@ public class Components {
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())
                                         .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela", ""))
-                                        .r_child(Components.InputColumn("Quantidade de parcelas", qtdParcelas, "Ex: 1"))
+                                        .r_child(Components.InputColumnNumeric("Quantidade de parcelas", qtdParcelas, "Ex: 1"))
                                         .r_child(Components.ButtonCadastro("Gerar parcelas", handleGerarParcelas)))
                         .items(parcelaComponentForEachState)
         );
