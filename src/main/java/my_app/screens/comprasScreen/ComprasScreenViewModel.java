@@ -236,7 +236,13 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                                 .filter(f -> f.getId().equals(compra.getFornecedorId()))
                                 .findFirst()
                                 .orElse(null);
+                        ProdutoModel produtoModel = produtoList.stream()
+                                .filter(f -> f.getCodigoBarras().equals(compra.getProdutoCod()))
+                                .findFirst()
+                                .orElse(null);
+
                         compra.setFornecedor(fornecedor);
+                        compra.setProdutoModel(produtoModel);
                     }
 
                     compras.addAll(listCompras);

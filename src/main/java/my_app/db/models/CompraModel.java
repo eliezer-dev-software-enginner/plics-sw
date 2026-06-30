@@ -49,4 +49,5 @@ public class CompraModel {
     private Long dataValidade;
 
     private transient FornecedorModel fornecedor;
+    private transient ProdutoModel produtoModel;
 }

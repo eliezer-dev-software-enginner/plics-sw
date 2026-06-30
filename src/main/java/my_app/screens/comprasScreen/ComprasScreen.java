@@ -78,6 +78,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .header()
                 .columns()
                 .column("ID", it -> it.getId(), (double) 90)
+                .column("Produto", it -> it.getProdutoModel().getDescricao(), (double) 90)
                 .column("Quantidade", it -> it.getQuantidade())
                 .column("N. Nota", it -> it.getNumeroNota())
                 .column("Fornecedor", it -> it.getFornecedor() == null ? "" : it.getFornecedor().getNome())
