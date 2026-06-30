@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class EmpresaService extends BaseService<EmpresaModel> {
 
     public EmpresaService() throws SQLException {
-        this(new Session(DB.production().connection()));
+        this(DB.getPersismSession());
     }
 
     public EmpresaService(Session session) {

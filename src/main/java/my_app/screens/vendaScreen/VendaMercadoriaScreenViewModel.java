@@ -187,7 +187,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
 
     void reloadProdutos() {
         try {
-            var produtoList = new ProdutoService().listar();
+            var produtoList = produtoService.listar();
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
         } catch (Exception e) {
             throw new RuntimeException(e);

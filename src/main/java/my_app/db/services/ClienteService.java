@@ -17,7 +17,7 @@ public class ClienteService extends BaseService<ClienteModel> {
 
     // produção
     public ClienteService() throws SQLException {
-        this(new Session(DB.production().connection()));
+        this(DB.getPersismSession());
     }
 
     // testes

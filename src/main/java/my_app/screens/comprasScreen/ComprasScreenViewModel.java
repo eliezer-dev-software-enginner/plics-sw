@@ -189,7 +189,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
     void reloadProdutos() {
         try {
-            var produtoList = new ProdutoService().listar();
+            var produtoList = produtoService.listar();
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
         } catch (SQLException e) {
             throw new RuntimeException(e);

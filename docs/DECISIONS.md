@@ -1,5 +1,28 @@
 # Decisões Arquiteturais
 
+## 2026-06-30: Vazamento de Sessions — conexões JDBC SQLite nunca fechadas
+
+**Problema:** Cada `Service` criava uma `Session` Persism (backed por conexão JDBC) que NUNCA era fechada. Durante uma sessão típica, ~12+ sessions acumulavam. Nem no shutdown do app as conexões eram liberadas. Além disso:
+- `ComprasScreenViewModel.reloadProdutos()` e `VendaMercadoriaScreenViewModel.reloadProdutos()` criavam `new ProdutoService()` a cada chamada, vazando uma session por operação.
+- `ClienteService()` e `EmpresaService()` usavam `new Session(DB.production().connection())`, SEM registrar em `activeSessions`, então nem `closeAllSessions()` conseguia fechá-las.
+- `closeAllSessions()` existia mas NUNCA era chamado (nem no shutdown).
+
+**Decisão:**
+1. `Main.handleClose()` agora chama `DB.closeAllSessions()` antes de `Platform.exit()`.
+2. `reloadProdutos()` reusa `produtoService` (já existente no ViewModel) em vez de criar nova instância.
+3. `ClienteService` e `EmpresaService` alterados para `DB.getPersismSession()` (registra em `activeSessions`).
+4. `CategoriaModel.java`: removido import não utilizado `org.jetbrains.annotations.NotNull`.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/Main.java` (+closeAllSessions no shutdown)
+- `src/main/java/my_app/screens/comprasScreen/ComprasScreenViewModel.java` (reloadProdutos reusa service)
+- `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreenViewModel.java` (reloadProdutos reusa service)
+- `src/main/java/my_app/db/services/ClienteService.java` (alinhado ao padrão)
+- `src/main/java/my_app/db/services/EmpresaService.java` (alinhado ao padrão)
+- `src/main/java/my_app/db/models/CategoriaModel.java` (import não utilizado removido)
+
+---
+
 ## 2026-06-30: Correção do Flyway + SQLite — migrations modificadas e inicialização duplicada
 
 **Problema:** Ao lançar nova versão com novas migrations, Flyway lançava `FlywayValidateException`. A causa raiz foi dupla:

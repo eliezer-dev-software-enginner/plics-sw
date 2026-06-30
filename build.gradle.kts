@@ -65,8 +65,6 @@ dependencies {
     //sqlite
     implementation("org.xerial:sqlite-jdbc:3.45.1.0")
 
-    implementation("com.dorkbox:SystemTray:4.4")
-
     implementation("io.github.sproket:persism:2.3")
     implementation("org.flywaydb:flyway-core:10.15.0")
 

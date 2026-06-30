@@ -53,6 +53,12 @@
 
 ## Últimas alterações
 
+### 2026-06-30: Correção de vazamento de Sessions SQLite
+- **`DB.closeAllSessions()`** agora é chamado no shutdown (`Main.handleClose()`)
+- **`reloadProdutos()`** em ComprasScreenVM e VendaMercadoriaScreenVM reusa service existente em vez de criar novo
+- **`ClienteService` e `EmpresaService`** alinhados ao padrão `DB.getPersismSession()`
+- **Import não utilizado removido** de `CategoriaModel.java`
+
 ### 2026-06-30: Correção Flyway + SQLite — migrations modificadas e inicialização duplicada
 - **V1 e V7 restaurados ao original**: checksums agora correspondem ao primeiro commit. V20 e V21 convertem tipos para `REAL` em bancos existentes.
 - **`flyway.repair()` adicionado** antes de `migrate()` no startup — recalcula checksums automaticamente para qualquer banco, eliminando `FlywayValidateException` em upgrades.

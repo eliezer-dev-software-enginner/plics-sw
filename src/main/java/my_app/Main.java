@@ -16,7 +16,6 @@ import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
 import my_app.hotreload.HotReload;
 import my_app.core.AppRoutes;
-import my_app.utils.TrayManager;
 import org.flywaydb.core.Flyway;
 
 public class Main {
@@ -64,7 +63,6 @@ public class Main {
                         .classesToExclude(Set.of("my_app.Main"));
                 hotReload.start();
             }
-            TrayManager.setup(BASE_TITLE);
     }
 
     private static void onEvent(MegalodonteApp.Event ev) {
@@ -75,17 +73,8 @@ public class Main {
 
     public static void handleClose(){
             ListenerManager.disposeAll();
-            // Shutdown do SystemTray antes do Platform.exit
-            // para evitar threads órfãs
-            try {
-                var tray = dorkbox.systemTray.SystemTray.get();
-                if (tray != null) {
-                    tray.shutdown();
-                }
-            } catch (Exception ignored) {}
-
+            DB.closeAllSessions();
             Platform.exit();
-            // System.exit(0) como fallback se necessário
     }
 
     // mandatory for hotreload

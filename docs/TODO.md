@@ -101,6 +101,17 @@
 - [x] **`CategoriaService` alinhado** ao padrão `DB.getPersismSession()`
 - [x] **Documentação** atualizada (DECISIONS.md, CONTEXT.md, TODO.md)
 
+## Concluído (Correção vazamento de Sessions — 2026-06-30)
+- [x] **`DB.closeAllSessions()` adicionado** no `Main.handleClose()` antes de `Platform.exit()`
+- [x] **`reloadProdutos()` corrigido** em `ComprasScreenViewModel` e `VendaMercadoriaScreenViewModel`: reusa `produtoService` em vez de criar `new ProdutoService()` a cada chamada
+- [x] **`ClienteService` alinhado** ao padrão `DB.getPersismSession()`
+- [x] **`EmpresaService` alinhado** ao padrão `DB.getPersismSession()`
+- [x] **Import não utilizado removido** de `CategoriaModel.java` (`org.jetbrains.annotations.NotNull`)
+
+## Melhoria futura: Método dispose() no Megalodonte (onDispose)
+- Adicionar hook dispose nas ViewModels via `ViewModelScreenContract` para fechar services ao sair da tela
+- Impedir acúmulo de Sessions entre navegações
+
 ## Melhoria futura: Startup resiliente a erros
 - `Main.initialize()` não deve lançar exceção — sempre abrir uma janela, mesmo que seja uma tela de erro
 - Try-catch em cada etapa (Flyway, PreferenciasService, AppRoutes) com fallback para valores seguros
