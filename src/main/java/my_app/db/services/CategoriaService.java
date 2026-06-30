@@ -12,7 +12,7 @@ public class CategoriaService extends BaseService<CategoriaModel> {
 
     // produção
     public CategoriaService() throws SQLException {
-        this(new Session(DB.production().connection()));
+        this(DB.getPersismSession());
     }
 
     // testes

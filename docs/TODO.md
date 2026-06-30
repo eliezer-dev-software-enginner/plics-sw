@@ -92,6 +92,15 @@
 - [x] **CategoriaScreenViewModelTest.deveAtualizarCategoria()**: teste que cobre o cenário de erro (editar nome cria nova categoria)
 - [x] **AI_RULES.md**: adicionar regra para analisar `*.md` de testes no início da sessão
 
+## Concluído (Correção Flyway + SQLite — 2026-06-30)
+- [x] **V1 restaurado**: `validade REAL` → `INTEGER` (checksum original)
+- [x] **V7 restaurado**: colunas `TEXT`/`INTEGER` originais (checksum original)
+- [x] **V21 criado**: converte colunas de `compras` para `REAL` em bancos existentes
+- [x] **`flyway.repair()` adicionado** antes de `migrate()` — resolve checksum mismatch para qualquer versão anterior
+- [x] **Flyway removido de `DB.getPersismSession()`** — única chamada em `Main.initialize()`
+- [x] **`CategoriaService` alinhado** ao padrão `DB.getPersismSession()`
+- [x] **Documentação** atualizada (DECISIONS.md, CONTEXT.md, TODO.md)
+
 ## Melhoria futura: Startup resiliente a erros
 - `Main.initialize()` não deve lançar exceção — sempre abrir uma janela, mesmo que seja uma tela de erro
 - Try-catch em cada etapa (Flyway, PreferenciasService, AppRoutes) com fallback para valores seguros

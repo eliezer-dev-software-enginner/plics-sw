@@ -53,6 +53,13 @@
 
 ## Últimas alterações
 
+### 2026-06-30: Correção Flyway + SQLite — migrations modificadas e inicialização duplicada
+- **V1 e V7 restaurados ao original**: checksums agora correspondem ao primeiro commit. V20 e V21 convertem tipos para `REAL` em bancos existentes.
+- **`flyway.repair()` adicionado** antes de `migrate()` no startup — recalcula checksums automaticamente para qualquer banco, eliminando `FlywayValidateException` em upgrades.
+- **Flyway removido de `DB.getPersismSession()`**: agora é chamado uma única vez em `Main.initialize()`.
+- **`CategoriaService` alinhado** ao padrão `DB.getPersismSession()`.
+- **Migration V21** criada para corrigir tipos das colunas de `compras` em bancos existentes.
+
 ### 2026-06-29: Produtos sem cadastro válido em testes de venda
 - `testes-loja-de-roupas.md`: SKU004 do #18 alterado para SKU006 (libera SKU004). Adicionados #143 (Jaqueta SKU003) e #144 (Calça Jeans SKU004) como cadastros válidos.
 - `testes-mercado.md`: Adicionada seção ProdutoScreen com #145 (Arroz 5kg), #146 (Feijão 1kg), #147 (Óleo 900ml).

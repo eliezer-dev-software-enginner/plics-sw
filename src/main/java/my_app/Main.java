@@ -93,12 +93,13 @@ public class Main {
         ThemeManager.setTheme(Themes.LIGHT);
 
         try {
-            Flyway.configure()
+            var flyway = Flyway.configure()
                     .dataSource(DB.production().url(), "", "")
                     .locations("classpath:flyway_migrations")
                     .baselineOnMigrate(true)
-                    .load()
-                    .migrate();
+                    .load();
+            flyway.repair();
+            flyway.migrate();
 
             var prefs = new PreferenciasService().listar();
             if (!prefs.isEmpty()) {
