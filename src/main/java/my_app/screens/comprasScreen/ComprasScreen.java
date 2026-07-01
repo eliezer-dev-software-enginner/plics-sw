@@ -3,6 +3,7 @@ package my_app.screens.comprasScreen;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.SpacerVertical;
+import megalodonte.components.inputs.Input;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
@@ -63,8 +64,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     private Row formSecondRow() {
+        Component quantidadeInput = Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 1,500",vm.quantidadeRef);
+
         return new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 1,500"))
+                .r_child(quantidadeInput)
                 .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
                 .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSelected, it -> it))
                 .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))

@@ -2,6 +2,7 @@ package my_app.domain.components;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,6 +16,7 @@ import javafx.stage.StageStyle;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.base.Animations;
+import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.base.state.ReadableState;
 import megalodonte.base.state.State;
@@ -447,7 +449,29 @@ public class Components {
                 .c_child(input);
     }
 
-    public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder) {
+    public static class InputRef {
+        private Input inputRef;
+
+        public void set(Input input) {
+            this.inputRef = input;
+        }
+
+        public void requestFocus() {
+            UI.runOnUi(() -> {
+                Node node = inputRef.getJavaFxNode();
+                if (node instanceof Parent parent) {
+                    for (Node child : parent.getChildrenUnmodifiable()) {
+                        if (child instanceof TextInputControl) {
+                            child.requestFocus();
+                            return;
+                        }
+                    }
+                }
+                node.requestFocus();
+            });
+        }
+    }
+    public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder, InputRef inputRef) {
         var inputProps = getInputProps(placeholder);
 
         var input = new Input(inputState, inputProps)
@@ -480,9 +504,16 @@ public class Components {
                 })
                 .lockCursorToEnd();
 
+        if(inputRef != null) inputRef.set((Input) input);
+
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
+    }
+
+
+    public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder) {
+        return InputColumnDecimal(label, inputState, placeholder, null);
     }
 
     private static String formatarDecimal(String value) {

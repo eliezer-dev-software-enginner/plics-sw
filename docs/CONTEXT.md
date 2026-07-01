@@ -53,6 +53,10 @@
 
 ## Últimas alterações
 
+### 2026-07-01: Correção de requestFocus() no input de quantidade (ComprasScreen)
+- **`InputRef.requestFocus()`**: agora percorre os filhos do `StackPane` e foca o `TextField` interno diretamente, em vez de chamar `requestFocus()` no `StackPane` (que era ignorado por não ser focusable).
+- **Causa raiz**: `InputBase` (megalodonte) envolve o `TextField` em um `StackPane`. `getJavaFxNode()` retorna o `StackPane`, que tem `focusTraversable = false` — o `requestFocus()` no `StackPane` não delega para o `TextField`.
+
 ### 2026-06-30: Correção de vazamento de Sessions SQLite
 - **`DB.closeAllSessions()`** agora é chamado no shutdown (`Main.handleClose()`)
 - **`reloadProdutos()`** em ComprasScreenVM e VendaMercadoriaScreenVM reusa service existente em vez de criar novo

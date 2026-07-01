@@ -65,7 +65,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
-                Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2"),
+                Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2",vm.quantidadeRef),
                 Components.InputColumn("Descrição do produto",
                         vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""),
                         "Ex: Paraiso", true)

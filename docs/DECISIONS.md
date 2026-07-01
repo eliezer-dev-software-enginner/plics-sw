@@ -1,5 +1,18 @@
 # Decisões Arquiteturais
 
+## 2026-07-01: requestFocus() em InputRef não funcionava por focar o StackPane wrapper em vez do TextField
+
+**Problema:** `InputRef.requestFocus()` chamava `getJavaFxNode().requestFocus()`, que retornava o `StackPane` (container wrapper criado em `InputBase`). Como `StackPane` tem `focusTraversable = false` por padrão, o JavaFX ignora o `requestFocus()` em nós não-focusable — o foco nunca chega ao `TextField` interno.
+
+**Decisão:**
+1. `InputRef.requestFocus()` agora percorre os filhos do `StackPane` via `Parent.getChildrenUnmodifiable()` e chama `requestFocus()` diretamente no `TextInputControl` (o `TextField`).
+2. Adicionado `import javafx.scene.Node` em `Components.java`.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/domain/components/Components.java` (InputRef.requestFocus + import Node)
+
+---
+
 ## 2026-06-30: Vazamento de Sessions — conexões JDBC SQLite nunca fechadas
 
 **Problema:** Cada `Service` criava uma `Session` Persism (backed por conexão JDBC) que NUNCA era fechada. Durante uma sessão típica, ~12+ sessions acumulavam. Nem no shutdown do app as conexões eram liberadas. Além disso:

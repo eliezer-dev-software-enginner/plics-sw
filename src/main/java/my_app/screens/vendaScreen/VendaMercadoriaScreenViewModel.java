@@ -78,6 +78,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
 
     final TotaisState totais = new TotaisState(pcVenda, qtd, descontoEmDinheiro);
 
+    public Components.InputRef quantidadeRef = new Components.InputRef();
+
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
         this(ctx, createVendaService(), createProdutoService(), createClienteService(), createContaAreceberService());
     }
@@ -163,6 +165,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             pcVenda.set(Utils.deRealParaCentavos(produto.getPrecoVenda()));
             estoqueAnterior.set(produto.getEstoque().toString());
             sugestoesProduto.clear();
+            quantidadeRef.requestFocus();
         }
     }
 

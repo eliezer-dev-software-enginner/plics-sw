@@ -29,35 +29,17 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Estou enfrentando um problema com migrations utilizando **Flyway + SQLite**.
+Estou enfrentando um problema com o requestFocus() no input de quantidade.
+Após selecionar um produto era para ele ficar com o cursor nele piscando e isso não acontece.
+Analise ComprasScreen e ComprasScreenViewModel o reqst acontece no método selecionarProduto() eu já validei que o método requestFocus() está sendo chamado corretamente.
 
-Analise toda a implementação relacionada ao banco de dados e identifique por que, ao lançar uma nova versão da aplicação contendo novas migrations, o Flyway lança uma exceção e a aplicação só volta a funcionar após apagar manualmente o banco de dados SQLite.
+    private Row formSecondRow() {
+        Component quantidadeInput = Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 1,500",vm.quantidadeRef);
 
-Quero que você investigue toda a arquitetura de migrations, incluindo:
-
-* Como o Flyway está sendo inicializado.
-* Em que momento `migrate()` é chamado.
-* Como o banco SQLite é criado.
-* Como é configurado o caminho do banco.
-* Se existe alguma configuração incorreta do Flyway.
-* Se alguma migration antiga foi alterada após ter sido publicada.
-* Se existem problemas de checksum.
-* Se há migrations fora de ordem ou com versões duplicadas.
-* Se alguma migration está sendo removida ou renomeada.
-* Se há scripts incompatíveis com SQLite.
-* Se existe algum problema na tabela `flyway_schema_history`.
-* Se o banco está sendo aberto antes da execução das migrations.
-* Se existe alguma estratégia incorreta de versionamento.
-
-Após identificar a causa, explique detalhadamente:
-
-1. Qual é o problema.
-2. Por que ele acontece.
-3. Como corrigir definitivamente.
-4. Quais arquivos precisam ser alterados.
-5. Quais boas práticas estão sendo violadas.
-6. Como deixar o projeto preparado para futuras versões, de forma que o usuário possa atualizar o aplicativo sem perder seus dados.
-
-**Importante:** Não quero soluções paliativas como apagar o banco de dados, executar `clean()`, remover a tabela de histórico ou desabilitar validações do Flyway. Quero que seja encontrada a causa raiz e aplicada uma solução compatível com um ambiente de produção, preservando todos os dados dos usuários.
-
-Caso seja necessário, percorra todo o projeto para localizar qualquer trecho de código que possa estar contribuindo para o problema e apresente um plano completo de correção.
+        return new Row(new RowProps().bottomVertically().spacingOf(10))
+                .r_child(quantidadeInput)
+                .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
+                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSelected, it -> it))
+                .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
+                .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
+    }

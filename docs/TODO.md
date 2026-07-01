@@ -101,6 +101,11 @@
 - [x] **`CategoriaService` alinhado** ao padrão `DB.getPersismSession()`
 - [x] **Documentação** atualizada (DECISIONS.md, CONTEXT.md, TODO.md)
 
+## Concluído (Correção requestFocus — 2026-07-01)
+- [x] **Root cause**: `InputRef.requestFocus()` chamava `getJavaFxNode().requestFocus()` no `StackPane` wrapper, não no `TextField`. `StackPane` com `focusTraversable = false` ignora `requestFocus()`.
+- [x] **Fix**: `InputRef.requestFocus()` percorre `Parent.getChildrenUnmodifiable()`, encontra o `TextInputControl` e chama `requestFocus()` nele.
+- [x] **Arquivo alterado**: `Components.java` (InputRef + import Node)
+
 ## Concluído (Correção vazamento de Sessions — 2026-06-30)
 - [x] **`DB.closeAllSessions()` adicionado** no `Main.handleClose()` antes de `Platform.exit()`
 - [x] **`reloadProdutos()` corrigido** em `ComprasScreenViewModel` e `VendaMercadoriaScreenViewModel`: reusa `produtoService` em vez de criar `new ProdutoService()` a cada chamada
