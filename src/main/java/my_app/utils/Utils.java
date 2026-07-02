@@ -122,11 +122,27 @@ public static BigDecimal deCentavosParaReal(String centavos){
         return email.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
     }
 
-    // Validação de CNPJ (Remove formatação e verifica se tem 14 dígitos)
-// Para uma validação rigorosa (cálculo de dígitos), recomenda-se uma lib ou algoritmo completo.
+    private static final int[] CNPJ_DV1_WEIGHTS = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+    private static final int[] CNPJ_DV2_WEIGHTS = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+
     public static boolean isValidCnpj(String cnpj) {
-        String cleanCnpj = cnpj.replaceAll("[^0-9]", "");
-        return cleanCnpj.length() == 14;
+        if (cnpj == null || cnpj.isBlank()) return false;
+        String clean = cnpj.toUpperCase().replaceAll("[^0-9A-Z]", "");
+        if (clean.length() != 14) return false;
+        String body = clean.substring(0, 12);
+        int dv1 = calcMod11(body, CNPJ_DV1_WEIGHTS);
+        if (dv1 != (clean.charAt(12) - 48)) return false;
+        int dv2 = calcMod11(body + dv1, CNPJ_DV2_WEIGHTS);
+        return dv2 == (clean.charAt(13) - 48);
+    }
+
+    private static int calcMod11(String input, int[] weights) {
+        int sum = 0;
+        for (int i = 0; i < input.length(); i++) {
+            sum += (input.charAt(i) - 48) * weights[i];
+        }
+        int remainder = sum % 11;
+        return remainder < 2 ? 0 : 11 - remainder;
     }
 
     public static boolean isValidCpf(String cpf) {

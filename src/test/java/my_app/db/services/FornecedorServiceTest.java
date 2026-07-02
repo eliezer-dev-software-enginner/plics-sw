@@ -17,7 +17,7 @@ class FornecedorServiceTest extends BaseServiceTest {
     private FornecedorModel fornecedorValido() {
         var f = new FornecedorModel();
         f.setNome("Fornecedor A");
-        f.setCpfCnpj("12345678901234");
+        f.setCpfCnpj("11222333000181");
         return f;
     }
 
@@ -82,7 +82,7 @@ class FornecedorServiceTest extends BaseServiceTest {
         fornecedorService.salvar(fornecedorValido());
         var f2 = new FornecedorModel();
         f2.setNome("Fornecedor B");
-        f2.setCpfCnpj("98765432109876");
+        f2.setCpfCnpj("99887766554429");
         var salvo2 = fornecedorService.salvar(f2);
         salvo2.setCpfCnpj("12345678901234");
         assertThrows(IllegalArgumentException.class, () -> fornecedorService.atualizar(salvo2));

@@ -54,7 +54,7 @@ class FornecedorScreenViewModelTest extends BaseViewModelTest {
     void deveSalvarFornecedorPessoaJuridica() throws Exception {
         vm.tipoPessoaSelected.set("Jurídica");
         vm.nome.set("Empresa XYZ Ltda");
-        vm.cnpjCpf.set("12345678901234");
+        vm.cnpjCpf.set("11222333000181");
         vm.celular.set("");
 
         vm.handleAddOrUpdate();
@@ -63,7 +63,7 @@ class FornecedorScreenViewModelTest extends BaseViewModelTest {
         var list = fornecedorService.listar();
         assertEquals(1, list.size());
         assertEquals("Empresa XYZ Ltda", list.get(0).getNome());
-        assertEquals("12345678901234", list.get(0).getCpfCnpj());
+        assertEquals("11222333000181", list.get(0).getCpfCnpj());
     }
 
     @Test

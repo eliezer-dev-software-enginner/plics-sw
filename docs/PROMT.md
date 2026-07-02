@@ -29,17 +29,5 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Estou enfrentando um problema com o requestFocus() no input de quantidade.
-Após selecionar um produto era para ele ficar com o cursor nele piscando e isso não acontece.
-Analise ComprasScreen e ComprasScreenViewModel o reqst acontece no método selecionarProduto() eu já validei que o método requestFocus() está sendo chamado corretamente.
-
-    private Row formSecondRow() {
-        Component quantidadeInput = Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 1,500",vm.quantidadeRef);
-
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(quantidadeInput)
-                .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
-                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSelected, it -> it))
-                .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
-                .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
-    }
+Adicionei select para definir se o fornecedor é pessoa física ou jurídica em FornecedorScreen
+E adicionei validação para o caso de uso acima. Agora quero que você crie testes automatizados que cobrem esse cenário.

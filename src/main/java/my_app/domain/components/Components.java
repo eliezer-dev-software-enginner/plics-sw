@@ -534,8 +534,13 @@ public class Components {
         return decPart.isEmpty() ? fmt.toString() : fmt + "," + decPart;
     }
 
+    @Deprecated(forRemoval = true)
     public static Component InputColumnCnpj(String label, State<String> inputState) {
-        var inputProps =getInputProps("00.000.000/0000-00");
+        return InputColumnCnpjAlfanumerico(label, inputState);
+    }
+
+    public static Component InputColumnCnpjAlfanumerico(String label, State<String> inputState) {
+        var inputProps = getInputProps("AA.AAA.AAA/AAAA-DD");
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -543,14 +548,14 @@ public class Components {
                     return OnChangeResult.of(formatted, value);
                 })
                 .onChange(value -> {
-                    String numeric = value.replaceAll("[^0-9]", "");
+                    String raw = value.toUpperCase().replaceAll("[^0-9A-Z]", "");
 
-                    if (numeric.length() > 14) {
-                        numeric = numeric.substring(0, 14);
+                    if (raw.length() > 14) {
+                        raw = raw.substring(0, 14);
                     }
 
-                    String formatted = formatCnpj(numeric);
-                    return OnChangeResult.of(formatted, numeric);
+                    String formatted = formatCnpj(raw);
+                    return OnChangeResult.of(formatted, raw);
                 })
                 .lockCursorToEnd();
 
