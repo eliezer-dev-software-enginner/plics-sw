@@ -1,5 +1,26 @@
 # Decisões Arquiteturais
 
+## 2026-07-02: Validação de CPF/CNPJ em FornecedorScreen — tipo de pessoa física/jurídica
+
+**Problema:** Ao adicionar select "Tipo de pessoa" (Física/Jurídica) na FornecedorScreen, a validação no ViewModel (que usa `isValidCpf` ou `isValidCnpj` conforme o tipo) não batia com a validação no Service (que sempre usava `isValidCnpj`, rejeitando CPFs de 11 dígitos). Além disso, a validação no VM ocorria antes da verificação de nome obrigatório e validava CPF/CNPJ mesmo quando o campo estava vazio.
+
+**Decisão:**
+1. `FornecedorService.validar()`: aceitar CPF (11 dígitos) ou CNPJ (14 dígitos) via `isValidCpf || isValidCnpj`.
+2. `FornecedorScreenViewModel.handleAddOrUpdate()`: reordenar validações — nome obrigatório primeiro, depois CPF/CNPJ apenas se preenchido (opcional).
+3. Testes de service: 3 novos (CPF válido, CPF inválido, CPF no update).
+4. Testes de ViewModel: 8 novos cobrindo `tipoPessoaSelected`, `tipoPessoaEhFisica`, salvamento como física/jurídica/sem doc, nome vazio, clearForm.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/db/services/FornecedorService.java` (validação aceita CPF e CNPJ)
+- `src/main/java/my_app/screens/fornecedorScreen/FornecedorScreenViewModel.java` (reordenação validação)
+- `src/test/java/my_app/db/services/FornecedorServiceTest.java` (+3 testes CPF)
+- `src/test/java/my_app/screens/fornecedorScreen/FornecedorScreenViewModelTest.java` (reescrito, 8 testes)
+- `docs/DECISIONS.md` (esta entrada)
+- `docs/CONTEXT.md` (atualizado)
+- `docs/TODO.md` (atualizado)
+
+---
+
 ## 2026-07-01: requestFocus() em InputRef não funcionava por focar o StackPane wrapper em vez do TextField
 
 **Problema:** `InputRef.requestFocus()` chamava `getJavaFxNode().requestFocus()`, que retornava o `StackPane` (container wrapper criado em `InputBase`). Como `StackPane` tem `focusTraversable = false` por padrão, o JavaFX ignora o `requestFocus()` em nós não-focusable — o foco nunca chega ao `TextField` interno.

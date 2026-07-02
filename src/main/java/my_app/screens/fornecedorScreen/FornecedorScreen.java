@@ -8,6 +8,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.Show;
 import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
@@ -60,7 +61,11 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private Row informacoesPessoais() {
         return new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(Components.InputColumn("Nome Fantasia", vm.nome, "Ex: Empresa 123"))
-                .r_child(Components.InputColumnCnpj("CNPJ", vm.cnpj))
+                .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
+                .r_child(Show.when(vm.tipoPessoaEhFisica,
+                        () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
+                        () -> Components.InputColumnCnpj("CNPJ", vm.cnpjCpf)
+                ))
                 .r_child(Components.InputColumnPhone("Celular", vm.celular))
                 .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, ""))
                 .r_child(Components.InputColumn("Email", vm.email, "Ex: email@teste.com"));
@@ -79,7 +84,9 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .column("ID", it -> it.getId())
                 .column("Nome", it -> it.getNome())
                 .column("Telefone", it -> Utils.formatPhone(it.getCelular()))
-                .column("CNPJ", it -> it.getCpfCnpj())
+                .column("CPF/CNPJ",      it -> it.getCpfCnpj().length() == 11
+                        ? Utils.formatCpf(it.getCpfCnpj())
+                        : Utils.formatCnpj(it.getCpfCnpj()))
                 .column("Email", it -> it.getEmail())
                 .column("Data de Criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .end()

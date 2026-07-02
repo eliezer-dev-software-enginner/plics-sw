@@ -65,6 +65,12 @@
 - [x] **testes-gerais.md ClienteScreen**: adicionados 12 clientes (#12-#23) que estavam faltando — João Pedro, Carla Lima, Carlos Mendes, Sofia Rocha, Luana Costa, Thiago Santos, José Moura, Renata Oliveira, Paulo Sérgio, Fernanda Lima, Ricardo Gomes, Juliana Costa
 - [x] **Fornecedores verificados**: todos os fornecedores usados em testes já estavam definidos — sem alteração necessária
 
+## Concluído (Tipo de pessoa FornecedorScreen — 2026-07-02)
+- [x] **FornecedorService.validar()**: aceita CPF (11 dígitos) e CNPJ (14 dígitos) — antes só CNPJ
+- [x] **FornecedorScreenViewModel.handleAddOrUpdate()**: valida nome primeiro (obrigatório); CPF/CNPJ validado conforme tipo de pessoa, apenas se preenchido
+- [x] **FornecedorServiceTest**: +3 testes (CPF válido, CPF inválido, CPF no update)
+- [x] **FornecedorScreenViewModelTest**: 8 testes (tipoPessoa inicial, ComputedState, física, jurídica, sem doc, nome vazio, clearForm)
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

@@ -1,5 +1,6 @@
 package my_app.screens.fornecedorScreen;
 
+import megalodonte.ComputedState;
 import megalodonte.v2.ListState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
@@ -10,6 +11,7 @@ import my_app.db.services.FornecedorService;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.utils.Utils;
 
 import java.sql.SQLException;
 
@@ -20,7 +22,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     public final State<FornecedorModel> fornecedorSelected = new State<>(null);
 
     State<String> nome = State.of("");
-    State<String> cnpj = State.of("");
+    State<String> cnpjCpf = State.of("");
     State<String> celular = State.of("");
     State<String> inscricaoEstadual = State.of("");
     State<String> email = State.of("");
@@ -32,6 +34,11 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     State<String> numero = State.of("");
 
     State<String> observacao = State.of("");
+    final State<String> tipoPessoaSelected = new State<>(Data.tiposPessoaList.getFirst());
+    final ComputedState<Boolean> tipoPessoaEhFisica = ComputedState.of(
+            () -> tipoPessoaSelected.get().equals(Data.tiposPessoaList.getFirst()),
+            tipoPessoaSelected
+    );
 
     public FornecedorScreenViewModel(ScreenContext ctx) {
         this(ctx, createFornecedorService());
@@ -61,7 +68,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         final var data = fornecedorSelected.get();
         if (data != null) {
             nome.set(data.getNome());
-            cnpj.set(data.getCpfCnpj());
+            cnpjCpf.set(data.getCpfCnpj());
             celular.set(data.getCelular());
             inscricaoEstadual.set(data.getInscricaoEstadual());
             email.set(data.getEmail());
@@ -89,7 +96,20 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     @Override
     public void handleAddOrUpdate() {
         String nomeValue = nome.getOrDefault("").trim();
-        String cnpjValue = cnpj.getOrDefault("").trim();
+        if (nomeValue.isEmpty()) throw new RuntimeException("Nome é obrigatório");
+
+        String cnpjValue = cnpjCpf.getOrDefault("").trim();
+        if (!cnpjValue.isEmpty()) {
+            if (tipoPessoaEhFisica.get() && !Utils.isValidCpf(cnpjValue)) {
+                Components.ShowAlertError("CPF inválido");
+                return;
+            }
+            if (!tipoPessoaEhFisica.get() && !Utils.isValidCnpj(cnpjValue)) {
+                Components.ShowAlertError("CNPJ inválido");
+                return;
+            }
+        }
+
         String celularValue = celular.getOrDefault("").trim();
         String emailValue = email.getOrDefault("").trim();
         String inscricaoValue = inscricaoEstadual.getOrDefault("").trim();
@@ -99,8 +119,6 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         String ruaValue = rua.getOrDefault("").trim();
         String numeroValue = numero.getOrDefault("").trim();
         String observacaoValue = observacao.getOrDefault("").trim();
-
-        if (nomeValue.isEmpty()) throw new RuntimeException("Nome é obrigatório");
 
         if (modoEdicao.get() && fornecedorSelected.get() == null) return;
 
@@ -112,6 +130,8 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     }
 
     private void asyncAtualizar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue, String ufValue, String cidadeValue, String bairroValue, String ruaValue, String numeroValue, String observacaoValue) {
+
+
         Async.Run(() -> {
             try {
                 FornecedorModel selecionado = fornecedorSelected.get();
@@ -205,9 +225,8 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
 
     @Override
     public void clearForm() {
-        modoEdicao.set(false);
         nome.set("");
-        cnpj.set("");
+        cnpjCpf.set("");
         celular.set("");
         inscricaoEstadual.set("");
         email.set("");

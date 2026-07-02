@@ -103,4 +103,31 @@ class FornecedorServiceTest extends BaseServiceTest {
         var salvo = fornecedorService.salvar(f);
         assertEquals("11988887777", salvo.getCelular());
     }
+
+    @Test
+    void deveAceitarCpfValido() throws Exception {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("12345678901");
+        var salvo = fornecedorService.salvar(f);
+        assertNotNull(salvo.getId());
+        assertEquals("12345678901", salvo.getCpfCnpj());
+    }
+
+    @Test
+    void deveRejeitarCpfInvalido() {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("1234567890");
+        assertThrows(IllegalArgumentException.class, () -> fornecedorService.salvar(f));
+    }
+
+    @Test
+    void deveAceitarCpfNoUpdate() throws Exception {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("12345678901");
+        var salvo = fornecedorService.salvar(f);
+        assertDoesNotThrow(() -> fornecedorService.atualizar(salvo));
+    }
 }
