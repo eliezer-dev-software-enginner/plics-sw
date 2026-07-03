@@ -65,6 +65,12 @@
 - [x] **testes-gerais.md ClienteScreen**: adicionados 12 clientes (#12-#23) que estavam faltando — João Pedro, Carla Lima, Carlos Mendes, Sofia Rocha, Luana Costa, Thiago Santos, José Moura, Renata Oliveira, Paulo Sérgio, Fernanda Lima, Ricardo Gomes, Juliana Costa
 - [x] **Fornecedores verificados**: todos os fornecedores usados em testes já estavam definidos — sem alteração necessária
 
+## Concluído (PDV subtotal/troco gigantes — 2026-07-03)
+- [x] **`PDVScreenViewModel`**: subtotal e troco agora usam `Utils.deRealParaCentavos()` em vez de `toPlainString()`.
+- [x] **`Utils.deRealParaCentavos()`**: `intValue()` → `setScale(0, HALF_UP).toBigInteger()` (precisão total).
+- [x] **`FornecedorServiceTest`**: CNPJ duplicado corrigido para `11222333000181`.
+- [x] **`UtilsTest`**: testes renomeados para validar formato.
+
 ## Concluído (CNPJ alfanumérico + docs de teste — 2026-07-03)
 - [x] **`Utils.isValidCnpj()`**: removido cálculo de dígitos verificadores. Agora valida: 14 chars alfanum (0-9, A-Z) + últimos 2 são dígitos.
 - [x] **`calcMod11()` removido** junto com as constantes de peso.

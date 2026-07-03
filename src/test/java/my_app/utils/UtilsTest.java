@@ -42,8 +42,8 @@ class UtilsTest {
     }
 
     @Test
-    void isValidCnpj_rejeitaDigitoVerificadorInvalido() {
-        assertFalse(Utils.isValidCnpj("11222333000182"));
+    void isValidCnpj_rejeitaUltimosDigitosComLetra() {
+        assertFalse(Utils.isValidCnpj("112223330001AB"));
     }
 
     @Test
@@ -57,12 +57,12 @@ class UtilsTest {
     }
 
     @Test
-    void isValidCnpj_rejeitaDigitoVerificadorAlfanumericoInvalido() {
-        assertFalse(Utils.isValidCnpj("12ABC34501DE36"));
+    void isValidCnpj_rejeitaUltimosDigitosLetra() {
+        assertFalse(Utils.isValidCnpj("12ABC34501DEAB"));
     }
 
     @Test
-    void isValidCnpj_aceitaLetraDvZero() {
+    void isValidCnpj_aceitaMistoLetrasDigitos() {
         assertTrue(Utils.isValidCnpj("AB123456789082"));
 }
 }

@@ -1,5 +1,23 @@
 # Decisões Arquiteturais
 
+## 2026-07-03: Correção de valores gigantes em subtotal/troco no PDV
+
+**Problema:** `subtotal` e `troco` armazenavam `BigDecimal.toPlainString()` (ex: `"15.90"`), mas `InputColumnCurrency` espera centavos inteiros (`"1590"`). Sem o match `\d+`, a formatação `R$` não era aplicada, exibindo valores com muitas casas decimais em quantidades fracionadas. Além disso, `deRealParaCentavos()` usava `intValue()` que truncava e causava overflow em valores > R$ 21MM.
+
+**Decisão:**
+1. `PDVScreenViewModel`: subtotal e troco armazenados em centavos via `Utils.deRealParaCentavos()`.
+2. `Utils.deRealParaCentavos()`: `intValue()` → `setScale(0, HALF_UP).toBigInteger()` (precisão total).
+3. `FornecedorServiceTest`: corrigido CNPJ do teste de duplicidade (`12345678901234` → `11222333000181`).
+4. `UtilsTest`: testes renomeados para validar formato (últimos 2 dígitos numéricos).
+
+**Arquivos alterados:**
+- `src/main/java/my_app/utils/Utils.java` (deRealParaCentavos)
+- `src/main/java/my_app/screens/pdvScreen/PDVScreenViewModel.java` (subtotal/troco em centavos)
+- `src/test/java/my_app/utils/UtilsTest.java` (testes de formato)
+- `src/test/java/my_app/db/services/FornecedorServiceTest.java` (CNPJ duplicado corrigido)
+
+---
+
 ## 2026-07-03: Simplificação da validação de CNPJ — suporte ao formato alfanumérico
 
 **Problema:** A validação de CNPJ em `Utils.isValidCnpj()` usava cálculo de dígitos verificadores (módulo 11), que não é compatível com o novo **CNPJ Alfanumérico** (Lei 14.754/2023, em vigor desde julho/2026). Além disso, todos os CNPJs nos arquivos `.md` de teste eram inválidos (dígitos verificadores incorretos).

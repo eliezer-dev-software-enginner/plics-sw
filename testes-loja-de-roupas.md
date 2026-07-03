@@ -104,12 +104,12 @@
 ## PDVScreen
 
 | # | Cenário | Produto | Qtd | Total | Recebido | Fiado | Cliente (fiado) | Efeito Esperado | Erro | Resultado |
-|---|---------|---------|-----|-------|----------|-------|-----------------|-----------------|------|---|
-| 84 | Venda avulsa (não fiada) | Camiseta M | 2 | R$ 79,80 | R$ 100,00 | Não | - | Troco: R$ 20,20. Pedido registrado. | | |
-| 85 | Venda fiada | Calça Jeans | 1 | R$ 80,00 | - | Sim | Maria Souza | Pedido registrado como fiado. Gera conta a receber. | | |
-| 86 | Venda fiada sem cliente | Jaqueta | 1 | R$ 199,90 | - | Sim | (vazio) | Alerta: "Selecione um cliente para venda fiada". | | |
-| 87 | Recebimento menor que total | Camiseta M | 3 | R$ 119,70 | R$ 50,00 | Não | - | Alerta: "Valor recebido é insuficiente". | | |
-| 88 | Carrinho vazio | (nenhum) | 0 | R$ 0 | - | - | - | Alerta: "Adicione produtos ao carrinho". | | |
+|---|---------|---------|-----|-------|----------|-------|-----------------|-----------------|------|-----------|
+| 84 | Venda avulsa (não fiada) | Camiseta M | 2 | R$ 79,80 | R$ 100,00 | Não | - | Troco: R$ 20,20. Pedido registrado. | | ok        |
+| 85 | Venda fiada | Calça Jeans | 1 | R$ 80,00 | - | Sim | Maria Souza | Pedido registrado como fiado. Gera conta a receber. | |           |
+| 86 | Venda fiada sem cliente | Jaqueta | 1 | R$ 199,90 | - | Sim | (vazio) | Alerta: "Selecione um cliente para venda fiada". | |           |
+| 87 | Recebimento menor que total | Camiseta M | 3 | R$ 119,70 | R$ 50,00 | Não | - | Alerta: "Valor recebido é insuficiente". | |           |
+| 88 | Carrinho vazio | (nenhum) | 0 | R$ 0 | - | - | - | Alerta: "Adicione produtos ao carrinho". | |           |
 
 ---
 

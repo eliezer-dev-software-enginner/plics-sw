@@ -53,6 +53,11 @@
 
 ## Últimas alterações
 
+### 2026-07-03: Correção de valores gigantes em subtotal/troco no PDV
+- **`PDVScreenViewModel`**: subtotal e troco agora armazenam centavos inteiros via `Utils.deRealParaCentavos()`.
+- **`Utils.deRealParaCentavos()`**: substituído `intValue()` por `setScale(0, HALF_UP).toBigInteger()` — elimina truncamento e overflow.
+- **`FornecedorServiceTest`**: corrigido CNPJ no teste de duplicidade.
+
 ### 2026-07-03: Validação de CNPJ simplificada — suporte ao formato alfanumérico
 - **`Utils.isValidCnpj()`**: removido cálculo de dígitos verificadores (módulo 11). Agora valida apenas formato: 14 caracteres (0-9, A-Z), últimos 2 obrigatoriamente dígitos.
 - **`calcMod11()` e constantes de peso removidos** por obsolescência.

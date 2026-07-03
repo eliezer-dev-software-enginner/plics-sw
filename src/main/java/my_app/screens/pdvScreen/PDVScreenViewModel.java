@@ -1,5 +1,6 @@
 package my_app.screens.pdvScreen;
 
+import megalodonte.ComputedState;
 import megalodonte.base.state.State;
 import megalodonte.v2.ListState;
 import megalodonte.base.UI;
@@ -33,7 +34,14 @@ public class PDVScreenViewModel {
 
     // Cache de todos os produtos (lookup por código)
     private final Map<String, ProdutoModel> produtosCache = new HashMap<>();
+    final ListState<ProdutoModel> sugestoesProduto = ListState.ofEmpty();
 
+    final ComputedState<Boolean> sugestoesProdutoVisible = ComputedState.of(
+            () -> !sugestoesProduto.get().isEmpty(),
+            sugestoesProduto
+    );
+
+    final State<ProdutoModel> produtoEncontrado = State.of(null);
     final ListState<ClienteModel> clientes = ListState.ofEmpty();
 
     State<ClienteModel> clienteSelected = State.of(null);
@@ -86,20 +94,19 @@ public class PDVScreenViewModel {
     }
 
     protected void onInit() {
-        // Sempre que o carrinho mudar, recalcula o subtotal
         itensCarrinho.onChange(itens -> {
             BigDecimal total = itens.stream()
                     .map(ItemVenda::totalItem)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            subtotal.set(total.toPlainString());
+            subtotal.set(Utils.deRealParaCentavos(total));
         });
 
         totalRecebido.subscribe(recebido -> {
             try {
                 BigDecimal recebidoBD = Utils.deCentavosParaReal(recebido);
-                BigDecimal subtotalBD = new BigDecimal(subtotal.get());
+                BigDecimal subtotalBD = Utils.deCentavosParaReal(subtotal.get());
                 BigDecimal t = recebidoBD.subtract(subtotalBD);
-                troco.set(t.compareTo(BigDecimal.ZERO) < 0 ? "0" : t.toPlainString());
+                troco.set(t.compareTo(BigDecimal.ZERO) < 0 ? "0" : Utils.deRealParaCentavos(t));
             } catch (NumberFormatException e) {
                 troco.set("0");
             }
@@ -110,6 +117,43 @@ public class PDVScreenViewModel {
                 clientes.add(cm);
             }
         });
+
+        produtoEncontrado.subscribe(this::selecionarProduto);
+        codigoBarrasInput.subscribe(termo -> filtrarProdutos(termo));
+
+    }
+
+    void selecionarProduto(ProdutoModel produto) {
+        if (produto != null) {
+            codigoBarrasInput.set(produto.getCodigoBarras());
+            //quantidadeRef.requestFocus();
+        }
+    }
+
+    void filtrarProdutos(String termo) {
+        if (termo == null || termo.trim().isEmpty()) {
+            sugestoesProduto.clear();
+            return;
+        }
+
+        var selected = produtoEncontrado.get();
+
+        if (selected == null || !selected.getCodigoBarras().equals(termo.trim())) {
+            produtoEncontrado.set(null);
+        }
+
+        if(selected != null) {
+            IO.println(selected.getDescricao());
+        }
+
+
+        var filtrados = produtosCache.values().stream()
+                .filter(p -> p.getCodigoBarras().contains(termo.trim())
+                        || p.getDescricao().toLowerCase().contains(termo.trim().toLowerCase()))
+                .limit(8)
+                .toList();
+
+        sugestoesProduto.set(filtrados);
     }
 
     void loadProdutos() {

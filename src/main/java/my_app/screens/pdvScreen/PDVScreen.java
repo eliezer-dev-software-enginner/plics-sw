@@ -79,7 +79,9 @@ public class PDVScreen implements ScreenComponent {
                 new Column().children(
                         Components.FormTitle("Buscar produto"),
                         new SpacerVertical(5),
-                        Components.InputColumn("Código do produto", vm.codigoBarrasInput, "Ex: João"),
+                        //Components.InputColumn("Código do produto", vm.codigoBarrasInput, "Ex: João"),
+                        Components.InputColumnComDynamicSearch("Código do produto", vm.codigoBarrasInput, "xxxxxxxx",
+                                vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
                         Components.InputColumnComEnterHandler("Quantidade",
                                         vm.quantidadeInput, "Ex: 1",
                                         () -> vm.adicionarPorCodigo(vm.codigoBarrasInput.get())

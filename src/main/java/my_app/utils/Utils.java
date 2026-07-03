@@ -114,7 +114,7 @@ public static BigDecimal deCentavosParaReal(String centavos){
      */
     public static String deRealParaCentavos(BigDecimal real){
         if (real == null) return "0";
-        return real.multiply(new BigDecimal("100")).intValue() + "";
+        return real.multiply(new BigDecimal("100")).setScale(0, java.math.RoundingMode.HALF_UP).toBigInteger().toString();
     }
 
     // Validação simples de E-mail

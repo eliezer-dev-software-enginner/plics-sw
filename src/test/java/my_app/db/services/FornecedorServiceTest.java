@@ -84,7 +84,7 @@ class FornecedorServiceTest extends BaseServiceTest {
         f2.setNome("Fornecedor B");
         f2.setCpfCnpj("99887766554429");
         var salvo2 = fornecedorService.salvar(f2);
-        salvo2.setCpfCnpj("12345678901234");
+        salvo2.setCpfCnpj("11222333000181");
         assertThrows(IllegalArgumentException.class, () -> fornecedorService.atualizar(salvo2));
     }
 
