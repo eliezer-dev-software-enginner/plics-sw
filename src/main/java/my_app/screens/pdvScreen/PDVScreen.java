@@ -46,8 +46,11 @@ public class PDVScreen implements ScreenComponent {
                                         new SpacerVertical(30),
                                         vendaFiadaComponent(),
                                         new SpacerVertical(30),
-                                        new Button("Finalizar Venda").onClick(vm::finalizarVenda),
-                                        new Button("Imprimir nota de venda").onClick(vm::imprimirNota)
+                                        new Row(new RowProps().spacingOf(10)).children(
+                                                new Button("Finalizar Venda").onClick(vm::finalizarVenda),
+                                                new Button("Imprimir nota de venda").onClick(vm::imprimirNota)
+                                        )
+
                                 )
                         ),
                         new SpacerVertical().fill(),
