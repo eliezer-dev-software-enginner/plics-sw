@@ -5,7 +5,7 @@
 | Campo | Valor | |
 |-------|-------|---|
 | Nome fantasia | Moda & Estilo Ltda | |
-| CNPJ | 12.345.678/0001-90 | |
+| CNPJ | 12.345.678/0001-95 | |
 | Celular | (11) 98765-4321 | |
 | Email | contato@modaestilo.com.br | |
 | Cidade | São Paulo - SP | |
@@ -129,7 +129,7 @@
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
 | 1 | Categoria | Criar "Masculino" | Nome: Masculino | OK | | |
-| 2 | Fornecedor | Criar "Malharia Silva" | CNPJ: 11.111.111/0001-11, SP | OK | | |
+| 2 | Fornecedor | Criar "Malharia Silva" | CNPJ: 11.111.111/0001-91, SP | OK | | |
 | 3 | Produto | Criar "Camiseta M" | SKU001, R$ 15,00/R$ 39,90, UN, Est: 100 | OK | | |
 | 4 | Cliente | Criar "Maria Souza" | CPF: 123.456.789-09 | OK | | |
 | 5 | Compras | Comprar 50 Camisetas | Malharia Silva, R$ 15,00, A VISTA, refletir estoque | Estoque: 150 | | |

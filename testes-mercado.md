@@ -5,7 +5,7 @@
 | Campo | Valor | |
 |-------|-------|---|
 | Nome fantasia | SuperMax Mercado | |
-| CNPJ | 77.888.999/0001-55 | |
+| CNPJ | 77.888.999/0001-81 | |
 | Celular | (61) 99666-5555 | |
 | Email | supermax@mercado.com.br | |
 | Cidade | Brasília - DF | |
@@ -56,7 +56,7 @@
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
 | 1 | Categoria | Criar "Alimentos" | Nome: Alimentos | OK | | |
-| 2 | Fornecedor | Criar "Alimentos Brasil" | CNPJ: 66.666.666/0001-66, DF | OK | | |
+| 2 | Fornecedor | Criar "Alimentos Brasil" | CNPJ: 66.666.666/0001-91, DF | OK | | |
 | 3 | Produto | Criar "Arroz 5kg" | SKU-ARROZ, R$ 8,00/R$ 12,00, UN, Est: 200 | OK | | |
 | 4 | Compras | Comprar 100 Arroz a prazo | Alimentos Brasil, R$ 8,00, A PRAZO (3x) | Estoque: 300. Gera 3 contas a pagar. | | |
 | 5 | Contas a Pagar | Verificar | 3 parcelas geradas automaticamente | OK | | |

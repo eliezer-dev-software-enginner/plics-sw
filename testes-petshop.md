@@ -5,7 +5,7 @@
 | Campo | Valor | |
 |-------|-------|---|
 | Nome fantasia | PetShop Amigo | |
-| CNPJ | 98.765.432/0001-10 | |
+| CNPJ | 98.765.432/0001-98 | |
 | Celular | (21) 99876-5432 | |
 | Email | contato@petshopamigo.com.br | |
 | Cidade | Rio de Janeiro - RJ | |
@@ -124,7 +124,7 @@
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
 | 1 | Categoria | Criar "Cachorros" | Nome: Cachorros | OK | | |
-| 2 | Fornecedor | Criar "Purina Pet" | CNPJ: 44.444.444/0001-44, RJ | OK | | |
+| 2 | Fornecedor | Criar "Purina Pet" | CNPJ: 44.444.444/0001-91, RJ | OK | | |
 | 3 | Cliente | Criar "Ana Beatriz" | CPF: 222.333.444-55 | OK | | |
 | 4 | Produto | Criar "Ração Cães 15kg" | RAC-C-001, R$ 45,00/R$ 79,90, KG, Est: 20, perecível 15/12/2026 | OK | | |
 | 5 | Produto | Criar "Brinquedo Osso" | BRI-001, R$ 3,50/R$ 9,90, UN, Est: 50 | OK | | |

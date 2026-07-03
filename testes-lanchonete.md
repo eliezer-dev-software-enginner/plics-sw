@@ -5,7 +5,7 @@
 | Campo | Valor | |
 |-------|-------|---|
 | Nome fantasia | Sabor & Cia Lanches | |
-| CNPJ | 11.222.333/0001-44 | |
+| CNPJ | 11.222.333/0001-81 | |
 | Celular | (31) 99988-7766 | |
 | Email | saborecia@email.com.br | |
 | Cidade | Belo Horizonte - MG | |

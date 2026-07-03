@@ -5,7 +5,7 @@
 | Campo | Valor | |
 |-------|-------|---|
 | Nome fantasia | Boi Nobre Carnes | |
-| CNPJ | 55.666.777/0001-88 | |
+| CNPJ | 55.666.777/0001-81 | |
 | Celular | (41) 99777-8888 | |
 | Email | boinobre@carnes.com.br | |
 | Cidade | Curitiba - PR | |
