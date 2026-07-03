@@ -53,6 +53,17 @@
 
 ## Últimas alterações
 
+### 2026-07-02: Testes para tipo de pessoa (Física/Jurídica) em FornecedorScreen
+- **Select "Tipo de pessoa"** adicionado em FornecedorScreen com `Data.tiposPessoaList` ("Física", "Jurídica").
+- **ViewModel**: `tipoPessoaSelected` (State), `tipoPessoaEhFisica` (ComputedState). Valida CPF se física, CNPJ se jurídica. Só valida CPF/CNPJ quando campo preenchido (opcional).
+- **Service**: `validar()` agora aceita CPF (11 dígitos) ou CNPJ (14 dígitos) — antes só aceitava CNPJ.
+- **FornecedorServiceTest**: +3 testes (CPF válido, CPF inválido, CPF no update) — total 14 testes, 0 falhas.
+- **FornecedorScreenViewModelTest**: reescrito com 8 testes (tipoPessoa inicial, ComputedState, física, jurídica, sem doc, nome vazio, clearForm).
+
+### 2026-07-01: Correção de requestFocus() no input de quantidade (ComprasScreen)
+- **`InputRef.requestFocus()`**: agora percorre os filhos do `StackPane` e foca o `TextField` interno diretamente, em vez de chamar `requestFocus()` no `StackPane` (que era ignorado por não ser focusable).
+- **Causa raiz**: `InputBase` (megalodonte) envolve o `TextField` em um `StackPane`. `getJavaFxNode()` retorna o `StackPane`, que tem `focusTraversable = false` — o `requestFocus()` no `StackPane` não delega para o `TextField`.
+
 ### 2026-06-30: Correção de vazamento de Sessions SQLite
 - **`DB.closeAllSessions()`** agora é chamado no shutdown (`Main.handleClose()`)
 - **`reloadProdutos()`** em ComprasScreenVM e VendaMercadoriaScreenVM reusa service existente em vez de criar novo

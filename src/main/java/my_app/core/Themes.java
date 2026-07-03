@@ -14,7 +14,8 @@ return new ThemeColors(
                 "#334155",                    // secondary
                 "#ffffff",                    // text primary
                 "#94a3b8",                    // text secondary
-                "#334155"                    // border,
+                "#334155",                    // border,
+        "#A9A9A9"
             );
         }
 
@@ -44,8 +45,8 @@ return new ThemeColors(
                 "#e2e8f0",                    // secondary: Cinza claro para elementos secundários
                 "#0f172a",                    // text primary: Azul quase preto para máximo contraste
                 "#94a3b8",                    // text secondary: Cinza médio para textos de apoio
-                "#1B2432"                   // border: Cinza suave para divisórias e bordas,
-                
+                "#1B2432",                   // border: Cinza suave para divisórias e bordas,
+                "#A9A9A9"
 
             );
         }

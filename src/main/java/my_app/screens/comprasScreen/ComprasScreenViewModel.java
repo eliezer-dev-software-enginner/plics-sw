@@ -1,6 +1,7 @@
 package my_app.screens.comprasScreen;
 
 import megalodonte.ComputedState;
+import megalodonte.components.inputs.Input;
 import megalodonte.v2.ListState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
@@ -82,6 +83,8 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
             () -> !sugestoesProduto.get().isEmpty(),
             sugestoesProduto
     );
+
+    public Components.InputRef quantidadeRef = new Components.InputRef();
 
     public ComprasScreenViewModel(ScreenContext ctx) {
         this(ctx, createCompraService(), createFornecedorService(), createProdutoService(), createContasPagarService());
@@ -184,6 +187,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
             estoqueAnterior.set(produto.getEstoque().toString());
             sugestoesProduto.clear();
             atualizarEstoqueVisual();
+            quantidadeRef.requestFocus();
         }
     }
 

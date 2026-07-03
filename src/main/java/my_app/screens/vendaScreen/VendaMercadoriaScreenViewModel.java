@@ -78,6 +78,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
 
     final TotaisState totais = new TotaisState(pcVenda, qtd, descontoEmDinheiro);
 
+    public Components.InputRef quantidadeRef = new Components.InputRef();
+
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
         this(ctx, createVendaService(), createProdutoService(), createClienteService(), createContaAreceberService());
     }
@@ -163,6 +165,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             pcVenda.set(Utils.deRealParaCentavos(produto.getPrecoVenda()));
             estoqueAnterior.set(produto.getEstoque().toString());
             sugestoesProduto.clear();
+            quantidadeRef.requestFocus();
         }
     }
 
@@ -212,6 +215,10 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                     for (var venda : vendaList) {
                         venda.setCliente(clienteList.stream()
                                 .filter(it -> it.getId().equals(venda.getClienteId()))
+                                .findFirst()
+                                .orElse(null));
+                        venda.setProduto(produtoList.stream()
+                                .filter(it -> it.getCodigoBarras().equals(venda.getProdutoCod()))
                                 .findFirst()
                                 .orElse(null));
                     }
@@ -343,8 +350,15 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     }
 
     private void fillModelFromForm(VendaModel model, boolean isNew) {
-        model.setProdutoCod(produtoEncontrado.get().getCodigoBarras());
-        model.setClienteId(clienteSelected.get() != null ? clienteSelected.get().getId() : null);
+        String cod = produtoEncontrado.get().getCodigoBarras();
+        Integer clienteId = clienteSelected.get().getId();
+
+        model.setProduto(produtoModelListState.get().stream().filter(prod-> prod.getCodigoBarras().equals(cod)).findFirst().get());
+        model.setProdutoCod(cod);
+
+        model.setCliente(clientes.get().stream().filter(c-> c.getId().equals(clienteId)).findFirst().get());
+        model.setClienteId(clienteId);
+
         model.setQuantidade(new BigDecimal(qtd.get()));
         model.setPrecoUnitario(Utils.deCentavosParaReal(pcVenda.get()));
         model.setDesconto(Utils.deCentavosParaReal(descontoEmDinheiro.get()));

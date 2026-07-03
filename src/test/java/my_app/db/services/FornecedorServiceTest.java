@@ -17,7 +17,7 @@ class FornecedorServiceTest extends BaseServiceTest {
     private FornecedorModel fornecedorValido() {
         var f = new FornecedorModel();
         f.setNome("Fornecedor A");
-        f.setCpfCnpj("12345678901234");
+        f.setCpfCnpj("11222333000181");
         return f;
     }
 
@@ -82,7 +82,7 @@ class FornecedorServiceTest extends BaseServiceTest {
         fornecedorService.salvar(fornecedorValido());
         var f2 = new FornecedorModel();
         f2.setNome("Fornecedor B");
-        f2.setCpfCnpj("98765432109876");
+        f2.setCpfCnpj("99887766554429");
         var salvo2 = fornecedorService.salvar(f2);
         salvo2.setCpfCnpj("12345678901234");
         assertThrows(IllegalArgumentException.class, () -> fornecedorService.atualizar(salvo2));
@@ -102,5 +102,32 @@ class FornecedorServiceTest extends BaseServiceTest {
         f.setCelular("11988887777");
         var salvo = fornecedorService.salvar(f);
         assertEquals("11988887777", salvo.getCelular());
+    }
+
+    @Test
+    void deveAceitarCpfValido() throws Exception {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("12345678901");
+        var salvo = fornecedorService.salvar(f);
+        assertNotNull(salvo.getId());
+        assertEquals("12345678901", salvo.getCpfCnpj());
+    }
+
+    @Test
+    void deveRejeitarCpfInvalido() {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("1234567890");
+        assertThrows(IllegalArgumentException.class, () -> fornecedorService.salvar(f));
+    }
+
+    @Test
+    void deveAceitarCpfNoUpdate() throws Exception {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("12345678901");
+        var salvo = fornecedorService.salvar(f);
+        assertDoesNotThrow(() -> fornecedorService.atualizar(salvo));
     }
 }

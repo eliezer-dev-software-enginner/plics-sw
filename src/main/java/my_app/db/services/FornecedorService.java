@@ -41,12 +41,12 @@ public class FornecedorService extends BaseService<FornecedorModel> {
         if (nome == null || nome.isBlank())
             throw new IllegalArgumentException("Nome é obrigatório");
 
-        String cnpj = model.getCpfCnpj();
-        if (cnpj != null && !cnpj.isBlank() && !isValidCnpj(cnpj))
-            throw new IllegalArgumentException("CNPJ inválido (deve conter 14 dígitos)");
+        String cpfCnpj = model.getCpfCnpj();
+        if (cpfCnpj != null && !cpfCnpj.isBlank() && !isValidCpf(cpfCnpj) && !isValidCnpj(cpfCnpj))
+            throw new IllegalArgumentException("CPF/CNPJ inválido (deve conter 11 ou 14 dígitos)");
 
-        if (cnpj != null && !cnpj.isBlank()) {
-            var existente = fornecedorRepository.buscarPorCpfCnpj(cnpj);
+        if (cpfCnpj != null && !cpfCnpj.isBlank()) {
+            var existente = fornecedorRepository.buscarPorCpfCnpj(cpfCnpj);
             if (existente != null && !existente.getId().equals(idAtual))
                 throw new IllegalArgumentException("Já existe um fornecedor com este CNPJ/CPF");
         }

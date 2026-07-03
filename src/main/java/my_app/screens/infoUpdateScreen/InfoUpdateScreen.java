@@ -33,8 +33,8 @@ public class InfoUpdateScreen implements ScreenComponent {
             container.c_child(columnInsideCard);
         });
 
-        return new Container(new ContainerProps().paddingAll(10)).children(
+        return new Scroll(new Container(new ContainerProps().paddingAll(10)).children(
                 new Card(container)
-        );
+        ));
     }
 }

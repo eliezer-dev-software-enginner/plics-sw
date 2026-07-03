@@ -29,35 +29,5 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Estou enfrentando um problema com migrations utilizando **Flyway + SQLite**.
-
-Analise toda a implementação relacionada ao banco de dados e identifique por que, ao lançar uma nova versão da aplicação contendo novas migrations, o Flyway lança uma exceção e a aplicação só volta a funcionar após apagar manualmente o banco de dados SQLite.
-
-Quero que você investigue toda a arquitetura de migrations, incluindo:
-
-* Como o Flyway está sendo inicializado.
-* Em que momento `migrate()` é chamado.
-* Como o banco SQLite é criado.
-* Como é configurado o caminho do banco.
-* Se existe alguma configuração incorreta do Flyway.
-* Se alguma migration antiga foi alterada após ter sido publicada.
-* Se existem problemas de checksum.
-* Se há migrations fora de ordem ou com versões duplicadas.
-* Se alguma migration está sendo removida ou renomeada.
-* Se há scripts incompatíveis com SQLite.
-* Se existe algum problema na tabela `flyway_schema_history`.
-* Se o banco está sendo aberto antes da execução das migrations.
-* Se existe alguma estratégia incorreta de versionamento.
-
-Após identificar a causa, explique detalhadamente:
-
-1. Qual é o problema.
-2. Por que ele acontece.
-3. Como corrigir definitivamente.
-4. Quais arquivos precisam ser alterados.
-5. Quais boas práticas estão sendo violadas.
-6. Como deixar o projeto preparado para futuras versões, de forma que o usuário possa atualizar o aplicativo sem perder seus dados.
-
-**Importante:** Não quero soluções paliativas como apagar o banco de dados, executar `clean()`, remover a tabela de histórico ou desabilitar validações do Flyway. Quero que seja encontrada a causa raiz e aplicada uma solução compatível com um ambiente de produção, preservando todos os dados dos usuários.
-
-Caso seja necessário, percorra todo o projeto para localizar qualquer trecho de código que possa estar contribuindo para o problema e apresente um plano completo de correção.
+Adicionei select para definir se o fornecedor é pessoa física ou jurídica em FornecedorScreen
+E adicionei validação para o caso de uso acima. Agora quero que você crie testes automatizados que cobrem esse cenário.

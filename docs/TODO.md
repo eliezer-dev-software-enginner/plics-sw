@@ -65,6 +65,12 @@
 - [x] **testes-gerais.md ClienteScreen**: adicionados 12 clientes (#12-#23) que estavam faltando — João Pedro, Carla Lima, Carlos Mendes, Sofia Rocha, Luana Costa, Thiago Santos, José Moura, Renata Oliveira, Paulo Sérgio, Fernanda Lima, Ricardo Gomes, Juliana Costa
 - [x] **Fornecedores verificados**: todos os fornecedores usados em testes já estavam definidos — sem alteração necessária
 
+## Concluído (Tipo de pessoa FornecedorScreen — 2026-07-02)
+- [x] **FornecedorService.validar()**: aceita CPF (11 dígitos) e CNPJ (14 dígitos) — antes só CNPJ
+- [x] **FornecedorScreenViewModel.handleAddOrUpdate()**: valida nome primeiro (obrigatório); CPF/CNPJ validado conforme tipo de pessoa, apenas se preenchido
+- [x] **FornecedorServiceTest**: +3 testes (CPF válido, CPF inválido, CPF no update)
+- [x] **FornecedorScreenViewModelTest**: 8 testes (tipoPessoa inicial, ComputedState, física, jurídica, sem doc, nome vazio, clearForm)
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅
@@ -100,6 +106,11 @@
 - [x] **Flyway removido de `DB.getPersismSession()`** — única chamada em `Main.initialize()`
 - [x] **`CategoriaService` alinhado** ao padrão `DB.getPersismSession()`
 - [x] **Documentação** atualizada (DECISIONS.md, CONTEXT.md, TODO.md)
+
+## Concluído (Correção requestFocus — 2026-07-01)
+- [x] **Root cause**: `InputRef.requestFocus()` chamava `getJavaFxNode().requestFocus()` no `StackPane` wrapper, não no `TextField`. `StackPane` com `focusTraversable = false` ignora `requestFocus()`.
+- [x] **Fix**: `InputRef.requestFocus()` percorre `Parent.getChildrenUnmodifiable()`, encontra o `TextInputControl` e chama `requestFocus()` nele.
+- [x] **Arquivo alterado**: `Components.java` (InputRef + import Node)
 
 ## Concluído (Correção vazamento de Sessions — 2026-06-30)
 - [x] **`DB.closeAllSessions()` adicionado** no `Main.handleClose()` antes de `Platform.exit()`
