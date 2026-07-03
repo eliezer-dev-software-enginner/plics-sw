@@ -1,5 +1,20 @@
 # Decisões Arquiteturais
 
+## 2026-07-03: Simplificação da validação de CNPJ — suporte ao formato alfanumérico
+
+**Problema:** A validação de CNPJ em `Utils.isValidCnpj()` usava cálculo de dígitos verificadores (módulo 11), que não é compatível com o novo **CNPJ Alfanumérico** (Lei 14.754/2023, em vigor desde julho/2026). Além disso, todos os CNPJs nos arquivos `.md` de teste eram inválidos (dígitos verificadores incorretos).
+
+**Decisão:**
+1. `isValidCnpj()` simplificado para validar apenas formato: 14 caracteres alfanuméricos (0-9, A-Z), sendo os últimos 2 obrigatoriamente dígitos numéricos.
+2. `calcMod11()` e as constantes de peso removidos por não serem mais necessários.
+3. Todos os CNPJs nos arquivos de teste `.md` corrigidos para dígitos verificadores válidos.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/utils/Utils.java` (isValidCnpj simplificado, calcMod11 removido)
+- `testes-acougue.md`, `testes-gerais.md`, `testes-lanchonete.md`, `testes-loja-de-roupas.md`, `testes-mercado.md`, `testes-petshop.md` (CNPJs corrigidos)
+
+---
+
 ## 2026-07-02: Validação de CPF/CNPJ em FornecedorScreen — tipo de pessoa física/jurídica
 
 **Problema:** Ao adicionar select "Tipo de pessoa" (Física/Jurídica) na FornecedorScreen, a validação no ViewModel (que usa `isValidCpf` ou `isValidCnpj` conforme o tipo) não batia com a validação no Service (que sempre usava `isValidCnpj`, rejeitando CPFs de 11 dígitos). Além disso, a validação no VM ocorria antes da verificação de nome obrigatório e validava CPF/CNPJ mesmo quando o campo estava vazio.

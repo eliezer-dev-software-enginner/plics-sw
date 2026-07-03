@@ -65,6 +65,12 @@
 - [x] **testes-gerais.md ClienteScreen**: adicionados 12 clientes (#12-#23) que estavam faltando — João Pedro, Carla Lima, Carlos Mendes, Sofia Rocha, Luana Costa, Thiago Santos, José Moura, Renata Oliveira, Paulo Sérgio, Fernanda Lima, Ricardo Gomes, Juliana Costa
 - [x] **Fornecedores verificados**: todos os fornecedores usados em testes já estavam definidos — sem alteração necessária
 
+## Concluído (CNPJ alfanumérico + docs de teste — 2026-07-03)
+- [x] **`Utils.isValidCnpj()`**: removido cálculo de dígitos verificadores. Agora valida: 14 chars alfanum (0-9, A-Z) + últimos 2 são dígitos.
+- [x] **`calcMod11()` removido** junto com as constantes de peso.
+- [x] **Arquivos `.md` de teste**: 16 CNPJs corrigidos (todos agora válidos).
+- [x] **Docs atualizados** (DECISIONS.md, CONTEXT.md, TODO.md).
+
 ## Concluído (Tipo de pessoa FornecedorScreen — 2026-07-02)
 - [x] **FornecedorService.validar()**: aceita CPF (11 dígitos) e CNPJ (14 dígitos) — antes só CNPJ
 - [x] **FornecedorScreenViewModel.handleAddOrUpdate()**: valida nome primeiro (obrigatório); CPF/CNPJ validado conforme tipo de pessoa, apenas se preenchido

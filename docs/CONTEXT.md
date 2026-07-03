@@ -53,6 +53,11 @@
 
 ## Últimas alterações
 
+### 2026-07-03: Validação de CNPJ simplificada — suporte ao formato alfanumérico
+- **`Utils.isValidCnpj()`**: removido cálculo de dígitos verificadores (módulo 11). Agora valida apenas formato: 14 caracteres (0-9, A-Z), últimos 2 obrigatoriamente dígitos.
+- **`calcMod11()` e constantes de peso removidos** por obsolescência.
+- **Arquivos `.md` de teste**: todos os 16 CNPJs corrigidos para dígitos verificadores válidos.
+
 ### 2026-07-02: Testes para tipo de pessoa (Física/Jurídica) em FornecedorScreen
 - **Select "Tipo de pessoa"** adicionado em FornecedorScreen com `Data.tiposPessoaList` ("Física", "Jurídica").
 - **ViewModel**: `tipoPessoaSelected` (State), `tipoPessoaEhFisica` (ComputedState). Valida CPF se física, CNPJ se jurídica. Só valida CPF/CNPJ quando campo preenchido (opcional).
