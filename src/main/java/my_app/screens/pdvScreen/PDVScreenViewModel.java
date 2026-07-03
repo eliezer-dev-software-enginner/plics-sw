@@ -63,7 +63,7 @@ public class PDVScreenViewModel {
     final State<String> totalRecebido = State.of("0");
     final State<String> troco         = State.of("0");
 
-
+    final State<Boolean> isPrintNotaVendaVisible = State.of(false);
 
     public PDVScreenViewModel(ScreenContext ctx) {
         this(ctx, createProdutoService(), createClienteService(), new PDVService());
@@ -266,11 +266,16 @@ public class PDVScreenViewModel {
                     isVendaFiada.set(false);
                     Components.ShowPopup(ctx, "Venda finalizada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    isPrintNotaVendaVisible.set(true);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao finalizar venda: " + e.getMessage()));
             }
         });
+    }
+
+    void imprimirNota(){
+
     }
 
     void handleCriarCliente(){
