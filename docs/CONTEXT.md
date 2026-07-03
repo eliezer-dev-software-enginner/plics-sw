@@ -53,6 +53,12 @@
 
 ## Últimas alterações
 
+### 2026-07-03: Impressão de nota de venda com ESC/POS
+- **`EscPosPrinter`**: implementado `imprimir(VendaModel)` e `imprimirNotaVenda(PedidoModel, List<PedidoItemModel>, ClienteModel, EmpresaModel)` usando `escpos-coffee` (4.1.0). Gera ESC/POS com cabeçalho da empresa, itens, totais, pagamento, rodapé e corte de papel. Saída vai para impressora térmica padrão do sistema ou arquivo `.bin` como fallback.
+- **`PDVScreenViewModel`**: `finalizarVenda()` agora armazena `lastPedido` (PedidoModel). `imprimirNota()` implementado — busca itens via `PedidoItemService`, empresa via `EmpresaService`, cliente via `ClienteService` e delega ao `EscPosPrinter`.
+- **`ComprovanteBuilder`**: interface mantida com `imprimir(VendaModel)`.
+- Dependência `escpos-coffee` já declarada no `build.gradle.kts` (não adicionada).
+
 ### 2026-07-03: Correção de valores gigantes em subtotal/troco no PDV
 - **`PDVScreenViewModel`**: subtotal e troco agora armazenam centavos inteiros via `Utils.deRealParaCentavos()`.
 - **`Utils.deRealParaCentavos()`**: substituído `intValue()` por `setScale(0, HALF_UP).toBigInteger()` — elimina truncamento e overflow.

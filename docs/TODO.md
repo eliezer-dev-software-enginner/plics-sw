@@ -83,6 +83,13 @@
 - [x] **FornecedorServiceTest**: +3 testes (CPF válido, CPF inválido, CPF no update)
 - [x] **FornecedorScreenViewModelTest**: 8 testes (tipoPessoa inicial, ComputedState, física, jurídica, sem doc, nome vazio, clearForm)
 
+## Concluído (Impressão nota de venda — 2026-07-03)
+- [x] **`EscPosPrinter.imprimir(VendaModel)`**: implementado com ESC/POS via escpos-coffee (cabeçalho empresa, item, totais, corte).
+- [x] **`EscPosPrinter.imprimirNotaVenda()`**: novo método para pedidos multi-item (PDV).
+- [x] **`PDVScreenViewModel.finalizarVenda()`**: armazena `lastPedido` para impressão posterior.
+- [x] **`PDVScreenViewModel.imprimirNota()`**: busca itens/cliente/empresa e imprime via `EscPosPrinter`.
+- [x] **Saída**: impressora térmica padrão (`PrinterOutputStream`) com fallback para arquivo `.bin`.
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

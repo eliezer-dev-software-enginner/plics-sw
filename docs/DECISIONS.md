@@ -1,5 +1,23 @@
 # Decisões Arquiteturais
 
+## 2026-07-03: Impressão de nota de venda com ESC/POS — EscPosPrinter + PDVScreenViewModel
+
+**Problema:** O método `EscPosPrinter.imprimir(VendaModel)` estava vazio, impossibilitando a impressão de notas de venda em impressoras térmicas. O botão "Imprimir nota de venda" no PDVScreen também não fazia nada (`PDVScreenViewModel.imprimirNota()` vazio).
+
+**Decisão:**
+1. `EscPosPrinter`: implementado `imprimir(VendaModel)` com ESC/POS via `escpos-coffee`. Formata cabeçalho da empresa, detalhes da venda, totais e rodapé. Saída vai para a impressora térmica padrão do sistema (`PrinterOutputStream.getDefaultPrintService()`) com fallback para arquivo `.bin`.
+2. `EscPosPrinter.imprimirNotaVenda()`: novo método público para impressão de pedidos multi-item (PDV). Recebe `PedidoModel`, `List<PedidoItemModel>`, `ClienteModel` e `EmpresaModel`.
+3. `PDVScreenViewModel.finalizarVenda()`: agora armazena o `PedidoModel` retornado em `lastPedido`.
+4. `PDVScreenViewModel.imprimirNota()`: busca itens via `PedidoItemService`, empresa via `EmpresaService`, cliente via `ClienteService` e chama `EscPosPrinter.imprimirNotaVenda()`.
+5. Múltiplos construtores em `EscPosPrinter` para injeção de `EmpresaService` e `OutputStream`.
+6. Suporte a charset UTF-8 para acentos em português.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/services/EscPosPrinter.java` (reescrito)
+- `src/main/java/my_app/screens/pdvScreen/PDVScreenViewModel.java` (+implementação imprimirNota, +services)
+
+---
+
 ## 2026-07-03: Correção de valores gigantes em subtotal/troco no PDV
 
 **Problema:** `subtotal` e `troco` armazenavam `BigDecimal.toPlainString()` (ex: `"15.90"`), mas `InputColumnCurrency` espera centavos inteiros (`"1590"`). Sem o match `\d+`, a formatação `R$` não era aplicada, exibindo valores com muitas casas decimais em quantidades fracionadas. Além disso, `deRealParaCentavos()` usava `intValue()` que truncava e causava overflow em valores > R$ 21MM.

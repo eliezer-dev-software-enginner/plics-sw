@@ -9,11 +9,14 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.ClienteService;
+import my_app.db.services.EmpresaService;
+import my_app.db.services.PedidoItemService;
 import my_app.db.services.ProdutoService;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.components.Components;
+import my_app.services.EscPosPrinter;
 import my_app.services.PDVService;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
@@ -65,6 +68,11 @@ public class PDVScreenViewModel {
 
     final State<Boolean> isPrintNotaVendaVisible = State.of(false);
 
+    private my_app.db.models.PedidoModel lastPedido;
+    private final PedidoItemService pedidoItemService;
+    private final EmpresaService empresaService;
+    private final EscPosPrinter escPosPrinter;
+
     public PDVScreenViewModel(ScreenContext ctx) {
         this(ctx, createProdutoService(), createClienteService(), new PDVService());
     }
@@ -74,6 +82,9 @@ public class PDVScreenViewModel {
         this.produtoService = produtoService;
         this.clienteService = clienteService;
         this.pdvService = pdvService;
+        this.pedidoItemService = createPedidoItemService();
+        this.empresaService = createEmpresaService();
+        this.escPosPrinter = new EscPosPrinter(empresaService);
         this.onInit();
     }
 
@@ -88,6 +99,22 @@ public class PDVScreenViewModel {
     private static ClienteService createClienteService() {
         try {
             return new ClienteService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static PedidoItemService createPedidoItemService() {
+        try {
+            return new PedidoItemService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static EmpresaService createEmpresaService() {
+        try {
+            return new EmpresaService();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -249,12 +276,13 @@ public class PDVScreenViewModel {
         final Integer finalClienteId = clienteId;
         Async.Run(() -> {
             try {
-                pdvService.finalizarVenda(
+                var pedido = pdvService.finalizarVenda(
                         itensCarrinho.get(),
-                        "À VISTA", // TODO: adicionar seletor de forma de pagamento
+                        "A VISTA",
                         finalClienteId,
                         fiado
                 );
+                lastPedido = pedido;
                 UI.runOnUi(() -> {
                     itensCarrinho.clear();
                     codigoBarrasInput.set("");
@@ -275,7 +303,40 @@ public class PDVScreenViewModel {
     }
 
     void imprimirNota(){
+        if (lastPedido == null) {
+            Components.ShowAlertError("Nenhuma venda para imprimir.");
+            return;
+        }
 
+        Async.Run(() -> {
+            try {
+                var itens = pedidoItemService.listarPorPedido(lastPedido.getId());
+                var empresa = empresaService.buscarUnico();
+                var clienteId = lastPedido.getClienteId();
+                final ClienteModel cliente;
+                if (clienteId != null) {
+                    cliente = clienteService.listar().stream()
+                            .filter(c -> c.getId().equals(clienteId))
+                            .findFirst()
+                            .orElse(null);
+                } else {
+                    cliente = null;
+                }
+
+                final var pedido = lastPedido;
+                final var itensFinal = itens;
+                final var empresaFinal = empresa;
+
+                try {
+                    escPosPrinter.imprimirNotaVenda(pedido, itensFinal, cliente, empresaFinal);
+                    } catch (Exception e) {
+                        UI.runOnUi(()->Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
+                    }
+
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar dados para impressao: " + e.getMessage()));
+            }
+        });
     }
 
     void handleCriarCliente(){
