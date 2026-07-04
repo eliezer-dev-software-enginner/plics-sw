@@ -14,10 +14,12 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.services.CompraService;
 import my_app.db.services.FornecedorService;
 import my_app.db.services.ProdutoService;
+import my_app.db.models.FornecedorModel;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
 import my_app.domain.states.TotaisState;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
@@ -140,6 +142,12 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         codigo.subscribe(termo -> filtrarProdutos(termo));
 
         produtoEncontrado.subscribe(this::selecionarProduto);
+
+        EventBus.getInstance().subscribe(event -> {
+            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
+                refreshFornecedores();
+            }
+        });
     }
 
     private void atualizarEstoqueVisual() {
@@ -197,6 +205,18 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    void refreshFornecedores() {
+        try {
+            var fornecedorList = fornecedorService.listar();
+            UI.runOnUi(() -> {
+                fornecedores.clear();
+                fornecedores.addAll(fornecedorList);
+            });
+        } catch (Exception e) {
+            log.error("Erro ao recarregar fornecedores", e);
         }
     }
 

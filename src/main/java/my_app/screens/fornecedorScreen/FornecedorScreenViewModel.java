@@ -9,6 +9,8 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.FornecedorModel;
 import my_app.db.services.FornecedorService;
 import my_app.domain.Data;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.Utils;
@@ -168,6 +170,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
                     fornecedores.updateIf(f -> f.getId().equals(atualizado.getId()), f -> atualizado);
                     Components.ShowPopup(ctx, "Fornecedor atualizado com sucesso");
                     clearForm();
+                    EventBus.getInstance().publish(EntityEvent.editado(atualizado));
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -197,6 +200,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
                     fornecedores.add(salvo);
                     Components.ShowPopup(ctx, "Fornecedor cadastrado com sucesso");
                     clearForm();
+                    EventBus.getInstance().publish(EntityEvent.criado(salvo));
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -215,6 +219,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
                     UI.runOnUi(() -> {
                         fornecedores.removeIf(it -> it.getId().equals(fornecedorModel.getId()));
                         Components.ShowPopup(ctx, "Fornecedor excluido com sucesso");
+                        EventBus.getInstance().publish(EntityEvent.excluido(fornecedorModel.getId()));
                     });
                 } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));

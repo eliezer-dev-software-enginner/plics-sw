@@ -111,6 +111,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
                     UI.runOnUi(() -> {
                         clientes.removeIf(it -> it.getId().equals(model.getId()));
                         Components.ShowPopup(ctx, "Cliente excluído com sucesso");
+                        EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
                     });
                 } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
@@ -139,6 +140,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
                         clientes.updateIf(it -> it.getId().equals(finalModel.getId()), it -> finalModel);
                         Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                         clearForm();
+                        EventBus.getInstance().publish(EntityEvent.editado(finalModel));
                     });
                 } else {
                     var model = getModelFromFields(new ClienteModel());

@@ -29,16 +29,5 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Lá está chegando assim abaixo, a largura(dots) lá no site é: 512:
---------------------------------
-NOTA DE VENDA
-N. 6
-Data: 03/07/2026 21:16
-Cliente: CLIENTE PADR├âO
---------------------------------
-ITENS
-SKU004  x1  R$┬á80,00  = R$┬á80,00
---------------------------------
-Total: R$┬á80,00
-Pagamento: A VISTA
-Obrigado pela preferencia!
+Uma cliente de loja quer que possa ser possivel cadastrar as seguintes propriedades em um produto: cor, tamanho e modelo.
+Faça isso e crie testes para isso também. Após isso lá nos arquivos de testes manuais ".md" adicione essas colunas nos testes de produtos.

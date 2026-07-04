@@ -10,8 +10,10 @@ import my_app.db.models.ClienteModel;
 import my_app.db.models.ContaAreceberModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.ContaAreceberService;
+import my_app.db.models.ClienteModel;
 import my_app.domain.components.Components;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
@@ -68,6 +70,11 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
         super(ctx);
         this.contaService = contaService;
         this.clienteService = clienteService;
+        EventBus.getInstance().subscribe(event -> {
+            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
+                loadClientes();
+            }
+        });
     }
 
     private static ContaAreceberService createContaAreceberService() {
@@ -85,6 +92,17 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
         } catch (SQLException e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
+        }
+    }
+
+    void loadClientes() {
+        try {
+            var clientesList = clienteService.listar();
+            UI.runOnUi(() -> {
+                clientes.set(clientesList);
+            });
+        } catch (Exception e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
         }
     }
 

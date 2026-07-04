@@ -11,6 +11,9 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.services.CategoriaService;
 import my_app.db.services.FornecedorService;
 import my_app.db.services.ProdutoService;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
+import my_app.db.models.FornecedorModel;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
@@ -69,6 +72,11 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         this.produtoService = produtoService;
         this.fornecedorService = fornecedorService;
         this.categoriaService = categoriaService;
+        EventBus.getInstance().subscribe(event -> {
+            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
+                refreshFornecedores();
+            }
+        });
     }
 
     private static ProdutoService createProdutoService() {
@@ -96,6 +104,20 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
+    }
+
+    private void refreshFornecedores() {
+        Async.Run(() -> {
+            try {
+                var fornecedorModelList = fornecedorService.listar();
+                UI.runOnUi(() -> {
+                    this.fornecedores.set(fornecedorModelList);
+                    this.fornecedorSelected.set(fornecedorModelList.isEmpty() ? null : fornecedorModelList.getFirst());
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            }
+        });
     }
 
     public void loadInicial() {

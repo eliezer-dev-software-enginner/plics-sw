@@ -25,6 +25,11 @@
     <prerequisites />
   </component>
   <component name="DBNavigator.Project.Settings">
+    <states>
+      <state category="SECRET_STORAGE_MIGRATION">
+        <migrated value="true" />
+      </state>
+    </states>
     <connections />
     <browser-settings>
       <general>
@@ -36,8 +41,6 @@
       </general>
       <filters>
         <object-type-filter>
-          <object-type name="SCHEMA" enabled="true" />
-          <object-type name="USER" enabled="true" />
           <object-type name="ROLE" enabled="true" />
           <object-type name="PRIVILEGE" enabled="true" />
           <object-type name="CHARSET" enabled="true" />
@@ -195,6 +198,7 @@
         <save-changes value="false" />
         <revert-changes value="true" />
         <exit-on-changes value="ASK" />
+        <close-temporary-console value="ASK" />
       </confirmations>
     </code-editor-settings>
     <code-completion-settings>
@@ -223,9 +227,14 @@
             <filter-element type="OBJECT" id="function" selected="true" />
             <filter-element type="OBJECT" id="package" selected="true" />
             <filter-element type="OBJECT" id="type" selected="true" />
+            <filter-element type="OBJECT" id="java class" selected="true" />
+            <filter-element type="OBJECT" id="java resource" selected="true" />
             <filter-element type="OBJECT" id="dimension" selected="true" />
             <filter-element type="OBJECT" id="cluster" selected="true" />
             <filter-element type="OBJECT" id="dblink" selected="true" />
+            <filter-element type="OBJECT" id="credential" selected="true" />
+            <filter-element type="OBJECT" id="AI profile" selected="true" />
+            <filter-element type="OBJECT" id="AI model" selected="true" />
           </user-schema>
           <public-schema>
             <filter-element type="OBJECT" id="table" selected="false" />
@@ -241,9 +250,14 @@
             <filter-element type="OBJECT" id="function" selected="false" />
             <filter-element type="OBJECT" id="package" selected="false" />
             <filter-element type="OBJECT" id="type" selected="false" />
+            <filter-element type="OBJECT" id="java class" selected="false" />
+            <filter-element type="OBJECT" id="java resource" selected="false" />
             <filter-element type="OBJECT" id="dimension" selected="false" />
             <filter-element type="OBJECT" id="cluster" selected="false" />
             <filter-element type="OBJECT" id="dblink" selected="false" />
+            <filter-element type="OBJECT" id="credential" selected="false" />
+            <filter-element type="OBJECT" id="AI profile" selected="false" />
+            <filter-element type="OBJECT" id="AI model" selected="false" />
           </public-schema>
           <any-schema>
             <filter-element type="OBJECT" id="table" selected="true" />
@@ -259,9 +273,14 @@
             <filter-element type="OBJECT" id="function" selected="true" />
             <filter-element type="OBJECT" id="package" selected="true" />
             <filter-element type="OBJECT" id="type" selected="true" />
+            <filter-element type="OBJECT" id="java class" selected="true" />
+            <filter-element type="OBJECT" id="java resource" selected="true" />
             <filter-element type="OBJECT" id="dimension" selected="true" />
             <filter-element type="OBJECT" id="cluster" selected="true" />
             <filter-element type="OBJECT" id="dblink" selected="true" />
+            <filter-element type="OBJECT" id="credential" selected="true" />
+            <filter-element type="OBJECT" id="AI profile" selected="true" />
+            <filter-element type="OBJECT" id="AI model" selected="true" />
           </any-schema>
         </basic-filter>
         <extended-filter>
@@ -288,9 +307,14 @@
             <filter-element type="OBJECT" id="function" selected="true" />
             <filter-element type="OBJECT" id="package" selected="true" />
             <filter-element type="OBJECT" id="type" selected="true" />
+            <filter-element type="OBJECT" id="java class" selected="true" />
+            <filter-element type="OBJECT" id="java resource" selected="true" />
             <filter-element type="OBJECT" id="dimension" selected="true" />
             <filter-element type="OBJECT" id="cluster" selected="true" />
             <filter-element type="OBJECT" id="dblink" selected="true" />
+            <filter-element type="OBJECT" id="credential" selected="true" />
+            <filter-element type="OBJECT" id="AI profile" selected="true" />
+            <filter-element type="OBJECT" id="AI model" selected="true" />
           </user-schema>
           <public-schema>
             <filter-element type="OBJECT" id="table" selected="true" />
@@ -309,6 +333,9 @@
             <filter-element type="OBJECT" id="dimension" selected="true" />
             <filter-element type="OBJECT" id="cluster" selected="true" />
             <filter-element type="OBJECT" id="dblink" selected="true" />
+            <filter-element type="OBJECT" id="credential" selected="true" />
+            <filter-element type="OBJECT" id="AI profile" selected="true" />
+            <filter-element type="OBJECT" id="AI model" selected="true" />
           </public-schema>
           <any-schema>
             <filter-element type="OBJECT" id="table" selected="true" />
@@ -324,9 +351,14 @@
             <filter-element type="OBJECT" id="function" selected="true" />
             <filter-element type="OBJECT" id="package" selected="true" />
             <filter-element type="OBJECT" id="type" selected="true" />
+            <filter-element type="OBJECT" id="java class" selected="true" />
+            <filter-element type="OBJECT" id="java resource" selected="true" />
             <filter-element type="OBJECT" id="dimension" selected="true" />
             <filter-element type="OBJECT" id="cluster" selected="true" />
             <filter-element type="OBJECT" id="dblink" selected="true" />
+            <filter-element type="OBJECT" id="credential" selected="true" />
+            <filter-element type="OBJECT" id="AI profile" selected="true" />
+            <filter-element type="OBJECT" id="AI model" selected="true" />
           </any-schema>
         </extended-filter>
       </filters>
@@ -408,17 +440,17 @@
     </operation-settings>
     <ddl-file-settings>
       <extensions>
-        <mapping file-type-id="VIEW" extensions="vw" />
-        <mapping file-type-id="TRIGGER" extensions="trg" />
-        <mapping file-type-id="PROCEDURE" extensions="prc" />
-        <mapping file-type-id="FUNCTION" extensions="fnc" />
-        <mapping file-type-id="PACKAGE" extensions="pkg" />
-        <mapping file-type-id="PACKAGE_SPEC" extensions="pks" />
-        <mapping file-type-id="PACKAGE_BODY" extensions="pkb" />
-        <mapping file-type-id="TYPE" extensions="tpe" />
-        <mapping file-type-id="TYPE_SPEC" extensions="tps" />
-        <mapping file-type-id="TYPE_BODY" extensions="tpb" />
-        <mapping file-type-id="JAVA_SOURCE" extensions="sql" />
+        <mapping file-type-id="VIEW" file-name-patterns="*.vw" />
+        <mapping file-type-id="TRIGGER" file-name-patterns="*.trg" />
+        <mapping file-type-id="PROCEDURE" file-name-patterns="*.prc" />
+        <mapping file-type-id="FUNCTION" file-name-patterns="*.fnc" />
+        <mapping file-type-id="PACKAGE" file-name-patterns="*.pkg" />
+        <mapping file-type-id="PACKAGE_SPEC" file-name-patterns="*.pks" />
+        <mapping file-type-id="PACKAGE_BODY" file-name-patterns="*.pkb" />
+        <mapping file-type-id="TYPE" file-name-patterns="*.tpe" />
+        <mapping file-type-id="TYPE_SPEC" file-name-patterns="*.tps" />
+        <mapping file-type-id="TYPE_BODY" file-name-patterns="*.tpb" />
+        <mapping file-type-id="JAVA_SOURCE" file-name-patterns="*.sql" />
       </extensions>
       <general>
         <lookup-ddl-files value="true" />
@@ -428,14 +460,6 @@
         <make-scripts-rerunnable value="true" />
       </general>
     </ddl-file-settings>
-    <assistant-settings>
-      <credential-settings>
-        <credentials />
-      </credential-settings>
-      <profile-settings>
-        <profiles />
-      </profile-settings>
-    </assistant-settings>
     <general-settings>
       <regional-settings>
         <date-format value="MEDIUM" />

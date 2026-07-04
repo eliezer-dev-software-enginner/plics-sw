@@ -13,10 +13,12 @@ import my_app.db.services.ClienteService;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ProdutoService;
 import my_app.db.services.VendaService;
+import my_app.db.models.ClienteModel;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
 import my_app.domain.states.TotaisState;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
@@ -137,6 +139,12 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         codigo.subscribe(termo -> filtrarProdutos(termo));
 
         produtoEncontrado.subscribe(this::selecionarProduto);
+
+        EventBus.getInstance().subscribe(event -> {
+            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
+                refreshClientes();
+            }
+        });
     }
 
     void filtrarProdutos(String termo) {
@@ -194,6 +202,18 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             UI.runOnUi(() -> produtoModelListState.set(produtoList));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    void refreshClientes() {
+        try {
+            var clienteList = clienteService.listar();
+            UI.runOnUi(() -> {
+                clientes.clear();
+                clientes.addAll(clienteList);
+            });
+        } catch (Exception e) {
+            log.error("Erro ao recarregar clientes", e);
         }
     }
 
