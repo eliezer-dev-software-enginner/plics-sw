@@ -70,8 +70,8 @@ public class AuthScreenViewModel {
         });
     }
 
-    boolean isLicensaTesteExpirada(String licensa) {
-        return LICENSA_TESTE.equals(licensa) && LocalDate.now().getDayOfMonth() > 11;
+    public static boolean isLicensaTesteExpirada(String licensa) {
+        return LICENSA_TESTE.equals(licensa) && LocalDate.now().getDayOfMonth() > 7;
     }
 
     void entrar(ScreenContext ctx) {
@@ -88,7 +88,7 @@ public class AuthScreenViewModel {
                 Components.ShowAlertError("Licença inválida");
                 return;
             }
-            if (isTeste && LocalDate.now().getDayOfMonth() > 11) {
+            if (isTeste && isLicensaTesteExpirada(licensaValue)) {
                 Components.ShowAlertError("Licença de teste expirada");
                 return;
             }

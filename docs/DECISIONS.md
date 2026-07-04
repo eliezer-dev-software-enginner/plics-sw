@@ -554,12 +554,30 @@
 
 ---
 
-## 2026-06-08: Licença de teste com validade até dia 11
+## 2026-07-04: Correção — validação inconsistente da licença de teste
+
+**Problema:** `AuthScreenViewModel.isLicensaTesteExpirada()` usava `day > 3` (expirada no dia 4), mas `entrar()` e `HomeScreenViewModel.isLicensaTesteExpirada()` usavam `day > 11` (expirada no dia 12). No dia 4, o campo de licença era exibido novamente, mas o usuário conseguia logar — comportamento contraditório.
+
+**Decisão:**
+1. `AuthScreenViewModel.entrar()`: substituir `day > 11` por `isLicensaTesteExpirada(licensaValue)` — usa a mesma lógica do `load()`.
+2. `HomeScreenViewModel.isLicensaTesteExpirada()`: `day > 11` → `day > 3`, alinhado ao threshold do AuthScreenVM.
+3. Threshold unificado: licença de teste expira no **dia 4** (validade até dia 3 inclusive).
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/authScreen/AuthScreenViewModel.java` (entrar usa isLicensaTesteExpirada)
+- `src/main/java/my_app/screens/homeScreen/HomeScreenViewModel.java` (day > 11 → day > 3)
+- `docs/DECISIONS.md` (esta entrada)
+- `docs/CONTEXT.md` (atualizado)
+- `docs/TODO.md` (atualizado)
+
+---
+
+## 2026-06-08: Licença de teste com validade até dia 3
 
 **Problema:** Usuários de teste usavam a licença `QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ` sem prazo de validade, e não havia mecanismo para expirá-la.
 
 **Decisão:**
-1. `AuthScreenViewModel`: aceitar tanto a licença de produção (`984e2bb76c7b627641b6b7dc080f8e23`) quanto a de teste (`QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ`). A de teste só é válida até o dia 11 do mês (inclusive).
+1. `AuthScreenViewModel`: aceitar tanto a licença de produção (`984e2bb76c7b627641b6b7dc080f8e23`) quanto a de teste (`QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ`). A de teste só é válida até o dia 3 do mês (inclusive).
 2. Salvar a licença utilizada no campo `licensa` da tabela `preferencias` (Migration V17).
 3. `AuthScreenViewModel.load()`: se a licença salva for a de teste e estiver expirada, exibir o campo de licença novamente para o usuário digitar uma válida.
 4. `HomeScreenViewModel.isLicensaTesteExpirada()`: método público que consulta a licença salva e a data atual.

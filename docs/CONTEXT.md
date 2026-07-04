@@ -104,6 +104,11 @@
 - **`CategoriaService` alinhado** ao padrão `DB.getPersismSession()`.
 - **Migration V21** criada para corrigir tipos das colunas de `compras` em bancos existentes.
 
+### 2026-07-04: Correção — validação inconsistente da licença de teste
+- **`AuthScreenViewModel.entrar()`**: agora usa `isLicensaTesteExpirada()` em vez de `day > 11` — alinhado com `load()`.
+- **`HomeScreenViewModel.isLicensaTesteExpirada()`**: `day > 11` → `day > 3` — mesmo threshold do AuthScreenVM.
+- **Efeito**: licença de teste expira no dia 4 (validade até dia 3). Antes, o campo de licença era exibido mas o login ainda era permitido até dia 11.
+
 ### 2026-06-29: Produtos sem cadastro válido em testes de venda
 - `testes-loja-de-roupas.md`: SKU004 do #18 alterado para SKU006 (libera SKU004). Adicionados #143 (Jaqueta SKU003) e #144 (Calça Jeans SKU004) como cadastros válidos.
 - `testes-mercado.md`: Adicionada seção ProdutoScreen com #145 (Arroz 5kg), #146 (Feijão 1kg), #147 (Óleo 900ml).

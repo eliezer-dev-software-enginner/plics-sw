@@ -29,5 +29,4 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Uma cliente de loja quer que possa ser possivel cadastrar as seguintes propriedades em um produto: cor, tamanho e modelo.
-Faça isso e crie testes para isso também. Após isso lá nos arquivos de testes manuais ".md" adicione essas colunas nos testes de produtos.
+hoje é 4 de julho, fui entrar com licensa de teste mas não era para eu conseguir fazer login. Era para mostrar que a licensa está expirada.

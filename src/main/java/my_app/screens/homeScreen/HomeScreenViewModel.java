@@ -15,6 +15,7 @@ import my_app.core.events.EventBus;
 import my_app.Main;
 import my_app.domain.components.Components;
 import my_app.infra.UpdaterService;
+import my_app.screens.authScreen.AuthScreenViewModel;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
@@ -133,7 +134,7 @@ public class HomeScreenViewModel {
             var prefs = preferenciasService.listar();
             if (!prefs.isEmpty()) {
                 String saved = prefs.getFirst().getLicensa();
-                return "QHd3fuX3mtoCo1gd9dmeKGTEBrxUJ31MxJ".equals(saved) && LocalDate.now().getDayOfMonth() > 11;
+                return AuthScreenViewModel.isLicensaTesteExpirada(saved);
             }
         } catch (Exception e) {
             log.error("Erro ao verificar licença", e);

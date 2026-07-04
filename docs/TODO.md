@@ -171,10 +171,15 @@
 ## Concluído (licença de teste)
 - Migration V17: coluna `licensa` adicionada à tabela `preferencias`
 - `PreferenciasModel`: campo `licensa` adicionado
-- `AuthScreenViewModel`: aceita licença de teste até dia 11; salva licença no banco; exibe campo novamente se expirou
+- `AuthScreenViewModel`: aceita licença de teste até dia 3; salva licença no banco; exibe campo novamente se expirou
 - `HomeScreenViewModel`: método `isLicensaTesteExpirada()` adicionado
 - `HomeScreen.onMount()`: redireciona para AuthScreen se licença de teste expirou
 - Testes: `AuthScreenViewModelTest` e `HomeScreenViewModelTest` atualizados
+
+## Concluído (correção inconsistência licença de teste — 2026-07-04)
+- `AuthScreenViewModel.entrar()`: substituído `day > 11` por `isLicensaTesteExpirada()` — alinhado com `load()`
+- `HomeScreenViewModel.isLicensaTesteExpirada()`: `day > 11` → `day > 3`
+- Docs atualizados (DECISIONS.md, CONTEXT.md, TODO.md)
 
 ## Concluído (empacotamento)
 - `scripts/config.py`: adicionado `UPDATER_DIR` e `build_updater()`
