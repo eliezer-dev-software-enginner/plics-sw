@@ -6,6 +6,7 @@ import megalodonte.v2.ListState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
+import my_app.Main;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.ClienteService;
@@ -84,8 +85,7 @@ public class PDVScreenViewModel {
         this.pdvService = pdvService;
         this.pedidoItemService = createPedidoItemService();
         this.empresaService = createEmpresaService();
-        //this.escPosPrinter = new EscPosPrinter(empresaService);
-        this.escPosPrinter =  EscPosPrinter.viaTcp("virtual-printer.online");
+        this.escPosPrinter = Main.devMode? EscPosPrinter.viaTcp("virtual-printer.online"): new EscPosPrinter(empresaService);
         this.onInit();
     }
 

@@ -20,7 +20,7 @@ import org.flywaydb.core.Flyway;
 
 public class Main {
     static HotReload hotReload;
-    static boolean devMode = "true".equals(System.getenv("DEV_MODE"));
+    public static boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
     public static String APP_VERSION = "1.0.6";
     public static String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
