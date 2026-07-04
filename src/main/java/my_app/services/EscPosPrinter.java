@@ -4,6 +4,7 @@ import com.github.anastaciocintra.escpos.EscPos;
 import com.github.anastaciocintra.escpos.EscPosConst;
 import com.github.anastaciocintra.escpos.Style;
 import com.github.anastaciocintra.output.PrinterOutputStream;
+import com.github.anastaciocintra.output.TcpIpOutputStream;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.EmpresaModel;
 import my_app.db.models.PedidoItemModel;
@@ -52,6 +53,18 @@ public class EscPosPrinter implements ComprovanteBuilder {
     public EscPosPrinter(EmpresaService empresaService, OutputStream outputStream) {
         this.empresaService = empresaService;
         this.outputStream = outputStream;
+    }
+
+    public static EscPosPrinter viaTcp(String host, int port) {
+        try {
+            return new EscPosPrinter(new TcpIpOutputStream(host, port));
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao conectar à impressora TCP: " + e.getMessage(), e);
+        }
+    }
+
+    public static EscPosPrinter viaTcp(String host) {
+        return viaTcp(host, 9107);
     }
 
     private static EmpresaService createEmpresaService() {
