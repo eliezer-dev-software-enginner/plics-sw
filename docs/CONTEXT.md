@@ -53,6 +53,17 @@
 
 ## Últimas alterações
 
+### 2026-07-04: Adicionadas propriedades cor, tamanho, modelo ao ProdutoScreen
+- **`ProdutoModel`**: adicionados campos `cor`, `tamanho`, `modelo` (String).
+- **`ProdutoDto`**: adicionados campos `cor`, `tamanho`, `modelo`.
+- **Migration V22**: `ALTER TABLE produtos ADD COLUMN cor/tamanho/modelo TEXT`.
+- **`Data.java`**: adicionadas listas `listaCores` (16 cores) e `listaTamanhos` (PP, P, M, G, GG, XG, UN).
+- **`ProdutoScreenViewModel`**: adicionados states `corSelected`, `tamanhoSelected`, `modelo`; atualizados `fillModelFromForm`, `clearForm`, `populateFromModel`.
+- **`ProdutoScreen`**: adicionados selects de Cor/Tamanho e input de Modelo no formulário; colunas na tabela; detalhes no modal.
+- **`ProdutoServiceTest`**: +1 teste (`deveSalvarProdutoComPropriedades`).
+- **`ProdutoScreenViewModelTest`**: +1 teste (`deveSalvarProdutoComPropriedades`).
+- **Arquivos `.md` de teste**: adicionadas colunas Cor, Tamanho, Modelo nas tabelas de ProdutoScreen de todos os 5 perfis.
+
 ### 2026-07-03: Impressão de nota de venda com ESC/POS
 - **`EscPosPrinter`**: implementado `imprimir(VendaModel)` e `imprimirNotaVenda(PedidoModel, List<PedidoItemModel>, ClienteModel, EmpresaModel)` usando `escpos-coffee` (4.1.0). Gera ESC/POS com cabeçalho da empresa, itens, totais, pagamento, rodapé e corte de papel. Saída vai para impressora térmica padrão do sistema ou arquivo `.bin` como fallback.
 - **`PDVScreenViewModel`**: `finalizarVenda()` agora armazena `lastPedido` (PedidoModel). `imprimirNota()` implementado — busca itens via `PedidoItemService`, empresa via `EmpresaService`, cliente via `ClienteService` e delega ao `EscPosPrinter`.

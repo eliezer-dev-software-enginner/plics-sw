@@ -18,6 +18,12 @@ public class Data {
     public static final List<String> unidadesDeMedidaList = List.of("UN", "KG", "g", "ml");
     public static final List<String> tiposPessoaList = List.of("Física", "Jurídica");
 
+    public static final List<String> listaCores = List.of(
+            "Azul", "Branco", "Preto", "Vermelho", "Verde", "Amarelo",
+            "Rosa", "Laranja", "Roxo", "Cinza", "Marrom", "Bege",
+            "Dourado", "Prateado", "Colorido", "Estampado"
+    );
+
     private static final String numberWhatsappSupport = "5532985066537";
     public static final String linkWhatsappSupport = "https://wa.me/"+numberWhatsappSupport;
 

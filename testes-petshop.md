@@ -21,15 +21,15 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
-| 113 | Ração cães 15kg | RAC-C-001 | Ração Cães 15kg | KG | Purina Pet | R$ 45,00 | R$ 79,90 | Cachorros | Purina Pet | 20 | Sim | 15/12/2026 | Salvo com sucesso. | | |
-| 114 | Ração gatos 10kg | RAC-G-001 | Ração Gatos 10kg | KG | Royal Canin | R$ 55,00 | R$ 89,90 | Gatos | Royal Canin | 15 | Sim | 20/01/2027 | Salvo com sucesso. | | |
-| 115 | Areia sanitária 4kg | ARE-001 | Areia Sanitária 4kg | KG | PetBrasil | R$ 12,00 | R$ 24,90 | Gatos | PetBrasil | 30 | Nao | - | Salvo com sucesso. | | |
-| 116 | Brinquedo (unidade) | BRI-001 | Brinquedo Osso Borracha | UN | PetBrasil | R$ 3,50 | R$ 9,90 | Cachorros | PetBrasil | 50 | Nao | - | Salvo com sucesso com unidade UN. | | |
-| 117 | Shampoo 500ml | SHA-001 | Shampoo Cães 500ml | ml | PetBrasil | R$ 8,00 | R$ 19,90 | Cachorros | PetBrasil | 40 | Nao | - | Salvo com sucesso com unidade ml. | | |
-| 118 | Petisco 100g (gramas) | PET-001 | Petisco Cães 100g | g | Purina Pet | R$ 5,00 | R$ 12,90 | Cachorros | Purina Pet | 60 | Nao | - | Salvo com sucesso com unidade "g". | | |
-| 119 | Perecível sem validade | RAC-T-001 | Ração Teste | KG | Purina Pet | R$ 20,00 | R$ 39,90 | Cachorros | Purina Pet | 10 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
+| 113 | Ração cães 15kg | RAC-C-001 | Ração Cães 15kg | KG | Purina Pet | - | - | - | R$ 45,00 | R$ 79,90 | Cachorros | Purina Pet | 20 | Sim | 15/12/2026 | Salvo com sucesso. | | |
+| 114 | Ração gatos 10kg | RAC-G-001 | Ração Gatos 10kg | KG | Royal Canin | - | - | - | R$ 55,00 | R$ 89,90 | Gatos | Royal Canin | 15 | Sim | 20/01/2027 | Salvo com sucesso. | | |
+| 115 | Areia sanitária 4kg | ARE-001 | Areia Sanitária 4kg | KG | PetBrasil | - | - | - | R$ 12,00 | R$ 24,90 | Gatos | PetBrasil | 30 | Nao | - | Salvo com sucesso. | | |
+| 116 | Brinquedo (unidade) | BRI-001 | Brinquedo Osso Borracha | UN | PetBrasil | - | - | - | R$ 3,50 | R$ 9,90 | Cachorros | PetBrasil | 50 | Nao | - | Salvo com sucesso com unidade UN. | | |
+| 117 | Shampoo 500ml | SHA-001 | Shampoo Cães 500ml | ml | PetBrasil | - | - | - | R$ 8,00 | R$ 19,90 | Cachorros | PetBrasil | 40 | Nao | - | Salvo com sucesso com unidade ml. | | |
+| 118 | Petisco 100g (gramas) | PET-001 | Petisco Cães 100g | g | Purina Pet | - | - | - | R$ 5,00 | R$ 12,90 | Cachorros | Purina Pet | 60 | Nao | - | Salvo com sucesso com unidade "g". | | |
+| 119 | Perecível sem validade | RAC-T-001 | Ração Teste | KG | Purina Pet | - | - | - | R$ 20,00 | R$ 39,90 | Cachorros | Purina Pet | 10 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
 
 ---
 

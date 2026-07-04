@@ -24,6 +24,9 @@ class ProdutoServiceTest extends BaseServiceTest {
         p.setPrecoVenda(BigDecimal.TEN);
         p.setTotalLiquido(BigDecimal.TEN);
         p.setFornecedorId(1);
+        p.setCor("Azul");
+        p.setTamanho("M");
+        p.setModelo("Esportivo");
         return p;
     }
 
@@ -60,6 +63,15 @@ class ProdutoServiceTest extends BaseServiceTest {
         var salvo = produtoService.salvar(produtoValido());
         assertNotNull(salvo.getId());
         assertNotNull(salvo.getDataCriacao());
+    }
+
+    @Test
+    void deveSalvarProdutoComPropriedades() throws Exception {
+        var salvo = produtoService.salvar(produtoValido());
+        assertNotNull(salvo.getId());
+        assertEquals("Azul", salvo.getCor());
+        assertEquals("M", salvo.getTamanho());
+        assertEquals("Esportivo", salvo.getModelo());
     }
 
     @Test

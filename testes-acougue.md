@@ -18,13 +18,13 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Preço Compra | Preço Venda | Categoria | Estoque | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------------|-------------|-----------|---------|-----------------|------|---|
-| 25 | Produto kg | CAR001 | Picanha | KG | R$ 45,00 | R$ 79,90 | Bovinos | 50 | Salvo com sucesso. | | |
-| 26 | Produto kg aves | CAR002 | Coxa de Frango | KG | R$ 8,00 | R$ 14,90 | Aves | 80 | Salvo com sucesso. | | |
-| 27 | Produto em gramas | CAR003 | Bacon fatiado 500g | g | R$ 18,00 | R$ 35,00 | Embutidos | 30 | Salvo com sucesso com unidade "g". | | |
-| 28 | Unidade não selecionada | CAR004 | Linguiça | (vazio) | R$ 10,00 | R$ 19,90 | Embutidos | 40 | Alerta: "Unidade é obrigatória". | | |
-| 29 | Preço venda zerado | CAR005 | Alcatra | KG | R$ 35,00 | R$ 0,00 | Bovinos | 30 | Alerta: "Preço de venda deve ser maior que zero". | | |
+| # | Cenário | SKU | Descrição | Unid. | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Estoque | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-----|---------|--------|-------------|-------------|-----------|---------|-----------------|------|---|
+| 25 | Produto kg | CAR001 | Picanha | KG | - | - | - | R$ 45,00 | R$ 79,90 | Bovinos | 50 | Salvo com sucesso. | | |
+| 26 | Produto kg aves | CAR002 | Coxa de Frango | KG | - | - | - | R$ 8,00 | R$ 14,90 | Aves | 80 | Salvo com sucesso. | | |
+| 27 | Produto em gramas | CAR003 | Bacon fatiado 500g | g | - | - | - | R$ 18,00 | R$ 35,00 | Embutidos | 30 | Salvo com sucesso com unidade "g". | | |
+| 28 | Unidade não selecionada | CAR004 | Linguiça | (vazio) | - | - | - | R$ 10,00 | R$ 19,90 | Embutidos | 40 | Alerta: "Unidade é obrigatória". | | |
+| 29 | Preço venda zerado | CAR005 | Alcatra | KG | - | - | - | R$ 35,00 | R$ 0,00 | Bovinos | 30 | Alerta: "Preço de venda deve ser maior que zero". | | |
 
 ---
 

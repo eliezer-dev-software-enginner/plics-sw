@@ -40,6 +40,10 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public final State<String> garantia = new State<>("");
     public final State<String> marca = new State<>("");
 
+    public final State<String> corSelected = new State<>("");
+    public final State<String> tamanhoSelected = new State<>("");
+    public final State<String> modelo = new State<>("");
+
     public final State<String> unidadeSelected = new State<>("UN");
 
     public final State<List<CategoriaModel>> categorias = new State<>(List.of());
@@ -230,6 +234,9 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         model.setObservacoes(observacoes.get());
         model.setImagem(imagem.get());
         model.setMarca(marca.get());
+        model.setCor(corSelected.get());
+        model.setTamanho(tamanhoSelected.get());
+        model.setModelo(modelo.get());
         model.setValidade("Sim".equals(perecivelSelected.get()) && !validade.isNull() ? DateUtils.localDateParaMillis(validade.get()) : null);
         model.setGarantia(garantia.get());
         model.setComissao(comissao.get());
@@ -247,6 +254,9 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         comissao.set("");
         garantia.set("");
         marca.set("");
+        corSelected.set("");
+        tamanhoSelected.set("");
+        modelo.set("");
         unidadeSelected.set("UN");
         estoque.set("0");
         validade.set(null);
@@ -266,6 +276,9 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         comissao.set(model.getComissao());
         garantia.set(model.getGarantia());
         marca.set(model.getMarca());
+        corSelected.set(model.getCor());
+        tamanhoSelected.set(model.getTamanho());
+        modelo.set(model.getModelo());
         unidadeSelected.set(model.getUnidade());
         estoque.set(Utils.quantidadeTratada(model.getEstoque()));
 

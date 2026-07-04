@@ -24,11 +24,11 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
-| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | R$ 8,00 | R$ 12,00 | Alimentos | Alimentos Brasil | 200 | Nao | - | Salvo com sucesso. | | |
-| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | R$ 5,00 | R$ 8,00 | Alimentos | Alimentos Brasil | 150 | Nao | - | Salvo com sucesso. | | |
-| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | R$ 4,50 | R$ 7,50 | Alimentos | Alimentos Brasil | 100 | Nao | - | Salvo com sucesso. | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
+| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | - | - | - | R$ 8,00 | R$ 12,00 | Alimentos | Alimentos Brasil | 200 | Nao | - | Salvo com sucesso. | | |
+| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | - | - | - | R$ 5,00 | R$ 8,00 | Alimentos | Alimentos Brasil | 150 | Nao | - | Salvo com sucesso. | | |
+| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | - | - | - | R$ 4,50 | R$ 7,50 | Alimentos | Alimentos Brasil | 100 | Nao | - | Salvo com sucesso. | | |
 
 ---
 

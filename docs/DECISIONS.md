@@ -1,5 +1,29 @@
 # Decisões Arquiteturais
 
+## 2026-07-04: Adição de propriedades cor, tamanho e modelo em produtos
+
+**Problema:** Uma cliente de loja de roupas deseja cadastrar cor, tamanho e modelo nos produtos para melhor organização e filtragem do catálogo.
+
+**Decisão:**
+1. `cor` e `tamanho` como selects com valores predefinidos (`Data.listaCores`, `Data.listaTamanhos`) para evitar inconsistência de digitação.
+2. `modelo` como campo texto livre (ex: "Skinny", "Couro", "Esportivo") para flexibilidade.
+3. Todos os campos são opcionais para não quebrar cadastros existentes.
+4. Migration V22 adiciona as colunas via `ALTER TABLE` simples.
+5. Os campos aparecem no formulário, na tabela e nos detalhes do produto.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/db/models/ProdutoModel.java` (+cor, tamanho, modelo)
+- `src/main/java/my_app/db/dto/ProdutoDto.java` (+cor, tamanho, modelo)
+- `src/main/java/my_app/domain/Data.java` (+listaCores, listaTamanhos)
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreenViewModel.java` (+states, atualizado fillModelFromForm/clearForm/populateFromModel)
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreen.java` (+UI, colunas tabela, detalhes)
+- `src/main/resources/flyway_migrations/V22__add_cor_tamanho_modelo_produtos.sql` (novo)
+- `src/test/java/my_app/db/services/ProdutoServiceTest.java` (+1 teste)
+- `src/test/java/my_app/screens/produtoScreen/ProdutoScreenViewModelTest.java` (+1 teste)
+- `testes-loja-de-roupas.md`, `testes-petshop.md`, `testes-lanchonete.md`, `testes-acougue.md`, `testes-mercado.md` (+colunas Cor, Tamanho, Modelo)
+
+---
+
 ## 2026-07-03: Impressão de nota de venda com ESC/POS — EscPosPrinter + PDVScreenViewModel
 
 **Problema:** O método `EscPosPrinter.imprimir(VendaModel)` estava vazio, impossibilitando a impressão de notas de venda em impressoras térmicas. O botão "Imprimir nota de venda" no PDVScreen também não fazia nada (`PDVScreenViewModel.imprimirNota()` vazio).

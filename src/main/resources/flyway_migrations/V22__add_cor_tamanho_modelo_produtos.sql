@@ -1,0 +1,3 @@
+ALTER TABLE produtos ADD COLUMN cor TEXT;
+ALTER TABLE produtos ADD COLUMN tamanho TEXT;
+ALTER TABLE produtos ADD COLUMN modelo TEXT;

@@ -13,6 +13,10 @@ public class ProdutoDto {
     public Long categoriaId;
     public Long fornecedorId;
 
+    public String cor;
+    public String tamanho;
+    public String modelo;
+
     public BigDecimal estoque;
     public String observacoes;
     public String imagem;

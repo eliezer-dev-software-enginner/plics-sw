@@ -94,6 +94,28 @@ class ProdutoScreenViewModelTest extends BaseViewModelTest {
     }
 
     @Test
+    void deveSalvarProdutoComPropriedades() throws Exception {
+        criarDependencias();
+        vm.codigoBarras.set("7891234567893");
+        vm.descricao.set("Produto com Cor, Tamanho, Modelo");
+        vm.precoVenda.set("79.90");
+        vm.unidadeSelected.set("UN");
+        vm.corSelected.set("Azul");
+        vm.tamanhoSelected.set("G");
+        vm.modelo.set("Esportivo");
+
+        vm.handleAddOrUpdate();
+        waitForAsync();
+
+        var list = produtoService.listar();
+        assertEquals(1, list.size());
+        var saved = list.get(0);
+        assertEquals("Azul", saved.getCor());
+        assertEquals("G", saved.getTamanho());
+        assertEquals("Esportivo", saved.getModelo());
+    }
+
+    @Test
     void deveSalvarProdutoComValidadeFutura() throws Exception {
         criarDependencias();
         vm.codigoBarras.set("7891234567892");

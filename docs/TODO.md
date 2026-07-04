@@ -138,6 +138,16 @@
 - [x] **`EmpresaService` alinhado** ao padrão `DB.getPersismSession()`
 - [x] **Import não utilizado removido** de `CategoriaModel.java` (`org.jetbrains.annotations.NotNull`)
 
+## Concluído (Propriedades cor, tamanho, modelo — 2026-07-04)
+- [x] **`ProdutoModel`**: campos `cor`, `tamanho`, `modelo` (String) adicionados
+- [x] **`ProdutoDto`**: campos `cor`, `tamanho`, `modelo` adicionados
+- [x] **Migration V22**: `ALTER TABLE` para adicionar colunas
+- [x] **`Data.java`**: listas `listaCores` (16 cores), `listaTamanhos` (PP, P, M, G, GG, XG, UN)
+- [x] **`ProdutoScreenViewModel`**: states corSelected/tamanhoSelected/modelo; fillModelFromForm/clearForm/populateFromModel atualizados
+- [x] **`ProdutoScreen`**: selects Cor/Tamanho e input Modelo no formulário; colunas na tabela; detalhes no modal
+- [x] **Testes**: `ProdutoServiceTest` (+1), `ProdutoScreenViewModelTest` (+1)
+- [x] **Arquivos `.md` de teste**: adicionadas colunas Cor, Tamanho, Modelo em todos os 5 perfis
+
 ## Melhoria futura: Método dispose() no Megalodonte (onDispose)
 - Adicionar hook dispose nas ViewModels via `ViewModelScreenContract` para fechar services ao sair da tela
 - Impedir acúmulo de Sessions entre navegações

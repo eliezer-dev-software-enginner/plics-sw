@@ -43,6 +43,10 @@ public class ProdutoModel {
     private String observacoes;
     private String imagem;
 
+    private String cor;
+    private String tamanho;
+    private String modelo;
+
     private Long validade;
     private String comissao;
     private String garantia;
