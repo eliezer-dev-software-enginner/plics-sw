@@ -13,8 +13,7 @@ public class Utils {
     public static String toBRLCurrency(BigDecimal value){
         final NumberFormat BRL =
                 NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-        return BRL.format(value);
-
+        return BRL.format(value).replace('\u00a0', ' ');
     }
 
     public static String toBRLCurrency(String value){

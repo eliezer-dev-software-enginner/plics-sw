@@ -84,7 +84,8 @@ public class PDVScreenViewModel {
         this.pdvService = pdvService;
         this.pedidoItemService = createPedidoItemService();
         this.empresaService = createEmpresaService();
-        this.escPosPrinter = new EscPosPrinter(empresaService);
+        //this.escPosPrinter = new EscPosPrinter(empresaService);
+        this.escPosPrinter =  EscPosPrinter.viaTcp("virtual-printer.online");
         this.onInit();
     }
 

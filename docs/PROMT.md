@@ -29,5 +29,16 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Adicionei select para definir se o fornecedor é pessoa física ou jurídica em FornecedorScreen
-E adicionei validação para o caso de uso acima. Agora quero que você crie testes automatizados que cobrem esse cenário.
+Lá está chegando assim abaixo, a largura(dots) lá no site é: 512:
+--------------------------------
+NOTA DE VENDA
+N. 6
+Data: 03/07/2026 21:16
+Cliente: CLIENTE PADR├âO
+--------------------------------
+ITENS
+SKU004  x1  R$┬á80,00  = R$┬á80,00
+--------------------------------
+Total: R$┬á80,00
+Pagamento: A VISTA
+Obrigado pela preferencia!

@@ -64,7 +64,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
     }
 
     public static EscPosPrinter viaTcp(String host) {
-        return viaTcp(host, 9107);
+        return viaTcp(host, 9205);
     }
 
     private static EmpresaService createEmpresaService() {
@@ -151,7 +151,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
             OutputStream out = outputStream != null ? outputStream : resolverOutputStream();
             if (out == null) return false;
             try (EscPos escpos = new EscPos(out)) {
-                escpos.setCharsetName("UTF-8");
+                escpos.setCharacterCodeTable(EscPos.CharacterCodeTable.CP860_Portuguese);
                 escpos.initializePrinter();
                 consumer.accept(escpos);
                 escpos.flush();
