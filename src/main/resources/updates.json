@@ -1,5 +1,28 @@
 [
   {
+    "version": "v1.0.7",
+    "notes": [
+      "Feat: Impressão de nota de venda via ESC/POS — PDV e Venda de Mercadoria (TCP/IP ou impressora padrão)",
+      "Feat: Propriedades cor, tamanho e modelo em produtos",
+      "Feat: CNPJ alfanumérico — validação simplificada compatível com lei 14.754/2023",
+      "Feat: Fornecedor aceita CPF (pessoa física) além de CNPJ",
+      "Feat: Exibe email do cliente em ClienteScreen",
+      "Feat: Auto-focus no campo quantidade após selecionar produto (ComprasScreen e VendaScreen)",
+      "Feat: Telas inscritas em eventos de fornecedor/cliente — listas dinâmicas",
+      "Feat: Scroll em InfoUpdateScreen",
+      "Feat: Clique duplo na célula abre detalhes do produto em VendaMercadoriaScreen",
+      "Feat: Exibe nome do produto e preço de venda na tabela de VendaMercadoriaScreen",
+      "Feat: Carrega nome do produto na tabela de ComprasScreen",
+      "Fix: Vazamento de sessions SQLite — closeAllSessions no shutdown do app",
+      "Fix: Flyway + SQLite — repair() antes de migrate() e inicialização única",
+      "Fix: Subtotal e troco gigantes no PDV — armazena centavos inteiros",
+      "Fix: Charset CP860 e espaço normal em valores monetários na impressão",
+      "Fix: Impede entrada de parcela menor que 1",
+      "Fix: ComprasScreenViewModel.clearForm() agora reseta o desconto",
+      "Fix: Validação inconsistente da licença de teste — agora usa método centralizado estático"
+    ]
+  },
+  {
     "version": "v1.0.6",
     "notes": [
       "Feat: InputColumnDecimal auto-formata com separador de milhar enquanto digita",
