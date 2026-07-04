@@ -206,17 +206,6 @@ public class PDVScreenViewModel {
         });
     }
 
-    void loadClientes() {
-        Async.Run(() -> {
-            try {
-                var list = clienteService.listar();
-               // UI.runOnUi(() -> clientes.set(list));
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar clientes: " + e.getMessage()));
-            }
-        });
-    }
-
     void adicionarPorCodigo(String codigo) {
         var produto = produtosCache.get(codigo.trim());
         if (produto == null) {

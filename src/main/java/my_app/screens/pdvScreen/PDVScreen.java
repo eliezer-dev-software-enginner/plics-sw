@@ -25,7 +25,6 @@ public class PDVScreen implements ScreenComponent {
     @Override
     public void onMount() {
         vm.loadProdutos();
-        vm.loadClientes();
     }
 
     @Override
