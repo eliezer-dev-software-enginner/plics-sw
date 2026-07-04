@@ -6,13 +6,9 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.ClienteModel;
-import my_app.db.models.ProdutoModel;
-import my_app.db.models.VendaModel;
-import my_app.db.services.ClienteService;
-import my_app.db.services.ContaAreceberService;
-import my_app.db.services.ProdutoService;
-import my_app.db.services.VendaService;
+import my_app.Main;
+import my_app.db.models.*;
+import my_app.db.services.*;
 import my_app.db.models.ClienteModel;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
@@ -22,6 +18,7 @@ import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.services.EscPosPrinter;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
@@ -38,6 +35,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
     private final ContaAreceberService contaService;
+    private EmpresaService empresaService;
+    private EscPosPrinter escPosPrinter;
 
     final ListState<VendaModel> vendas = ListState.ofEmpty();
 
@@ -86,12 +85,22 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         this(ctx, createVendaService(), createProdutoService(), createClienteService(), createContaAreceberService());
     }
 
+    private static EmpresaService createEmpresaService() {
+        try {
+            return new EmpresaService();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public VendaMercadoriaScreenViewModel(ScreenContext ctx, VendaService vendaService, ProdutoService produtoService, ClienteService clienteService, ContaAreceberService contaService) {
         super(ctx);
         this.vendaService = vendaService;
         this.produtoService = produtoService;
         this.clienteService = clienteService;
         this.contaService = contaService;
+        this.empresaService = createEmpresaService();
+        this.escPosPrinter = Main.devMode? EscPosPrinter.viaTcp("virtual-printer.online"): new EscPosPrinter(empresaService);
         this.onInit();
     }
 
@@ -316,11 +325,13 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 VendaModel finalVenda = salvo;
                 UI.runOnUi(() -> {
                     vendas.add(finalVenda);
-                    Components.ShowPopup(ctx, "Venda salva com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
                     clearForm();
+                    Components.ShowPopupWithButton(ctx,"Salvo com sucesso","Imprimir", ()->{
+                        imprimirNotaDeVenda(finalVenda);
+                    });
                 });
             }
         });
@@ -416,5 +427,15 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         } else {
             estoqueAtual.set(estoqueBase.toString());
         }
+    }
+
+    void imprimirNotaDeVenda(VendaModel vendaModel){
+        Async.Run(() -> {
+            try {
+                escPosPrinter.imprimir(vendaModel);
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
+            }
+        });
     }
 }

@@ -2,6 +2,7 @@ package my_app.screens.vendaScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Button;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
@@ -113,7 +114,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .c_child(Components.TextWithDetails("Ganho líquido: ", Utils.toBRLCurrency(model.getTotalLiquido())))
                 .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
                 .c_child(Components.TextWithDetails("Validade: ", validade))
-                .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
+                .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true))
+                .c_child(new Button("Imprimir nota de venda").onClick(() -> vm.imprimirNotaDeVenda(model)));
     }
 
     @Override

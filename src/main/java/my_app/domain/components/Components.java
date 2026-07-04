@@ -142,6 +142,37 @@ public class Components {
         return Component.CreateFromJavaFxNode(scroll);
     }
 
+    public static void ShowPopupWithButton(
+            ScreenContext screenContext, String message, String btnTitle, Runnable callback) {
+        Popup popup = new Popup();
+        popup.setAutoHide(false);
+
+        Label label = new Label(message);
+        label.setStyle("""
+                    -fx-background-color: #333;
+                    -fx-text-fill: white;
+                    -fx-padding: 10 16;
+                    -fx-background-radius: 6;
+                """);
+
+        Card card = new Card(new Container()
+                .children(
+                        Component.CreateFromJavaFxNode(label),
+                        new SpacerVertical(15),
+                        new Row(new RowProps().spacingOf(10)).children(
+                                new Button(btnTitle).onClick(callback),
+                                new Button("Fechar", new ButtonProps().bgColor("red")).onClick(()->{
+                                    callback.run();
+                                    popup.hide();
+                                })
+                        )
+                ));
+
+
+        popup.getContent().add(card.getJavaFxNode());
+        popup.show(screenContext.selfStage());
+    }
+
     public static void ShowPopup(ScreenContext context, String message) {
         Popup popup = new Popup();
 
