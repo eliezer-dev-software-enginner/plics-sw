@@ -32,7 +32,7 @@ public class AppRoutes {
     public Router defineRoutes(boolean askCredentials, boolean forceAccessRoute) throws ReflectiveOperationException {
 
         var routes = Set.of(
-                new Router.Route("ler-planilha-ia", ctx -> new LerPlanilhaScreen(ctx), new RouteProps(950, 550, "Extrair dados com IA", true)),
+                new Router.Route("ler-planilha-ia", ctx -> new LerPlanilhaScreen(ctx), new RouteProps(650, 500, "Extrair dados com IA", true)),
                 new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(950, 550, Main.BASE_TITLE, true)),
                 new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1180, 700,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
