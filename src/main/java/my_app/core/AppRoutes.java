@@ -3,6 +3,7 @@ package my_app.core;
 import megalodonte.base.route.RouteProps;
 import megalodonte.router.v4.Router;
 import my_app.Main;
+import my_app.screens.ler_planilha_ia.LerPlanilhaScreen;
 import my_app.screens.welcomeScreen.WelcomeScreen;
 import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
 import my_app.screens.feedbackScreen.RelatarErroScreen;
@@ -31,6 +32,7 @@ public class AppRoutes {
     public Router defineRoutes(boolean askCredentials, boolean forceAccessRoute) throws ReflectiveOperationException {
 
         var routes = Set.of(
+                new Router.Route("ler-planilha-ia", ctx -> new LerPlanilhaScreen(ctx), new RouteProps(950, 550, "Extrair dados com IA", true)),
                 new Router.Route("welcome", ctx -> new WelcomeScreen(ctx), new RouteProps(950, 550, Main.BASE_TITLE, true)),
                 new Router.Route("home", ctx -> new HomeScreen(ctx), new RouteProps(1180, 700,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),

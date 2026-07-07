@@ -226,6 +226,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
             try {
                 var model = new ProdutoModel();
                 fillModelFromForm(model);
+
+                //TODO: produto serviçe deveria cuidar disso
                 model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
 
                 var salvo = produtoService.salvar(model);
