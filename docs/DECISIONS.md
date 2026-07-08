@@ -1,5 +1,73 @@
 # Decisões Arquiteturais
 
+## 2026-07-08: Substituição do jSerialComm por JSSC
+
+**Problema:** `jSerialComm 2.10.4` falhava ao extrair a DLL nativa no Windows do usuário (erro "Acesso negado" + DLL ARM64 em CPU AMD64), impossibilitando a listagem de portas seriais e a impressão via serial/Bluetooth.
+
+**Decisão:** Substituir `com.fazecast:jSerialComm:2.10.4` por `io.github.java-native:jssc:2.10.2` (Java Simple Serial Connector), uma biblioteca mais simples e de mesma finalidade.
+
+**Mudanças por arquivo:**
+
+1. **`build.gradle.kts`**: dependência trocada.
+
+2. **`PreferenciasViewModel.java`**:
+   - `SerialPort.getCommPorts()` → `SerialPortList.getPortNames()` (retorna `String[]` com nomes simples como "COM1").
+   - Remove `limparCacheJSerialComm()` e imports obsoletos (`java.io`, `java.nio.file`, `java.util.Comparator`).
+
+3. **`EscPosPrinter.java`** — `resolverOutputStream()`:
+   - `SerialPort.getCommPort()` → `new jssc.SerialPort(portaImpressora)`.
+   - `setBaudRate(9600)` → `setParams(BAUDRATE_9600, DATABITS_8, STOPBITS_1, PARITY_NONE)`.
+   - Wrapper `OutputStream` que delega `write()` para `serialPort.writeByte()`/`writeBytes()` (JSSC não tem `getOutputStream()` nativo).
+   - `close()` fecha a porta serial via `serialPort.closePort()`.
+
+4. **`Main.java`**: `corrigirArquiteturaNativa()` mantida (corrige `os.arch` se detectado como `aarch64` em CPU AMD64 — útil para qualquer lib nativa). Cache cleaning removido.
+
+**Arquivos alterados:**
+- `build.gradle.kts` (jSerialComm → jssc)
+- `src/main/java/my_app/Main.java` (renomeado método, removido cache cleaning)
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasViewModel.java` (API JSSC)
+- `src/main/java/my_app/services/EscPosPrinter.java` (API JSSC + OutputStream wrapper)
+
+---
+
+## 2026-07-08: Listagem de impressoras Windows no select de preferências
+
+**Contexto:** Após substituir jSerialComm por JSSC, o select "Selecionar impressora" em PreferenciasScreen listava apenas portas COM seriais. O usuário testou e não havia portas COM disponíveis no sistema (apenas impressoras de rede e Bluetooth). O driver HPRT MPT-II (COM2) que ele baixou dava erro no Windows, impossibilitando impressão.
+
+**Decisão:**
+1. **`PreferenciasViewModel.load()`**: após listar portas seriais, também lista impressoras Windows via `javax.print.PrintServiceLookup.lookupPrintServices()`. Cada item aparece como `"NomeImpressora - Spooler"` (ao lado de `"COM1 - Serial"`). `savePrinterPort()` já extrai o nome real via `split(" - ")[0]`, funcionando para ambos os tipos.
+2. **`EscPosPrinter.resolverOutputStream()`**:
+   - Detecta se o nome salvo é porta serial (`COM\d+`, contém `\` ou `/`) ou nome de impressora Windows.
+   - Se for nome de impressora, busca a `PrintService` pelo nome exato via `PrintServiceLookup`.
+3. **`isPrinterAcceptingJobs(PrintService)`**: verifica o atributo `PrinterIsAcceptingJobs` antes de criar `PrinterOutputStream`. Se a impressora não estiver aceitando jobs (offline, driver problemático), loga `warn` e tenta a impressora padrão. Se a padrão também falhar, gera preview `.txt` silenciosamente — evita o `SEVERE` do `PrinterOutputStream` (que acontecia em thread interna da biblioteca).
+4. **`isSerialPortName(String)`**: heurística para distinguir porta serial de nome de impressora. Retorna `true` se o nome corresponde a `COM\d+` ou contém barras invertidas/diretas.
+5. **`findPrintServiceByName(String)`**: percorre `PrintServiceLookup.lookupPrintServices()` e retorna a primeira `PrintService` cujo `getName()` coincide exatamente.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasViewModel.java` (+impressoras Windows no load)
+- `src/main/java/my_app/services/EscPosPrinter.java` (+isPrinterAcceptingJobs, isSerialPortName, findPrintServiceByName)
+
+---
+
+## 2026-07-08: Correção — tabela de produtos não atualizava após CRUD
+
+**Problema:** Após criar, editar ou excluir um produto na ProdutoScreen, a tabela não refletia as alterações. O usuário precisava sair e voltar à tela para ver os dados atualizados.
+
+**Causa raiz:**
+1. **`handleClickMenuDelete()`**: removia do banco mas nunca removia o item da lista `produtos` (ListState), então a tabela continuava exibindo o produto excluído.
+2. **`asyncAtualizar()`**: recarregava a lista inteira do banco em vez de usar `updateIf` — carregamento desnecessário e sem publicação de evento de atualização.
+3. **`loadInicial()`**: não fazia `clear()` antes de `addAll()`, podendo duplicar itens se chamado múltiplas vezes.
+
+**Decisão:**
+1. `handleClickMenuDelete()`: adicionar `produtos.removeIf(it -> it.getId().equals(...))` após exclusão no banco.
+2. `asyncAtualizar()`: seguir o padrão do `FornecedorScreenViewModel` — criar nova instância do model com dados atualizados e usar `produtos.updateIf()` para substituir na lista.
+3. `loadInicial()`: adicionar `this.produtos.clear()` antes de `addAll()`.
+
+**Arquivo alterado:**
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreenViewModel.java`
+
+---
+
 ## 2026-07-08: Porta da impressora salva em preferências
 
 **Problema:** A lista de portas seriais (COM / Bluetooth RFCOMM) era exibida na PreferenciasScreen mas não era persistida. O `EscPosPrinter` em `VendaMercadoriaScreenViewModel` usava porta hardcoded (`/dev/rfcomm0`), e `PDVScreenViewModel` não usava porta alguma (apenas fallback para impressora do sistema).

@@ -53,6 +53,19 @@
 
 ## Últimas alterações
 
+### 2026-07-08: Substituição do jSerialComm por JSSC
+- **Problema**: jSerialComm 2.10.4 falhava ao extrair DLL nativa (Acesso negado + DLL ARM64 em CPU AMD64).
+- **Solução**: Trocado para `io.github.java-native:jssc:2.10.2` (JSSC).
+- **PreferenciasViewModel**: `SerialPortList.getPortNames()` em vez de `SerialPort.getCommPorts()`.
+- **EscPosPrinter**: `new jssc.SerialPort(porta)` + OutputStream wrapper.
+- **Main.java**: `corrigirArquiteturaNativa()` mantida (corrige `os.arch` se `aarch64` em CPU AMD64).
+
+### 2026-07-08: Listagem de impressoras Windows no select de preferências
+- **PreferenciasViewModel.load()**: agora também lista impressoras Windows via `PrintServiceLookup.lookupPrintServices()` como `"Nome - Spooler"`.
+- **EscPosPrinter.resolverOutputStream()**: detecta se o nome é serial (`COM\d+`) ou impressora Windows. Se for impressora, busca `PrintService` por nome.
+- **isPrinterAcceptingJobs()**: verifica atributo `PrinterIsAcceptingJobs` antes de criar `PrinterOutputStream`. Se offline/não aceitando, loga `warn` e tenta fallback (impressora padrão → preview .txt).
+- **DevicesTest.java**: teste de diagnóstico para listar portas seriais e impressoras Windows.
+
 ### 2026-07-08: Porta da impressora salva em preferências e usada nas telas de venda
 - **Migration V23**: adicionada coluna `porta_impressora TEXT` à tabela `preferencias`.
 - **`PreferenciasModel`**: adicionado campo `portaImpressora` com `@Column(name = "porta_impressora")`.
@@ -125,6 +138,12 @@
 
 ### 2026-06-29: Clientes de perfil sem cadastro válido em testes-gerais.md
 - `testes-gerais.md` ClienteScreen: adicionados 12 clientes (#12-#23)
+
+### 2026-07-08: Tabela de produtos não atualizava após CRUD
+- **`handleClickMenuDelete()`**: adicionado `produtos.removeIf()` para remover item da lista após exclusão
+- **`asyncAtualizar()`**: substituído recarregamento completo por `updateIf` com nova instância (padrão FornecedorScreenViewModel)
+- **`loadInicial()`**: adicionado `this.produtos.clear()` antes de `addAll()` para evitar duplicação
+- **Arquivo alterado**: `ProdutoScreenViewModel.java`
 
 ---
 

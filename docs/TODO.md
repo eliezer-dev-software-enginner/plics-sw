@@ -147,6 +147,12 @@
 - [x] **VendaMercadoriaScreenViewModel**: porta carregada de `PreferenciasService` (remove hardcoded `/dev/rfcomm0`)
 - [x] **PDVScreenViewModel**: porta carregada de `PreferenciasService`; usa construtor com porta se definida, fallback caso contrário
 
+## Concluído (Tabela de produtos não atualizava após CRUD — 2026-07-08)
+- [x] **`handleClickMenuDelete()`**: adicionado `produtos.removeIf()` para remover da lista e atualizar a tabela
+- [x] **`asyncAtualizar()`**: substituído recarregamento completo por `updateIf` com nova instância (padrão FornecedorScreenViewModel)
+- [x] **`loadInicial()`**: adicionado `clear()` antes de `addAll()` para evitar duplicação
+- [x] **Arquivo alterado**: `ProdutoScreenViewModel.java`
+
 ## Concluído (Propriedades cor, tamanho, modelo — 2026-07-04)
 - [x] **`ProdutoModel`**: campos `cor`, `tamanho`, `modelo` (String) adicionados
 - [x] **`ProdutoDto`**: campos `cor`, `tamanho`, `modelo` adicionados

@@ -128,6 +128,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 var categoriasList = categoriaService.listar();
 
                 UI.runOnUi(() -> {
+                    this.produtos.clear();
                     this.produtos.addAll(produtosList);
                     this.categorias.set(categoriasList);
                     this.categoriaSelected.set(categoriasList.isEmpty() ? null : categoriasList.getFirst());
@@ -166,6 +167,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 try {
                     produtoService.excluirById(produtoModel.getId());
                     UI.runOnUi(() -> {
+                        produtos.removeIf(it -> it.getId().equals(produtoModel.getId()));
                         clearForm();
                         Components.ShowPopup(ctx, "Produto excluído com sucesso");
                     });
@@ -208,10 +210,32 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 fillModelFromForm(selecionado);
                 produtoService.atualizar(selecionado);
 
-                var produtosList = produtoService.listar();
+                var atualizado = new ProdutoModel();
+                atualizado.setId(selecionado.getId());
+                atualizado.setCodigoBarras(selecionado.getCodigoBarras());
+                atualizado.setDescricao(selecionado.getDescricao());
+                atualizado.setPrecoCompra(selecionado.getPrecoCompra());
+                atualizado.setPrecoVenda(selecionado.getPrecoVenda());
+                atualizado.setUnidade(selecionado.getUnidade());
+                atualizado.setCategoriaId(selecionado.getCategoriaId());
+                atualizado.setFornecedorId(selecionado.getFornecedorId());
+                atualizado.setEstoque(selecionado.getEstoque());
+                atualizado.setObservacoes(selecionado.getObservacoes());
+                atualizado.setImagem(selecionado.getImagem());
+                atualizado.setMarca(selecionado.getMarca());
+                atualizado.setCor(selecionado.getCor());
+                atualizado.setTamanho(selecionado.getTamanho());
+                atualizado.setModelo(selecionado.getModelo());
+                atualizado.setValidade(selecionado.getValidade());
+                atualizado.setGarantia(selecionado.getGarantia());
+                atualizado.setComissao(selecionado.getComissao());
+                atualizado.setTotalLiquido(selecionado.getTotalLiquido());
+                atualizado.setDataCriacao(selecionado.getDataCriacao());
+                atualizado.setCategoria(selecionado.getCategoria());
+                atualizado.setFornecedor(selecionado.getFornecedor());
+
                 UI.runOnUi(() -> {
-                    this.produtos.clear();
-                    this.produtos.addAll(produtosList);
+                    this.produtos.updateIf(p -> p.getId().equals(atualizado.getId()), p -> atualizado);
                     Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
                     clearForm();
                 });
