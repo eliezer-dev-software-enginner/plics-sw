@@ -1,7 +1,9 @@
 package my_app;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Set;
@@ -18,6 +20,7 @@ import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
 import my_app.hotreload.HotReload;
 import my_app.core.AppRoutes;
+import my_app.infra.ProcessKiller;
 import my_app.services.PlanilhaFornecedorReader;
 import org.flywaydb.core.Flyway;
 
@@ -25,7 +28,7 @@ public class Main {
     static HotReload hotReload;
     public static boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
-    public static String APP_VERSION = "1.0.7 - feat";
+    public static String APP_VERSION = "1.0.9";
     public static String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
 
@@ -77,12 +80,32 @@ public class Main {
     public static void handleClose(){
             ListenerManager.disposeAll();
             DB.closeAllSessions();
-            Platform.exit();
+
+        Thread.getAllStackTraces().keySet().stream()
+                .filter(t -> !t.isDaemon())
+                .forEach(t -> log("Thread non-daemon viva: " + t.getName() + " (" + t.getState() + ")"));
+
+        ProcessKiller.killCurrentProcessAsync();
+        Platform.exit();
+    }
+
+    private static final Path LOG_FILE = Path.of(
+            System.getProperty("java.io.tmpdir"), "plics-close.log"
+    );
+
+    private static void log(String msg) {
+        try {
+            Files.writeString(LOG_FILE,
+                    java.time.Instant.now() + " " + msg + "\n",
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException ignored) {}
     }
 
     // mandatory for hotreload
     public static void initialize(Context context) {
         ThemeManager.setTheme(Themes.LIGHT);
+
+
 
         try {
             var flyway = Flyway.configure()
@@ -108,6 +131,7 @@ public class Main {
             Router router = new AppRoutes().defineRoutes(askCredentials, forceAccessRoute);
             context.useRouter(router);
             context.useView(router.entrypoint());
+
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

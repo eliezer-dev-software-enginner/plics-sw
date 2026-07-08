@@ -32,7 +32,7 @@ public class HomeScreen implements ScreenComponent {
 
     public HomeScreen(ScreenContext ctx) {
         this.ctx = ctx;
-        this.viewModel = new HomeScreenViewModel();
+        this.viewModel = new HomeScreenViewModel(ctx);
     }
 
     private void buscarAtualizacao() {

@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +26,14 @@ public class UpdaterService {
 
     public UpdaterService() {
         this.client = HttpClient.newBuilder()
-            .followRedirects(HttpClient.Redirect.NORMAL)
-            .build();
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .executor(Executors.newCachedThreadPool(r -> {
+                    Thread t = new Thread(r);
+                    t.setDaemon(true);
+                    t.setName("http-client-daemon");
+                    return t;
+                }))
+                .build();
         this.mapper = new ObjectMapper();
     }
 
@@ -39,7 +46,7 @@ public class UpdaterService {
 
     public boolean hasUpdate(String currentVersion) throws IOException, InterruptedException {
         var latest = getLatestVersion();
-        return compareVersions(latest, currentVersion) > 0;
+        return !latest.equals(currentVersion);
     }
 
     public String downloadLatestPkg() throws IOException, InterruptedException {
@@ -52,6 +59,8 @@ public class UpdaterService {
         return downloadToTemp(downloadUrl);
     }
 
+
+    @Deprecated(forRemoval = true)
     static int compareVersions(String a, String b) {
         var pa = Pattern.compile("(\\d+)");
         var ma = pa.matcher(a);

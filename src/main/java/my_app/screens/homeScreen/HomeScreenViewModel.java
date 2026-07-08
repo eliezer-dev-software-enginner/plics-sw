@@ -4,6 +4,7 @@ import megalodonte.application.MegalodonteApp;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ContasPagarService;
 import my_app.db.services.PreferenciasService;
@@ -51,6 +52,7 @@ public class HomeScreenViewModel {
     public final State<String> vendasHoje = new State<>("R$ 0,00");
 
     public final State<Boolean> gifVisible = State.of(true);
+    private ScreenContext screenContext;
     public State<String> currentGif = new State<>(null);
     private final Random random = new Random();
 
@@ -67,8 +69,9 @@ public class HomeScreenViewModel {
     List<String> gifsFeliz = List.of(gifsList.getFirst(), gifsList.get(2));
     List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
 
-    public HomeScreenViewModel() {
+    public HomeScreenViewModel(ScreenContext screenContext) {
         this(createPreferenciasService(), createContaAreceberService(), createContasPagarService(), createVendaService(), createCompraService(), createPedidoService());
+        this.screenContext = screenContext;
     }
 
     public HomeScreenViewModel(PreferenciasService preferenciasService, ContaAreceberService receitasService, ContasPagarService despesasService, VendaService vendaService, CompraService compraService, PedidoService pedidoService) {
@@ -219,60 +222,47 @@ public class HomeScreenViewModel {
         executor.schedule(()-> UI.runOnUi(()-> gifVisible.set(false)),10, TimeUnit.SECONDS);
     }
 
+    //código que busca atualização
+    // UI.runOnUi(()->Components.ShowPopup(screenContext,"Baixando última versão do repositório..."));
     public void update() {
         new Thread(() -> {
-            String[] args = MegalodonteApp.getArgs();
-            String updaterPath;
-            String msiPath;
-
-            if (args.length >= 2) {
-                updaterPath = args[0];
-                msiPath = args[1];
-            } else {
-                try {
-                    var updater = new UpdaterService();
-                    if (!updater.hasUpdate(Main.APP_VERSION)) {
-                        UI.runOnUi(() -> Components.ShowAlertAdvice(
+            var updater = new UpdaterService();
+            UI.runOnUi(()->Components.ShowPopup(screenContext,"Baixando última versão do repositório..."));
+            try {
+                if (!updater.hasUpdate(Main.APP_VERSION)) {
+                    UI.runOnUi(() -> Components.ShowAlertAdvice(
                             "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
                             () -> {}
-                        ));
-                        return;
-                    }
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao verificar versão: " + e.getMessage()));
+                    ));
                     return;
                 }
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao verificar versão: " + e.getMessage()));
+                return;
+            }
 
-                updaterPath = discoverUpdaterPath();
-                if (updaterPath == null) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Updater não encontrado"));
-                    return;
-                }
-                try {
-                    msiPath = new UpdaterService().downloadLatestPkg();
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao baixar: " + e.getMessage()));
-                    return;
-                }
+            String updaterPath = discoverUpdaterPath();
+            if (updaterPath == null) {
+                UI.runOnUi(() -> Components.ShowAlertError("Updater não encontrado"));
+                return;
+            }
+
+            String msiPath;
+            try {
+                msiPath = updater.downloadLatestPkg();
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao baixar: " + e.getMessage()));
+                return;
             }
 
             long pid = ProcessHandle.current().pid();
+            String exePath = ProcessHandle.current().info().command().orElse("");
 
             try {
-                ProcessBuilder pb;
-                if (updaterPath.endsWith(".jar")) {
-                    String javaBin = System.getProperty("java.home")
-                        + File.separator + "bin" + File.separator + "java";
-                    pb = new ProcessBuilder(
-                        javaBin, "-jar", updaterPath,
-                        String.valueOf(pid), msiPath
-                    );
-                } else {
-                    pb = new ProcessBuilder(
+                ProcessBuilder pb = new ProcessBuilder(
                         updaterPath,
-                        String.valueOf(pid), msiPath
-                    );
-                }
+                        String.valueOf(pid), msiPath, exePath
+                );
                 pb.start();
                 System.exit(0);
             } catch (IOException e) {

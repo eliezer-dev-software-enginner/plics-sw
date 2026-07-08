@@ -27,29 +27,29 @@ public class HomeScreenViewModel {
     public void update() {
         new Thread(() -> {
             String[] args = MegalodonteApp.getArgs();
-            if (args.length < 2) {
+            if (args.length < 3) {
                 log("ERRO: args insuficientes (" + args.length + ")");
                 UI.runOnUi(() -> updateStatus.set("Erro: args insuficientes"));
                 return;
             }
 
-            String pidStr = args[0];
+            long pid = Long.parseLong(args[0]);
             String pkgPath = args[1];
-            log("Iniciando. PID=" + pidStr + " PKG=" + pkgPath);
+            String exePath = args[2];
+            log("Iniciando. PID=" + pid + " PKG=" + pkgPath + " EXE=" + exePath);
 
-            long pid = Long.parseLong(pidStr);
             UI.runOnUi(() -> updateStatus.set("Aguardando aplicação fechar..."));
 
             ProcessHandle.of(pid).ifPresentOrElse(
-                ph -> { log("Aguardando PID " + pid); ph.onExit().join(); log("PID " + pid + " fechou"); },
-                () -> log("PID " + pid + " nao encontrado, prosseguindo")
+                    ph -> { log("Aguardando PID " + pid); ph.onExit().join(); log("PID " + pid + " fechou"); },
+                    () -> log("PID " + pid + " nao encontrado, prosseguindo")
             );
 
             UI.runOnUi(() -> updateStatus.set("Instalando atualização..."));
 
             try {
                 if (IS_WINDOWS) {
-                    runWindowsUpdate(pkgPath);
+                    runWindowsUpdate(pkgPath, exePath);
                 } else {
                     runLinuxUpdate(pkgPath);
                 }
@@ -60,46 +60,150 @@ public class HomeScreenViewModel {
         }).start();
     }
 
-    private void runWindowsUpdate(String msiPath) throws IOException {
+    private void runWindowsUpdate(String msiPath, String exePath) throws IOException {
         var tempDir = Files.createTempDirectory("plics-update-");
         var logFile = tempDir.resolve("msi-result.txt");
         var batchFile = tempDir.resolve("run-update.bat");
+        var vbsFile = tempDir.resolve("run-update.vbs");
 
         var msiLogFile = tempDir.resolve("msi-install.log");
         String msiLog = msiLogFile.toAbsolutePath().toString().replace("\"", "\"\"");
         String resultLog = logFile.toAbsolutePath().toString().replace("\"", "\"\"");
         String msi = msiPath.replace("\"", "\"\"");
+        String exe = exePath.replace("\"", "\"\"");
+
+        String taskName = "PlicsUpdate_" + System.currentTimeMillis();
+
         String script = "@echo off\r\n" +
-            "setlocal enabledelayedexpansion\r\n" +
-            "set MSI=" + msi + "\r\n" +
-            "set LOG=" + msiLog + "\r\n" +
-            "set RESULT=" + resultLog + "\r\n" +
-            "set TRY=0\r\n" +
-            "taskkill /f /im java.exe /im javaw.exe /im \"Plics SW.exe\" 2>nul\r\n" +
-            "timeout /t 10 /nobreak >nul\r\n" +
-            ":retry\r\n" +
-            "msiexec /i \"!MSI!\" /quiet /log \"!LOG!\"\r\n" +
-            "set EC=!ERRORLEVEL!\r\n" +
-            "if !EC!==1603 (\r\n" +
-            "  set /a TRY=TRY+1\r\n" +
-            "  if !TRY! lss 3 (\r\n" +
-            "    timeout /t 10 /nobreak >nul\r\n" +
-            "    goto retry\r\n" +
-            "  )\r\n" +
-            ")\r\n" +
-            "echo ExitCode=!EC! > \"!RESULT!\"\r\n" +
-            "if !EC!==0 (\r\n" +
-            "  msg \"%USERNAME%\" \"Plics SW atualizado! Voce ja pode abri-lo.\"\r\n" +
-            ") else (\r\n" +
-            "  msg \"%USERNAME%\" \"Erro na instalacao (code !EC!). Verifique os logs.\"\r\n" +
-            ")\r\n";
+                "setlocal enabledelayedexpansion\r\n" +
+                "set MSI=" + msi + "\r\n" +
+                "set LOG=" + msiLog + "\r\n" +
+                "set RESULT=" + resultLog + "\r\n" +
+                "set TASKNAME=" + taskName + "\r\n" +
+                "set EXE=" + exe + "\r\n" +
+                "set TRY=0\r\n" +
+                "taskkill /f /im java.exe /im javaw.exe /im \"Plics SW.exe\" 2>nul\r\n" +
+                "timeout /t 10 /nobreak >nul\r\n" +
+                ":retry\r\n" +
+                "msiexec /i \"!MSI!\" /quiet /log \"!LOG!\"\r\n" +
+                "set EC=!ERRORLEVEL!\r\n" +
+                "if !EC!==1603 (\r\n" +
+                "  set /a TRY=TRY+1\r\n" +
+                "  if !TRY! lss 3 (\r\n" +
+                "    timeout /t 10 /nobreak >nul\r\n" +
+                "    goto retry\r\n" +
+                "  )\r\n" +
+                ")\r\n" +
+                "echo ExitCode=!EC! > \"!RESULT!\"\r\n" +
+                "if !EC!==0 (\r\n" +
+                "  start \"\" \"!EXE!\"\r\n" +
+                ")\r\n" +
+                "schtasks /delete /tn \"!TASKNAME!\" /f >nul 2>&1\r\n";
 
         Files.writeString(batchFile, script);
+
+        String batEscaped = batchFile.toAbsolutePath().toString().replace("\"", "\"\"");
+        String vbsScript =
+                "Set WshShell = CreateObject(\"WScript.Shell\")\r\n" +
+                        "WshShell.Run \"\"\"" + batEscaped + "\"\"\", 0, False\r\n";
+        Files.writeString(vbsFile, vbsScript);
+
         log("Script criado: " + batchFile);
-        new ProcessBuilder("cmd", "/c", batchFile.toAbsolutePath().toString()).start();
-        log("msiexec iniciado via script batch");
+        log("VBS wrapper criado: " + vbsFile);
+
+        String startTime = java.time.LocalTime.now().plusMinutes(10)
+                .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+
+        var create = new ProcessBuilder("schtasks", "/create", "/f", "/sc", "once",
+                "/tn", taskName,
+                "/tr", "wscript.exe \"" + vbsFile.toAbsolutePath() + "\"",
+                "/st", startTime)
+                .redirectErrorStream(true).start();
+        logProcessOutput(create, "schtasks /create");
+
+        log("Task agendada criada: " + taskName);
+
+        var run = new ProcessBuilder("schtasks", "/run", "/tn", taskName)
+                .redirectErrorStream(true).start();
+        logProcessOutput(run, "schtasks /run");
+
+        log("Task executada via schtasks /run");
         System.exit(0);
     }
+
+    private void logProcessOutput(Process p, String label) {
+        try {
+            String output = new String(p.getInputStream().readAllBytes());
+            p.waitFor();
+            log(label + " exitCode=" + p.exitValue() + " output=" + output.trim());
+        } catch (Exception e) {
+            log(label + " erro ao ler output: " + e.getMessage());
+        }
+    }
+
+//    private void runWindowsUpdate(String msiPath) throws IOException {
+//        var tempDir = Files.createTempDirectory("plics-update-");
+//        var logFile = tempDir.resolve("msi-result.txt");
+//        var batchFile = tempDir.resolve("run-update.bat");
+//
+//        var msiLogFile = tempDir.resolve("msi-install.log");
+//        String msiLog = msiLogFile.toAbsolutePath().toString().replace("\"", "\"\"");
+//        String resultLog = logFile.toAbsolutePath().toString().replace("\"", "\"\"");
+//        String msi = msiPath.replace("\"", "\"\"");
+//
+//        String taskName = "PlicsUpdate_" + System.currentTimeMillis();
+//
+//        String script = "@echo off\r\n" +
+//                "setlocal enabledelayedexpansion\r\n" +
+//                "set MSI=" + msi + "\r\n" +
+//                "set LOG=" + msiLog + "\r\n" +
+//                "set RESULT=" + resultLog + "\r\n" +
+//                "set TASKNAME=" + taskName + "\r\n" +
+//                "set TRY=0\r\n" +
+//                "taskkill /f /im java.exe /im javaw.exe /im \"Plics SW.exe\" 2>nul\r\n" +
+//                "timeout /t 10 /nobreak >nul\r\n" +
+//                ":retry\r\n" +
+//                "msiexec /i \"!MSI!\" /quiet /log \"!LOG!\"\r\n" +
+//                "set EC=!ERRORLEVEL!\r\n" +
+//                "if !EC!==1603 (\r\n" +
+//                "  set /a TRY=TRY+1\r\n" +
+//                "  if !TRY! lss 3 (\r\n" +
+//                "    timeout /t 10 /nobreak >nul\r\n" +
+//                "    goto retry\r\n" +
+//                "  )\r\n" +
+//                ")\r\n" +
+//                "echo ExitCode=!EC! > \"!RESULT!\"\r\n" +
+//                "if !EC!==0 (\r\n" +
+//                "  msg \"%USERNAME%\" \"Plics SW atualizado! Voce ja pode abri-lo.\"\r\n" +
+//                ") else (\r\n" +
+//                "  msg \"%USERNAME%\" \"Erro na instalacao (code !EC!). Verifique os logs.\"\r\n" +
+//                ")\r\n" +
+//                "schtasks /delete /tn \"!TASKNAME!\" /f >nul 2>&1\r\n";
+//
+//        Files.writeString(batchFile, script);
+//        log("Script criado: " + batchFile);
+//
+//        // /st é só formalidade (obrigatório pro /sc once), horário distante o suficiente pra nunca coincidir
+//        String startTime = java.time.LocalTime.now().plusMinutes(10)
+//                .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+//
+//        var create = new ProcessBuilder("schtasks", "/create", "/f", "/sc", "once",
+//                "/tn", taskName,
+//                "/tr", batchFile.toAbsolutePath().toString(),
+//                "/st", startTime)
+//                .redirectErrorStream(true).start();
+//        logProcessOutput(create, "schtasks /create");
+//
+//        log("Task agendada criada: " + taskName);
+//
+//        // Dispara a task AGORA, sem depender do horário
+//        var run = new ProcessBuilder("schtasks", "/run", "/tn", taskName)
+//                .redirectErrorStream(true).start();
+//        logProcessOutput(run, "schtasks /run");
+//
+//        log("Task executada via schtasks /run");
+//        System.exit(0);
+//    }
 
     private void runLinuxUpdate(String debPath) throws IOException {
         var tempDir = Files.createTempDirectory("plics-update-");
