@@ -1,10 +1,12 @@
 package my_app.screens.preferenciasScreen;
 
+import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Platform;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.ListState;
 import my_app.Main;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class PreferenciasViewModel extends ViewModelScreenContract {
     private static final Logger log = LoggerFactory.getLogger(PreferenciasViewModel.class);
@@ -27,6 +30,8 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
     final State<String> habilitarCredenciaisSelected = State.of("Não");
     final State<String> loginState = State.of("");
     final State<String> passwordState = State.of("");
+    final ListState<String> comportsState = new ListState<>(List.of("N/D"));
+    final State<String> comportsStateSelected = State.of("N/D");
 
     private PreferenciasModel prefLoaded;
 
@@ -52,6 +57,15 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
     void load() {
         Async.Run(() -> {
             try {
+                SerialPort[] portas = SerialPort.getCommPorts();
+                for (SerialPort p : portas) {
+                    String name = p.getSystemPortName() + " - " + p.getDescriptivePortName();
+                    UI.runOnUi(()->{
+                        System.out.println(name);
+                        comportsState.add(name);
+                    });
+                }
+
                 var prefs = preferenciasService.listar();
                 if (!prefs.isEmpty()) {
                     var pref = prefs.getFirst();
@@ -60,6 +74,13 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
                         habilitarCredenciaisSelected.set(pref.getCredenciaisHabilitadas() == 1 ? "Sim" : "Não");
                         loginState.set(pref.getLogin());
                         passwordState.set(pref.getSenha());
+                        var savedPort = pref.getPortaImpressora();
+                        if (savedPort != null && !savedPort.isBlank()) {
+                            comportsState.get().stream()
+                                    .filter(name -> name.startsWith(savedPort))
+                                    .findFirst()
+                                    .ifPresent(name -> comportsStateSelected.set(name));
+                        }
                     });
                 }
             } catch (SQLException e) {
@@ -84,12 +105,23 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
                 prefLoaded.setCredenciaisHabilitadas(habilitar ? 1 : 0);
                 prefLoaded.setLogin(login);
                 prefLoaded.setSenha(senha);
+                savePrinterPort();
                 preferenciasService.atualizar(prefLoaded);
                 UI.runOnUi(() -> Components.ShowPopup(ctx, "Preferências salvas com sucesso!"));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
+    }
+
+    private void savePrinterPort() {
+        var selected = comportsStateSelected.get();
+        if (selected != null && !selected.equals("N/D")) {
+            var systemPortName = selected.split(" - ")[0];
+            prefLoaded.setPortaImpressora(systemPortName);
+        } else {
+            prefLoaded.setPortaImpressora(null);
+        }
     }
 
     String validar() {

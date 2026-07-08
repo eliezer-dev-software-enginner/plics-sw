@@ -53,6 +53,15 @@
 
 ## Últimas alterações
 
+### 2026-07-08: Porta da impressora salva em preferências e usada nas telas de venda
+- **Migration V23**: adicionada coluna `porta_impressora TEXT` à tabela `preferencias`.
+- **`PreferenciasModel`**: adicionado campo `portaImpressora` com `@Column(name = "porta_impressora")`.
+- **`PreferenciasDto`**: adicionado campo `portaImpressora`.
+- **`PreferenciasViewModel.load()`**: restaura `comportsStateSelected` a partir da porta salva.
+- **`PreferenciasViewModel.salvar()`**: extrai o nome da porta do item selecionado (parte antes de " - ") e salva no model.
+- **`VendaMercadoriaScreenViewModel`**: porta carregada de `PreferenciasService` em vez de hardcoded `/dev/rfcomm0`.
+- **`PDVScreenViewModel`**: porta carregada de `PreferenciasService` e passada ao `EscPosPrinter`; se houver porta definida, usa o construtor com porta, senão usa o fallback (impressora do sistema).
+
 ### 2026-07-04: Adicionadas propriedades cor, tamanho, modelo ao ProdutoScreen
 - **`ProdutoModel`**: adicionados campos `cor`, `tamanho`, `modelo` (String).
 - **`ProdutoDto`**: adicionados campos `cor`, `tamanho`, `modelo`.

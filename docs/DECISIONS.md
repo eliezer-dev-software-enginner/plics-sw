@@ -1,5 +1,27 @@
 # Decisões Arquiteturais
 
+## 2026-07-08: Porta da impressora salva em preferências
+
+**Problema:** A lista de portas seriais (COM / Bluetooth RFCOMM) era exibida na PreferenciasScreen mas não era persistida. O `EscPosPrinter` em `VendaMercadoriaScreenViewModel` usava porta hardcoded (`/dev/rfcomm0`), e `PDVScreenViewModel` não usava porta alguma (apenas fallback para impressora do sistema).
+
+**Decisão:**
+1. Adicionar coluna `porta_impressora TEXT` na tabela `preferencias` (Migration V23).
+2. `PreferenciasModel.portaImpressora` mapeado via `@Column(name = "porta_impressora")`.
+3. No `salvar()`, extrair o nome do sistema da porta (parte antes de ` - `) e salvar no model.
+4. No `load()`, buscar o item na lista de portas que começa com o nome salvo e selecioná-lo.
+5. `VendaMercadoriaScreenViewModel` e `PDVScreenViewModel`: carregar a porta via `PreferenciasService` e passar ao construtor de `EscPosPrinter`. Se `null`, `EscPosPrinter` usa fallback (impressora do sistema).
+6. A string completa exibida no select é `systemPortName + " - " + descriptivePortName`, mas apenas `systemPortName` é persistida — isso permite que a descrição mude entre reinicializações sem quebrar a seleção.
+
+**Arquivos alterados:**
+- `src/main/resources/flyway_migrations/V23__add_porta_impressora_preferencias.sql` (novo)
+- `src/main/java/my_app/db/models/PreferenciasModel.java` (+portaImpressora)
+- `src/main/java/my_app/db/dto/PreferenciasDto.java` (+portaImpressora)
+- `src/main/java/my_app/screens/preferenciasScreen/PreferenciasViewModel.java` (+savePrinterPort, load/save da porta)
+- `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreenViewModel.java` (+carregarPortaImpressora, import)
+- `src/main/java/my_app/screens/pdvScreen/PDVScreenViewModel.java` (+carregarPortaImpressora, import)
+
+---
+
 ## 2026-07-04: Adição de propriedades cor, tamanho e modelo em produtos
 
 **Problema:** Uma cliente de loja de roupas deseja cadastrar cor, tamanho e modelo nos produtos para melhor organização e filtragem do catálogo.

@@ -37,6 +37,7 @@ public class PreferenciasScreen implements ScreenComponent {
         return new Column(new ColumnProps().paddingAll(20)).children(
                 new Text("Minhas preferências"),
                 Components.SelectColumn("Habilitar credenciais", Data.simNaoList, vm.habilitarCredenciaisSelected, it -> it),
+                Components.SelectColumn("Selecionar impressora", vm.comportsState, vm.comportsStateSelected, it -> it,false),
                 Show.when(credentialsScreenIsVisible, () -> new Column().children(
                         new Text("Escolha seu login e senha de acesso"),
                         Components.InputColumn("Login", vm.loginState, ""),

@@ -28,6 +28,9 @@ public class PreferenciasModel {
 
     private String licensa;
 
+    @Column(name = "porta_impressora")
+    private String portaImpressora;
+
     public boolean isFirstAccess() {
         return primeiroAcesso != null && primeiroAcesso == 1;
     }

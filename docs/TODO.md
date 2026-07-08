@@ -138,6 +138,15 @@
 - [x] **`EmpresaService` alinhado** ao padrão `DB.getPersismSession()`
 - [x] **Import não utilizado removido** de `CategoriaModel.java` (`org.jetbrains.annotations.NotNull`)
 
+## Concluído (Porta da impressora em preferências — 2026-07-08)
+- [x] **Migration V23**: `ALTER TABLE preferencias ADD COLUMN porta_impressora TEXT`
+- [x] **PreferenciasModel**: campo `portaImpressora` com `@Column(name = "porta_impressora")`
+- [x] **PreferenciasDto**: campo `portaImpressora`
+- [x] **PreferenciasViewModel.load()**: restaura select da porta salva
+- [x] **PreferenciasViewModel.salvar()**: salva `systemPortName` (parte antes de " - ") no model
+- [x] **VendaMercadoriaScreenViewModel**: porta carregada de `PreferenciasService` (remove hardcoded `/dev/rfcomm0`)
+- [x] **PDVScreenViewModel**: porta carregada de `PreferenciasService`; usa construtor com porta se definida, fallback caso contrário
+
 ## Concluído (Propriedades cor, tamanho, modelo — 2026-07-04)
 - [x] **`ProdutoModel`**: campos `cor`, `tamanho`, `modelo` (String) adicionados
 - [x] **`ProdutoDto`**: campos `cor`, `tamanho`, `modelo` adicionados
@@ -147,6 +156,10 @@
 - [x] **`ProdutoScreen`**: selects Cor/Tamanho e input Modelo no formulário; colunas na tabela; detalhes no modal
 - [x] **Testes**: `ProdutoServiceTest` (+1), `ProdutoScreenViewModelTest` (+1)
 - [x] **Arquivos `.md` de teste**: adicionadas colunas Cor, Tamanho, Modelo em todos os 5 perfis
+
+## Melhoria futura: Verificar carregamento da porta da impressora
+- Testar fluxo completo: selecionar porta Bluetooth na PreferenciasScreen, salvar, e verificar impressão no PDV e VendaMercadoriaScreen
+- Considerar método `dispose()` nas ViewModels para fechar `PreferenciasService` ao sair da tela (evitar acúmulo de Sessions)
 
 ## Melhoria futura: Método dispose() no Megalodonte (onDispose)
 - Adicionar hook dispose nas ViewModels via `ViewModelScreenContract` para fechar services ao sair da tela

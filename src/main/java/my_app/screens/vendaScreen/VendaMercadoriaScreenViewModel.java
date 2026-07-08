@@ -10,6 +10,7 @@ import my_app.Main;
 import my_app.db.models.*;
 import my_app.db.services.*;
 import my_app.db.models.ClienteModel;
+import my_app.db.services.PreferenciasService;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
 import my_app.domain.states.TotaisState;
@@ -100,10 +101,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         this.clienteService = clienteService;
         this.contaService = contaService;
         this.empresaService = createEmpresaService();
-        //this.escPosPrinter = Main.devMode? EscPosPrinter.viaTcp("virtual-printer.online"): new EscPosPrinter(empresaService);
-        //this.escPosPrinter = new EscPosPrinter(empresaService);
-        this.escPosPrinter = new EscPosPrinter(empresaService, "/dev/rfcomm0"); // Linux
-        //new EscPosPrinter(empresaService, "COM5")         // Windows
+        this.escPosPrinter = new EscPosPrinter(empresaService, carregarPortaImpressora());
         this.onInit();
     }
 
@@ -132,6 +130,20 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
+    }
+
+    private String carregarPortaImpressora() {
+        try {
+            var prefsService = new PreferenciasService();
+            var prefs = prefsService.listar();
+            if (!prefs.isEmpty()) {
+                var port = prefs.getFirst().getPortaImpressora();
+                if (port != null && !port.isBlank()) return port;
+            }
+        } catch (SQLException e) {
+            log.warn("Não foi possível carregar porta da impressora", e);
+        }
+        return null;
     }
 
     private static ContaAreceberService createContaAreceberService() {

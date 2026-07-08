@@ -12,6 +12,7 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.EmpresaService;
 import my_app.db.services.PedidoItemService;
+import my_app.db.services.PreferenciasService;
 import my_app.db.services.ProdutoService;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
@@ -85,7 +86,9 @@ public class PDVScreenViewModel {
         this.pdvService = pdvService;
         this.pedidoItemService = createPedidoItemService();
         this.empresaService = createEmpresaService();
-        this.escPosPrinter = Main.devMode? EscPosPrinter.viaTcp("virtual-printer.online"): new EscPosPrinter(empresaService);
+        var porta = carregarPortaImpressora();
+        this.escPosPrinter = Main.devMode ? EscPosPrinter.viaTcp("virtual-printer.online")
+                : (porta != null ? new EscPosPrinter(empresaService, porta) : new EscPosPrinter(empresaService));
         this.onInit();
     }
 
@@ -111,6 +114,20 @@ public class PDVScreenViewModel {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String carregarPortaImpressora() {
+        try {
+            var prefsService = new PreferenciasService();
+            var prefs = prefsService.listar();
+            if (!prefs.isEmpty()) {
+                var port = prefs.getFirst().getPortaImpressora();
+                if (port != null && !port.isBlank()) return port;
+            }
+        } catch (SQLException e) {
+            log.warn("Não foi possível carregar porta da impressora", e);
+        }
+        return null;
     }
 
     private static EmpresaService createEmpresaService() {

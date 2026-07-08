@@ -29,4 +29,6 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-hoje é 4 de julho, fui entrar com licensa de teste mas não era para eu conseguir fazer login. Era para mostrar que a licensa está expirada.
+Em PreferenciasScreen e PreferenciasViewModel comecei a fazer a parte de listar as impressoras reconhecidas no dispostivo incluindo impressoras bluetoth.
+O que falta é salvar a porta da impressora nas preferências e então carregá-la para a state do select.
+E inclusive lá em VendaMercadoriaScreenViewModel e no model do pdv deve usar a porta carregada.
