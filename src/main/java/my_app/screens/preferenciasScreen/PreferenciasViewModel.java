@@ -1,7 +1,8 @@
 package my_app.screens.preferenciasScreen;
 
-import com.fazecast.jSerialComm.SerialPort;
+import jssc.SerialPortList;
 import javafx.application.Platform;
+import javax.print.PrintServiceLookup;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
@@ -57,13 +58,31 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
     void load() {
         Async.Run(() -> {
             try {
-                SerialPort[] portas = SerialPort.getCommPorts();
-                for (SerialPort p : portas) {
-                    String name = p.getSystemPortName() + " - " + p.getDescriptivePortName();
-                    UI.runOnUi(()->{
-                        System.out.println(name);
-                        comportsState.add(name);
-                    });
+                try {
+                    String[] portNames = SerialPortList.getPortNames();
+                    for (String name : portNames) {
+                        UI.runOnUi(()->{
+                            comportsState.add(name + " - Serial");
+                        });
+                    }
+                } catch (Throwable e) {
+                    log.error("Erro ao carregar portas seriais: {}", e.getMessage(), e);
+                    UI.runOnUi(() -> Components.ShowAlertError(
+                            "Não foi possível carregar portas seriais.\n" +
+                            "O recurso de impressão em porta COM será desabilitado.\n" +
+                            "Erro: " + e.getMessage()));
+                }
+
+                try {
+                    javax.print.PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+                    for (var ps : printServices) {
+                        String printerName = ps.getName();
+                        UI.runOnUi(() -> {
+                            comportsState.add(printerName + " - Spooler");
+                        });
+                    }
+                } catch (Throwable e) {
+                    log.error("Erro ao carregar impressoras Windows: {}", e.getMessage(), e);
                 }
 
                 var prefs = preferenciasService.listar();

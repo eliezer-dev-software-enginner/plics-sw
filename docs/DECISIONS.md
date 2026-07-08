@@ -49,6 +49,30 @@
 
 ---
 
+## 2026-07-08: Criação da tabela `cores` — cores passam a vir do banco
+
+**Problema:** A lista de cores era fixa em `Data.listaCores` (hardcoded). Não era possível gerenciar as cores dinamicamente, e a字段 `cor` do produto armazenava múltiplas cores como string separada por vírgulas.
+
+**Decisão:**
+1. **Migration V24**: `CREATE TABLE cores` com colunas `id`, `nome` (UNIQUE), `dataCriacao`. As mesmas 16 cores da lista fixa são inseridas como dados iniciais.
+2. **CorModel**: model com `@Table("cores")`, campos `id`, `nome`, `dataCriacao`.
+3. **CorRepository**: estende `BaseRepository<CorModel>`, padrão existente.
+4. **CorService**: estende `BaseService<CorModel>`, dois construtores (produção/testes), valida nome obrigatório.
+5. **ProdutoScreenViewModel**: adicionado `CorService` + `State<List<CorModel>> cores` carregado em `loadInicial()`. `coresSelecionadas` continua armazenando nomes (`List<String>`) para compatibilidade com a string `cor` do produto.
+6. **ProdutoScreen**: `coresCheckboxes()` agora itera sobre `vm.cores` em vez de `Data.listaCores`.
+
+**Arquivos criados:**
+- `src/main/resources/flyway_migrations/V24__criar_tabela_cores.sql`
+- `src/main/java/my_app/db/models/CorModel.java`
+- `src/main/java/my_app/db/repositories/CorRepository.java`
+- `src/main/java/my_app/db/services/CorService.java`
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreenViewModel.java`
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreen.java`
+
+---
+
 ## 2026-07-08: Correção — tabela de produtos não atualizava após CRUD
 
 **Problema:** Após criar, editar ou excluir um produto na ProdutoScreen, a tabela não refletia as alterações. O usuário precisava sair e voltar à tela para ver os dados atualizados.

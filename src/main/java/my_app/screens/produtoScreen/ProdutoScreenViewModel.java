@@ -6,9 +6,11 @@ import megalodonte.base.async.Async;
 import megalodonte.base.UI;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.CategoriaModel;
+import my_app.db.models.CorModel;
 import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.CategoriaService;
+import my_app.db.services.CorService;
 import my_app.db.services.FornecedorService;
 import my_app.db.services.ProdutoService;
 import my_app.core.events.EntityEvent;
@@ -29,6 +31,9 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     private final ProdutoService produtoService;
     private final FornecedorService fornecedorService;
     private final CategoriaService categoriaService;
+    private final CorService corService;
+
+    public final ListState<CorModel> cores = ListState.ofEmpty();
 
     public final ListState<ProdutoModel> produtos = ListState.of(List.of());
     public final State<String> codigoBarras = new State<>("");
@@ -43,7 +48,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public final State<String> garantia = new State<>("");
     public final State<String> marca = new State<>("");
 
-    public final State<String> corSelected = new State<>("");
+    public final ListState<String> coresSelecionadas = ListState.ofEmpty();
     public final State<String> tamanhoSelected = new State<>("");
     public final State<String> modelo = new State<>("");
 
@@ -64,14 +69,15 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public final State<String> perecivelSelected = new State<>("Não");
 
     public ProdutoScreenViewModel(ScreenContext ctx) {
-        this(ctx, createProdutoService(), createFornecedorService(), createCategoriaService());
+        this(ctx, createProdutoService(), createFornecedorService(), createCategoriaService(), createCorService());
     }
 
-    public ProdutoScreenViewModel(ScreenContext ctx, ProdutoService produtoService, FornecedorService fornecedorService, CategoriaService categoriaService) {
+    public ProdutoScreenViewModel(ScreenContext ctx, ProdutoService produtoService, FornecedorService fornecedorService, CategoriaService categoriaService, CorService corService) {
         super(ctx);
         this.produtoService = produtoService;
         this.fornecedorService = fornecedorService;
         this.categoriaService = categoriaService;
+        this.corService = corService;
         EventBus.getInstance().subscribe(event -> {
             if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
                 refreshFornecedores();
@@ -106,6 +112,15 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         }
     }
 
+    private static CorService createCorService() {
+        try {
+            return new CorService();
+        } catch (SQLException e) {
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
+            throw new RuntimeException(e);
+        }
+    }
+
     private void refreshFornecedores() {
         Async.Run(() -> {
             try {
@@ -126,10 +141,12 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 var produtosList = produtoService.listar();
                 var fornecedorModelList = fornecedorService.listar();
                 var categoriasList = categoriaService.listar();
+                var coresList = corService.listar();
 
                 UI.runOnUi(() -> {
                     this.produtos.clear();
                     this.produtos.addAll(produtosList);
+                    this.cores.addAll(coresList);
                     this.categorias.set(categoriasList);
                     this.categoriaSelected.set(categoriasList.isEmpty() ? null : categoriasList.getFirst());
 
@@ -157,6 +174,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
 
     @Override
     public void handleClickMenuDelete() {
+
         ProdutoModel produtoModel = produtoSelected.get();
         if (produtoModel == null) return;
 
@@ -282,7 +300,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         model.setObservacoes(observacoes.get());
         model.setImagem(imagem.get());
         model.setMarca(marca.get());
-        model.setCor(corSelected.get());
+        model.setCor(String.join(", ", coresSelecionadas.get()));
         model.setTamanho(tamanhoSelected.get());
         model.setModelo(modelo.get());
         model.setValidade("Sim".equals(perecivelSelected.get()) && !validade.isNull() ? DateUtils.localDateParaMillis(validade.get()) : null);
@@ -302,7 +320,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         comissao.set("");
         garantia.set("");
         marca.set("");
-        corSelected.set("");
+        coresSelecionadas.set(List.of());
         tamanhoSelected.set("");
         modelo.set("");
         unidadeSelected.set("UN");
@@ -324,7 +342,10 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         comissao.set(model.getComissao());
         garantia.set(model.getGarantia());
         marca.set(model.getMarca());
-        corSelected.set(model.getCor());
+        var corStr = model.getCor();
+        coresSelecionadas.set(corStr != null && !corStr.isBlank()
+                ? List.of(corStr.split(",\s*"))
+                : List.of());
         tamanhoSelected.set(model.getTamanho());
         modelo.set(model.getModelo());
         unidadeSelected.set(model.getUnidade());

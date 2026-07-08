@@ -56,10 +56,12 @@ dependencies {
     implementation("megalodonte:megalodonte-router:1.0.0-beta")
     implementation("megalodonte:megalodonte-theme:1.0.0-beta")
 
+    //implementation("org.controlsfx:controlsfx:11.2.4-SNAPSHOT")
+
     //Java library for ESC/POS printer commands
     implementation("com.github.anastaciocintra:escpos-coffee:4.1.0")
 
-    implementation("com.fazecast:jSerialComm:2.10.4")
+    implementation("io.github.java-native:jssc:2.10.2")
 
     implementation("org.kordamp.ikonli:ikonli-core:12.4.0")
     implementation("org.kordamp.ikonli:ikonli-javafx:12.4.0")
@@ -115,6 +117,11 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.register<JavaExec>("runDevicesTest") {
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("my_app.DevicesTest")
 }
 
 application {

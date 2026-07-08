@@ -42,7 +42,20 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        corrigirArquiteturaNativa();
         MegalodonteApp.run(args, Main::start, Main::onEvent);
+    }
+
+    private static void corrigirArquiteturaNativa() {
+        var arch = System.getProperty("os.arch");
+        if (arch != null && arch.toLowerCase().contains("aarch64")) {
+            var procArch = System.getenv("PROCESSOR_ARCHITECTURE");
+            var procArchW6432 = System.getenv("PROCESSOR_ARCHITEW6432");
+            if ((procArch != null && procArch.contains("AMD64")) ||
+                (procArchW6432 != null && procArchW6432.contains("AMD64"))) {
+                System.setProperty("os.arch", "amd64");
+            }
+        }
     }
 
     private static void start(Context context) {

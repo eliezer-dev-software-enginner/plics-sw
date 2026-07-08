@@ -139,6 +139,15 @@
 ### 2026-06-29: Clientes de perfil sem cadastro válido em testes-gerais.md
 - `testes-gerais.md` ClienteScreen: adicionados 12 clientes (#12-#23)
 
+### 2026-07-08: Tabela `cores` criada — cores vêm do banco em vez de lista fixa
+- **Migration V24**: `CREATE TABLE cores` com as 16 cores pré-populadas
+- **CorModel, CorRepository, CorService** criados seguindo padrão do projeto
+- **ProdutoScreenViewModel**: `cores` carregado via `CorService`; `coresSelecionadas` mantém nomes selecionados
+- **ProdutoScreen**: checkboxes agora iteram sobre `vm.cores` (do banco)
+- **Data.java**: `listaCores` pode ser removida futuramente (não usada mais pela tela)
+- **Arquivos criados**: `V24__criar_tabela_cores.sql`, `CorModel.java`, `CorRepository.java`, `CorService.java`
+- **Arquivos alterados**: `ProdutoScreenViewModel.java`, `ProdutoScreen.java`
+
 ### 2026-07-08: Tabela de produtos não atualizava após CRUD
 - **`handleClickMenuDelete()`**: adicionado `produtos.removeIf()` para remover item da lista após exclusão
 - **`asyncAtualizar()`**: substituído recarregamento completo por `updateIf` com nova instância (padrão FornecedorScreenViewModel)

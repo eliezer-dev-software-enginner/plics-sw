@@ -3,6 +3,8 @@ package my_app.screens.preferenciasScreen;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.RowProps;
 import megalodonte.v2.Show;
 import megalodonte.components.Button;
 import megalodonte.components.LineHorizontal;
@@ -36,9 +38,11 @@ public class PreferenciasScreen implements ScreenComponent {
 
         return new Column(new ColumnProps().paddingAll(20)).children(
                 new Text("Minhas preferências"),
-                Components.SelectColumn("Habilitar credenciais", Data.simNaoList, vm.habilitarCredenciaisSelected, it -> it),
-                Components.SelectColumn("Selecionar impressora", vm.comportsState, vm.comportsStateSelected, it -> it,false),
-                Show.when(credentialsScreenIsVisible, () -> new Column().children(
+                new Row(new RowProps().spacingOf(20)).children(
+                        Components.SelectColumn("Habilitar credenciais", Data.simNaoList, vm.habilitarCredenciaisSelected, it -> it),
+                        Components.SelectColumn("Selecionar impressora", vm.comportsState, vm.comportsStateSelected, it -> it,false)
+                        ),
+                     Show.when(credentialsScreenIsVisible, () -> new Column().children(
                         new Text("Escolha seu login e senha de acesso"),
                         Components.InputColumn("Login", vm.loginState, ""),
                         Components.InputColumn("Senha", vm.passwordState, "")

@@ -147,6 +147,14 @@
 - [x] **VendaMercadoriaScreenViewModel**: porta carregada de `PreferenciasService` (remove hardcoded `/dev/rfcomm0`)
 - [x] **PDVScreenViewModel**: porta carregada de `PreferenciasService`; usa construtor com porta se definida, fallback caso contrário
 
+## Concluído (Tabela `cores` criada — 2026-07-08)
+- [x] **Migration V24**: `CREATE TABLE cores` com 16 cores pré-populadas
+- [x] **CorModel, CorRepository, CorService** seguindo padrão existente
+- [x] **ProdutoScreenViewModel**: `cores` carregados via `CorService` em `loadInicial()`
+- [x] **ProdutoScreen**: checkboxes iteram sobre `vm.cores` em vez de `Data.listaCores`
+- [x] **Arquivos criados**: `V24__criar_tabela_cores.sql`, `CorModel.java`, `CorRepository.java`, `CorService.java`
+- [x] **Arquivos alterados**: `ProdutoScreenViewModel.java`, `ProdutoScreen.java`
+
 ## Concluído (Tabela de produtos não atualizava após CRUD — 2026-07-08)
 - [x] **`handleClickMenuDelete()`**: adicionado `produtos.removeIf()` para remover da lista e atualizar a tabela
 - [x] **`asyncAtualizar()`**: substituído recarregamento completo por `updateIf` com nova instância (padrão FornecedorScreenViewModel)

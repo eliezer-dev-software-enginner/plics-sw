@@ -17,7 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.print.PrintService;
-import java.io.FileOutputStream;
+import javax.print.PrintServiceLookup;
+import javax.print.attribute.standard.PrinterIsAcceptingJobs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -26,7 +27,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import com.fazecast.jSerialComm.SerialPort;
+import jssc.SerialPort;
+import jssc.SerialPortException;
 public class EscPosPrinter implements ComprovanteBuilder {
     private static final Logger log = LoggerFactory.getLogger(EscPosPrinter.class);
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -50,12 +52,6 @@ public class EscPosPrinter implements ComprovanteBuilder {
 
     public EscPosPrinter(OutputStream outputStream) {
         this.empresaService = createEmpresaService();
-        this.outputStream = outputStream;
-        this.portaImpressora = null;
-    }
-
-    public EscPosPrinter(EmpresaService empresaService, OutputStream outputStream) {
-        this.empresaService = empresaService;
         this.outputStream = outputStream;
         this.portaImpressora = null;
     }
@@ -176,22 +172,78 @@ public class EscPosPrinter implements ComprovanteBuilder {
     }
 
     private OutputStream resolverOutputStream() throws Exception {
-        // Tenta primeiro a porta serial configurada (Bluetooth RFCOMM / COM)
         if (portaImpressora != null && !portaImpressora.isBlank()) {
-            SerialPort porta = SerialPort.getCommPort(portaImpressora);
-            porta.setBaudRate(9600);
-            porta.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 2000);
-            if (porta.openPort()) {
-                return porta.getOutputStream();
+            if (isSerialPortName(portaImpressora)) {
+                var serialPort = new SerialPort(portaImpressora);
+                serialPort.openPort();
+                serialPort.setParams(SerialPort.BAUDRATE_9600,
+                        SerialPort.DATABITS_8,
+                        SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+                return new OutputStream() {
+                    @Override public void write(int b) throws IOException {
+                        try { serialPort.writeByte((byte) b); }
+                        catch (SerialPortException e) { throw new IOException(e); }
+                    }
+                    @Override public void write(byte[] b, int off, int len) throws IOException {
+                        try {
+                            byte[] data = (off == 0 && len == b.length)
+                                    ? b : java.util.Arrays.copyOfRange(b, off, off + len);
+                            serialPort.writeBytes(data);
+                        } catch (SerialPortException e) { throw new IOException(e); }
+                    }
+                    @Override public void close() throws IOException {
+                        try { serialPort.closePort(); }
+                        catch (SerialPortException e) { throw new IOException(e); }
+                    }
+                };
+            } else {
+                PrintService ps = findPrintServiceByName(portaImpressora);
+                if (ps != null) {
+                    if (isPrinterAcceptingJobs(ps)) {
+                        return new PrinterOutputStream(ps);
+                    }
+                    log.warn("Impressora '{}' nao esta aceitando jobs, tentando padrao", portaImpressora);
+                } else {
+                    log.warn("Impressora '{}' nao encontrada no spooler Windows", portaImpressora);
+                }
             }
-            log.warn("Não foi possível abrir a porta serial {}", portaImpressora);
         }
 
-        // Fallback: impressora registrada no sistema (spooler)
+        // Fallback: impressora padrao do sistema
         PrintService ps = PrinterOutputStream.getDefaultPrintService();
-        if (ps != null) return new PrinterOutputStream(ps);
+        if (ps != null) {
+            if (isPrinterAcceptingJobs(ps)) {
+                return new PrinterOutputStream(ps);
+            }
+            log.warn("Impressora padrao '{}' nao esta aceitando jobs", ps.getName());
+        }
 
-        log.warn("Nenhuma impressora encontrada");
+        log.warn("Nenhuma impressora disponivel");
+        return null;
+    }
+
+    private static boolean isPrinterAcceptingJobs(PrintService ps) {
+        try {
+            PrinterIsAcceptingJobs attr = ps.getAttribute(PrinterIsAcceptingJobs.class);
+            return attr == null || attr == PrinterIsAcceptingJobs.ACCEPTING_JOBS;
+        } catch (Exception e) {
+            log.warn("Erro ao verificar se impressora aceita jobs: {}", e.getMessage());
+            return true;
+        }
+    }
+
+    private static boolean isSerialPortName(String name) {
+        return name.matches("(?i)COM\\d+")
+                || name.contains("\\")
+                || name.contains("/");
+    }
+
+    private static PrintService findPrintServiceByName(String name) {
+        javax.print.PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
+        for (var ps : services) {
+            if (ps.getName().equals(name)) return ps;
+        }
         return null;
     }
 

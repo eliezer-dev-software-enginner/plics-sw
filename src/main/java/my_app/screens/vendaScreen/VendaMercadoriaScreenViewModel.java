@@ -449,6 +449,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             try {
                 escPosPrinter.imprimir(vendaModel);
             } catch (Exception e) {
+                e.printStackTrace();
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
             }
         });
