@@ -101,30 +101,31 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     private Component coresCheckboxes() {
         var outerColumn = new Column(new ColumnProps().spacingOf(3));
+
         outerColumn.c_child(new Text("Cores", new TextProps().fontSize(theme.typography().small())));
+        vm.cores.onChange(listaCores->{
+            var cbSize = 4;
+            var rows = (int) Math.ceil((double) listaCores.size() / cbSize);
 
-        var listaCores = vm.cores.get();
-        var cbSize = 4;
-        var rows = (int) Math.ceil((double) listaCores.size() / cbSize);
-
-        for (int r = 0; r < rows; r++) {
-            var row = new Row(new RowProps().spacingOf(8));
-            int start = r * cbSize;
-            int end = Math.min(start + cbSize, listaCores.size());
-            for (int i = start; i < end; i++) {
-                var cor = listaCores.get(i);
-                var cb = new CheckBox(cor.getNome());
-                cb.setSelected(vm.coresSelecionadas.get().contains(cor.getNome()));
-                cb.selectedProperty().addListener((obs, old, selected) -> {
-                    var current = new java.util.ArrayList<>(vm.coresSelecionadas.get());
-                    if (selected) { if (!current.contains(cor.getNome())) current.add(cor.getNome()); }
-                    else { current.remove(cor.getNome()); }
-                    vm.coresSelecionadas.set(current);
-                });
-                row.r_child(Component.CreateFromJavaFxNode(cb));
+            for (int r = 0; r < rows; r++) {
+                var row = new Row(new RowProps().spacingOf(8));
+                int start = r * cbSize;
+                int end = Math.min(start + cbSize, listaCores.size());
+                for (int i = start; i < end; i++) {
+                    var cor = listaCores.get(i);
+                    var cb = new CheckBox(cor.getNome());
+                    cb.setSelected(vm.coresSelecionadas.get().contains(cor.getNome()));
+                    cb.selectedProperty().addListener((obs, old, selected) -> {
+                        var current = new java.util.ArrayList<>(vm.coresSelecionadas.get());
+                        if (selected) { if (!current.contains(cor.getNome())) current.add(cor.getNome()); }
+                        else { current.remove(cor.getNome()); }
+                        vm.coresSelecionadas.set(current);
+                    });
+                    row.r_child(Component.CreateFromJavaFxNode(cb));
+                }
+                outerColumn.c_child(row);
             }
-            outerColumn.c_child(row);
-        }
+        });
 
         return outerColumn;
     }
@@ -138,7 +139,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
         };
 
         var showValidadePicker = ComputedState.of(() -> vm.perecivelSelected.get().equals("Sim"), vm.perecivelSelected);
-        var temCores = ComputedState.of(() -> !vm.cores.get().isEmpty(), vm.cores);
 
         return new Column(new ColumnProps().spacingOf(20))
                 .c_child(
@@ -149,7 +149,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                 Components.InputColumn("Marca", vm.marca, "")
                         )
                 ).c_child(new Row(rowProps)
-                        .r_child(Show.when(temCores, () -> coresCheckboxes()))
+                        .r_child(coresCheckboxes())
                         .r_child(Components.InputColumn("Tamanho", vm.tamanhoSelected, ""))
                         .r_child(Components.InputColumn("Modelo", vm.modelo, ""))
                 ).c_child(new Row(rowProps)
