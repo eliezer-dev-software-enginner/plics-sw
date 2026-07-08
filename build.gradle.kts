@@ -59,6 +59,8 @@ dependencies {
     //Java library for ESC/POS printer commands
     implementation("com.github.anastaciocintra:escpos-coffee:4.1.0")
 
+    implementation("com.fazecast:jSerialComm:2.10.4")
+
     implementation("org.kordamp.ikonli:ikonli-core:12.4.0")
     implementation("org.kordamp.ikonli:ikonli-javafx:12.4.0")
     implementation("org.kordamp.ikonli:ikonli-antdesignicons-pack:12.4.0")

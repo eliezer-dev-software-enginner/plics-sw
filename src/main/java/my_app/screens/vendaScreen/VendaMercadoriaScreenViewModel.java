@@ -100,7 +100,10 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         this.clienteService = clienteService;
         this.contaService = contaService;
         this.empresaService = createEmpresaService();
-        this.escPosPrinter = Main.devMode? EscPosPrinter.viaTcp("virtual-printer.online"): new EscPosPrinter(empresaService);
+        //this.escPosPrinter = Main.devMode? EscPosPrinter.viaTcp("virtual-printer.online"): new EscPosPrinter(empresaService);
+        //this.escPosPrinter = new EscPosPrinter(empresaService);
+        this.escPosPrinter = new EscPosPrinter(empresaService, "/dev/rfcomm0"); // Linux
+        //new EscPosPrinter(empresaService, "COM5")         // Windows
         this.onInit();
     }
 

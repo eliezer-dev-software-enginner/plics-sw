@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import com.fazecast.jSerialComm.SerialPort;
 public class EscPosPrinter implements ComprovanteBuilder {
     private static final Logger log = LoggerFactory.getLogger(EscPosPrinter.class);
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -34,25 +34,37 @@ public class EscPosPrinter implements ComprovanteBuilder {
 
     private final EmpresaService empresaService;
     private final OutputStream outputStream;
+    private final String portaImpressora;
 
     public EscPosPrinter() {
         this.empresaService = createEmpresaService();
         this.outputStream = null;
+        this.portaImpressora = null;
     }
 
     public EscPosPrinter(EmpresaService empresaService) {
         this.empresaService = empresaService;
         this.outputStream = null;
+        this.portaImpressora = null;
     }
 
     public EscPosPrinter(OutputStream outputStream) {
         this.empresaService = createEmpresaService();
         this.outputStream = outputStream;
+        this.portaImpressora = null;
     }
 
     public EscPosPrinter(EmpresaService empresaService, OutputStream outputStream) {
         this.empresaService = empresaService;
         this.outputStream = outputStream;
+        this.portaImpressora = null;
+    }
+
+    // novo construtor para impressora via porta serial (Bluetooth RFCOMM / COM)
+    public EscPosPrinter(EmpresaService empresaService, String portaImpressora) {
+        this.empresaService = empresaService;
+        this.outputStream = null;
+        this.portaImpressora = portaImpressora;
     }
 
     public static EscPosPrinter viaTcp(String host, int port) {
@@ -164,8 +176,21 @@ public class EscPosPrinter implements ComprovanteBuilder {
     }
 
     private OutputStream resolverOutputStream() throws Exception {
+        // Tenta primeiro a porta serial configurada (Bluetooth RFCOMM / COM)
+        if (portaImpressora != null && !portaImpressora.isBlank()) {
+            SerialPort porta = SerialPort.getCommPort(portaImpressora);
+            porta.setBaudRate(9600);
+            porta.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 2000);
+            if (porta.openPort()) {
+                return porta.getOutputStream();
+            }
+            log.warn("Não foi possível abrir a porta serial {}", portaImpressora);
+        }
+
+        // Fallback: impressora registrada no sistema (spooler)
         PrintService ps = PrinterOutputStream.getDefaultPrintService();
         if (ps != null) return new PrinterOutputStream(ps);
+
         log.warn("Nenhuma impressora encontrada");
         return null;
     }
