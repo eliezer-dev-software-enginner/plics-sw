@@ -170,6 +170,22 @@ public static BigDecimal deCentavosParaReal(String centavos){
         return sb.toString();
     }
 
+    public static String formatCep(String numeric) {
+        if (numeric == null || numeric.isEmpty()) return "";
+
+        StringBuilder sb = new StringBuilder();
+        int len = numeric.length();
+
+        if (len <= 5) {
+            sb.append(numeric);
+        } else {
+            sb.append(numeric, 0, 5).append("-")
+                    .append(numeric.substring(5));
+        }
+
+        return sb.toString();
+    }
+
     public static String formatCpf(String numeric) {
         if (numeric == null || numeric.isEmpty()) return "";
 
