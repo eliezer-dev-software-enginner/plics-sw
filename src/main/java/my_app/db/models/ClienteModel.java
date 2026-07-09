@@ -23,4 +23,21 @@ public class ClienteModel {
     private String email;
     @Column(name = "isPessoaFisica")
     private Boolean pessoaFisica;
+
+    @Column(name="data_nascimento")
+    private Long dataNascimento;
+    private String observacao;
+
+    @Column(name = "is_gestante")
+    private Boolean isGestante;
+
+    @Column(name="data_nascimento_bebe")
+    private Long dataNascimentoBebe;
+
+    private String cep;
+    private String uf;
+    private String cidade;
+    private String bairro;
+    private String rua;
+    private String numero;
 }
