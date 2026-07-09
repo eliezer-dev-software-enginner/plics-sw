@@ -1,6 +1,7 @@
 package my_app.screens.produtoScreen;
 
 import javafx.scene.control.CheckBox;
+import javafx.scene.layout.Border;
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
@@ -114,13 +115,21 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 for (int i = start; i < end; i++) {
                     var cor = listaCores.get(i);
                     var cb = new CheckBox(cor.getNome());
+
                     cb.setSelected(vm.coresSelecionadas.get().contains(cor.getNome()));
+                    //checkbox -> coresSelecionadas
                     cb.selectedProperty().addListener((obs, old, selected) -> {
                         var current = new java.util.ArrayList<>(vm.coresSelecionadas.get());
                         if (selected) { if (!current.contains(cor.getNome())) current.add(cor.getNome()); }
                         else { current.remove(cor.getNome()); }
                         vm.coresSelecionadas.set(current);
                     });
+
+                    //checkbox <- coresSelecionadas
+                    vm.coresSelecionadas.subscribe(coresSelecionadas->{
+                        cb.setSelected(coresSelecionadas.contains(cor.getNome()));
+                    });
+
                     row.r_child(Component.CreateFromJavaFxNode(cb));
                 }
                 outerColumn.c_child(row);

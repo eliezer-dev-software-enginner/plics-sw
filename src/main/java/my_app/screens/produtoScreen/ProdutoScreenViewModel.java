@@ -346,6 +346,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         coresSelecionadas.set(corStr != null && !corStr.isBlank()
                 ? List.of(corStr.split(",\s*"))
                 : List.of());
+
         tamanhoSelected.set(model.getTamanho());
         modelo.set(model.getModelo());
         unidadeSelected.set(model.getUnidade());
