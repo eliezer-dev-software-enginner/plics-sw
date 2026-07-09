@@ -13,9 +13,12 @@ import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.domain.states.EnderecoState;
+import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 public class ClienteViewModel extends ViewModelScreenContract {
     private final ClienteService clienteService;
@@ -27,12 +30,24 @@ public class ClienteViewModel extends ViewModelScreenContract {
     final State<String> cnpjCpf = new State<>("");
     final State<String> celular = new State<>("");
     final State<String> email = new State<>("");
+    final State<String> observacao = new State<>("");
+    public final State<LocalDate> dataNascimento = State.of(null);
 
     final State<String> tipoPessoaSelected = new State<>(Data.tiposPessoaList.getFirst());
+    final State<String> isGestante = new State<>(Data.simNaoList.getLast());
+    public final State<LocalDate> dataNascimentoBebe = State.of(null);
+
     final ComputedState<Boolean> tipoPessoaEhFisica = ComputedState.of(
             () -> tipoPessoaSelected.get().equals(Data.tiposPessoaList.getFirst()),
             tipoPessoaSelected
     );
+
+    final ComputedState<Boolean> isGestanteComputed = ComputedState.of(
+            () -> isGestante.get().equals(Data.simNaoList.getFirst()),
+            isGestante
+    );
+
+    State<EnderecoState> enderecoState = new State<>(new EnderecoState());
 
     public ClienteViewModel(ScreenContext ctx) {
         this(ctx, createClienteService());
@@ -71,6 +86,24 @@ public class ClienteViewModel extends ViewModelScreenContract {
         cnpjCpf.set(data.getCpfCnpj());
         celular.set(data.getCelular());
         email.set(data.getEmail());
+        observacao.set(data.getObservacao() == null? "": data.getObservacao());
+        dataNascimento.set(data.getDataNascimento() != null?
+                DateUtils.millisParaLocalDate(data.getDataNascimento()): null
+                );
+
+        final Boolean gestante = data.getGestante();
+
+        if(gestante){
+            isGestante.set(Data.simNaoList.getFirst());
+        }else{
+            isGestante.set(Data.simNaoList.getLast());
+        }
+
+        dataNascimentoBebe.set(data.getDataNascimentoBebe() != null?
+                DateUtils.millisParaLocalDate(data.getDataNascimentoBebe()): null
+        );
+
+        enderecoState.get().populateFromClienteModel(data);
     }
 
     private ClienteModel getModelFromFields(ClienteModel model){
@@ -84,6 +117,25 @@ public class ClienteViewModel extends ViewModelScreenContract {
         model.setCelular(celularValue);
         model.setEmail(emailValue);
         model.setPessoaFisica(tipoPessoaEhFisica.get());
+        model.setObservacao(observacao.get());
+
+        boolean isGestanteValue = isGestante.get()!=null && isGestante.get().equals(Data.simNaoList.getFirst());
+        model.setGestante(isGestanteValue);
+
+        model.setDataNascimento(dataNascimento.get() != null ?
+                DateUtils.localDateParaMillis(dataNascimento.get()) : null);
+
+        model.setDataNascimentoBebe(dataNascimentoBebe.get() != null ?
+                DateUtils.localDateParaMillis(dataNascimentoBebe.get()) : null);
+
+
+        EnderecoState enderecoStateValue = enderecoState.get();
+        model.setCep(enderecoStateValue.cep.get());
+        model.setUf(enderecoStateValue.ufSelected.get());
+        model.setCidade(enderecoStateValue.cidade.get());
+        model.setBairro(enderecoStateValue.bairro.get());
+        model.setRua(enderecoStateValue.rua.get());
+        model.setNumero(enderecoStateValue.numero.get());
 
         return model;
     }
@@ -94,7 +146,8 @@ public class ClienteViewModel extends ViewModelScreenContract {
                 var list = clienteService.listar();
                 UI.runOnUi(() -> clientes.set(list));
             } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar clientes"));
+                e.printStackTrace();
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar clientes: " + e.getMessage()));
             }
         });
     }

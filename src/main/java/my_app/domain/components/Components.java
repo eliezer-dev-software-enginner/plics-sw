@@ -37,7 +37,9 @@ import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.ListState;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
+import my_app.domain.Data;
 import my_app.domain.Parcela;
+import my_app.domain.states.EnderecoState;
 import my_app.domain.states.TotaisState;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -59,6 +61,19 @@ import static my_app.utils.Utils.*;
 public class Components {
 
     public static ThemeInterface theme = ThemeManager.theme();
+
+    public static Component enderecoComponent(EnderecoState enderecoState){
+        return new Container().children(
+                Components.FormTitle("Endereço"),
+                new Row(new RowProps().bottomVertically().spacingOf(10))
+                        .r_child(Components.InputColumnCep("Cep", enderecoState.cep))
+                        .r_child(Components.SelectColumn("UF", Data.ufList, enderecoState.ufSelected, it -> it))
+                        .r_child(Components.InputColumn("Cidade", enderecoState.cidade, ""))
+                        .r_child(Components.InputColumn("Bairro", enderecoState.bairro, ""))
+                        .r_child(Components.InputColumn("Rua", enderecoState.rua, ""))
+                        .r_child(Components.InputColumnNumeric("Número", enderecoState.numero, ""))
+        );
+    }
 
     public static Component imageWithTextRow(String imgPath, String text) {
         return new Row().children(
@@ -449,6 +464,35 @@ public class Components {
         return new Row()
                 .r_child(new Text(label, new TextProps().fontSize(theme.typography().body()).bold()))
                 .r_child(new Text(valueState, new TextProps().fontSize(theme.typography().body())));
+    }
+
+    public static Component InputColumnCep(String label, State<String> inputState) {
+        var inputProps = new InputProps()
+                .height(31).placeHolder("00000-000")
+                .fontSize(theme.typography().small())
+                .borderWidth(theme.border().width())
+                .borderColor(theme.colors().primary());
+
+        var input = new Input(inputState, inputProps)
+                .onInitialize(value -> {
+                    String formatted = formatCep(value);
+                    return OnChangeResult.of(formatted, value);
+                })
+                .onChange(value -> {
+                    String numeric = value.replaceAll("[^0-9]", "");
+
+                    if (numeric.length() > 8) {
+                        numeric = numeric.substring(0, 8);
+                    }
+
+                    String formatted = formatCep(numeric);
+                    return OnChangeResult.of(formatted, numeric);
+                })
+                .lockCursorToEnd();
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
+                .c_child(input);
     }
 
     public static Component InputColumnCpf(String label, State<String> inputState) {

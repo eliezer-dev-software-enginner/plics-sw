@@ -29,7 +29,7 @@ public class ClienteModel {
     private String observacao;
 
     @Column(name = "is_gestante")
-    private Boolean isGestante;
+    private Boolean gestante;
 
     @Column(name="data_nascimento_bebe")
     private Long dataNascimentoBebe;

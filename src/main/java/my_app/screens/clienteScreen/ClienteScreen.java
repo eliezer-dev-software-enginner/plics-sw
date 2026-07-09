@@ -51,7 +51,16 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                 ))
                                 .r_child(Components.InputColumnPhone("Celular", vm.celular))
                                 .r_child(Components.InputColumn("Email", vm.email, ""))
+                                .r_child(Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"))
                         )
+                        .c_child(
+                                new Row(new RowProps().spacingOf(10)).children(
+                                        Components.SelectColumn("É gestante?", Data.simNaoList, vm.isGestante, it -> it),
+                                        Show.when(vm.isGestanteComputed,()->Components.DatePickerColumn(vm.dataNascimentoBebe,"Data de nascimento do bebê") )
+                                )
+                        )
+                        .c_child(new SpacerVertical(10))
+                        .c_child(Components.enderecoComponent(vm.enderecoState.get()))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, vm::clearForm))
         );

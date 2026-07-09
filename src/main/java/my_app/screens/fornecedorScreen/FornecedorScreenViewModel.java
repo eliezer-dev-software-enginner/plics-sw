@@ -13,6 +13,7 @@ import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.domain.states.EnderecoState;
 import my_app.utils.Utils;
 
 import java.sql.SQLException;
@@ -28,14 +29,10 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     State<String> celular = State.of("");
     State<String> inscricaoEstadual = State.of("");
     State<String> email = State.of("");
-
-    State<String> ufSelected = State.of(Data.ufList.getFirst());
-    State<String> cidade = State.of("");
-    State<String> bairro = State.of("");
-    State<String> rua = State.of("");
-    State<String> numero = State.of("");
-
     State<String> observacao = State.of("");
+
+    State<EnderecoState> enderecoState = new State<>(new EnderecoState());
+
     final State<String> tipoPessoaSelected = new State<>(Data.tiposPessoaList.getFirst());
     final ComputedState<Boolean> tipoPessoaEhFisica = ComputedState.of(
             () -> tipoPessoaSelected.get().equals(Data.tiposPessoaList.getFirst()),
@@ -74,11 +71,8 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
             celular.set(data.getCelular());
             inscricaoEstadual.set(data.getInscricaoEstadual());
             email.set(data.getEmail());
-            ufSelected.set(data.getUfSelected());
-            cidade.set(data.getCidade());
-            bairro.set(data.getBairro());
-            rua.set(data.getRua());
-            numero.set(data.getNumero());
+            //
+            enderecoState.get().populateFromFornecedorModel(data);
             observacao.set(data.getObservacao());
         }
     }
@@ -115,11 +109,11 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         String celularValue = celular.getOrDefault("").trim();
         String emailValue = email.getOrDefault("").trim();
         String inscricaoValue = inscricaoEstadual.getOrDefault("").trim();
-        String ufValue = ufSelected.getOrDefault("").trim();
-        String cidadeValue = cidade.getOrDefault("").trim();
-        String bairroValue = bairro.getOrDefault("").trim();
-        String ruaValue = rua.getOrDefault("").trim();
-        String numeroValue = numero.getOrDefault("").trim();
+        String ufValue = enderecoState.get().ufSelected.getOrDefault("").trim();
+        String cidadeValue = enderecoState.get().cidade.getOrDefault("").trim();
+        String bairroValue = enderecoState.get().bairro.getOrDefault("").trim();
+        String ruaValue = enderecoState.get().rua.getOrDefault("").trim();
+        String numeroValue = enderecoState.get().numero.getOrDefault("").trim();
         String observacaoValue = observacao.getOrDefault("").trim();
 
         if (modoEdicao.get() && fornecedorSelected.get() == null) return;
@@ -132,8 +126,6 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     }
 
     private void asyncAtualizar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue, String ufValue, String cidadeValue, String bairroValue, String ruaValue, String numeroValue, String observacaoValue) {
-
-
         Async.Run(() -> {
             try {
                 FornecedorModel selecionado = fornecedorSelected.get();
@@ -235,11 +227,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         celular.set("");
         inscricaoEstadual.set("");
         email.set("");
-        ufSelected.set(Data.ufList.getFirst());
-        cidade.set("");
-        bairro.set("");
-        rua.set("");
-        numero.set("");
+        enderecoState.get().clear();
         observacao.set("");
     }
 }
