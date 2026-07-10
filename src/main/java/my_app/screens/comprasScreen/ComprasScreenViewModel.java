@@ -437,4 +437,13 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         });
     }
 
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.compraService.close();
+        this.produtoService.close();
+        this.fornecedorService.close();
+        //TODO: chamar close()
+       // this.contasPagarService.close();
+    }
 }

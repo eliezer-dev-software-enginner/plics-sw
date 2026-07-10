@@ -17,6 +17,9 @@ public abstract class ViewModelScreenContract {
     }
 
     protected void onInit() {}
+    public void onDestroy() throws Exception {
+        // no-op por padrão, subclasses sobrescrevem se precisar
+    }
 
     public abstract void populateFromModel();
     public abstract void clearForm();
@@ -30,4 +33,6 @@ public abstract class ViewModelScreenContract {
     public void handleFocusChange(boolean focus) {
         focusState.set(focus);
     }
+
+
 }

@@ -293,4 +293,14 @@ public class HomeScreenViewModel {
         }
         return null;
     }
+
+
+    public void onDestroy() throws Exception {
+        this.compraService.close();
+        this.despesasService.close();
+        this.pedidoService.close();
+        this.receitasService.close();
+        this.preferenciasService.close();
+        this.vendaService.close();
+    }
 }

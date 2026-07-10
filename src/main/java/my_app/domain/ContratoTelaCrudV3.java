@@ -82,4 +82,11 @@ public interface ContratoTelaCrudV3 {
 
     }
 
+    default void onDestroy() {
+        try {
+            viewModel().onDestroy();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

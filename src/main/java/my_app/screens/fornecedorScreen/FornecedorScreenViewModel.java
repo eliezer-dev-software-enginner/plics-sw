@@ -228,4 +228,9 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         enderecoState.get().clear();
         observacao.set("");
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.fornecedorService.close();
+    }
 }

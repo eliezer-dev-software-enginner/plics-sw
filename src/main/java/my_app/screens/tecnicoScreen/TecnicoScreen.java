@@ -29,6 +29,11 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
         vm.loadTecnicos();
     }
 
+    @Override
+    public void onDestroy() {
+        ContratoTelaCrudV3.super.onDestroy();
+    }
+
     public Component render() {
         return mainView(vm.focusState);
     }

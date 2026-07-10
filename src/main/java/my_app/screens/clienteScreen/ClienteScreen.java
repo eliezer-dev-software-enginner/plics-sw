@@ -38,6 +38,11 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
+    public void onDestroy() {
+        ContratoTelaCrudV3.super.onDestroy();
+    }
+
+    @Override
     public Component render() {
         return mainView(vm.focusState);
     }

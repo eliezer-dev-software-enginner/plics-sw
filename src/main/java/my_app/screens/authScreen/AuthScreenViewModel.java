@@ -115,4 +115,8 @@ public class AuthScreenViewModel {
             }
         });
     }
+
+    public void onDestroy() throws Exception {
+        preferenciasService.close();
+    }
 }

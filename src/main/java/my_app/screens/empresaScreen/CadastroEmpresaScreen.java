@@ -23,6 +23,15 @@ public class CadastroEmpresaScreen implements ScreenComponent {
         vm.fetchData();
     }
 
+    @Override
+    public void onDestroy() {
+        try {
+            vm.onDestroy();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Component render() {
         return new Container(new ContainerProps().paddingAll(5))
                 .c_child(new SpacerVertical(10))

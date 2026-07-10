@@ -358,4 +358,12 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public ScreenContext getCtx() {
         return ctx;
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.produtoService.close();
+        this.categoriaService.close();
+        this.corService.close();
+        this.fornecedorService.close();
+    }
 }

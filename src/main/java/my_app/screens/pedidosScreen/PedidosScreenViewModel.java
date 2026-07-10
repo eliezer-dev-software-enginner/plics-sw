@@ -105,4 +105,10 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
             }
         });
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.pedidoItemService.close();
+        this.pedidoService.close();
+    }
 }

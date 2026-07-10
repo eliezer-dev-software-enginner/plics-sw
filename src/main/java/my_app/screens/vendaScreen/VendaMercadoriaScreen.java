@@ -36,6 +36,11 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     public void onMount() { vm.fetchData(); }
 
     @Override
+    public void onDestroy() {
+        ContratoTelaCrudV3.super.onDestroy();
+    }
+
+    @Override
     public Component render() { return mainView(vm.focusState); }
 
     @Override

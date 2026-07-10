@@ -36,6 +36,11 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
     }
 
     @Override
+    public void onDestroy() {
+        ContratoTelaCrudV3.super.onDestroy();
+    }
+
+    @Override
     public Component render() {
         var mainContent = new Container(new ContainerProps().bgColor(theme.colors().background()))
                 .children(

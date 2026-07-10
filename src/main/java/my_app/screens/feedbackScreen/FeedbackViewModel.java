@@ -35,4 +35,8 @@ public class FeedbackViewModel {
             }
         });
     }
+
+    public void onDestroy(){
+
+    }
 }

@@ -3,6 +3,7 @@ package my_app.screens.welcomeScreen;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 import megalodonte.base.components.Component;
+import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
@@ -12,7 +13,7 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 
-public class WelcomeScreen {
+public class WelcomeScreen implements ScreenComponent {
     private final ScreenContext ctx;
 
     public WelcomeScreen(ScreenContext ctx) {

@@ -102,4 +102,8 @@ public class EmpresaViewModel {
         });
     }
 
+    //@Override
+    public void onDestroy() throws Exception {
+        this.empresaService.close();
+    }
 }

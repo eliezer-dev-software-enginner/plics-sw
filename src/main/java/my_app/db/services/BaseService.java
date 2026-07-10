@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import my_app.db.repositories.BaseRepository;
 
-public abstract class BaseService<M> {
+public abstract class BaseService<M> implements AutoCloseable {
 
     protected final BaseRepository<M> repository;
 
@@ -32,7 +32,8 @@ public abstract class BaseService<M> {
         return repository.buscarById(id);
     }
 
-    public void close() {
+    @Override
+    public void close() throws Exception {
         repository.close();
     }
 }

@@ -31,6 +31,15 @@ public class AuthScreen implements ScreenComponent {
     }
 
     @Override
+    public void onDestroy() {
+        try {
+            vm.onDestroy();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public Component render() {
         return new Container(new ContainerProps().paddingAll(20).bgImage("/assets/bgAuth.jpg")).children(
                 new Row(new RowProps()).children(new Text("Plics - SW " + Main.APP_VERSION, new TextProps().color("white").bold())),

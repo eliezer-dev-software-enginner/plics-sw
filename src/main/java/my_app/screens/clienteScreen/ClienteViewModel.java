@@ -218,4 +218,9 @@ public class ClienteViewModel extends ViewModelScreenContract {
         celular.set("");
         email.set("");
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.clienteService.close();
+    }
 }

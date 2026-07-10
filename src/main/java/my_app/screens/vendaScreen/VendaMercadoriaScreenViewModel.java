@@ -448,4 +448,12 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             }
         });
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.vendaService.close();
+        this.clienteService.close();
+        this.produtoService.close();
+        this.contaService.close();
+    }
 }

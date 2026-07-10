@@ -376,4 +376,10 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
             }
         }
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.contaService.close();
+        this.fornecedorService.close();
+    }
 }

@@ -20,6 +20,11 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     public void onMount() {vm.loadCategorias();}
 
+    @Override
+    public void onDestroy() {
+        ContratoTelaCrudV3.super.onDestroy();
+    }
+
     public Component render() {
         return mainView(vm.focusState);
     }

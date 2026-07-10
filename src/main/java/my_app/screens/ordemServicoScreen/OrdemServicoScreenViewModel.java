@@ -278,4 +278,11 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
             }
         }
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.service.close();
+        this.clienteService.close();
+        this.tecnicoService.close();
+    }
 }

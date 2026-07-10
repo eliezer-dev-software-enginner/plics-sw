@@ -346,4 +346,13 @@ public class PDVScreenViewModel {
     void handleCriarCliente(){
         ctx.router().spawnWindow("clientes",e->{});
     }
+
+    public void onDestroy() throws Exception {
+        this.clienteService.close();
+        this.empresaService.close();
+        this.produtoService.close();
+        this.pedidoItemService.close();
+        //TODO: CHAMAR CLOSE
+        //this.pdvService.close();
+    }
 }

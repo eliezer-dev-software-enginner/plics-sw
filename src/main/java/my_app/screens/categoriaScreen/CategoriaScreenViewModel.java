@@ -122,4 +122,9 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
         nome.set("");
         modoEdicao.set(false);
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.categoriaService.close();
+    }
 }

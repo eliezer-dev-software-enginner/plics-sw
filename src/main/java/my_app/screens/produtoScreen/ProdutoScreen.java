@@ -39,6 +39,11 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
         vm.loadInicial();
     }
 
+    @Override
+    public void onDestroy() {
+        ContratoTelaCrudV3.super.onDestroy();
+    }
+
     public Component render() {
         return mainView(vm.focusState);
     }

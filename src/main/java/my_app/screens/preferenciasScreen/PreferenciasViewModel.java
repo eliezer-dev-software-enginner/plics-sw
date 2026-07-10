@@ -159,4 +159,9 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
 
     @Override
     public void handleClickMenuDelete() {}
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.preferenciasService.close();
+    }
 }

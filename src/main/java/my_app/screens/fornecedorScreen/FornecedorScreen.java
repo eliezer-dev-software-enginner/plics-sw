@@ -30,6 +30,11 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
         vm.loadFornecedores();
     }
 
+    @Override
+    public void onDestroy() {
+        ContratoTelaCrudV3.super.onDestroy();
+    }
+
     public Component render() {
         return mainView(vm.focusState);
     }

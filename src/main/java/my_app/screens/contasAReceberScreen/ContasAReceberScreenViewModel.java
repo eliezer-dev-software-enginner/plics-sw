@@ -410,4 +410,10 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
             }
         }
     }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.clienteService.close();
+        this.contaService.close();
+    }
 }
