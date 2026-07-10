@@ -2,6 +2,7 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import my_app.domain.components.Components;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
@@ -33,5 +34,12 @@ public class FornecedorModel {
     private String bairro;
     private String rua;
     private String numero;
+    private String cep;
     private String observacao;
+
+    public Components.Endereco getEndereco(){
+        return new Components.Endereco(
+                getUfSelected(),getCep(),getCidade(),getBairro(),getRua(),getNumero()
+        );
+    }
 }

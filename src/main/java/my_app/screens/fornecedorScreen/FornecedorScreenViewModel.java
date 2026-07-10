@@ -115,17 +115,19 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         String ruaValue = enderecoState.get().rua.getOrDefault("").trim();
         String numeroValue = enderecoState.get().numero.getOrDefault("").trim();
         String observacaoValue = observacao.getOrDefault("").trim();
+        String cepValue = enderecoState.get().cep.getOrDefault("").trim();
 
         if (modoEdicao.get() && fornecedorSelected.get() == null) return;
 
         if (modoEdicao.get()) {
-            asyncAtualizar(nomeValue, cnpjValue, celularValue, emailValue, inscricaoValue, ufValue, cidadeValue, bairroValue, ruaValue, numeroValue, observacaoValue);
+            asyncAtualizar(nomeValue, cnpjValue, celularValue, emailValue, inscricaoValue, ufValue, cidadeValue, bairroValue, ruaValue, numeroValue, observacaoValue, cepValue);
         } else {
-            asyncSalvar(nomeValue, cnpjValue, celularValue, emailValue, inscricaoValue, ufValue, cidadeValue, bairroValue, ruaValue, numeroValue, observacaoValue);
+            asyncSalvar(nomeValue, cnpjValue, celularValue, emailValue, inscricaoValue, ufValue, cidadeValue, bairroValue, ruaValue, numeroValue, observacaoValue,cepValue);
         }
     }
 
-    private void asyncAtualizar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue, String ufValue, String cidadeValue, String bairroValue, String ruaValue, String numeroValue, String observacaoValue) {
+    private void asyncAtualizar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue,
+                                String ufValue, String cidadeValue, String bairroValue, String ruaValue, String numeroValue, String observacaoValue,  String cepValue) {
         Async.Run(() -> {
             try {
                 FornecedorModel selecionado = fornecedorSelected.get();
@@ -170,7 +172,8 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         });
     }
 
-    private void asyncSalvar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue, String ufValue, String cidadeValue, String bairroValue, String ruaValue, String numeroValue, String observacaoValue) {
+    private void asyncSalvar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue, String ufValue, String cidadeValue,
+                             String bairroValue, String ruaValue, String numeroValue, String observacaoValue, String cepValue) {
         Async.Run(() -> {
             try {
                 var model = new FornecedorModel();
@@ -185,6 +188,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
                 model.setRua(ruaValue);
                 model.setNumero(numeroValue);
                 model.setObservacao(observacaoValue);
+                model.setCep(cepValue);
 
                 var salvo = fornecedorService.salvar(model);
 

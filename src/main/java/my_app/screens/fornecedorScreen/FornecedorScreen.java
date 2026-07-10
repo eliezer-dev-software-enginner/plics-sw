@@ -97,15 +97,11 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .c_child(new SpacerVertical(20))
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Nome: ", model.getNome()))
-                .c_child(Components.TextWithDetails("CNPJ: ", model.getCpfCnpj()))
-                .c_child(Components.TextWithDetails("Telefone: ", model.getCelular()))
+                .c_child(Components.TextWithDetails("CPF/CNPJ: ", model.getCpfCnpj()))
+                .c_child(Components.TextWithDetails("Telefone: ",Utils.formatPhone(model.getCelular())))
                 .c_child(Components.TextWithDetails("Inscrição estadual: ", model.getInscricaoEstadual()))
                 .c_child(Components.TextWithDetails("Email: ", model.getEmail()))
-                .c_child(Components.TextWithDetails("UF: ", model.getUfSelected()))
-                .c_child(Components.TextWithDetails("Cidade: ", model.getCidade()))
-                .c_child(Components.TextWithDetails("Bairro: ", model.getBairro()))
-                .c_child(Components.TextWithDetails("Rua: ", model.getRua()))
-                .c_child(Components.TextWithDetails("Número: ", model.getNumero()))
+                .c_child(Components.ItemDetailEndereco(model.getEndereco()))
                 .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }

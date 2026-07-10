@@ -62,6 +62,18 @@ public class Components {
 
     public static ThemeInterface theme = ThemeManager.theme();
 
+
+    public record Endereco(String uf, String cep, String cidade, String bairro,String rua, String numero){}
+    public static Component ItemDetailEndereco(Endereco endereco){
+        return new Container()
+                .c_child(Components.TextWithDetails("UF: ", endereco.uf()))
+                .c_child(Components.TextWithDetails("CEP: ", Utils.formatCep(endereco.cep())))
+                .c_child(Components.TextWithDetails("Cidade: ", endereco.cidade()))
+                .c_child(Components.TextWithDetails("Bairro: ", endereco.bairro()))
+                .c_child(Components.TextWithDetails("Rua: ", endereco.rua()))
+                .c_child(Components.TextWithDetails("Número: ", endereco.numero()));
+    }
+
     public static Component enderecoComponent(EnderecoState enderecoState){
         return new Container().children(
                 Components.FormTitle("Endereço"),

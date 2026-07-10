@@ -14,7 +14,7 @@ public class EnderecoState {
     public State<String> cep = State.of("");//TODO: ADICIONAR EM FORNECEDOR
 
     public void populateFromFornecedorModel(FornecedorModel model){
-        //cep.set(model.getCep());
+        cep.set(model.getCep());
         ufSelected.set(model.getUfSelected());
         cidade.set(model.getCidade());
         bairro.set(model.getBairro());

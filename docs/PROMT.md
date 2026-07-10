@@ -29,6 +29,4 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Em PreferenciasScreen e PreferenciasViewModel comecei a fazer a parte de listar as impressoras reconhecidas no dispostivo incluindo impressoras bluetoth.
-O que falta é salvar a porta da impressora nas preferências e então carregá-la para a state do select.
-E inclusive lá em VendaMercadoriaScreenViewModel e no model do pdv deve usar a porta carregada.
+na tela de produtos, ao realizar as operações de crud a tabela não se atualiza. Vide FornecedoresViewModel e VendaMercadoriaSceenViewModel

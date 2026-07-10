@@ -2,6 +2,7 @@ package my_app.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import my_app.domain.components.Components;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
@@ -40,4 +41,15 @@ public class ClienteModel {
     private String bairro;
     private String rua;
     private String numero;
+
+    public Components.Endereco getEndereco(){
+        return new Components.Endereco(
+                getUf(),getCep(),getCidade(),getBairro(),getRua(),getNumero()
+        );
+    }
+
+    public String getGestanteText(){
+        if(gestante!=null && gestante)return "Sim";
+        return "Não";
+    }
 }
