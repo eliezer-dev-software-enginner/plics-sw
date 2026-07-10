@@ -11,7 +11,7 @@ public class EnderecoState {
     public State<String> bairro = State.of("");
     public State<String> rua = State.of("");
     public State<String> numero = State.of("");
-    public State<String> cep = State.of("");//TODO: ADICIONAR EM FORNECEDOR
+    public State<String> cep = State.of("");
 
     public void populateFromFornecedorModel(FornecedorModel model){
         cep.set(model.getCep());
@@ -31,6 +31,7 @@ public class EnderecoState {
     }
 
     public void clear() {
+        cep.set("");
         ufSelected.set(Data.ufList.getFirst());
         cidade.set("");
         bairro.set("");
