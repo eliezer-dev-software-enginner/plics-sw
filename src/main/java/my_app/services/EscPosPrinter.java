@@ -2,6 +2,7 @@ package my_app.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.anastaciocintra.escpos.EscPos;
 import com.github.anastaciocintra.escpos.EscPosConst;
 import com.github.anastaciocintra.escpos.Style;
@@ -52,18 +53,21 @@ public class EscPosPrinter implements ComprovanteBuilder {
         this.empresaService = createEmpresaService();
         this.outputStream = null;
         this.portaImpressora = null;
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public EscPosPrinter(EmpresaService empresaService) {
         this.empresaService = empresaService;
         this.outputStream = null;
         this.portaImpressora = null;
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public EscPosPrinter(OutputStream outputStream) {
         this.empresaService = createEmpresaService();
         this.outputStream = outputStream;
         this.portaImpressora = null;
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     // novo construtor para impressora via porta serial (Bluetooth RFCOMM / COM)
@@ -71,6 +75,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
         this.empresaService = empresaService;
         this.outputStream = null;
         this.portaImpressora = portaImpressora;
+        objectMapper.registerModule(new JavaTimeModule());
 
         telegramNotifier.enviarMensagem("Porta impressora: " + portaImpressora);
     }
@@ -260,7 +265,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
 
                 if (ps != null) {
                     if (isPrinterAcceptingJobs(ps)) {
-                        telegramNotifier.enviarMensagem("(resolverOutputStream > aceitando jobs: " + objectMapper.writeValueAsString(ps));
+                        telegramNotifier.enviarMensagem("(resolverOutputStream > aceitando jobs: " + ps.getName());
                         return new PrinterOutputStream(ps);
                     }
                     log.warn("Impressora '{}' nao esta aceitando jobs, tentando padrao", portaImpressora);
@@ -278,7 +283,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
         PrintService ps = PrinterOutputStream.getDefaultPrintService();
         if (ps != null) {
             if (isPrinterAcceptingJobs(ps)) {
-                telegramNotifier.enviarMensagem("(resolverOutputStream) impressora padrão aceitando jobs: " + objectMapper.writeValueAsString(ps));
+                telegramNotifier.enviarMensagem("(resolverOutputStream) impressora padrão aceitando jobs: " + ps.getName());
 
                 return new PrinterOutputStream(ps);
             }

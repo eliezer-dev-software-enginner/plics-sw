@@ -113,6 +113,7 @@ dependencies {
     //jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")
 
     //leitor de excel e afins
     implementation("org.apache.poi:poi:5.3.0")
