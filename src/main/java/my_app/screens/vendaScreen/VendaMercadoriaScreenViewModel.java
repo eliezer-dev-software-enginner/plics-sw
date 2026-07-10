@@ -17,6 +17,7 @@ import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.services.EscPosPrinter;
+import my_app.services.WinRawPrinter;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
@@ -98,6 +99,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         this.contaService = contaService;
         EmpresaService empresaService = createEmpresaService();
         this.escPosPrinter = new EscPosPrinter(empresaService, carregarPortaImpressora());
+
         this.onInit();
     }
 
@@ -129,15 +131,15 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     }
 
     private String carregarPortaImpressora() {
-        try {
-            var prefsService = new PreferenciasService();
-            var prefs = prefsService.listar();
-            if (!prefs.isEmpty()) {
-                var port = prefs.getFirst().getPortaImpressora();
-                if (port != null && !port.isBlank()) return port;
-            }
-        } catch (SQLException e) {
-            log.warn("Não foi possível carregar porta da impressora", e);
+        List<PreferenciasModel> prefs;
+        try (var prefsService = new PreferenciasService()) {
+            prefs = prefsService.listar();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (!prefs.isEmpty()) {
+            var port = prefs.getFirst().getPortaImpressora();
+            if (port != null && !port.isBlank()) return port;
         }
         return null;
     }
@@ -447,6 +449,41 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
             }
         });
+    }
+
+    void imprimirNotaDeVendaAlternativo(VendaModel vendaModel) {
+        Async.Run(() -> {
+            try {
+                String nomeImpressora = resolverNomeImpressoraTermica();
+                if (nomeImpressora == null) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Impressora térmica não encontrada"));
+                    return;
+                }
+                byte[] bytes = escPosPrinter.gerarBytesEscPos(vendaModel);
+                boolean ok = WinRawPrinter.imprimirRaw(nomeImpressora, bytes);
+                if (!ok) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Falha na impressão alternativa (RAW)"));
+                }
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro: " + e.getMessage()));
+            }
+        });
+    }
+
+    private String resolverNomeImpressoraTermica() {
+        String configurada = carregarPortaImpressora();
+        if (configurada != null && !EscPosPrinter.isSerialPortName(configurada)) {
+            return configurada;
+        }
+        var services = javax.print.PrintServiceLookup.lookupPrintServices(null, null);
+        for (var ps : services) {
+            String nome = ps.getName();
+            if (nome != null && nome.toUpperCase().contains("TM-T20X")) {
+                return nome;
+            }
+        }
+        var def = javax.print.PrintServiceLookup.lookupDefaultPrintService();
+        return def != null ? def.getName() : null;
     }
 
     @Override

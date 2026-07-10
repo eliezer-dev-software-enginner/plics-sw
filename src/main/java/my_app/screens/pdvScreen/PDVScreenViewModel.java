@@ -87,8 +87,8 @@ public class PDVScreenViewModel {
         this.pedidoItemService = createPedidoItemService();
         this.empresaService = createEmpresaService();
         var porta = carregarPortaImpressora();
-        this.escPosPrinter = Main.devMode ? EscPosPrinter.viaTcp("virtual-printer.online")
-                : (porta != null ? new EscPosPrinter(empresaService, porta) : new EscPosPrinter(empresaService));
+        this.escPosPrinter = porta != null ? new EscPosPrinter(empresaService, porta) :
+                new EscPosPrinter(empresaService);
         this.onInit();
     }
 

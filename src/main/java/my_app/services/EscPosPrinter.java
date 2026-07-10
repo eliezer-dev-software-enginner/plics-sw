@@ -1,5 +1,7 @@
 package my_app.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.anastaciocintra.escpos.EscPos;
 import com.github.anastaciocintra.escpos.EscPosConst;
 import com.github.anastaciocintra.escpos.Style;
@@ -11,6 +13,8 @@ import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.db.models.VendaModel;
 import my_app.db.services.EmpresaService;
+import my_app.domain.telegram.TelegramNotifier;
+import my_app.domain.telegram.TelegramNotifierFactory;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
@@ -19,13 +23,16 @@ import org.slf4j.LoggerFactory;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.attribute.standard.PrinterIsAcceptingJobs;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import jssc.SerialPort;
 import jssc.SerialPortException;
@@ -37,6 +44,9 @@ public class EscPosPrinter implements ComprovanteBuilder {
     private final EmpresaService empresaService;
     private final OutputStream outputStream;
     private final String portaImpressora;
+
+    private static final TelegramNotifier telegramNotifier = TelegramNotifierFactory.create();;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public EscPosPrinter() {
         this.empresaService = createEmpresaService();
@@ -61,18 +71,8 @@ public class EscPosPrinter implements ComprovanteBuilder {
         this.empresaService = empresaService;
         this.outputStream = null;
         this.portaImpressora = portaImpressora;
-    }
 
-    public static EscPosPrinter viaTcp(String host, int port) {
-        try {
-            return new EscPosPrinter(new TcpIpOutputStream(host, port));
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao conectar à impressora TCP: " + e.getMessage(), e);
-        }
-    }
-
-    public static EscPosPrinter viaTcp(String host) {
-        return viaTcp(host, 9205);
+        telegramNotifier.enviarMensagem("Porta impressora: " + portaImpressora);
     }
 
     private static EmpresaService createEmpresaService() {
@@ -85,8 +85,13 @@ public class EscPosPrinter implements ComprovanteBuilder {
 
     @Override
     public void imprimir(VendaModel venda) {
+        try {
+            telegramNotifier.enviarMensagem("Vai imprimir venda model: " + objectMapper.writeValueAsString(venda));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         EmpresaModel empresa = buscarEmpresa();
-        if (tentarEscPos(escpos -> {
+        if (!tentarEscPos(escpos -> {
             if (empresa != null) cabecalho(escpos, empresa);
             separador(escpos);
             titulo(escpos, "NOTA DE VENDA");
@@ -102,7 +107,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
             linha(escpos, "Cod: " + venda.getProdutoCod());
             linha(escpos, "Qtd: " + venda.getQuantidade().stripTrailingZeros().toPlainString());
             linha(escpos, "Vl. Unit.: " + Utils.toBRLCurrency(venda.getPrecoUnitario()));
-            if (venda.getDesconto() != null && venda.getDesconto().compareTo(java.math.BigDecimal.ZERO) > 0) {
+            if (venda.getDesconto() != null && venda.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
                 linha(escpos, "Desconto: " + Utils.toBRLCurrency(venda.getDesconto()));
             }
             linha(escpos, "Total: " + Utils.toBRLCurrency(venda.getTotalLiquido()));
@@ -118,7 +123,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
     }
 
     public void imprimirNotaVenda(PedidoModel pedido, List<PedidoItemModel> itens, ClienteModel cliente, EmpresaModel empresa) {
-        if (tentarEscPos(escpos -> {
+        if (!tentarEscPos(escpos -> {
             if (empresa != null) cabecalho(escpos, empresa);
             separador(escpos);
             titulo(escpos, "NOTA DE VENDA");
@@ -136,7 +141,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
             }
             separador(escpos);
             linha(escpos, "Total: " + Utils.toBRLCurrency(pedido.getTotalLiquido()));
-            if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(java.math.BigDecimal.ZERO) > 0) {
+            if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
                 linha(escpos, "Desconto: " + Utils.toBRLCurrency(pedido.getDesconto()));
             }
             linha(escpos, "Pagamento: " + (pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA"));
@@ -149,6 +154,49 @@ public class EscPosPrinter implements ComprovanteBuilder {
         }
     }
 
+    public byte[] gerarBytesEscPos(VendaModel venda) {
+        telegramNotifier.enviarMensagem("(gerarBytesEscPos) vai buscar empresa: ");
+
+        EmpresaModel empresa = buscarEmpresa();
+        var baos = new ByteArrayOutputStream();
+        try (EscPos escpos = new EscPos(baos)) {
+            escpos.setCharacterCodeTable(EscPos.CharacterCodeTable.CP860_Portuguese);
+            escpos.initializePrinter();
+            if (empresa != null) cabecalho(escpos, empresa);
+            separador(escpos);
+            titulo(escpos, "NOTA DE VENDA");
+            linha(escpos, "N. " + (venda.getNumeroNota() != null ? venda.getNumeroNota() : String.valueOf(venda.getId())));
+            linha(escpos, "Data: " + (venda.getDataCriacao() != null
+                    ? venda.getDataCriacao().format(DT_FMT)
+                    : DateUtils.millisToBrazilianDateTime(venda.getDataVenda())));
+            ClienteModel cliente = venda.getCliente();
+            if (cliente != null) linha(escpos, "Cliente: " + cliente.getNome());
+            separador(escpos);
+            titulo(escpos, "ITEM");
+            if (venda.getProduto() != null) linha(escpos, "Produto: " + venda.getProduto().getDescricao());
+            linha(escpos, "Cod: " + venda.getProdutoCod());
+            linha(escpos, "Qtd: " + venda.getQuantidade().stripTrailingZeros().toPlainString());
+            linha(escpos, "Vl. Unit.: " + Utils.toBRLCurrency(venda.getPrecoUnitario()));
+            if (venda.getDesconto() != null && venda.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
+                linha(escpos, "Desconto: " + Utils.toBRLCurrency(venda.getDesconto()));
+            }
+            linha(escpos, "Total: " + Utils.toBRLCurrency(venda.getTotalLiquido()));
+            separador(escpos);
+            linha(escpos, "Pagamento: " + venda.getTipoPagamento());
+            if (venda.getObservacao() != null && !venda.getObservacao().isBlank()) {
+                linha(escpos, "Obs: " + venda.getObservacao());
+            }
+            rodape(escpos);
+            escpos.flush();
+            telegramNotifier.enviarMensagem("(gerarBytesEscPos) linhas montadas");
+        } catch (Exception e) {
+            telegramNotifier.enviarMensagem("(gerarBytesEscPos) erro ao montar linhas: " + e.getMessage());
+            throw new RuntimeException("Erro ao gerar bytes ESC/POS: " + e.getMessage(), e);
+
+        }
+        return baos.toByteArray();
+    }
+
     @FunctionalInterface
     private interface EscPosConsumer {
         void accept(EscPos escpos) throws Exception;
@@ -157,21 +205,24 @@ public class EscPosPrinter implements ComprovanteBuilder {
     private boolean tentarEscPos(EscPosConsumer consumer) {
         try {
             OutputStream out = outputStream != null ? outputStream : resolverOutputStream();
-            if (out == null) return true;
+            if (out == null) return false;
             try (EscPos escpos = new EscPos(out)) {
                 escpos.setCharacterCodeTable(EscPos.CharacterCodeTable.CP860_Portuguese);
                 escpos.initializePrinter();
                 consumer.accept(escpos);
                 escpos.flush();
             }
-            return false;
+            telegramNotifier.enviarMensagem("(tentarEscPos) Sucesso ");
+            return true;
         } catch (Exception e) {
             log.warn("Falha ao imprimir via ESC/POS, gerando preview .txt: {}", e.getMessage());
-            return true;
+            telegramNotifier.enviarMensagem("(tentarEscPos) Falha ao imprimir via ESC/POS, gerando preview .txt: " + e.getMessage());
+            return false;
         }
     }
 
     private OutputStream resolverOutputStream() throws Exception {
+        telegramNotifier.enviarMensagem("(resolverOutputStream)");
         if (portaImpressora != null && !portaImpressora.isBlank()) {
             if (isSerialPortName(portaImpressora)) {
                 var serialPort = new SerialPort(portaImpressora);
@@ -183,41 +234,59 @@ public class EscPosPrinter implements ComprovanteBuilder {
                 return new OutputStream() {
                     @Override public void write(int b) throws IOException {
                         try { serialPort.writeByte((byte) b); }
-                        catch (SerialPortException e) { throw new IOException(e); }
+                        catch (SerialPortException e) {
+                            telegramNotifier.enviarMensagem("(resolverOutputStream > write(b)) erro: " + e.getMessage());
+                            throw new IOException(e); }
                     }
                     @Override public void write(byte[] b, int off, int len) throws IOException {
                         try {
                             byte[] data = (off == 0 && len == b.length)
-                                    ? b : java.util.Arrays.copyOfRange(b, off, off + len);
+                                    ? b : Arrays.copyOfRange(b, off, off + len);
                             serialPort.writeBytes(data);
-                        } catch (SerialPortException e) { throw new IOException(e); }
+                        } catch (SerialPortException e) {
+                            telegramNotifier.enviarMensagem("(resolverOutputStream > write(b,off,len)) erro: " + e.getMessage());
+
+                            throw new IOException(e); }
                     }
                     @Override public void close() throws IOException {
                         try { serialPort.closePort(); }
-                        catch (SerialPortException e) { throw new IOException(e); }
+                        catch (SerialPortException e) {
+                            telegramNotifier.enviarMensagem("(resolverOutputStream > close()) erro: " + e.getMessage());
+                            throw new IOException(e); }
                     }
                 };
             } else {
                 PrintService ps = findPrintServiceByName(portaImpressora);
+
                 if (ps != null) {
                     if (isPrinterAcceptingJobs(ps)) {
+                        telegramNotifier.enviarMensagem("(resolverOutputStream > aceitando jobs: " + objectMapper.writeValueAsString(ps));
                         return new PrinterOutputStream(ps);
                     }
                     log.warn("Impressora '{}' nao esta aceitando jobs, tentando padrao", portaImpressora);
+                    telegramNotifier.enviarMensagem("(resolverOutputStream > NÃO está aceitando jobs");
+
                 } else {
                     log.warn("Impressora '{}' nao encontrada no spooler Windows", portaImpressora);
+                    telegramNotifier.enviarMensagem("(resolverOutputStream > nao encontrada no spooler Windows");
                 }
             }
         }
 
+        telegramNotifier.enviarMensagem("(resolverOutputStream > fALLBACK IMPRESSORA PADRÃO WINDOWS");
         // Fallback: impressora padrao do sistema
         PrintService ps = PrinterOutputStream.getDefaultPrintService();
         if (ps != null) {
             if (isPrinterAcceptingJobs(ps)) {
+                telegramNotifier.enviarMensagem("(resolverOutputStream) impressora padrão aceitando jobs: " + objectMapper.writeValueAsString(ps));
+
                 return new PrinterOutputStream(ps);
             }
             log.warn("Impressora padrao '{}' nao esta aceitando jobs", ps.getName());
+            telegramNotifier.enviarMensagem("(resolverOutputStream) Impressora padrao NÃO está aceitando jobs");
         }
+
+        telegramNotifier.enviarMensagem("(resolverOutputStream) Nenhuma impressora disponivel");
 
         log.warn("Nenhuma impressora disponivel");
         return null;
@@ -229,18 +298,21 @@ public class EscPosPrinter implements ComprovanteBuilder {
             return attr == null || attr == PrinterIsAcceptingJobs.ACCEPTING_JOBS;
         } catch (Exception e) {
             log.warn("Erro ao verificar se impressora aceita jobs: {}", e.getMessage());
+            telegramNotifier.enviarMensagem("(isPrinterAcceptingJobs) Erro ao verificar se impressora aceita jobs: " + e.getMessage());
             return true;
         }
     }
 
-    private static boolean isSerialPortName(String name) {
+    public static boolean isSerialPortName(String name) {
+        telegramNotifier.enviarMensagem("(isSerialPortName) name: " + name);
+
         return name.matches("(?i)COM\\d+")
                 || name.contains("\\")
                 || name.contains("/");
     }
 
     private static PrintService findPrintServiceByName(String name) {
-        javax.print.PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
+        PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
         for (var ps : services) {
             if (ps.getName().equals(name)) return ps;
         }
@@ -252,6 +324,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
             return empresaService.buscarUnico();
         } catch (SQLException e) {
             log.warn("Empresa nao cadastrada, imprimindo sem cabecalho");
+            telegramNotifier.enviarMensagem("(isSerialPortName) Empresa nao cadastrada, imprimindo sem cabecalho: " + e.getMessage());
             return null;
         }
     }
@@ -294,7 +367,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
         sb.append("Cod: ").append(venda.getProdutoCod()).append("\n");
         sb.append("Qtd: ").append(venda.getQuantidade().stripTrailingZeros().toPlainString()).append("\n");
         sb.append("Vl. Unit.: ").append(Utils.toBRLCurrency(venda.getPrecoUnitario())).append("\n");
-        if (venda.getDesconto() != null && venda.getDesconto().compareTo(java.math.BigDecimal.ZERO) > 0) {
+        if (venda.getDesconto() != null && venda.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
             sb.append("Desconto: ").append(Utils.toBRLCurrency(venda.getDesconto())).append("\n");
         }
         sb.append("Total: ").append(Utils.toBRLCurrency(venda.getTotalLiquido())).append("\n");
@@ -340,7 +413,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
         }
         sb.append(SEP).append("\n");
         sb.append("Total: ").append(Utils.toBRLCurrency(pedido.getTotalLiquido())).append("\n");
-        if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(java.math.BigDecimal.ZERO) > 0) {
+        if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
             sb.append("Desconto: ").append(Utils.toBRLCurrency(pedido.getDesconto())).append("\n");
         }
         sb.append("Pagamento: ").append(pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA").append("\n");

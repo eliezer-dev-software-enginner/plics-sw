@@ -121,7 +121,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
                 .c_child(Components.TextWithDetails("Validade: ", validade))
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true))
-                .c_child(new Button("Imprimir nota de venda").onClick(() -> vm.imprimirNotaDeVenda(model)));
+                .c_child(new Button("Imprimir nota de venda").onClick(() -> vm.imprimirNotaDeVenda(model)))
+                .c_child(new Button("Imprimir (modo alternativo)").onClick(() -> vm.imprimirNotaDeVendaAlternativo(model)));
     }
 
     @Override
