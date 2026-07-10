@@ -1,5 +1,19 @@
 [
   {
+    "version": "v1.0.9",
+    "notes": [
+      "Feat: adicionado campo de cep no fornecedor",
+      "Feat: adicionada máscara de CEP",
+      "Feat: adicionado campos de endereço, data de nascimento e observação e dados de gestante caso o cliente seja uma gestante.",
+      "Feat: Possibilidade de salvar um produto com mais de uma cor.",
+      "Feat: Salvar impressora nas preferências e usar nas telas de venda",
+      "Feat: Carrega impressoras disponíveis na tela de preferências",
+      "Fix: Correção na atualização, agora a atualização ocorre em um serviço separado no Windows e abre o exe automaticamente após a atualização bem sucedida.",
+      "Fix: Impressão de nota de venda na tela de Venda de mercadoria",
+      "Fix: Tabela de produtos não atualizava após CRUD"
+    ]
+  },
+  {
     "version": "v1.0.7",
     "notes": [
       "Feat: Impressão de nota de venda via ESC/POS — PDV e Venda de Mercadoria (TCP/IP ou impressora padrão)",
