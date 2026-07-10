@@ -216,20 +216,18 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
         var selected = contaSelected.get();
         if (selected == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> {
-            Async.Run(() -> {
-                try {
-                    contaService.excluir(selected.getId());
-                    UI.runOnUi(() -> {
-                        contas.removeIf(c -> c.getId().equals(selected.getId()));
-                        Components.ShowPopup(ctx, "Conta excluída com sucesso!");
-                        clearForm();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
-                }
-            });
-        });
+        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> Async.Run(() -> {
+            try {
+                contaService.excluir(selected.getId());
+                UI.runOnUi(() -> {
+                    contas.removeIf(c -> c.getId().equals(selected.getId()));
+                    Components.ShowPopup(ctx, "Conta excluída com sucesso!");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
+            }
+        }));
     }
 
     public void registrarPagamento(ScreenContext ctx) {

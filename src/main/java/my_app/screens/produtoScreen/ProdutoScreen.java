@@ -1,7 +1,6 @@
 package my_app.screens.produtoScreen;
 
 import javafx.scene.control.CheckBox;
-import javafx.scene.layout.Border;
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
@@ -13,6 +12,8 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
+import my_app.db.models.CategoriaModel;
+import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
@@ -82,12 +83,12 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
         simpleTable.fromData(vm.produtos)
                 .header()
                 .columns()
-                .column("ID", it -> it.getId(), 70.0)
-                .column("Código", it -> it.getCodigoBarras())
+                .column("ID", ProdutoModel::getId, 70.0)
+                .column("Código", ProdutoModel::getCodigoBarras)
                 .column("Cor", it -> it.getCor() != null ? it.getCor() : "")
                 .column("Tamanho", it -> it.getTamanho() != null ? it.getTamanho() : "")
-                .column("Estoque", it -> it.getEstoque())
-                .column("Descrição", it -> it.getDescricao())
+                .column("Estoque", ProdutoModel::getEstoque)
+                .column("Descrição", ProdutoModel::getDescricao)
                 .column("Preço de compra", it -> Utils.toBRLCurrency(it.getPrecoCompra()))
                 .column("Preço de venda", it -> Utils.toBRLCurrency(it.getPrecoVenda()))
                 .column("Categoria", it -> it.getCategoria() != null ? it.getCategoria().getNome() : "")
@@ -126,9 +127,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                     });
 
                     //checkbox <- coresSelecionadas
-                    vm.coresSelecionadas.subscribe(coresSelecionadas->{
-                        cb.setSelected(coresSelecionadas.contains(cor.getNome()));
-                    });
+                    vm.coresSelecionadas.subscribe(coresSelecionadas-> cb.setSelected(coresSelecionadas.contains(cor.getNome())));
 
                     row.r_child(Component.CreateFromJavaFxNode(cb));
                 }
@@ -164,8 +163,8 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 ).c_child(new Row(rowProps)
                         .r_child(Components.InputColumnCurrency("Preço de compra", vm.precoCompra))
                         .r_child(Components.InputColumnCurrency("Preço de venda", vm.precoVenda))
-                        .r_child(Components.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, it -> it.getNome()))
-                        .r_child(Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, it -> it.getNome()))
+                        .r_child(Components.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, CategoriaModel::getNome))
+                        .r_child(Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome))
                         .r_child(Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it))
                         .r_child(Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade"))
                         )

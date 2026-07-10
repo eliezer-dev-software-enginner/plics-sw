@@ -6,12 +6,12 @@ import my_app.db.models.FornecedorModel;
 import my_app.domain.Data;
 
 public class EnderecoState {
-    public State<String> ufSelected = State.of(Data.ufList.getFirst());
-    public State<String> cidade = State.of("");
-    public State<String> bairro = State.of("");
-    public State<String> rua = State.of("");
-    public State<String> numero = State.of("");
-    public State<String> cep = State.of("");
+    public final State<String> ufSelected = State.of(Data.ufList.getFirst());
+    public final State<String> cidade = State.of("");
+    public final State<String> bairro = State.of("");
+    public final State<String> rua = State.of("");
+    public final State<String> numero = State.of("");
+    public final State<String> cep = State.of("");
 
     public void populateFromFornecedorModel(FornecedorModel model){
         cep.set(model.getCep());

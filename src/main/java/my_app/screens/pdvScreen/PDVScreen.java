@@ -10,6 +10,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
+import my_app.db.models.ClienteModel;
 import my_app.domain.components.Components;
 
 import java.math.BigDecimal;
@@ -112,7 +113,7 @@ public class PDVScreen implements ScreenComponent {
                                         }
                                     })
                             .column("Vlr. Unit.", it -> it.produto.getPrecoVenda())
-                            .column("Total", it -> it.totalItem())
+                            .column("Total", ItemVenda::totalItem)
                         .end()
                     .build()
         );
@@ -121,13 +122,11 @@ public class PDVScreen implements ScreenComponent {
     Component vendaFiadaComponent(){
         return new Column().children(
                 new Checkbox("É uma venda fiada?",vm.isVendaFiada),
-                Show.when(vm.isVendaFiada, ()-> {
-                    return new Column().children(
-                            Components.FormTitle("Quem é o cliente?"),
-                            Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, f -> f.getNome(),
-                                    true,"+ Criar cliente", vm::handleCriarCliente)
-                    );
-                })
+                Show.when(vm.isVendaFiada, ()-> new Column().children(
+                        Components.FormTitle("Quem é o cliente?"),
+                        Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome,
+                                true,"+ Criar cliente", vm::handleCriarCliente)
+                ))
         );
     }
 

@@ -6,7 +6,6 @@ import net.sf.persism.Session;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import static net.sf.persism.Parameters.params;
 import static net.sf.persism.SQL.sql;

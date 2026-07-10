@@ -1,6 +1,5 @@
 package my_app.services;
 
-import my_app.db.models.PedidoModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.ProdutoService;
 import my_app.screens.pdvScreen.ItemVenda;
@@ -8,7 +7,6 @@ import my_app.db.services.BaseServiceTest;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -190,20 +190,18 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
         var selected = osSelected.get();
         if (selected == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir a O.S #" + selected.getNumeroOs() + "?", () -> {
-            Async.Run(() -> {
-                try {
-                    service.excluir(selected.getId());
-                    UI.runOnUi(() -> {
-                        ordensDeServico.removeIf(os -> os.getId().equals(selected.getId()));
-                        Components.ShowPopup(ctx, "Ordem de serviço excluída com sucesso!");
-                        clearForm();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
-                }
-            });
-        });
+        Components.ShowAlertAdvice("Deseja excluir a O.S #" + selected.getNumeroOs() + "?", () -> Async.Run(() -> {
+            try {
+                service.excluir(selected.getId());
+                UI.runOnUi(() -> {
+                    ordensDeServico.removeIf(os -> os.getId().equals(selected.getId()));
+                    Components.ShowPopup(ctx, "Ordem de serviço excluída com sucesso!");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
+            }
+        }));
     }
 
     public void openTecnicoWindow() {

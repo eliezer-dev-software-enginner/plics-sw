@@ -1,6 +1,5 @@
 package my_app.screens.homeScreen;
 
-import megalodonte.application.MegalodonteApp;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
@@ -53,12 +52,12 @@ public class HomeScreenViewModel {
 
     public final State<Boolean> gifVisible = State.of(true);
     private ScreenContext screenContext;
-    public State<String> currentGif = new State<>(null);
+    public final State<String> currentGif = new State<>(null);
     private final Random random = new Random();
 
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    List<String> gifsList = List.of(
+    final List<String> gifsList = List.of(
             "/assets/gifs/feliz.gif",
             "/assets/gifs/aguardando-apreencivamente.gif",
             "/assets/gifs/feliz-2.gif",
@@ -66,8 +65,8 @@ public class HomeScreenViewModel {
             "/assets/gifs/de-boa-relaxando.gif"
     );
 
-    List<String> gifsFeliz = List.of(gifsList.getFirst(), gifsList.get(2));
-    List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
+    final List<String> gifsFeliz = List.of(gifsList.getFirst(), gifsList.get(2));
+    final List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
 
     public HomeScreenViewModel(ScreenContext screenContext) {
         this(createPreferenciasService(), createContaAreceberService(), createContasPagarService(), createVendaService(), createCompraService(), createPedidoService());

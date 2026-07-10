@@ -58,23 +58,21 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
         if (model == null) return;
 
         var bodyMessage = "Tem certeza que deseja excluir o técnico: %s?".formatted(model.getNome());
-        Components.ShowAlertAdvice(bodyMessage, () -> {
-            Async.Run(() -> {
-                try {
-                    tecnicoService.excluirById(model.getId());
+        Components.ShowAlertAdvice(bodyMessage, () -> Async.Run(() -> {
+            try {
+                tecnicoService.excluirById(model.getId());
 
-                    EventBus.getInstance().publish(EntityEvent.excluido(model.getId().longValue()));
+                EventBus.getInstance().publish(EntityEvent.excluido(model.getId().longValue()));
 
-                    UI.runOnUi(() -> {
-                        tecnicos.removeIf(it -> it.getId().equals(model.getId()));
-                        Components.ShowPopup(ctx, "Técnico excluído com sucesso");
-                        clearForm();
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir técnico: " + e.getMessage()));
-                }
-            });
-        });
+                UI.runOnUi(() -> {
+                    tecnicos.removeIf(it -> it.getId().equals(model.getId()));
+                    Components.ShowPopup(ctx, "Técnico excluído com sucesso");
+                    clearForm();
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir técnico: " + e.getMessage()));
+            }
+        }));
     }
 
     @Override

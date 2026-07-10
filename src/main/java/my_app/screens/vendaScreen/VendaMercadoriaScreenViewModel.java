@@ -6,11 +6,8 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.Main;
 import my_app.db.models.*;
 import my_app.db.services.*;
-import my_app.db.models.ClienteModel;
-import my_app.db.services.PreferenciasService;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
 import my_app.domain.states.TotaisState;
@@ -36,8 +33,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
     private final ContaAreceberService contaService;
-    private EmpresaService empresaService;
-    private EscPosPrinter escPosPrinter;
+    private final EscPosPrinter escPosPrinter;
 
     final ListState<VendaModel> vendas = ListState.ofEmpty();
 
@@ -64,7 +60,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     final State<VendaModel> vendaSelected = State.of(null);
 
     final List<String> opcoesEstoque = List.of("Sim", "Não");
-    final State<String> opcaoEstoqueSelected = State.of(opcoesEstoque.get(0));
+    final State<String> opcaoEstoqueSelected = State.of(opcoesEstoque.getFirst());
     final State<String> estoqueAnterior = State.of("0");
     final State<String> estoqueAtual = State.of("0");
 
@@ -80,7 +76,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
 
     final TotaisState totais = new TotaisState(pcVenda, qtd, descontoEmDinheiro);
 
-    public Components.InputRef quantidadeRef = new Components.InputRef();
+    public final Components.InputRef quantidadeRef = new Components.InputRef();
 
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
         this(ctx, createVendaService(), createProdutoService(), createClienteService(), createContaAreceberService());
@@ -100,7 +96,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         this.produtoService = produtoService;
         this.clienteService = clienteService;
         this.contaService = contaService;
-        this.empresaService = createEmpresaService();
+        EmpresaService empresaService = createEmpresaService();
         this.escPosPrinter = new EscPosPrinter(empresaService, carregarPortaImpressora());
         this.onInit();
     }
@@ -160,7 +156,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         qtd.subscribe(v -> atualizarEstoqueVisual());
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
         produtoEncontrado.subscribe(v -> atualizarEstoqueVisual());
-        codigo.subscribe(termo -> filtrarProdutos(termo));
+        codigo.subscribe(this::filtrarProdutos);
 
         produtoEncontrado.subscribe(this::selecionarProduto);
 
@@ -344,9 +340,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
                     clearForm();
-                    Components.ShowPopupWithButton(ctx,"Salvo com sucesso","Imprimir", ()->{
-                        imprimirNotaDeVenda(finalVenda);
-                    });
+                    Components.ShowPopupWithButton(ctx,"Salvo com sucesso","Imprimir", ()-> imprimirNotaDeVenda(finalVenda));
                 });
             }
         });

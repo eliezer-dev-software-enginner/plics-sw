@@ -10,15 +10,13 @@ public abstract class ViewModelScreenContract {
 
     public final State<Boolean> focusState = new State<>(false);
 
-    public ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
+    public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
 
     public ViewModelScreenContract(ScreenContext ctx){
         this.ctx = ctx;
     }
 
     protected void onInit() {}
-
-    protected void onDispose() {}
 
     public abstract void populateFromModel();
     public abstract void clearForm();

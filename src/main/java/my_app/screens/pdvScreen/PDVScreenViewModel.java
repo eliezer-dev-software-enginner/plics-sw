@@ -49,7 +49,7 @@ public class PDVScreenViewModel {
     final State<ProdutoModel> produtoEncontrado = State.of(null);
     final ListState<ClienteModel> clientes = ListState.ofEmpty();
 
-    State<ClienteModel> clienteSelected = State.of(null);
+    final State<ClienteModel> clienteSelected = State.of(null);
 
     // Estado reativo: itens no carrinho
     final ListState<ItemVenda> itensCarrinho = ListState.ofEmpty();
@@ -164,7 +164,7 @@ public class PDVScreenViewModel {
         });
 
         produtoEncontrado.subscribe(this::selecionarProduto);
-        codigoBarrasInput.subscribe(termo -> filtrarProdutos(termo));
+        codigoBarrasInput.subscribe(this::filtrarProdutos);
 
     }
 
@@ -209,7 +209,7 @@ public class PDVScreenViewModel {
                 System.out.println("=== loadProdutos ===");
                 System.out.println("Lista retornada: " + list.size());
                 if (!list.isEmpty()) {
-                    System.out.println("Primeiro produto: " + list.get(0).getDescricao());
+                    System.out.println("Primeiro produto: " + list.getFirst().getDescricao());
                 }
 
                 UI.runOnUi(() -> {
@@ -283,13 +283,12 @@ public class PDVScreenViewModel {
         final Integer finalClienteId = clienteId;
         Async.Run(() -> {
             try {
-                var pedido = pdvService.finalizarVenda(
+                lastPedido = pdvService.finalizarVenda(
                         itensCarrinho.get(),
                         "A VISTA",
                         finalClienteId,
                         fiado
                 );
-                lastPedido = pedido;
                 UI.runOnUi(() -> {
                     itensCarrinho.clear();
                     codigoBarrasInput.set("");
@@ -331,11 +330,9 @@ public class PDVScreenViewModel {
                 }
 
                 final var pedido = lastPedido;
-                final var itensFinal = itens;
-                final var empresaFinal = empresa;
 
                 try {
-                    escPosPrinter.imprimirNotaVenda(pedido, itensFinal, cliente, empresaFinal);
+                    escPosPrinter.imprimirNotaVenda(pedido, itens, cliente, empresa);
                     } catch (Exception e) {
                         UI.runOnUi(()->Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
                     }

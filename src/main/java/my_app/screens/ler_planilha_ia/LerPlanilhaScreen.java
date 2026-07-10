@@ -10,7 +10,6 @@ import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.FornecedorModel;
@@ -23,9 +22,7 @@ import my_app.domain.components.Components;
 import my_app.services.PlanilhaFornecedorReader;
 import my_app.utils.Utils;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -34,8 +31,8 @@ public class LerPlanilhaScreen implements ScreenComponent {
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
     private final CategoriaService categoriaService;
-    State<String> status = new State<String>("");
-    State<CategoriaModel> categoria = new State<>(null);
+    final State<String> status = new State<>("");
+    final State<CategoriaModel> categoria = new State<>(null);
 
     public LerPlanilhaScreen(ScreenContext screenContext) {
         this.screenContext = screenContext;
@@ -89,7 +86,7 @@ public class LerPlanilhaScreen implements ScreenComponent {
                         //salvar produtos referenciando o fornecedor
                         ProdutoModel produtoModel = new ProdutoModel();
                         produtoModel.setCodigoBarras(Utils.gerarCodigoBarrasEAN13());
-                        produtoModel.setUnidade(Data.unidadesDeMedidaList.get(0));
+                        produtoModel.setUnidade(Data.unidadesDeMedidaList.getFirst());
                         produtoModel.setTotalLiquido(row.venda().subtract(row.custo()));
                         produtoModel.setCategoriaId(categoria.get().getId());
 
@@ -107,7 +104,7 @@ public class LerPlanilhaScreen implements ScreenComponent {
                             throw new RuntimeException("Erro ao salvar produto: " + e.getMessage());
                         }
                     }
-                    UI.runOnUi(()->Components.ShowPopupWithButton(screenContext,"Dados copiados com sucesso","Fechar tela", ()->stage.close()));
+                    UI.runOnUi(()->Components.ShowPopupWithButton(screenContext,"Dados copiados com sucesso","Fechar tela", stage::close));
 
                 }catch (Exception e){
                     e.printStackTrace();

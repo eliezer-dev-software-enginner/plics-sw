@@ -14,11 +14,10 @@ import megalodonte.utils.related.TextVariant;
 
 public class WelcomeScreen {
     private final ScreenContext ctx;
-    private final WelcomeScreenViewModel vm;
 
     public WelcomeScreen(ScreenContext ctx) {
         this.ctx = ctx;
-        this.vm = new WelcomeScreenViewModel(ctx);
+        WelcomeScreenViewModel vm = new WelcomeScreenViewModel();
     }
 
     private final ThemeInterface theme = ThemeManager.theme();
@@ -62,9 +61,9 @@ public class WelcomeScreen {
         return new Row(new RowProps().width(200).maxWidth(300).centerHorizontally().bgColor("yellow"))
                 .children(
                         new Text("usuário", new TextProps().variant(TextVariant.BODY)),
-                        new Text(" admin", (TextProps) new TextProps().variant(TextVariant.BODY).bold()),
+                        new Text(" admin", new TextProps().variant(TextVariant.BODY).bold()),
                         new Text(" e senha", new TextProps().variant(TextVariant.BODY)),
-                        new Text(" 1234", (TextProps) new TextProps().variant(TextVariant.BODY).bold())
+                        new Text(" 1234", new TextProps().variant(TextVariant.BODY).bold())
                 );
     }
 }

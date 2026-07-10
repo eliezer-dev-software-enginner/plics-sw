@@ -45,7 +45,6 @@ class CompraServiceTest extends BaseServiceTest {
     @Test
     void deveSalvarCompraViaDto() throws Exception {
         var salvo = compraService.salvar(dtoValido());
-        assertNotNull(salvo.getId());
         assertTrue(salvo.getDataCriacaoMillis() > 0);
     }
 

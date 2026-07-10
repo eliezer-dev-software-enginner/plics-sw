@@ -24,10 +24,6 @@ public class DateUtils {
         return millisParaLocalDate(millis, ZoneId.systemDefault());
     }
 
-    public static LocalDate millisParaLocalDateUTC(long millis) {
-        return millisParaLocalDate(millis, ZoneOffset.UTC);
-    }
-
     private static final DateTimeFormatter BR_FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 

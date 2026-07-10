@@ -68,7 +68,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                                 vm.clienteSelected, f -> f != null ? f.getNome() : "", true))
                                         .r_child(Components.SelectColumnWithButton("Técnico", vm.tecnicos,
                                                 vm.tecnicoSelected, it -> it != null ? it.getNome() : "", true,
-                                                "+", () -> vm.openTecnicoWindow()))
+                                                "+", vm::openTecnicoWindow))
                                         .r_child(Components.InputColumn("Equipamento", vm.equipamento, "Marca, Modelo ou Serial"))
                                         .r_child(Components.InputColumnCurrency("Mão de obra (R$)", vm.maoDeObra))
                         )
@@ -97,8 +97,8 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .column("ID", it -> it.getId() != null ? "#" + it.getId() : "", (double) 90)
                 .column("N. OS", it -> it.getNumeroOs() != null ? String.valueOf(it.getNumeroOs()) : "", (double) 90)
                 .column("Cliente", it -> it.getCliente() != null ? it.getCliente().getNome() : "")
-                .column("Status", it -> it.getStatus())
-                .column("Equipamento", it -> it.getEquipamento())
+                .column("Status", OrdemServicoModel::getStatus)
+                .column("Equipamento", OrdemServicoModel::getEquipamento)
                 .column("Mão de obra", it -> Utils.toBRLCurrency(it.getMaoDeObraValor()))
                 .column("Total liq.", it -> Utils.toBRLCurrency(it.getTotalLiquido()))
                 .column("Data de visita", it -> DateUtils.millisToBrazilianDate(it.getDataEscolhida()))

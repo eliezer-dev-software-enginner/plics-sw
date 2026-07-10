@@ -4,16 +4,12 @@ import net.sf.persism.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class DB {
 
@@ -86,27 +82,6 @@ public final class DB {
             for (var s : copy) {
                 try { s.close(); } catch (Exception ignored) {}
             }
-        }
-    }
-
-    public static void limparBanco() throws SQLException {
-        var sql = readResource("/clean_db.sql");
-        try (var conn = production().connection(); var stmt = conn.createStatement()) {
-            for (var line : sql.split(";")) {
-                var trimmed = line.trim();
-                if (!trimmed.isEmpty()) {
-                    stmt.execute(trimmed);
-                }
-            }
-        }
-    }
-
-    private static String readResource(String path) {
-        try (var reader = new BufferedReader(
-                new InputStreamReader(DB.class.getResourceAsStream(path), StandardCharsets.UTF_8))) {
-            return reader.lines().collect(Collectors.joining("\n"));
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao ler recurso: " + path, e);
         }
     }
 }

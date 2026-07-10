@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -194,7 +195,7 @@ public class HotReload {
      * 'start' no WatchService.
      */
     private void registerAll(final WatchService ws, final Path start) throws IOException {
-        Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(start, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 dir.register(ws, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
@@ -320,7 +321,7 @@ public class HotReload {
             return null;
         }
 
-        String combinedPath = String.join(System.getProperty("path.separator"), paths);
+        String combinedPath = String.join(File.pathSeparator, paths);
         System.out.println("[HotReload Debug] Combined module path: " + combinedPath);
         return combinedPath;
     }

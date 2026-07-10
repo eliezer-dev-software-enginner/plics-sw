@@ -1,7 +1,6 @@
 package my_app.domain.telegram;
 
 import my_app.Main;
-import my_app.security.CryptoManager;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -49,7 +48,7 @@ public class TelegramNotifier {
                     HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                System.out.printf("✅ Notificação enviada com sucesso");
+                System.out.print("✅ Notificação enviada com sucesso");
             } else {
                 throw new RuntimeException("❌ Erro HTTP %d: %s%n".formatted(response.statusCode(), response.body()));
             }

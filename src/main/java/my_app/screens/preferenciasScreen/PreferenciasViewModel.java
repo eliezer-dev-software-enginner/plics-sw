@@ -1,22 +1,17 @@
 package my_app.screens.preferenciasScreen;
 
 import jssc.SerialPortList;
-import javafx.application.Platform;
+
 import javax.print.PrintServiceLookup;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
-import my_app.Main;
-import my_app.core.events.DadosFinanceirosAtualizadosEvent;
-import my_app.core.events.EventBus;
-import my_app.db.DB;
 import my_app.db.models.PreferenciasModel;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
-import net.sf.persism.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +21,7 @@ import java.util.List;
 public class PreferenciasViewModel extends ViewModelScreenContract {
     private static final Logger log = LoggerFactory.getLogger(PreferenciasViewModel.class);
 
-    private PreferenciasService preferenciasService;
+    private final PreferenciasService preferenciasService;
 
     final State<String> habilitarCredenciaisSelected = State.of("Não");
     final State<String> loginState = State.of("");
@@ -61,9 +56,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
                 try {
                     String[] portNames = SerialPortList.getPortNames();
                     for (String name : portNames) {
-                        UI.runOnUi(()->{
-                            comportsState.add(name + " - Serial");
-                        });
+                        UI.runOnUi(()-> comportsState.add(name + " - Serial"));
                     }
                 } catch (Throwable e) {
                     log.error("Erro ao carregar portas seriais: {}", e.getMessage(), e);
@@ -77,9 +70,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
                     javax.print.PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
                     for (var ps : printServices) {
                         String printerName = ps.getName();
-                        UI.runOnUi(() -> {
-                            comportsState.add(printerName + " - Spooler");
-                        });
+                        UI.runOnUi(() -> comportsState.add(printerName + " - Spooler"));
                     }
                 } catch (Throwable e) {
                     log.error("Erro ao carregar impressoras Windows: {}", e.getMessage(), e);
@@ -98,7 +89,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
                             comportsState.get().stream()
                                     .filter(name -> name.startsWith(savedPort))
                                     .findFirst()
-                                    .ifPresent(name -> comportsStateSelected.set(name));
+                                    .ifPresent(comportsStateSelected::set);
                         }
                     });
                 }
@@ -152,31 +143,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
     }
 
     void deletarTodosDados() {
-        Async.Run(() -> {
-            try {
-                preferenciasService.close();
-                DB.limparBanco();
-
-                try (var stmt = DB.production().connection().createStatement()) {
-                    stmt.execute("INSERT INTO preferencias (tema, credenciais_habilitadas, primeiro_acesso, dataCriacao, login, senha) SELECT 'Claro', 0, 1, strftime('%s', 'now') * 1000, 'admin', '1234' WHERE NOT EXISTS (SELECT 1 FROM preferencias WHERE id = 1)");
-                    stmt.execute("INSERT INTO categorias (nome, data_criacao) SELECT 'Geral', CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Geral')");
-                    stmt.execute("INSERT INTO fornecedores (nome, dataCriacao) SELECT 'Fornecedor Padrão', strftime('%s', 'now') * 1000 WHERE NOT EXISTS (SELECT 1 FROM fornecedores WHERE nome = 'Fornecedor Padrão')");
-                    stmt.execute("INSERT INTO usuarios (nome, senha, cargo, dataCriacao) SELECT 'admin', '1234', 'admin', strftime('%s', 'now') * 1000 WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE nome = 'admin')");
-                    stmt.execute("INSERT INTO empresas (texto_responsabilidade, dataCriacao) SELECT 'APÓS O VENCIMENTO COBRAR MULTA DE ATRASO 2,00\nNÃO RECEBER ATRASADO\nJUROS DE 0,01 AO DIA.', strftime('%s', 'now') * 1000 WHERE NOT EXISTS (SELECT 1 FROM empresas WHERE id = 1)");
-                    stmt.execute("INSERT INTO clientes (nome, cpfCnpj, celular, email, dataCriacao,isPessoaFisica) SELECT 'CLIENTE PADRÃO', '', '', '', strftime('%s', 'now') * 1000, 1 WHERE NOT EXISTS (SELECT 1 FROM clientes WHERE id = 1)");
-                }
-
-                UI.runOnUi(() -> {
-                    Components.ShowPopupForced(ctx,
-                            "Todos os dados foram excluídos com sucesso!\n\nFeche o aplicativo e abra de novo para aplicar as mudanças.",
-                            "Fechar aplicativo",
-                            Main::handleClose
-                    );
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir dados: " + e.getMessage()));
-            }
-        });
+      Components.ShowAlertError("Opção temporariamente indisponível!");
     }
 
     @Override

@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CleanDbRunner {
@@ -14,16 +15,15 @@ public class CleanDbRunner {
             .replace("\\", "/") + "/clean_db_test_" + System.currentTimeMillis() + ".db";
     private static final String TEST_URL = "jdbc:sqlite:" + TEST_DB;
 
-    public static void main(String[] args) throws Exception {
+    static void main(String[] args) throws Exception {
         System.out.println("=== Teste: limparBanco nao corrompe historico Flyway ===");
 
-        try (var conn = DriverManager.getConnection(TEST_URL)) {
-            Flyway.configure()
-                    .dataSource(TEST_URL, "", "")
-                    .locations("classpath:flyway_migrations")
-                    .load()
-                    .migrate();
-        }
+        DriverManager.getConnection(TEST_URL);
+        Flyway.configure()
+                .dataSource(TEST_URL, "", "")
+                .locations("classpath:flyway_migrations")
+                .load()
+                .migrate();
         System.out.println("1. Flyway.migrate() executado com sucesso");
 
         try (var conn = DriverManager.getConnection(TEST_URL);
@@ -38,7 +38,7 @@ public class CleanDbRunner {
             }
         }
 
-        var sql = readResource("/clean_db.sql");
+        var sql = readResource();
         System.out.println("2. Executando clean_db.sql:");
         try (var conn = DriverManager.getConnection(TEST_URL);
              var stmt = conn.createStatement()) {
@@ -105,12 +105,12 @@ public class CleanDbRunner {
         try { new java.io.File(TEST_DB).delete(); } catch (Exception ignored) {}
     }
 
-    private static String readResource(String path) {
+    private static String readResource() {
         try (var reader = new BufferedReader(
-                new InputStreamReader(CleanDbRunner.class.getResourceAsStream(path), StandardCharsets.UTF_8))) {
+                new InputStreamReader(Objects.requireNonNull(CleanDbRunner.class.getResourceAsStream("/clean_db.sql")), StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao ler recurso: " + path, e);
+            throw new RuntimeException("Erro ao ler recurso: " + "/clean_db.sql", e);
         }
     }
 }

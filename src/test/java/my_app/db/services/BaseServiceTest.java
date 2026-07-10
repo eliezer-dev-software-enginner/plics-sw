@@ -9,13 +9,13 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class BaseServiceTest {
 
     protected static void assertBigDecimalEquals(BigDecimal expected, BigDecimal actual) {
-        assertTrue(expected.compareTo(actual) == 0,
-                "Expected " + expected + " (scale " + expected.scale() + ") but got " + actual + " (scale " + (actual == null ? "N/A" : actual.scale()) + ")");
+        assertEquals(0, expected.compareTo(actual), "Expected " + expected + " (scale " + expected.scale() + ") but got " + actual + " (scale " + (actual == null ? "N/A" : actual.scale()) + ")");
     }
 
     protected Session session;

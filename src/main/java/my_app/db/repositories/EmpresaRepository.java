@@ -5,7 +5,6 @@ import net.sf.persism.Session;
 
 import java.sql.SQLException;
 
-import static net.sf.persism.Parameters.params;
 import static net.sf.persism.SQL.sql;
 
 public class EmpresaRepository extends BaseRepository<EmpresaModel> {

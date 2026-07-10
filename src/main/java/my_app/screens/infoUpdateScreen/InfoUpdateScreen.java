@@ -10,11 +10,9 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.domain.components.Components;
 
 public class InfoUpdateScreen implements ScreenComponent {
-    private final ScreenContext ctx;
     private final InfoUpdateScreenViewModel vm;
 
     public InfoUpdateScreen(ScreenContext ctx) {
-        this.ctx = ctx;
         this.vm = new InfoUpdateScreenViewModel();
     }
 

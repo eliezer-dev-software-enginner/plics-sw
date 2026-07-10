@@ -2,12 +2,10 @@ package my_app.screens.comprasScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.inputs.Input;
 import megalodonte.components.layout_components.Column;
-import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.CompraModel;
+import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
@@ -53,8 +51,8 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     private Row formFirstRow() {
         return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
-                Components.DatePickerColumn(vm.dataCompra, "Data de compra", "dd/mm/yyyy"),
-                Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, f -> f.getNome(), true),
+                Components.DatePickerColumn(vm.dataCompra, "Data de compra"),
+                Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
@@ -80,16 +78,16 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .fromData(vm.compras)
                 .header()
                 .columns()
-                .column("ID", it -> it.getId(), (double) 90)
+                .column("ID", CompraModel::getId, (double) 90)
                 .column("Produto", it -> it.getProdutoModel().getDescricao(), (double) 90)
-                .column("Quantidade", it -> it.getQuantidade())
-                .column("N. Nota", it -> it.getNumeroNota())
+                .column("Quantidade", CompraModel::getQuantidade)
+                .column("N. Nota", CompraModel::getNumeroNota)
                 .column("Fornecedor", it -> it.getFornecedor() == null ? "" : it.getFornecedor().getNome())
                 .column("Total liq. de compra", it -> Utils.toBRLCurrency(it.getTotalLiquido()))
                 .column("Data de criação", it -> DateUtils.millisToBrazilianDateTime(it.getDataCriacaoMillis()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemSelectChange(it -> vm.compraSelected.set(it));
+                .onItemSelectChange(vm.compraSelected::set);
     }
 
     @Override

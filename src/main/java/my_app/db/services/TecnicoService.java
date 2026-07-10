@@ -11,15 +11,13 @@ import java.time.LocalDateTime;
 
 public class TecnicoService extends BaseService<TecnicoModel> {
 
-    private final TecnicoRepository tecnicoRepository;
-
     public TecnicoService() throws SQLException {
         this(DB.getPersismSession());
     }
 
     public TecnicoService(Session session) {
         super(new TecnicoRepository(session));
-        this.tecnicoRepository = (TecnicoRepository) repository;
+        TecnicoRepository tecnicoRepository = (TecnicoRepository) repository;
     }
 
     @Override

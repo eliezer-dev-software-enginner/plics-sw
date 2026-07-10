@@ -30,7 +30,7 @@ public class CompraService extends BaseService<CompraModel> {
 
     @Override
     public void atualizar(CompraModel model) throws SQLException {
-        repository.atualizar(model);
+        super.atualizar(model);
     }
 
     public CompraModel toModel(CompraDto dto) {

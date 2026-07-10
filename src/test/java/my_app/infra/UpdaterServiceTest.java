@@ -27,12 +27,4 @@ class UpdaterServiceTest {
         assertFalse(version.isBlank());
         System.out.println("Ultima versao no GitHub: " + version);
     }
-
-    @Test
-    void comparaVersoesCorretamente() {
-        assertTrue(UpdaterService.compareVersions("2.0.0", "1.0.0") > 0);
-        assertTrue(UpdaterService.compareVersions("1.0.0", "2.0.0") < 0);
-        assertEquals(0, UpdaterService.compareVersions("1.5.3", "1.5.3"));
-        assertTrue(UpdaterService.compareVersions("1.10.0", "1.9.9") > 0);
-    }
 }

@@ -8,7 +8,7 @@ import my_app.core.Themes;
 
 public class Main {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         MegalodonteApp.run(args, Main::initialize, ev -> {
             if (ev == MegalodonteApp.Event.CloseRequest) {
                 ListenerManager.disposeAll();

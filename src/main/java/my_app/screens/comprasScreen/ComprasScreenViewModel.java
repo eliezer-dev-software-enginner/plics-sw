@@ -1,7 +1,6 @@
 package my_app.screens.comprasScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.components.inputs.Input;
 import megalodonte.v2.ListState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
@@ -9,7 +8,6 @@ import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.dto.CompraDto;
 import my_app.db.models.CompraModel;
-import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.CompraService;
 import my_app.db.services.FornecedorService;
@@ -30,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -73,7 +70,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     final State<CompraModel> compraSelected = State.of(null);
 
     // --- Controle de estoque ---
-    final State<String> opcaoEstoqueSelected = State.of(Data.simNaoList.get(0));
+    final State<String> opcaoEstoqueSelected = State.of(Data.simNaoList.getFirst());
     final State<String> estoqueAnterior = State.of("0");
     final State<String> estoqueAtual = State.of("0");
 
@@ -86,7 +83,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
             sugestoesProduto
     );
 
-    public Components.InputRef quantidadeRef = new Components.InputRef();
+    public final Components.InputRef quantidadeRef = new Components.InputRef();
 
     public ComprasScreenViewModel(ScreenContext ctx) {
         this(ctx, createCompraService(), createFornecedorService(), createProdutoService(), createContasPagarService());
@@ -139,7 +136,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
 
         produtoEncontrado.subscribe(v -> atualizarEstoqueVisual());
-        codigo.subscribe(termo -> filtrarProdutos(termo));
+        codigo.subscribe(this::filtrarProdutos);
 
         produtoEncontrado.subscribe(this::selecionarProduto);
 
@@ -381,7 +378,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         if (data != null) {
             Async.Run(() -> {
                 try {
-                    Long compraId = data.getId();
+                    long compraId = data.getId();
 
                     contasPagarService.excluirPorCompraId(compraId);
 
@@ -415,7 +412,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         pcCompra.set("0");
         dataValidade.set(null);
         fornecedorSelected.set(fornecedores.get(0));
-        opcaoEstoqueSelected.set(Data.simNaoList.get(0));
+        opcaoEstoqueSelected.set(Data.simNaoList.getFirst());
         estoqueAnterior.set("0");
         estoqueAtual.set("0");
         descontoEmDinheiro.set("0");

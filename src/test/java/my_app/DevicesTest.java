@@ -1,7 +1,7 @@
 package my_app;
 
 public class DevicesTest {
-    public static void main(String[] args) throws Exception {
+    static void main(String[] args) throws Exception {
         System.out.println("=== DIAGNÓSTICO JSSC ===");
         System.out.println("OS: " + System.getProperty("os.name"));
         System.out.println("Arch: " + System.getProperty("os.arch"));

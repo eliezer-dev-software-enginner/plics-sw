@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import static my_app.utils.Utils.*;
-import static my_app.utils.Utils.isValidPhone;
 
 public class ClienteService extends BaseService<ClienteModel> {
 
@@ -51,7 +50,7 @@ public class ClienteService extends BaseService<ClienteModel> {
             }
         }
 
-        if (!model.getEmail().isEmpty() && !isValidEmail(model.getEmail())) {
+        if (!model.getEmail().isEmpty() && isNotValidEmail(model.getEmail())) {
             throw new IllegalArgumentException("Formato de e-mail inválido");
         }
         if (!model.getCelular().isEmpty() && !isValidPhone(model.getCelular())) {

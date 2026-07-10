@@ -39,7 +39,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20))
                         .c_child(new Row(new RowProps().centerHorizontally())
-                                .r_child(new Text("Cadastro de Fornecedor", (TextProps) new TextProps().variant(TextVariant.SUBTITLE).bold())))
+                                .r_child(new Text("Cadastro de Fornecedor", new TextProps().variant(TextVariant.SUBTITLE).bold())))
                         .c_child(new SpacerVertical(20))
                         .c_child(informacoesPessoais())
                         .c_child(new SpacerVertical(20))
@@ -57,7 +57,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
                 .r_child(Show.when(vm.tipoPessoaEhFisica,
                         () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
-                        () -> Components.InputColumnCnpj("CNPJ", vm.cnpjCpf)
+                        () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                 ))
                 .r_child(Components.InputColumnPhone("Celular", vm.celular))
                 .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, ""))
@@ -74,21 +74,19 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
         return new SimpleTable<FornecedorModel>()
                 .fromData(vm.fornecedores)
                 .header().columns()
-                .column("ID", it -> it.getId())
-                .column("Nome", it -> it.getNome())
+                .column("ID", FornecedorModel::getId)
+                .column("Nome", FornecedorModel::getNome)
                 .column("Telefone", it -> Utils.formatPhone(it.getCelular()))
                 .column("CPF/CNPJ",      it -> it.getCpfCnpj().length() == 11
                         ? Utils.formatCpf(it.getCpfCnpj())
                         : Utils.formatCnpj(it.getCpfCnpj()))
-                .column("Email", it -> it.getEmail())
+                .column("Email", FornecedorModel::getEmail)
                 .column("Data de Criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .end()
                 .build()
                 .onItemSelectChange(vm.fornecedorSelected::set)
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemDoubleClick(it -> {
-                    Components.ShowModal(ItemDetails(it), this.ctx, 550);
-                });
+                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), this.ctx, 550));
     }
 
     Component ItemDetails(FornecedorModel model) {

@@ -117,15 +117,14 @@ public static BigDecimal deCentavosParaReal(String centavos){
     }
 
     // Validação simples de E-mail
-    public static boolean isValidEmail(String email) {
-        return email.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+    public static boolean isNotValidEmail(String email) {
+        return !email.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
     }
 
     public static boolean isValidCnpj(String cnpj) {
         String clean = cnpj == null ? "" : cnpj.toUpperCase().replaceAll("[^0-9A-Z]", "");
         if (clean.length() != 14) return false;
-        if (!clean.substring(12).matches("\\d{2}")) return false;
-        return true;
+        return clean.substring(12).matches("\\d{2}");
     }
 
     public static boolean isValidCpf(String cpf) {
@@ -147,11 +146,11 @@ public static BigDecimal deCentavosParaReal(String centavos){
         StringBuilder sb = new StringBuilder();
         int len = numeric.length();
 
-        if (len > 0) sb.append("(");
+        sb.append("(");
         if (len <= 2) {
             sb.append(numeric);
         } else {
-            sb.append(numeric.substring(0, 2)).append(") ");
+            sb.append(numeric, 0, 2).append(") ");
             String rest = numeric.substring(2);
 
             if (rest.length() <= 4) {
@@ -161,10 +160,10 @@ public static BigDecimal deCentavosParaReal(String centavos){
                 sb.append(rest);
             } else if (rest.length() <= 8) {
                 // Formato Fixo: (XX) XXXX-XXXX
-                sb.append(rest.substring(0, 4)).append("-").append(rest.substring(4));
+                sb.append(rest, 0, 4).append("-").append(rest.substring(4));
             } else {
                 // Formato Celular: (XX) XXXXX-XXXX
-                sb.append(rest.substring(0, 5)).append("-").append(rest.substring(5));
+                sb.append(rest, 0, 5).append("-").append(rest.substring(5));
             }
         }
         return sb.toString();

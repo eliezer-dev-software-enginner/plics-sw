@@ -52,7 +52,7 @@ public class FornecedorService extends BaseService<FornecedorModel> {
         }
 
         String email = model.getEmail();
-        if (email != null && !email.isBlank() && !isValidEmail(email))
+        if (email != null && !email.isBlank() && isNotValidEmail(email))
             throw new IllegalArgumentException("Formato de e-mail inválido");
 
         String celular = model.getCelular();

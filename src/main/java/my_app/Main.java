@@ -21,27 +21,26 @@ import my_app.db.services.PreferenciasService;
 import my_app.hotreload.HotReload;
 import my_app.core.AppRoutes;
 import my_app.infra.ProcessKiller;
-import my_app.services.PlanilhaFornecedorReader;
 import org.flywaydb.core.Flyway;
 
 public class Main {
     static HotReload hotReload;
-    public static boolean devMode = "true".equals(System.getenv("DEV_MODE"));
+    public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
-    public static String APP_VERSION = "1.0.9";
-    public static String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
+    public static final String APP_VERSION = "1.0.9";
+    public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
 
     static boolean askCredentials = false;
     static boolean forceAccessRoute = false;
 
-    public static String ICON_PATH = "/assets/app_ico.png";
+    public static final String ICON_PATH = "/assets/app_ico.png";
 
     public static Image loadIcon() {
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(ICON_PATH)));
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         corrigirArquiteturaNativa();
         MegalodonteApp.run(args, Main::start, Main::onEvent);
     }

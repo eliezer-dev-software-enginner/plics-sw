@@ -15,17 +15,17 @@ public class EmpresaViewModel {
     private final ScreenContext ctx;
     private final EmpresaService empresaService;
 
-    State<String> nome = State.of("");
-    State<String> celular = State.of("");
-    State<String> logoMarca = State.of("/logo_256x256.png");
+    final State<String> nome = State.of("");
+    final State<String> celular = State.of("");
+    final State<String> logoMarca = State.of("/logo_256x256.png");
 
-    State<String> cep = State.of("");
-    State<String> cidade = State.of("");
-    State<String> bairro = State.of("");
-    State<String> rua = State.of("");
+    final State<String> cep = State.of("");
+    final State<String> cidade = State.of("");
+    final State<String> bairro = State.of("");
+    final State<String> rua = State.of("");
 
-    State<String> localPagamento = State.of("");
-    State<String> textoResponsabilidade = State.of("");
+    final State<String> localPagamento = State.of("");
+    final State<String> textoResponsabilidade = State.of("");
 
     public EmpresaViewModel(ScreenContext ctx) throws SQLException {
         this(ctx, new EmpresaService());
@@ -94,10 +94,7 @@ public class EmpresaViewModel {
         Async.Run(()->{
             try{
                 empresaService.salvarOuAtualizar(model);
-                UI.runOnUi(()-> {
-                    IO.println("Empresa atualizada com sucesso!");
-
-                });
+                UI.runOnUi(()-> IO.println("Empresa atualizada com sucesso!"));
 
             } catch (Exception e) {
                 throw new RuntimeException(e);

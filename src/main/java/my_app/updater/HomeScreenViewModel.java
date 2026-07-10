@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public class HomeScreenViewModel {
-    State<String> updateStatus = new State("Iniciando...");
+    final State<String> updateStatus = new State("Iniciando...");
 
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
     private static final Path LOG_FILE = Path.of(
@@ -216,7 +216,7 @@ public class HomeScreenViewModel {
             "sleep 10\n" +
             "PKG=\"" + debPath.replace("\"", "\\\"") + "\"\n" +
             "LOG=\"" + installLog.toAbsolutePath().toString() + "\"\n" +
-            "RESULT=\"" + resultFile.toAbsolutePath().toString() + "\"\n" +
+            "RESULT=\"" + resultFile.toAbsolutePath() + "\"\n" +
             "for i in 1 2 3; do\n" +
             "  pkexec env DISPLAY=\"$DISPLAY\" DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" \\\n" +
             "    dpkg -i \"$PKG\" >\"$LOG\" 2>&1\n" +

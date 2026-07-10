@@ -47,7 +47,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
             isGestante
     );
 
-    State<EnderecoState> enderecoState = new State<>(new EnderecoState());
+    final State<EnderecoState> enderecoState = new State<>(new EnderecoState());
 
     public ClienteViewModel(ScreenContext ctx) {
         this(ctx, createClienteService());
@@ -157,20 +157,18 @@ public class ClienteViewModel extends ViewModelScreenContract {
         final var model = clienteSelecionado.get();
         if (model == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir cliente " + model.getNome(), () -> {
-            Async.Run(() -> {
-                try {
-                    clienteService.excluirById(model.getId());
-                    UI.runOnUi(() -> {
-                        clientes.removeIf(it -> it.getId().equals(model.getId()));
-                        Components.ShowPopup(ctx, "Cliente excluído com sucesso");
-                        EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
-                }
-            });
-        });
+        Components.ShowAlertAdvice("Deseja excluir cliente " + model.getNome(), () -> Async.Run(() -> {
+            try {
+                clienteService.excluirById(model.getId());
+                UI.runOnUi(() -> {
+                    clientes.removeIf(it -> it.getId().equals(model.getId()));
+                    Components.ShowPopup(ctx, "Cliente excluído com sucesso");
+                    EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
+            }
+        }));
     }
 
     @Override

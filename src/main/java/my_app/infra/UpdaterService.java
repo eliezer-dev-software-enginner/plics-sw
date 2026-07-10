@@ -13,8 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class UpdaterService {
 
@@ -58,21 +56,6 @@ public class UpdaterService {
         }
         return downloadToTemp(downloadUrl);
     }
-
-
-    @Deprecated(forRemoval = true)
-    static int compareVersions(String a, String b) {
-        var pa = Pattern.compile("(\\d+)");
-        var ma = pa.matcher(a);
-        var mb = pa.matcher(b);
-        while (ma.find() && mb.find()) {
-            var na = Integer.parseInt(ma.group());
-            var nb = Integer.parseInt(mb.group());
-            if (na != nb) return na - nb;
-        }
-        return 0;
-    }
-
     private String fetchLatestRelease() throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
             .uri(URI.create(LATEST_RELEASE_URL))

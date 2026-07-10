@@ -5,7 +5,6 @@ import megalodonte.base.state.State;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.UI;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -14,14 +13,10 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
-import my_app.Main;
-import my_app.domain.components.Components;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class HomeScreen implements ScreenComponent {
@@ -137,7 +132,7 @@ public class HomeScreen implements ScreenComponent {
 
     //TODO: HISTÓRICO DE CAICXA, COMPRAS DE MERCADORIA E CONTAS A PAGAR NÃO APARECEM
     record CardItem(String img, String title, String desc, String destination){}
-    List<CardItem> cardItemList = List.of(
+    final List<CardItem> cardItemList = List.of(
             new CardItem("/assets/venda.png", "Venda","Tela de vendas","vendas"),
             new CardItem("/assets/ordem_servico.png", "Ordem de serviço","Tela de ordem de serviço","ordem-de-servico"),
             new CardItem("/assets/produtos.png", "Produtos","Gerencie seus produtos","produtos"),

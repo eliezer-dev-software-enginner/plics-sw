@@ -54,7 +54,6 @@ class ComprasRepositoryTest extends BaseRepositoryTest {
         log.info("Compra salva com id={}", salvo.getId());
 
         assertNotNull(salvo);
-        assertNotNull(salvo.getId());
         assertEquals("PROD001", salvo.getProdutoCod());
         assertEquals(0, BigDecimal.valueOf(100.50).compareTo(salvo.getTotalLiquido()));
     }

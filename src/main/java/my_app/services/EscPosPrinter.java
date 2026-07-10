@@ -86,7 +86,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
     @Override
     public void imprimir(VendaModel venda) {
         EmpresaModel empresa = buscarEmpresa();
-        if (!tentarEscPos(escpos -> {
+        if (tentarEscPos(escpos -> {
             if (empresa != null) cabecalho(escpos, empresa);
             separador(escpos);
             titulo(escpos, "NOTA DE VENDA");
@@ -118,7 +118,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
     }
 
     public void imprimirNotaVenda(PedidoModel pedido, List<PedidoItemModel> itens, ClienteModel cliente, EmpresaModel empresa) {
-        if (!tentarEscPos(escpos -> {
+        if (tentarEscPos(escpos -> {
             if (empresa != null) cabecalho(escpos, empresa);
             separador(escpos);
             titulo(escpos, "NOTA DE VENDA");
@@ -157,17 +157,17 @@ public class EscPosPrinter implements ComprovanteBuilder {
     private boolean tentarEscPos(EscPosConsumer consumer) {
         try {
             OutputStream out = outputStream != null ? outputStream : resolverOutputStream();
-            if (out == null) return false;
+            if (out == null) return true;
             try (EscPos escpos = new EscPos(out)) {
                 escpos.setCharacterCodeTable(EscPos.CharacterCodeTable.CP860_Portuguese);
                 escpos.initializePrinter();
                 consumer.accept(escpos);
                 escpos.flush();
             }
-            return true;
+            return false;
         } catch (Exception e) {
             log.warn("Falha ao imprimir via ESC/POS, gerando preview .txt: {}", e.getMessage());
-            return false;
+            return true;
         }
     }
 
@@ -354,7 +354,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
 
     private static String centrado(String texto) {
         int espacos = (SEP.length() - (texto != null ? texto.length() : 0)) / 2;
-        if (espacos <= 0) return texto != null ? texto : "";
+        if (espacos <= 0) return texto;
         return " ".repeat(espacos) + (texto != null ? texto : "");
     }
 

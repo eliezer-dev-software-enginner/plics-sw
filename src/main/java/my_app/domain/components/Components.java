@@ -60,7 +60,7 @@ import static my_app.utils.Utils.*;
 
 public class Components {
 
-    public static ThemeInterface theme = ThemeManager.theme();
+    public static final ThemeInterface theme = ThemeManager.theme();
 
 
     public record Endereco(String uf, String cep, String cidade, String bairro,String rua, String numero){}
@@ -135,7 +135,7 @@ public class Components {
                 () -> new Column(new ColumnProps())
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())
-                                        .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela", ""))
+                                        .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela"))
                                         .r_child(Components.InputColumnNumeric("Quantidade de parcelas", qtdParcelas, "Ex: 1"))
                                         .r_child(Components.ButtonCadastro("Gerar parcelas", handleGerarParcelas)))
                         .items(parcelaComponentForEachState)
@@ -312,26 +312,6 @@ public class Components {
                 );
     }
 
-    //TODO: adicionar campo editavel:false
-    @Deprecated
-    public static Component DatePickerColumn(State<LocalDate> localDateState, String label, String placeholder) {
-
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
-                .c_child(new DatePicker(localDateState,
-                                new DatePickerProps().fontSize(theme.typography().small()).height(31)
-                                        .placeHolder(placeholder)
-                                        .locale(new Locale("pt", "BR"))
-                                        .pattern("dd/MM/yyyy")
-                                        .editable(false)
-                                        .width(140)
-                                        .placeHolder("dd/MM/yyyy").
-                                        borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().primary())
-                        )
-                );
-    }
-
     public static Column ImageSelector(String title, State<String> imageState,
                                        ImageProps props,
                                        Runnable callback) {
@@ -349,7 +329,7 @@ public class Components {
         return new Text(title, new TextProps().variant(TextVariant.BODY).bold());
     }
 
-    static ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
+    static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
             .fontSize(theme.typography().small()).textColor("white").bgColor("#2563eb");
 
     public static Component ButtonCadastro(String textState, Runnable handleAdd) {
@@ -619,11 +599,6 @@ public class Components {
             fmt.append(intPart.charAt(i));
         }
         return decPart.isEmpty() ? fmt.toString() : fmt + "," + decPart;
-    }
-
-    @Deprecated(forRemoval = true)
-    public static Component InputColumnCnpj(String label, State<String> inputState) {
-        return InputColumnCnpjAlfanumerico(label, inputState);
     }
 
     public static Component InputColumnCnpjAlfanumerico(String label, State<String> inputState) {
@@ -902,8 +877,6 @@ public class Components {
 
         }
     }
-
-    public enum AlertType {ERRO, SUCESSO}
 
     @FunctionalInterface
     interface Action {

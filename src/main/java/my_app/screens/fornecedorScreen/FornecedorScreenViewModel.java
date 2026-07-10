@@ -24,14 +24,14 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     public final ListState<FornecedorModel> fornecedores = ListState.ofEmpty();
     public final State<FornecedorModel> fornecedorSelected = new State<>(null);
 
-    State<String> nome = State.of("");
-    State<String> cnpjCpf = State.of("");
-    State<String> celular = State.of("");
-    State<String> inscricaoEstadual = State.of("");
-    State<String> email = State.of("");
-    State<String> observacao = State.of("");
+    final State<String> nome = State.of("");
+    final State<String> cnpjCpf = State.of("");
+    final State<String> celular = State.of("");
+    final State<String> inscricaoEstadual = State.of("");
+    final State<String> email = State.of("");
+    final State<String> observacao = State.of("");
 
-    State<EnderecoState> enderecoState = new State<>(new EnderecoState());
+    final State<EnderecoState> enderecoState = new State<>(new EnderecoState());
 
     final State<String> tipoPessoaSelected = new State<>(Data.tiposPessoaList.getFirst());
     final ComputedState<Boolean> tipoPessoaEhFisica = ComputedState.of(
@@ -56,10 +56,6 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    protected void onInit() {
     }
 
     @Override
@@ -208,20 +204,18 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
         final var fornecedorModel = fornecedorSelected.get();
         if (fornecedorModel == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir fornecedor  " + fornecedorModel.getNome(), () -> {
-            Async.Run(() -> {
-                try {
-                    fornecedorService.excluirById(fornecedorModel.getId());
-                    UI.runOnUi(() -> {
-                        fornecedores.removeIf(it -> it.getId().equals(fornecedorModel.getId()));
-                        Components.ShowPopup(ctx, "Fornecedor excluido com sucesso");
-                        EventBus.getInstance().publish(EntityEvent.excluido(fornecedorModel.getId()));
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
-                }
-            });
-        });
+        Components.ShowAlertAdvice("Deseja excluir fornecedor  " + fornecedorModel.getNome(), () -> Async.Run(() -> {
+            try {
+                fornecedorService.excluirById(fornecedorModel.getId());
+                UI.runOnUi(() -> {
+                    fornecedores.removeIf(it -> it.getId().equals(fornecedorModel.getId()));
+                    Components.ShowPopup(ctx, "Fornecedor excluido com sucesso");
+                    EventBus.getInstance().publish(EntityEvent.excluido(fornecedorModel.getId()));
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
+            }
+        }));
     }
 
     @Override

@@ -10,6 +10,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
+import my_app.db.models.ClienteModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
@@ -67,7 +68,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     private Row formFirstRow() {
         return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
                 Components.DatePickerColumn(vm.dataVenda, "Data de venda"),
-                Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, f -> f.getNome(), true),
+                Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
@@ -84,10 +85,10 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .fromData(vm.vendas)
                 .header()
                 .columns()
-                .column("ID", it -> it.getId())
+                .column("ID", VendaModel::getId)
                 .column("Produto", it -> it.getProduto().getDescricao())
                 .column("Preço de venda", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
-                .column("Quantidade", it -> it.getQuantidade())
+                .column("Quantidade", VendaModel::getQuantidade)
                 .column("Total líquido", it -> Utils.toBRLCurrency(it.getTotalLiquido()))
                 .column("Data", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()

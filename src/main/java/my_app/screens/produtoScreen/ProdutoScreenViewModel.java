@@ -7,7 +7,6 @@ import megalodonte.base.UI;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.CorModel;
-import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.CategoriaService;
 import my_app.db.services.CorService;
@@ -144,9 +143,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 var coresList = corService.listar();
 
                 UI.runOnUi(() -> {
-                    this.produtos.clear();
-                    this.produtos.addAll(produtosList);
-                    this.cores.addAll(coresList);
+                    this.produtos.set(produtosList);
+                    this.cores.set(coresList);
                     this.categorias.set(categoriasList);
                     this.categoriaSelected.set(categoriasList.isEmpty() ? null : categoriasList.getFirst());
 
@@ -180,20 +178,18 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
 
         var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?"
                 .formatted(produtoModel.getDescricao(), produtoModel.getCodigoBarras());
-        Components.ShowAlertAdvice(bodyMessage, () -> {
-            Async.Run(() -> {
-                try {
-                    produtoService.excluirById(produtoModel.getId());
-                    UI.runOnUi(() -> {
-                        produtos.removeIf(it -> it.getId().equals(produtoModel.getId()));
-                        clearForm();
-                        Components.ShowPopup(ctx, "Produto excluído com sucesso");
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
-                }
-            });
-        });
+        Components.ShowAlertAdvice(bodyMessage, () -> Async.Run(() -> {
+            try {
+                produtoService.excluirById(produtoModel.getId());
+                UI.runOnUi(() -> {
+                    produtos.removeIf(it -> it.getId().equals(produtoModel.getId()));
+                    clearForm();
+                    Components.ShowPopup(ctx, "Produto excluído com sucesso");
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
+            }
+        }));
     }
 
     public String validar() {
@@ -273,6 +269,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
 
                 var salvo = produtoService.salvar(model);
+
                 salvo.setCategoria(categoriaSelected.get());
                 salvo.setFornecedor(fornecedorSelected.get());
 

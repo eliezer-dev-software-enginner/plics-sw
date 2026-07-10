@@ -16,7 +16,6 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
-import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
@@ -54,7 +53,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                 .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
                                 .r_child(Show.when(vm.tipoPessoaEhFisica,
                                         () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
-                                        () -> Components.InputColumnCnpj("CNPJ", vm.cnpjCpf)
+                                        () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                                 ))
                                 .r_child(Components.InputColumnPhone("Celular", vm.celular))
                                 .r_child(Components.InputColumn("Email", vm.email, ""))
@@ -84,8 +83,8 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
         simpleTable.fromData(vm.clientes)
                 .header()
                 .columns()
-                .column("ID",            it -> it.getId())
-                .column("Nome",          it -> it.getNome())
+                .column("ID", ClienteModel::getId)
+                .column("Nome", ClienteModel::getNome)
                 .column("Celular/Telefone",          it -> Utils.formatPhone(it.getCelular()))
                 .column("Email", ClienteModel::getEmail)
                 .column("CPF/CNPJ",      it -> it.getCpfCnpj().length() == 11
@@ -94,10 +93,8 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .column("Data de criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemSelectChange(it -> vm.clienteSelecionado.set(it))
-                .onItemDoubleClick(it -> {
-                    Components.ShowModal(ItemDetails(it), this.screenContext, 400);
-                });
+                .onItemSelectChange(vm.clienteSelecionado::set)
+                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), this.screenContext, 400));
 
         return simpleTable;
     }

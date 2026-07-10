@@ -6,7 +6,6 @@ import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
-import megalodonte.components.Button;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
@@ -80,8 +79,8 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                         )
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())
-                                        .r_child(Components.DatePickerColumn(vm.dataVencimento, "Data Vencimento", "dd/mm/yyyy"))
-                                        .r_child(Components.DatePickerColumn(vm.dataRecebimento, "Data Recebimento", "dd/mm/yyyy"))
+                                        .r_child(Components.DatePickerColumn(vm.dataVencimento, "Data Vencimento"))
+                                        .r_child(Components.DatePickerColumn(vm.dataRecebimento, "Data Recebimento"))
                                         .r_child(Components.SelectColumn("Tipo Doc", vm.tipoDocumentoOptions, vm.tipoDocumento, t -> t))
                                         .r_child(Components.InputColumn("Número Doc", vm.numeroDocumento, "Número do documento"))
                         )
@@ -134,7 +133,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                         new Row(new RowProps().spacingOf(8))
                                                                 .r_child(
                                                                         new Button("Registrar",
-                                                                                (ButtonProps) new ButtonProps()
+                                                                                new ButtonProps()
                                                                                         .height(35)
                                                                                         .fontSize(theme.typography().small())
                                                                                         .bgColor("#10b981")
@@ -143,7 +142,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                                 )
                                                                 .r_child(
                                                                         new Button("Cancelar",
-                                                                                (ButtonProps) new ButtonProps()
+                                                                                new ButtonProps()
                                                                                         .height(35)
                                                                                         .fontSize(theme.typography().small())
                                                                                         .bgColor("#6c757d")
@@ -170,7 +169,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                         .c_child(new Text("Em Aberto", new TextProps().variant(TextVariant.BODY)))
                                                         .c_child(
                                                                 new Text(Utils.toBRLCurrency(vm.getTotalEmAberto()),
-                                                                        (TextProps) new TextProps().variant(TextVariant.BODY).color("#ff6b6b"))
+                                                                        new TextProps().variant(TextVariant.BODY).color("#ff6b6b"))
                                                         )
                                         )
                                         .r_child(
@@ -178,7 +177,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                         .c_child(new Text("Vencidas", new TextProps().variant(TextVariant.BODY)))
                                                         .c_child(
                                                                 new Text(Utils.toBRLCurrency(vm.getTotalVencidas()),
-                                                                        (TextProps) new TextProps().variant(TextVariant.BODY).color("#dc3545"))
+                                                                        new TextProps().variant(TextVariant.BODY).color("#dc3545"))
                                                         )
                                         )
                         )
@@ -192,7 +191,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                 .header()
                 .columns()
                 .column("ID", it -> it.getId() != null ? "#" + it.getId() : "")
-                .column("Descrição", it -> it.getDescricao())
+                .column("Descrição", ContaAreceberModel::getDescricao)
                 .column("Cliente", it -> it.getCliente() != null ? it.getCliente().getNome() : "")
                 .column("Valor Original", it -> Utils.toBRLCurrency(it.getValorOriginal()))
                 .column("Valor Restante", it -> Utils.toBRLCurrency(it.getValorRestante()))

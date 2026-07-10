@@ -6,7 +6,6 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
-import my_app.db.models.ClienteModel;
 import my_app.db.models.ContaAreceberModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.ContaAreceberService;
@@ -98,9 +97,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
     void loadClientes() {
         try {
             var clientesList = clienteService.listar();
-            UI.runOnUi(() -> {
-                clientes.set(clientesList);
-            });
+            UI.runOnUi(() -> clientes.set(clientesList));
         } catch (Exception e) {
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
         }
@@ -233,21 +230,19 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
         var selected = contaSelected.get();
         if (selected == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> {
-            Async.Run(() -> {
-                try {
-                    contaService.excluir(selected.getId());
-                    UI.runOnUi(() -> {
-                        contas.removeIf(c -> c.getId().equals(selected.getId()));
-                        Components.ShowPopup(ctx, "Conta excluída com sucesso!");
-                        clearForm();
-                        EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                    });
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
-                }
-            });
-        });
+        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> Async.Run(() -> {
+            try {
+                contaService.excluir(selected.getId());
+                UI.runOnUi(() -> {
+                    contas.removeIf(c -> c.getId().equals(selected.getId()));
+                    Components.ShowPopup(ctx, "Conta excluída com sucesso!");
+                    clearForm();
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                });
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
+            }
+        }));
     }
 
     public void registrarRecebimento(ScreenContext ctx) {

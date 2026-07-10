@@ -2,14 +2,10 @@ package my_app.screens.empresaScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Card;
-import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.components.Components;
-import megalodonte.*;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;

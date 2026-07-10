@@ -12,13 +12,11 @@ import java.util.List;
 
 public class ContasPagarService {
     private final my_app.db.services.ContasPagarService repo;
-    private final CompraService compraService;
-    private final FornecedorService fornecedorService;
 
     public ContasPagarService() throws SQLException {
         this.repo = new my_app.db.services.ContasPagarService();
-        this.compraService = new CompraService();
-        this.fornecedorService = new FornecedorService();
+        CompraService compraService = new CompraService();
+        FornecedorService fornecedorService = new FornecedorService();
     }
 
     public void salvar(ContasPagarModel conta) throws SQLException {
