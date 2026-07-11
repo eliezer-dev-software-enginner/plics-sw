@@ -1,6 +1,8 @@
 package my_app.domain.telegram;
 
 import my_app.Main;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,16 +13,23 @@ public class TelegramNotifier {
     private final String botToken;
     private final String chatId;
 
+    private static final Logger log = LoggerFactory.getLogger(TelegramNotifier.class);
+
+    // Client reaproveitado — HttpClient é thread-safe e caro de recriar a cada chamada
+    private static final HttpClient client = HttpClient.newHttpClient();
+
     public TelegramNotifier(String botToken, String chatId) {
         this.botToken = botToken;
         this.chatId = chatId;
     }
 
+
     public void enviarMensagem(String mensagem) {
         if (botToken == null || chatId == null) {
-            throw new RuntimeException("❌ Erro de configuração do Telegram");
+            log.warn("Configuração do Telegram ausente, notificação ignorada: {}", mensagem);
+            return;
         }
-        
+
         String telegramUrl = String.format(
                 "https://api.telegram.org/bot%s/sendMessage",
                 botToken
@@ -37,27 +46,26 @@ public class TelegramNotifier {
                 newMessage
         );
 
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(telegramUrl))
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .POST(HttpRequest.BodyPublishers.ofString(formData))
-                    .timeout(java.time.Duration.ofSeconds(5))
-                    .build();
-            HttpResponse<String> response = client.send(request,
-                    HttpResponse.BodyHandlers.ofString());
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(telegramUrl))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(formData))
+                .timeout(java.time.Duration.ofSeconds(5))
+                .build();
 
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                System.out.print("✅ Notificação enviada com sucesso");
-            } else {
-                throw new RuntimeException("❌ Erro HTTP %d: %s%n".formatted(response.statusCode(), response.body()));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("❌ Erro ao enviar: "+ e.getMessage());
-        }
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .whenComplete((response, error) -> {
+                    if (error != null) {
+                        log.warn("Erro ao enviar notificação Telegram: {}", error.getMessage());
+                        return;
+                    }
+                    if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                        log.warn("Erro HTTP {} ao enviar notificação Telegram: {}", response.statusCode(), response.body());
+                    }
+                });
     }
 
-    static void main() {
+static void main() {
         TelegramNotifier notifier = TelegramNotifierFactory.create();
         notifier.enviarMensagem("Testando");
     }
