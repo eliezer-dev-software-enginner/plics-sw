@@ -1,5 +1,20 @@
 # Decisões Arquiteturais
 
+## 2026-07-11: Correção — falha de impressão ESC/POS no MSI empacotado (jdk.charsets ausente no jlink)
+
+**Problema:** Cliente com impressora térmica EPSON TM-T20X não conseguia imprimir notas de venda. Jobs ficavam presos na fila de impressão do Windows (visível como "Java Printing" com um deles em estado "Erro - Impressão"). Logs via Telegram revelaram `UnsupportedCharsetException: cp860`, lançada por `EscPos.setCharacterCodeTable(CP860_Portuguese)` (lib `escpos-coffee`). O erro só ocorria no MSI empacotado — nunca em `gradle run`.
+
+**Causa raiz:** O script de build (`scripts/config.py`, função `run_jlink`) gera a imagem de runtime customizada via `jlink`, detectando módulos necessários com `jdeps --print-module-deps`. Porém, `Charset.forName("Cp860")` é resolvido dinamicamente em runtime (via `ServiceLoader`/`CharsetProvider`), não aparecendo como dependência estática no bytecode. Por isso o `jdeps` nunca detectava a necessidade do módulo `jdk.charsets`, e ele não estava na lista fixa `base_modules`.
+
+**Decisão:** Adicionar `"jdk.charsets"` ao `base_modules` em `run_jlink()` (`scripts/config.py`), garantindo que o módulo sempre seja incluído na imagem gerada, independente do que o `jdeps` detectar.
+
+**Aprendizado:** Qualquer lib que resolva charsets, providers ou implementações via `ServiceLoader`/reflection em tempo de execução (charsets legados como Cp860, Cp437, Cp850, etc. são o caso mais comum em libs ESC/POS) não é capturada pela análise estática do `jdeps`. Módulos desse tipo precisam ser adicionados manualmente e permanentemente ao `base_modules`, como uma lista de "segurança" além do que a detecção automática oferece.
+
+**Arquivo alterado:**
+- `scripts/config.py` (`base_modules` em `run_jlink()`: +`"jdk.charsets"`)
+
+---
+
 ## 2026-07-08: Substituição do jSerialComm por JSSC
 
 **Problema:** `jSerialComm 2.10.4` falhava ao extrair a DLL nativa no Windows do usuário (erro "Acesso negado" + DLL ARM64 em CPU AMD64), impossibilitando a listagem de portas seriais e a impressão via serial/Bluetooth.
