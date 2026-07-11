@@ -738,24 +738,36 @@ public class Components {
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
-                                        int borderWidth, int borderRadius, String borderColor) {
+                                        int borderWidth, int borderRadius, String borderColor, String labelColor) {
         var props = getInputProps(placeholder);
         if (disableInput) props.disable();
 
-        TextProps textProps = new TextProps().fontSize(theme.typography().small());
-        if (label.equals("Login") || label.equals("Senha") || label.equals("Licença")) {
-            textProps.textColor("#fff");
+
+        TextProps labelProps = new TextProps().fontSize(theme.typography().small());
+        if (labelColor!=null) {
+            labelProps.color(labelColor);
+            labelProps.textColor(labelColor);
         }
+
         return new Column()
-                .c_child(new Text(label, textProps))
+                .c_child(new Text(label, labelProps))
                 .c_child(new Input((State<String>) inputState,
                                 props.borderWidth(borderWidth).borderColor(borderColor).borderRadius(borderRadius)
                         )
                 );
     }
 
+
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,String labelColor) {
+        return InputColumn(label, inputState, placeholder, disableInput, theme.border().width(), theme.border().radiusMd(), theme.colors().border(),labelColor);
+    }
+
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-        return InputColumn(label, inputState, placeholder, disableInput, theme.border().width(), theme.border().radiusMd(), theme.colors().border());
+        return InputColumn(label, inputState, placeholder, disableInput,null);
+    }
+
+    public static Component InputColumnAuth(String label, ReadableState<String> inputState, String placeholder) {
+        return InputColumn(label, inputState, placeholder, false, "#fff");
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {

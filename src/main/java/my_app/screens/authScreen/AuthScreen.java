@@ -47,9 +47,9 @@ public class AuthScreen implements ScreenComponent {
                 new Row().children(
                         new Column().children(
                                 new Text("Realize já seu login na Plics SW", new TextProps().color("white").fontSize(14)),
-                                Show.when(vm.showLicensaState, () -> Components.InputColumn("Licença", vm.licensaState, "")),
-                                Components.InputColumn("Login", vm.loginState, ""),
-                                Components.InputColumn("Senha", vm.passwordState, ""),
+                                Show.when(vm.showLicensaState, () -> Components.InputColumnAuth("Licença", vm.licensaState, "")),
+                                Components.InputColumnAuth("Login", vm.loginState, ""),
+                                Components.InputColumnAuth("Senha", vm.passwordState, ""),
                                 new SpacerVertical(10),
                                 Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
                         ),
