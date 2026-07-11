@@ -15,7 +15,10 @@ return new ThemeColors(
                 "#ffffff",                    // text primary
                 "#94a3b8",                    // text secondary
                 "#334155",                    // border,
-        "#A9A9A9"
+        "#A9A9A9",
+        "#dbeafe",                    // selection (primary with low opacity)
+        "#93c5fd",                    // focusRing (lighter primary)
+        "#2d3a4f"                     // hover
             );
         }
 
@@ -46,7 +49,10 @@ return new ThemeColors(
                 "#0f172a",                    // text primary: Azul quase preto para máximo contraste
                 "#94a3b8",                    // text secondary: Cinza médio para textos de apoio
                 "#1B2432",                   // border: Cinza suave para divisórias e bordas,
-                "#A9A9A9"
+                "#A9A9A9",
+                    "#dbeafe",                    // selection (primary with low opacity)
+                    "#93c5fd",                    // focusRing (lighter primary)
+                    "#e2e8f0"                     // hover
 
             );
         }
