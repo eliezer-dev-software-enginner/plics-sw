@@ -27,7 +27,7 @@ public class Main {
     static HotReload hotReload;
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
-    public static final String APP_VERSION = "1.0.9";
+    public static final String APP_VERSION = "1.0.9 - patch 02";
     public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
 

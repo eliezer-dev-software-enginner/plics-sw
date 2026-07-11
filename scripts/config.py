@@ -78,7 +78,10 @@ def run_jlink(temp_dir: Path):
     app_jar = temp_dir / "app.jar"
     java_bin = Path(_java_home()) / "bin"
     jdeps_cmd = str(java_bin / "jdeps")
-    base_modules = {"javafx.controls", "java.sql", "jdk.zipfs", "java.logging", "java.xml"}
+    base_modules = {
+        "javafx.controls", "java.sql", "jdk.zipfs", "java.logging", "java.xml",
+        "jdk.charsets",   # necessário para codepages tipo Cp860, Cp437 (ESC/POS)
+    }
     try:
         jdeps = subprocess.run(
             [jdeps_cmd, "--print-module-deps", "--ignore-missing-deps",
