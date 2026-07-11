@@ -305,9 +305,7 @@ public class Components {
                                         .locale(new Locale("pt", "BR"))
                                         .pattern("dd/MM/yyyy")
                                         .width(140)
-                                        .editable(false).
-                                        borderWidth(theme.border().width())
-                                        .borderColor(theme.colors().primary())
+                                        .editable(false)
                         )
                 );
     }
@@ -459,11 +457,7 @@ public class Components {
     }
 
     public static Component InputColumnCep(String label, State<String> inputState) {
-        var inputProps = new InputProps()
-                .height(31).placeHolder("00000-000")
-                .fontSize(theme.typography().small())
-                .borderWidth(theme.border().width())
-                .borderColor(theme.colors().primary());
+        var inputProps = getInputProps("00000-000");
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -488,11 +482,7 @@ public class Components {
     }
 
     public static Component InputColumnCpf(String label, State<String> inputState) {
-        var inputProps = new InputProps()
-                .height(31).placeHolder("000.000.000-00")
-                .fontSize(theme.typography().small())
-                .borderWidth(theme.border().width())
-                .borderColor(theme.colors().primary());
+        var inputProps = getInputProps("000.000.000-00");
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -538,6 +528,7 @@ public class Components {
             });
         }
     }
+
     public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder, InputRef inputRef) {
         var inputProps = getInputProps(placeholder);
 
@@ -577,7 +568,6 @@ public class Components {
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
-
 
     public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder) {
         return InputColumnDecimal(label, inputState, placeholder, null);
@@ -627,9 +617,7 @@ public class Components {
     }
 
     public static Component InputColumnPhone(String label, State<String> inputState) {
-        var inputProps = new InputProps()
-                .height(31).placeHolder("(00) 00000-0000");
-
+        var inputProps = getInputProps("(00) 00000-0000");
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -653,7 +641,6 @@ public class Components {
                 .c_child(new Text(label, new TextProps().fontSize(theme.typography().small())))
                 .c_child(input);
     }
-
 
     public static Component InputColumnNumeric(String label, State<String> inputState, String placeholder) {
         var inputProps = getInputProps(placeholder);
