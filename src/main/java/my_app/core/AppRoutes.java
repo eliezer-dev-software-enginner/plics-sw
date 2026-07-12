@@ -42,13 +42,7 @@ public class AppRoutes {
                 //ok
                 new Router.Route("fornecedores", FornecedorScreen::new, new RouteProps(1210, 650, "Gerenciamento de Fornecedores", true)),
                 //ok
-                new Router.Route("empresa",ctx-> {
-                    try {
-                        return new CadastroEmpresaScreen(ctx);
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, new RouteProps(900, 650, "Informações da empresa", false)),
+                new Router.Route("empresa", CadastroEmpresaScreen::new, new RouteProps(900, 650, "Informações da empresa", false)),
                //ok
                 new Router.Route("compras", ComprasScreen::new, new RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok

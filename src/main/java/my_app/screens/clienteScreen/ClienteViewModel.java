@@ -50,22 +50,9 @@ public class ClienteViewModel extends ViewModelScreenContract {
     final State<EnderecoState> enderecoState = new State<>(new EnderecoState());
 
     public ClienteViewModel(ScreenContext ctx) {
-        this(ctx, createClienteService());
-    }
-
-    public ClienteViewModel(ScreenContext ctx, ClienteService clienteService) {
         super(ctx);
-        this.clienteService = clienteService;
+        this.clienteService = createOrReport(ClienteService::new);
         this.onInit();
-    }
-
-    private static ClienteService createClienteService() {
-        try {
-            return new ClienteService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

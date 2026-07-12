@@ -1,8 +1,10 @@
 package my_app.domain;
 
 import megalodonte.ComputedState;
+import megalodonte.application.ErrorReporter;
 import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.utils.ThrowingSupplier;
 
 public abstract class ViewModelScreenContract {
     protected final ScreenContext ctx;
@@ -34,5 +36,12 @@ public abstract class ViewModelScreenContract {
         focusState.set(focus);
     }
 
-
+    protected <T> T createOrReport(ThrowingSupplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            ErrorReporter.handle(e);
+            throw new IllegalStateException(e); // interrompe a construção da tela de forma previsível
+        }
+    }
 }

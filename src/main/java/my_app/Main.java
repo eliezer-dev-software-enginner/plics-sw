@@ -12,12 +12,16 @@ import javafx.application.Platform;
 import javafx.scene.image.Image;
 import megalodonte.ListenerManager;
 import megalodonte.application.Context;
+import megalodonte.application.ErrorReporter;
 import megalodonte.application.MegalodonteApp;
+import megalodonte.base.UI;
+import megalodonte.base.async.Async;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.router.v4.Router;
 import my_app.core.Themes;
 import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
+import my_app.domain.components.Components;
 import my_app.hotreload.HotReload;
 import my_app.core.AppRoutes;
 import my_app.infra.ProcessKiller;
@@ -67,7 +71,9 @@ public class Main {
             }
 
             stage.getIcons().add(Main.loadIcon());
-
+        // registra o handler de erro o quanto antes — antes de qualquer Async.Run rodar
+        ErrorReporter.register(Main::handleAppError);
+        context.useView(new SplashScreen()); // mostra algo imediatamente
             initialize(context);
 
             if (devMode) {
@@ -115,11 +121,10 @@ public class Main {
 
     // mandatory for hotreload
     public static void initialize(Context context) {
-        ThemeManager.setTheme(Themes.LIGHT);
+        ThemeManager.setTheme(Themes.LIGHT); // mexe em Scene/Stylesheets -> FX thread, fica fora do Async.Run
 
-
-
-        try {
+        Async.Run(() -> {
+            // ---- tudo aqui roda fora da FX thread ----
             var flyway = Flyway.configure()
                     .dataSource(DB.production().url(), "", "")
                     .locations("classpath:flyway_migrations")
@@ -131,21 +136,39 @@ public class Main {
             var prefs = new PreferenciasService().listar();
             if (!prefs.isEmpty()) {
                 var pref = prefs.getFirst();
-                // ThemeManager.setTheme(pref.getTema().equals("Claro")? Themes.LIGHT: Themes.DARK);
                 askCredentials = pref.getCredenciaisHabilitadas() == 1;
                 forceAccessRoute = pref.isFirstAccess();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
-        try {
             Router router = new AppRoutes().defineRoutes(askCredentials, forceAccessRoute);
-            context.useRouter(router);
-            context.useView(router.entrypoint());
 
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+            // ---- volta pra FX thread só pra montar a tela ----
+            UI.runOnUi(() -> {
+                context.useRouter(router);
+                context.useView(router.entrypoint());
+
+                if (devMode) {
+                    hotReload = new HotReload()
+                            .sourcePath("src/main/java")
+                            .classesPath("build/classes/java/main")
+                            .resourcesPath("src/main/resources")
+                            .implementationClassName("my_app.hotreload.Reloader")
+                            .screenClassName(null)
+                            .reloadContext(context)
+                            .classesToExclude(Set.of("my_app.Main"));
+                    hotReload.start();
+                }
+            });
+        });
+    }
+
+    private static void handleAppError(Throwable t) {
+        Platform.runLater(() -> {
+            if (t instanceof IllegalArgumentException) {
+                Components.ShowAlertError(t.getMessage());
+            } else {
+                Components.ShowAlertError("Ocorreu um erro inesperado. Detalhes foram registrados.");
+            }
+        });
     }
 }

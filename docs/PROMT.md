@@ -29,4 +29,5 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-na tela de produtos, ao realizar as operações de crud a tabela não se atualiza. Vide FornecedoresViewModel e VendaMercadoriaSceenViewModel
+em ClienteViewModel a instancia de ClienteService eu faço da seguinte forma: "this.clienteService = createOrReport(ClienteService::new);"
+Eu quero que em todas as ViewModels você faça as instancias de services seguinte esse padrão.
