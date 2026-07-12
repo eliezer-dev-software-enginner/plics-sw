@@ -2,7 +2,9 @@ package my_app.screens.produtoScreen;
 
 import javafx.scene.control.CheckBox;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import megalodonte.ComputedState;
+import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -188,6 +190,11 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes do produto", new TextProps().variant(TextVariant.SUBTITLE)))
                 .c_child(new SpacerVertical(20))
+                .c_child(Show.when(model.getImagem()!=null,
+                        ()->new Image(model.getImagem(), new ImageProps().size(100))
+                                .attachAnimation(it-> Animations.fadeScale(it,true, Duration.millis(600)))
+                        )
+                )
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Código: ", model.getCodigoBarras()))
                 .c_child(Components.TextWithDetails("Cor: ", model.getCor() != null ? model.getCor() : "-"))
