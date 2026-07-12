@@ -76,65 +76,37 @@ public class PDVScreenViewModel {
     private final EscPosPrinter escPosPrinter;
 
     public PDVScreenViewModel(ScreenContext ctx) {
-        this(ctx, createProdutoService(), createClienteService(), new PDVService());
-    }
-
-    public PDVScreenViewModel(ScreenContext ctx, ProdutoService produtoService, ClienteService clienteService, PDVService pdvService) {
         this.ctx = ctx;
-        this.produtoService = produtoService;
-        this.clienteService = clienteService;
-        this.pdvService = pdvService;
-        this.pedidoItemService = createPedidoItemService();
-        this.empresaService = createEmpresaService();
+        this.produtoService = createOrReport(ProdutoService::new);
+        this.clienteService = createOrReport(ClienteService::new);
+        this.pdvService = createOrReport(PDVService::new);
+        this.pedidoItemService = createOrReport(PedidoItemService::new);
+        this.empresaService = createOrReport(EmpresaService::new);
         var porta = carregarPortaImpressora();
         this.escPosPrinter = porta != null ? new EscPosPrinter(empresaService, porta) :
                 new EscPosPrinter(empresaService);
         this.onInit();
     }
 
-    private static ProdutoService createProdutoService() {
-        try {
-            return new ProdutoService();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static ClienteService createClienteService() {
-        try {
-            return new ClienteService();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static PedidoItemService createPedidoItemService() {
-        try {
-            return new PedidoItemService();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private String carregarPortaImpressora() {
-        try {
-            var prefsService = new PreferenciasService();
+        try (var prefsService = createOrReport(PreferenciasService::new)) {
             var prefs = prefsService.listar();
             if (!prefs.isEmpty()) {
                 var port = prefs.getFirst().getPortaImpressora();
                 if (port != null && !port.isBlank()) return port;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.warn("Não foi possível carregar porta da impressora", e);
         }
         return null;
     }
 
-    private static EmpresaService createEmpresaService() {
+    private static <T> T createOrReport(megalodonte.utils.ThrowingSupplier<T> supplier) {
         try {
-            return new EmpresaService();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return supplier.get();
+        } catch (Exception e) {
+            megalodonte.application.ErrorReporter.handle(e);
+            throw new IllegalStateException(e);
         }
     }
 

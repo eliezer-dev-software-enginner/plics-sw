@@ -69,65 +69,22 @@ public class HomeScreenViewModel {
     final List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
 
     public HomeScreenViewModel(ScreenContext screenContext) {
-        this(createPreferenciasService(), createContaAreceberService(), createContasPagarService(), createVendaService(), createCompraService(), createPedidoService());
         this.screenContext = screenContext;
-    }
-
-    public HomeScreenViewModel(PreferenciasService preferenciasService, ContaAreceberService receitasService, ContasPagarService despesasService, VendaService vendaService, CompraService compraService, PedidoService pedidoService) {
-        this.preferenciasService = preferenciasService;
-        this.receitasService = receitasService;
-        this.despesasService = despesasService;
-        this.vendaService = vendaService;
-        this.compraService = compraService;
-        this.pedidoService = pedidoService;
+        this.preferenciasService = createOrReport(PreferenciasService::new);
+        this.receitasService = createOrReport(ContaAreceberService::new);
+        this.despesasService = createOrReport(ContasPagarService::new);
+        this.vendaService = createOrReport(VendaService::new);
+        this.compraService = createOrReport(CompraService::new);
+        this.pedidoService = createOrReport(PedidoService::new);
         this.onInit();
     }
 
-    private static PreferenciasService createPreferenciasService() {
+    private static <T> T createOrReport(megalodonte.utils.ThrowingSupplier<T> supplier) {
         try {
-            return new PreferenciasService();
+            return supplier.get();
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static ContaAreceberService createContaAreceberService() {
-        try {
-            return new ContaAreceberService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static ContasPagarService createContasPagarService() {
-        try {
-            return new ContasPagarService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static VendaService createVendaService() {
-        try {
-            return new VendaService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static CompraService createCompraService() {
-        try {
-            return new CompraService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static PedidoService createPedidoService() {
-        try {
-            return new PedidoService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            megalodonte.application.ErrorReporter.handle(e);
+            throw new IllegalStateException(e);
         }
     }
 

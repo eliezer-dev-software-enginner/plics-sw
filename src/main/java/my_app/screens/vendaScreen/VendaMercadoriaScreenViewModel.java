@@ -80,59 +80,20 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
     public final Components.InputRef quantidadeRef = new Components.InputRef();
 
     public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
-        this(ctx, createVendaService(), createProdutoService(), createClienteService(), createContaAreceberService());
-    }
-
-    private static EmpresaService createEmpresaService() {
-        try {
-            return new EmpresaService();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public VendaMercadoriaScreenViewModel(ScreenContext ctx, VendaService vendaService, ProdutoService produtoService, ClienteService clienteService, ContaAreceberService contaService) {
         super(ctx);
-        this.vendaService = vendaService;
-        this.produtoService = produtoService;
-        this.clienteService = clienteService;
-        this.contaService = contaService;
-        EmpresaService empresaService = createEmpresaService();
+        this.vendaService = createOrReport(VendaService::new);
+        this.produtoService = createOrReport(ProdutoService::new);
+        this.clienteService = createOrReport(ClienteService::new);
+        this.contaService = createOrReport(ContaAreceberService::new);
+        EmpresaService empresaService = createOrReport(EmpresaService::new);
         this.escPosPrinter = new EscPosPrinter(empresaService, carregarPortaImpressora());
 
         this.onInit();
     }
 
-    private static VendaService createVendaService() {
-        try {
-            return new VendaService();
-        } catch (Exception e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static ProdutoService createProdutoService() {
-        try {
-            return new ProdutoService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static ClienteService createClienteService() {
-        try {
-            return new ClienteService();
-        } catch (Exception e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
-    }
-
     private String carregarPortaImpressora() {
         List<PreferenciasModel> prefs;
-        try (var prefsService = new PreferenciasService()) {
+        try (var prefsService = createOrReport(PreferenciasService::new)) {
             prefs = prefsService.listar();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -142,15 +103,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             if (port != null && !port.isBlank()) return port;
         }
         return null;
-    }
-
-    private static ContaAreceberService createContaAreceberService() {
-        try {
-            return new ContaAreceberService();
-        } catch (Exception e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

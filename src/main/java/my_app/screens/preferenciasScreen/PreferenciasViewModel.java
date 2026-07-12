@@ -32,22 +32,9 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
     private PreferenciasModel prefLoaded;
 
     public PreferenciasViewModel(ScreenContext ctx) {
-        this(ctx, createPreferenciasService());
-    }
-
-    public PreferenciasViewModel(ScreenContext ctx, PreferenciasService preferenciasService) {
         super(ctx);
-        this.preferenciasService = preferenciasService;
+        this.preferenciasService = createOrReport(PreferenciasService::new);
         this.onInit();
-    }
-
-    private static PreferenciasService createPreferenciasService() {
-        try {
-            return new PreferenciasService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
     }
 
     void load() {

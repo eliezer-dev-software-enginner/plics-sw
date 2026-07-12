@@ -86,48 +86,12 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
     public final Components.InputRef quantidadeRef = new Components.InputRef();
 
     public ComprasScreenViewModel(ScreenContext ctx) {
-        this(ctx, createCompraService(), createFornecedorService(), createProdutoService(), createContasPagarService());
-    }
-
-    public ComprasScreenViewModel(ScreenContext ctx, CompraService compraService, FornecedorService fornecedorService, ProdutoService produtoService, ContasPagarService contasPagarService) {
         super(ctx);
-        this.compraService = compraService;
-        this.fornecedorService = fornecedorService;
-        this.produtoService = produtoService;
-        this.contasPagarService = contasPagarService;
+        this.compraService = createOrReport(CompraService::new);
+        this.fornecedorService = createOrReport(FornecedorService::new);
+        this.produtoService = createOrReport(ProdutoService::new);
+        this.contasPagarService = createOrReport(ContasPagarService::new);
         this.onInit();
-    }
-
-    private static CompraService createCompraService() {
-        try {
-            return new CompraService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static FornecedorService createFornecedorService() {
-        try {
-            return new FornecedorService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static ProdutoService createProdutoService() {
-        try {
-            return new ProdutoService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static ContasPagarService createContasPagarService() {
-        try {
-            return new ContasPagarService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

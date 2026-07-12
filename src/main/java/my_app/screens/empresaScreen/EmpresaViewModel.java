@@ -27,13 +27,18 @@ public class EmpresaViewModel {
     final State<String> localPagamento = State.of("");
     final State<String> textoResponsabilidade = State.of("");
 
-    public EmpresaViewModel(ScreenContext ctx) throws SQLException {
-        this(ctx, new EmpresaService());
+    public EmpresaViewModel(ScreenContext ctx) {
+        this.ctx = ctx;
+        this.empresaService = createOrReport(EmpresaService::new);
     }
 
-    public EmpresaViewModel(ScreenContext ctx, EmpresaService empresaService) {
-        this.ctx = ctx;
-        this.empresaService = empresaService;
+    private static <T> T createOrReport(megalodonte.utils.ThrowingSupplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            megalodonte.application.ErrorReporter.handle(e);
+            throw new IllegalStateException(e);
+        }
     }
 
     public void fetchData() {

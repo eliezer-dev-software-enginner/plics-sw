@@ -40,22 +40,9 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     );
 
     public FornecedorScreenViewModel(ScreenContext ctx) {
-        this(ctx, createFornecedorService());
-    }
-
-    public FornecedorScreenViewModel(ScreenContext ctx, FornecedorService fornecedorService) {
         super(ctx);
-        this.fornecedorService = fornecedorService;
+        this.fornecedorService = createOrReport(FornecedorService::new);
         this.onInit();
-    }
-
-    private static FornecedorService createFornecedorService() {
-        try {
-            return new FornecedorService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

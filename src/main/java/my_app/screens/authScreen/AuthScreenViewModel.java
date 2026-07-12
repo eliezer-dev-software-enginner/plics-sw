@@ -37,18 +37,19 @@ public class AuthScreenViewModel {
     private PreferenciasModel prefRecuperada;
 
     public AuthScreenViewModel() {
-        this(createPreferenciasService());
+        this.preferenciasService = createOrReport(PreferenciasService::new);
     }
 
     public AuthScreenViewModel(PreferenciasService preferenciasService) {
         this.preferenciasService = preferenciasService;
     }
 
-    private static PreferenciasService createPreferenciasService() {
+    private static <T> T createOrReport(megalodonte.utils.ThrowingSupplier<T> supplier) {
         try {
-            return new PreferenciasService();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return supplier.get();
+        } catch (Exception e) {
+            megalodonte.application.ErrorReporter.handle(e);
+            throw new IllegalStateException(e);
         }
     }
 

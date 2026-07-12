@@ -22,22 +22,9 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
     final State<String> nome = new State<>("");
 
     public CategoriaScreenViewModel(ScreenContext ctx) {
-        this(ctx, createCategoriaService());
-    }
-
-    public CategoriaScreenViewModel(ScreenContext ctx, CategoriaService categoriaService) {
         super(ctx);
-        this.categoriaService = categoriaService;
+        this.categoriaService = createOrReport(CategoriaService::new);
         this.onInit();
-    }
-
-    private static CategoriaService createCategoriaService() {
-        try {
-            return new CategoriaService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

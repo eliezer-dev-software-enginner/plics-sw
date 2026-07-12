@@ -28,32 +28,10 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
     final State<PedidoModel> pedidoSelecionado = State.of(null);
 
     public PedidosScreenViewModel(ScreenContext ctx) {
-        this(ctx, createPedidoService(), createPedidoItemService());
-    }
-
-    public PedidosScreenViewModel(ScreenContext ctx, PedidoService pedidoService, PedidoItemService pedidoItemService) {
         super(ctx);
-        this.pedidoService = pedidoService;
-        this.pedidoItemService = pedidoItemService;
+        this.pedidoService = createOrReport(PedidoService::new);
+        this.pedidoItemService = createOrReport(PedidoItemService::new);
         onInit();
-    }
-
-    private static PedidoService createPedidoService() {
-        try {
-            return new PedidoService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static PedidoItemService createPedidoItemService() {
-        try {
-            return new PedidoItemService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

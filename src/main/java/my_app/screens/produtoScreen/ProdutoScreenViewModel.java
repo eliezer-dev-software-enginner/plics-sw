@@ -68,56 +68,16 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
     public final State<String> perecivelSelected = new State<>("Não");
 
     public ProdutoScreenViewModel(ScreenContext ctx) {
-        this(ctx, createProdutoService(), createFornecedorService(), createCategoriaService(), createCorService());
-    }
-
-    public ProdutoScreenViewModel(ScreenContext ctx, ProdutoService produtoService, FornecedorService fornecedorService, CategoriaService categoriaService, CorService corService) {
         super(ctx);
-        this.produtoService = produtoService;
-        this.fornecedorService = fornecedorService;
-        this.categoriaService = categoriaService;
-        this.corService = corService;
+        this.produtoService = createOrReport(ProdutoService::new);
+        this.fornecedorService = createOrReport(FornecedorService::new);
+        this.categoriaService = createOrReport(CategoriaService::new);
+        this.corService = createOrReport(CorService::new);
         EventBus.getInstance().subscribe(event -> {
             if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
                 refreshFornecedores();
             }
         });
-    }
-
-    private static ProdutoService createProdutoService() {
-        try {
-            return new ProdutoService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static FornecedorService createFornecedorService() {
-        try {
-            return new FornecedorService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static CategoriaService createCategoriaService() {
-        try {
-            return new CategoriaService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static CorService createCorService() {
-        try {
-            return new CorService();
-        } catch (SQLException e) {
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            throw new RuntimeException(e);
-        }
     }
 
     private void refreshFornecedores() {
