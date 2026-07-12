@@ -28,15 +28,13 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
+public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<VendaModel> {
     private static final Logger log = LoggerFactory.getLogger(VendaMercadoriaScreenViewModel.class);
     private final VendaService vendaService;
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
     private final ContaAreceberService contaService;
     private final EscPosPrinter escPosPrinter;
-
-    final ListState<VendaModel> vendas = ListState.ofEmpty();
 
     final State<LocalDate> dataVenda = State.of(LocalDate.now());
     final State<String> numeroNota = State.of("");
@@ -103,6 +101,17 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
             if (port != null && !port.isBlank()) return port;
         }
         return null;
+    }
+
+    @Override
+    protected boolean matchesSearch(VendaModel model, String query) {
+        return (model.getProduto() != null && contains(model.getProduto().getDescricao(), query))
+                || (model.getCliente() != null && contains(model.getCliente().getNome(), query))
+                || contains(model.getNumeroNota(), query);
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
     }
 
     @Override
@@ -191,32 +200,34 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
         }
     }
 
-    void fetchData() {
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var clienteList = clienteService.listar();
                 var vendaList = vendaService.listar();
                 var produtoList = produtoService.listar();
 
+                for (var venda : vendaList) {
+                    venda.setCliente(clienteList.stream()
+                            .filter(it -> it.getId().equals(venda.getClienteId()))
+                            .findFirst()
+                            .orElse(null));
+                    venda.setProduto(produtoList.stream()
+                            .filter(it -> it.getCodigoBarras().equals(venda.getProdutoCod()))
+                            .findFirst()
+                            .orElse(null));
+                }
+
                 UI.runOnUi(() -> {
                     produtoModelListState.set(produtoList);
+                    clientes.clear();
                     clientes.addAll(clienteList);
                     clienteList.stream()
                             .filter(f -> f.getId() == 1)
                             .findFirst()
                             .ifPresent(clienteSelected::set);
-
-                    for (var venda : vendaList) {
-                        venda.setCliente(clienteList.stream()
-                                .filter(it -> it.getId().equals(venda.getClienteId()))
-                                .findFirst()
-                                .orElse(null));
-                        venda.setProduto(produtoList.stream()
-                                .filter(it -> it.getCodigoBarras().equals(venda.getProdutoCod()))
-                                .findFirst()
-                                .orElse(null));
-                    }
-                    vendas.addAll(vendaList);
+                    allDataList.set(vendaList);
                 });
 
             } catch (Exception e) {
@@ -259,7 +270,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 }
 
                 UI.runOnUi(() -> {
-                    vendas.updateIf(it -> it.getId().equals(selecionado.getId()), it -> selecionado);
+                    allDataList.updateIf(it -> it.getId().equals(selecionado.getId()), it -> selecionado);
                     Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
@@ -289,7 +300,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
 
                 VendaModel finalVenda = salvo;
                 UI.runOnUi(() -> {
-                    vendas.add(finalVenda);
+                    allDataList.add(finalVenda);
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
@@ -313,7 +324,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract {
                 reloadProdutos();
 
                 UI.runOnUi(() -> {
-                    vendas.removeIf(it -> it.getId().equals(vendaId));
+                    allDataList.removeIf(it -> it.getId().equals(vendaId));
                     Components.ShowPopup(ctx, "Venda e contas vinculadas excluídas!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });

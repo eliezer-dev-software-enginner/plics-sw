@@ -20,10 +20,9 @@ import my_app.utils.Utils;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-public class ClienteViewModel extends ViewModelScreenContract {
+public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
     private final ClienteService clienteService;
 
-    final ListState<ClienteModel> clientes = ListState.ofEmpty();
     final State<ClienteModel> clienteSelecionado = State.of(null);
 
     final State<String> nome = new State<>("");
@@ -52,12 +51,19 @@ public class ClienteViewModel extends ViewModelScreenContract {
     public ClienteViewModel(ScreenContext ctx) {
         super(ctx);
         this.clienteService = createOrReport(ClienteService::new);
-        this.onInit();
+        tipoPessoaSelected.subscribe(_ -> cnpjCpf.set(""));
     }
 
     @Override
-    protected void onInit() {
-        tipoPessoaSelected.subscribe(_ -> cnpjCpf.set(""));
+    protected boolean matchesSearch(ClienteModel model, String query) {
+        return contains(model.getNome(), query)
+                || contains(model.getCpfCnpj(), query)
+                || contains(model.getEmail(), query)
+                || contains(model.getCelular(), query);
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
     }
 
     @Override
@@ -127,11 +133,12 @@ public class ClienteViewModel extends ViewModelScreenContract {
         return model;
     }
 
-    void loadClientes() {
+    @Override
+    public void fetchListData(){
         Async.Run(() -> {
             try {
                 var list = clienteService.listar();
-                UI.runOnUi(() -> clientes.set(list));
+                UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
                 e.printStackTrace();
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar clientes: " + e.getMessage()));
@@ -148,7 +155,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
             try {
                 clienteService.excluirById(model.getId());
                 UI.runOnUi(() -> {
-                    clientes.removeIf(it -> it.getId().equals(model.getId()));
+                    allDataList.removeIf(it -> it.getId().equals(model.getId()));
                     Components.ShowPopup(ctx, "Cliente excluído com sucesso");
                     EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
                 });
@@ -175,7 +182,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
                     finalModel.setPessoaFisica(model.getPessoaFisica());
                     finalModel.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
-                        clientes.updateIf(it -> it.getId().equals(finalModel.getId()), it -> finalModel);
+                        allDataList.updateIf(it -> it.getId().equals(finalModel.getId()), it -> finalModel);
                         Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                         clearForm();
                         EventBus.getInstance().publish(EntityEvent.editado(finalModel));
@@ -184,7 +191,7 @@ public class ClienteViewModel extends ViewModelScreenContract {
                     var model = getModelFromFields(new ClienteModel());
                     clienteService.salvar(model);
                     UI.runOnUi(() -> {
-                        clientes.add(model);
+                        allDataList.add(model);
                         Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
                         clearForm();
                         EventBus.getInstance().publish(EntityEvent.criado(model));

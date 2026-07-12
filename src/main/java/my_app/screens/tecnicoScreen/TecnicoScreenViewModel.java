@@ -4,7 +4,6 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.v2.ListState;
 import my_app.db.models.TecnicoModel;
 import my_app.db.services.TecnicoService;
 import my_app.domain.components.Components;
@@ -13,13 +12,11 @@ import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 
 import java.sql.SQLException;
-import java.util.List;
 
-public class TecnicoScreenViewModel extends ViewModelScreenContract {
+public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel> {
 
     private final TecnicoService tecnicoService;
 
-    public final ListState<TecnicoModel> tecnicos = ListState.of(List.of());
     public final State<TecnicoModel> tecnicoSelected = new State<>(null);
     public final State<String> nome = new State<>("");
 
@@ -28,11 +25,21 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
         this.tecnicoService = createOrReport(TecnicoService::new);
     }
 
-    public void loadTecnicos() {
+    @Override
+    protected boolean matchesSearch(TecnicoModel model, String query) {
+        return contains(model.getNome(), query);
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
+    }
+
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var list = tecnicoService.listar();
-                UI.runOnUi(() -> tecnicos.addAll(list));
+                UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar técnicos: " + e.getMessage()));
             }
@@ -52,7 +59,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 EventBus.getInstance().publish(EntityEvent.excluido(model.getId().longValue()));
 
                 UI.runOnUi(() -> {
-                    tecnicos.removeIf(it -> it.getId().equals(model.getId()));
+                    allDataList.removeIf(it -> it.getId().equals(model.getId()));
                     Components.ShowPopup(ctx, "Técnico excluído com sucesso");
                     clearForm();
                 });
@@ -88,7 +95,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 EventBus.getInstance().publish(EntityEvent.criado(salvo));
 
                 UI.runOnUi(() -> {
-                    tecnicos.add(salvo);
+                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Técnico '" + salvo.getNome() + "' cadastrado com sucesso");
                     clearForm();
                 });
@@ -115,7 +122,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
                 atualizado.setDataCriacao(original.getDataCriacao());
 
                 UI.runOnUi(() -> {
-                    tecnicos.updateIf(it -> it.getId().equals(atualizado.getId()), it -> atualizado);
+                    allDataList.updateIf(it -> it.getId().equals(atualizado.getId()), it -> atualizado);
                     Components.ShowPopup(ctx, "Técnico atualizado com sucesso");
                     clearForm();
                 });
@@ -135,5 +142,10 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract {
     public void populateFromModel() {
         if (tecnicoSelected.get() == null) return;
         nome.set(tecnicoSelected.get().getNome());
+    }
+
+    @Override
+    public void onDestroy() throws Exception {
+        this.tecnicoService.close();
     }
 }

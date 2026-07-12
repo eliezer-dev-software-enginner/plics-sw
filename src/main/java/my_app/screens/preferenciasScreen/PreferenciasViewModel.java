@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.List;
 
-public class PreferenciasViewModel extends ViewModelScreenContract {
+public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasModel> {
     private static final Logger log = LoggerFactory.getLogger(PreferenciasViewModel.class);
 
     private final PreferenciasService preferenciasService;
@@ -131,6 +131,16 @@ public class PreferenciasViewModel extends ViewModelScreenContract {
 
     void deletarTodosDados() {
       Components.ShowAlertError("Opção temporariamente indisponível!");
+    }
+
+    @Override
+    protected boolean matchesSearch(PreferenciasModel model, String query) {
+        return false;
+    }
+
+    @Override
+    public void fetchListData() {
+        load();
     }
 
     @Override

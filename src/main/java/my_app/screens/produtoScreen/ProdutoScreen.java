@@ -38,7 +38,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     @Override
     public void onMount() {
-        vm.loadInicial();
+        vm.fetchListData();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     @Override
     public Component table() {
         var simpleTable = new SimpleTable<ProdutoModel>();
-        simpleTable.fromData(vm.produtos)
+        simpleTable.fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", ProdutoModel::getId, 70.0)
@@ -95,6 +95,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .column("Cor", it -> it.getCor() != null ? it.getCor() : "")
                 .column("Tamanho", it -> it.getTamanho() != null ? it.getTamanho() : "")
                 .column("Estoque", ProdutoModel::getEstoque)
+                .column("Est. Mínimo", ProdutoModel::getEstoqueMinimo)
                 .column("Descrição", ProdutoModel::getDescricao)
                 .column("Preço de compra", it -> Utils.toBRLCurrency(it.getPrecoCompra()))
                 .column("Preço de venda", it -> Utils.toBRLCurrency(it.getPrecoVenda()))
@@ -182,6 +183,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .c_child(new Row(rowProps)
                         .r_child(Components.TextAreaColumn("Observações", vm.observacoes, ""))
                         .r_child(Components.InputColumnNumeric("Estoque", vm.estoque, ""))
+                        .r_child(Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, ""))
                 );
     }
 
@@ -206,6 +208,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .c_child(Components.TextWithDetails("Tipo de unidade: ", model.getUnidade()))
                 .c_child(Components.TextWithDetails("Marca: ", model.getMarca()))
                 .c_child(Components.TextWithDetails("Estoque: ", model.getEstoque()))
+                .c_child(Components.TextWithDetails("Estoque Mínimo: ", model.getEstoqueMinimo()))
                 .c_child(Components.TextWithDetails("Preço de compra (R$): ", Utils.toBRLCurrency(model.getPrecoCompra())))
                 .c_child(Components.TextWithDetails("Preço de venda (R$): ", Utils.toBRLCurrency(model.getPrecoVenda())))
                 .c_child(Components.TextWithDetails("Ganho líquido estimado (R$): ", Utils.toBRLCurrency(model.getTotalLiquido())))

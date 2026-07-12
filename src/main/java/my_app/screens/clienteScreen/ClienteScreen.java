@@ -34,7 +34,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     @Override
     public void onMount() {
-        vm.loadClientes();
+        vm.fetchListData();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
     @Override
     public Component table() {
         var simpleTable = new SimpleTable<ClienteModel>();
-        simpleTable.fromData(vm.clientes)
+        simpleTable.fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", ClienteModel::getId)

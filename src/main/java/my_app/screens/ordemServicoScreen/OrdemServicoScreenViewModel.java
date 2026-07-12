@@ -4,8 +4,8 @@ import megalodonte.ComputedState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
+import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.OrdemServicoModel;
 import my_app.db.models.TecnicoModel;
@@ -24,15 +24,14 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
+public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemServicoModel> {
 
     private final OrdemServicoService service;
     private final ClienteService clienteService;
     private final TecnicoService tecnicoService;
 
-    public final ListState<OrdemServicoModel> ordensDeServico = ListState.of(List.of());
-    public final ListState<ClienteModel> clientes = ListState.of(List.of());
-    public final ListState<TecnicoModel> tecnicos = ListState.of(List.of());
+    public final ListState<ClienteModel> clientes = ListState.ofEmpty();
+    public final ListState<TecnicoModel> tecnicos = ListState.ofEmpty();
 
     public final State<ClienteModel> clienteSelected = State.of(null);
     public final State<TecnicoModel> tecnicoSelected = State.of(null);
@@ -70,7 +69,20 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
         });
     }
 
-    public void loadInicial() {
+    @Override
+    protected boolean matchesSearch(OrdemServicoModel model, String query) {
+        return contains(model.getEquipamento(), query)
+                || contains(model.getStatus(), query)
+                || (model.getCliente() != null && contains(model.getCliente().getNome(), query))
+                || (model.getTecnico() != null && contains(model.getTecnico().getNome(), query));
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
+    }
+
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var oss = service.listar();
@@ -82,8 +94,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
                 final var clientesCopy = List.copyOf(clientesList);
 
                 UI.runOnUi(() -> {
-                    ordensDeServico.clear();
-                    ordensDeServico.addAll(oss);
+                    allDataList.set(oss);
                     clientes.addAll(clientesCopy);
                     if (!clientesCopy.isEmpty()) {
                         clienteSelected.set(clientesCopy.getFirst());
@@ -163,7 +174,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
             try {
                 service.excluir(selected.getId());
                 UI.runOnUi(() -> {
-                    ordensDeServico.removeIf(os -> os.getId().equals(selected.getId()));
+                    allDataList.removeIf(os -> os.getId().equals(selected.getId()));
                     Components.ShowPopup(ctx, "Ordem de serviço excluída com sucesso!");
                     clearForm();
                 });
@@ -187,7 +198,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
                 salvo.setTecnico(tecnicoSelected.get());
 
                 UI.runOnUi(() -> {
-                    ordensDeServico.add(salvo);
+                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Ordem de serviço salva com sucesso!");
                     clearForm();
                 });
@@ -208,7 +219,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract {
                 selected.setTecnico(tecnicoSelected.get());
 
                 UI.runOnUi(() -> {
-                    ordensDeServico.updateIf(os -> os.getId().equals(selected.getId()), os -> selected);
+                    allDataList.updateIf(os -> os.getId().equals(selected.getId()), os -> selected);
                     Components.ShowPopup(ctx, "Ordem de serviço atualizada com sucesso!");
                     clearForm();
                 });

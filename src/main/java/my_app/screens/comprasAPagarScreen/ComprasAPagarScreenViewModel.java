@@ -5,7 +5,6 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.v2.ListState;
 import my_app.db.models.ContasPagarModel;
 import my_app.db.models.FornecedorModel;
 import my_app.db.services.ContasPagarService;
@@ -20,12 +19,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
+public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<ContasPagarModel> {
 
     private final ContasPagarService contaService;
     private final FornecedorService fornecedorService;
-
-    public final ListState<ContasPagarModel> contas = ListState.of(List.of());
 
     public final State<String> descricao = State.of("");
     public final State<String> valorOriginal = State.of("0");
@@ -67,7 +64,18 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
         this.fornecedorService = createOrReport(FornecedorService::new);
     }
 
-    public void loadInicial() {
+    @Override
+    protected boolean matchesSearch(ContasPagarModel model, String query) {
+        return contains(model.getDescricao(), query)
+                || (model.getFornecedor() != null && contains(model.getFornecedor().getNome(), query));
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
+    }
+
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var contasList = contaService.listar();
@@ -85,7 +93,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
                 final var fornecedoresCopy = List.copyOf(fornecedoresList);
 
                 UI.runOnUi(() -> {
-                    contas.addAll(contasList);
+                    allDataList.set(contasList);
                     fornecedores.set(fornecedoresCopy);
                     if (!fornecedoresCopy.isEmpty()) {
                         fornecedorSelected.set(fornecedoresCopy.getFirst());
@@ -110,8 +118,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
                 attachFornecedores(contasFiltradas);
 
                 UI.runOnUi(() -> {
-                    contas.clear();
-                    contas.addAll(contasFiltradas);
+                    allDataList.set(contasFiltradas);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -126,8 +133,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
                 attachFornecedores(contasVencidas);
 
                 UI.runOnUi(() -> {
-                    contas.clear();
-                    contas.addAll(contasVencidas);
+                    allDataList.set(contasVencidas);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -198,7 +204,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
             try {
                 contaService.excluir(selected.getId());
                 UI.runOnUi(() -> {
-                    contas.removeIf(c -> c.getId().equals(selected.getId()));
+                    allDataList.removeIf(c -> c.getId().equals(selected.getId()));
                     Components.ShowPopup(ctx, "Conta excluída com sucesso!");
                     clearForm();
                 });
@@ -240,7 +246,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
                 }
 
                 UI.runOnUi(() -> {
-                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
                     Components.ShowPopup(ctx, "Pagamento registrado com sucesso!");
                     valorPagamento.set("0");
                     modoPagamento.set(false);
@@ -271,7 +277,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
                 }
 
                 UI.runOnUi(() -> {
-                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
                     Components.ShowPopup(ctx, "Conta quitada com sucesso!");
                 });
             } catch (Exception e) {
@@ -289,7 +295,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
                 salvo.setFornecedor(fornecedorSelected.get());
 
                 UI.runOnUi(() -> {
-                    contas.add(salvo);
+                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
                     clearForm();
                 });
@@ -309,7 +315,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract {
                 selected.setFornecedor(fornecedorSelected.get());
 
                 UI.runOnUi(() -> {
-                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
+                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
                     Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                     clearForm();
                 });

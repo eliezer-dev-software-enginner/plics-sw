@@ -23,7 +23,7 @@ public class PedidosScreen implements ScreenComponent {
 
     @Override
     public void onMount() {
-        vm.loadPedidos();
+        vm.fetchListData();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class PedidosScreen implements ScreenComponent {
 
     Component pedidosTable() {
         return new SimpleTable<PedidoModel>()
-                .fromData(vm.pedidos)
+                .fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID",           it -> "#" + it.getId())

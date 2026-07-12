@@ -32,7 +32,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
 
     @Override
     public void onMount() {
-        vm.loadInicial();
+        vm.fetchListData();
     }
 
     @Override
@@ -44,6 +44,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
     public Component render() {
         var mainContent = new Container(new ContainerProps().bgColor(theme.colors().background()))
                 .children(
+                        Components.searchInput(viewModel().searchState, ""),
                         form(),
                         new SpacerVertical(30),
                         paymentSection(),
@@ -164,7 +165,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
     @Override
     public Component table() {
         var simpleTable = new SimpleTable<ContasPagarModel>();
-        simpleTable.fromData(vm.contas)
+        simpleTable.fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", it -> it.getId() != null ? "#" + it.getId() : "")

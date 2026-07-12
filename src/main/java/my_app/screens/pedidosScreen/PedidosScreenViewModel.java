@@ -4,7 +4,6 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.v2.ListState;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.db.services.PedidoItemService;
@@ -16,15 +15,14 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
-public class PedidosScreenViewModel extends ViewModelScreenContract {
+public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel> {
 
     private static final Logger log = LoggerFactory.getLogger(PedidosScreenViewModel.class);
 
     private final PedidoService pedidoService;
     private final PedidoItemService pedidoItemService;
 
-    final ListState<PedidoModel> pedidos = ListState.ofEmpty();
-    final ListState<PedidoItemModel> itensDoPedidoSelecionado = ListState.ofEmpty();
+    final megalodonte.v2.ListState<PedidoItemModel> itensDoPedidoSelecionado = megalodonte.v2.ListState.ofEmpty();
     final State<PedidoModel> pedidoSelecionado = State.of(null);
 
     public PedidosScreenViewModel(ScreenContext ctx) {
@@ -32,6 +30,16 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
         this.pedidoService = createOrReport(PedidoService::new);
         this.pedidoItemService = createOrReport(PedidoItemService::new);
         onInit();
+    }
+
+    @Override
+    protected boolean matchesSearch(PedidoModel model, String query) {
+        return contains(String.valueOf(model.getClienteId()), query)
+                || contains(model.getFormaPagamento(), query);
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
     }
 
     @Override
@@ -61,11 +69,12 @@ public class PedidosScreenViewModel extends ViewModelScreenContract {
     public void handleClickMenuDelete() {
     }
 
-    void loadPedidos() {
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var list = pedidoService.listar();
-                UI.runOnUi(() -> pedidos.set(list));
+                UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
                 log.error("Erro ao carregar pedidos", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar pedidos: " + e.getMessage()));

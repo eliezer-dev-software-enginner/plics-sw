@@ -90,6 +90,18 @@
 - [x] **`PDVScreenViewModel.imprimirNota()`**: busca itens/cliente/empresa e imprime via `EscPosPrinter`.
 - [x] **Saída**: impressora térmica padrão (`PrinterOutputStream`) com fallback para arquivo `.bin`.
 
+## Concluído (Estoque mínimo — 2026-07-12)
+- [x] **Migration V29**: `ALTER TABLE produtos ADD COLUMN estoque_minimo REAL DEFAULT 0`
+- [x] **ProdutoModel**: campo `estoqueMinimo` (BigDecimal)
+- [x] **ProdutoScreenViewModel**: state `estoqueMinimo`, preenchido em `fillModelFromForm`, `populateFromModel`, resetado em `clearForm`, copiado em `asyncAtualizar`
+- [x] **ProdutoScreen**: input numérico no formulário, coluna na tabela, detalhe no modal
+
+## Concluído (Busca/Filtro global — 2026-07-12)
+- [x] **`ViewModelScreenContract<Model>`**: adicionado `searchState`, `allDataList`, `filteredList`, `matchesSearch()`, `fetchListData()`
+- [x] **`ContratoTelaCrudV3.mainView()`**: adicionado `Components.searchInput()` no topo
+- [x] **9 telas refatoradas**: Categoria, Tecnico, Fornecedor, Compras, VendaMercadoria, ContasAReceber, ComprasAPagar, OrdemServico, Pedidos
+- [x] **Tabelas**: todas usam `vm.filteredList` em vez de listas locais
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

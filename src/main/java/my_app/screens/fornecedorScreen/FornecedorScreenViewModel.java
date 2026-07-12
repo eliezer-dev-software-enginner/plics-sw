@@ -1,7 +1,6 @@
 package my_app.screens.fornecedorScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.v2.ListState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
@@ -18,10 +17,9 @@ import my_app.utils.Utils;
 
 import java.sql.SQLException;
 
-public class FornecedorScreenViewModel extends ViewModelScreenContract {
+public class FornecedorScreenViewModel extends ViewModelScreenContract<FornecedorModel> {
     private final FornecedorService fornecedorService;
 
-    public final ListState<FornecedorModel> fornecedores = ListState.ofEmpty();
     public final State<FornecedorModel> fornecedorSelected = new State<>(null);
 
     final State<String> nome = State.of("");
@@ -46,6 +44,30 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
     }
 
     @Override
+    protected boolean matchesSearch(FornecedorModel model, String query) {
+        return contains(model.getNome(), query)
+                || contains(model.getCpfCnpj(), query)
+                || contains(model.getEmail(), query)
+                || contains(model.getCelular(), query);
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
+    }
+
+    @Override
+    public void fetchListData() {
+        Async.Run(() -> {
+            try {
+                final var list = fornecedorService.listar();
+                UI.runOnUi(() -> allDataList.set(list));
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar fornecedores: " + e.getMessage()));
+            }
+        });
+    }
+
+    @Override
     public void populateFromModel() {
         final var data = fornecedorSelected.get();
         if (data != null) {
@@ -58,18 +80,6 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
             enderecoState.get().populateFromFornecedorModel(data);
             observacao.set(data.getObservacao());
         }
-    }
-
-    public void loadFornecedores() {
-        Async.Run(() -> {
-            try {
-                fornecedores.clear();
-                final var list = fornecedorService.listar();
-                UI.runOnUi(() -> fornecedores.addAll(list));
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar fornecedores: " + e.getMessage()));
-            }
-        });
     }
 
     @Override
@@ -144,7 +154,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
                 atualizado.setDataCriacao(selecionado.getDataCriacao());
 
                 UI.runOnUi(() -> {
-                    fornecedores.updateIf(f -> f.getId().equals(atualizado.getId()), f -> atualizado);
+                    allDataList.updateIf(f -> f.getId().equals(atualizado.getId()), f -> atualizado);
                     Components.ShowPopup(ctx, "Fornecedor atualizado com sucesso");
                     clearForm();
                     EventBus.getInstance().publish(EntityEvent.editado(atualizado));
@@ -176,7 +186,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
                 var salvo = fornecedorService.salvar(model);
 
                 UI.runOnUi(() -> {
-                    fornecedores.add(salvo);
+                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Fornecedor cadastrado com sucesso");
                     clearForm();
                     EventBus.getInstance().publish(EntityEvent.criado(salvo));
@@ -195,7 +205,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract {
             try {
                 fornecedorService.excluirById(fornecedorModel.getId());
                 UI.runOnUi(() -> {
-                    fornecedores.removeIf(it -> it.getId().equals(fornecedorModel.getId()));
+                    allDataList.removeIf(it -> it.getId().equals(fornecedorModel.getId()));
                     Components.ShowPopup(ctx, "Fornecedor excluido com sucesso");
                     EventBus.getInstance().publish(EntityEvent.excluido(fornecedorModel.getId()));
                 });

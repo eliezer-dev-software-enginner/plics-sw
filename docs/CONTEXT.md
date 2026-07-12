@@ -53,6 +53,18 @@
 
 ## Últimas alterações
 
+### 2026-07-12: Estoque mínimo no ProdutoScreen
+- **Migration V29**: adicionada coluna `estoque_minimo REAL DEFAULT 0` à tabela `produtos`
+- **`ProdutoModel`**: adicionado campo `estoqueMinimo` (BigDecimal)
+- **`ProdutoScreenViewModel`**: state `estoqueMinimo`, preenchido em `fillModelFromForm`, `populateFromModel`, resetado em `clearForm`, copiado em `asyncAtualizar`
+- **`ProdutoScreen`**: input numérico no formulário, coluna na tabela, detalhe no modal
+
+### 2026-07-12: Busca/Filtro global em todas as telas CRUD
+- **`ViewModelScreenContract<Model>`**: adicionado `searchState`, `allDataList`, `filteredList`, `matchesSearch()` abstrato, `fetchListData()` abstrato
+- **Padrão**: cada ViewModel agora declara campos `matchesSearch()` e `fetchListData()`, substituindo listas locais por `allDataList`/`filteredList`
+- **`Components.searchInput()`**: adicionado ao topo das telas que usam `mainView()` e às telas com `render()` customizado
+- **Screens refatoradas**: Categoria, Tecnico, Fornecedor, Compras, VendaMercadoria, ContasAReceber, ComprasAPagar, OrdemServico, Pedidos
+
 ### 2026-07-08: Substituição do jSerialComm por JSSC
 - **Problema**: jSerialComm 2.10.4 falhava ao extrair DLL nativa (Acesso negado + DLL ARM64 em CPU AMD64).
 - **Solução**: Trocado para `io.github.java-native:jssc:2.10.2` (JSSC).

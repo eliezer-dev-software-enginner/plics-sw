@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ProdutoScreenViewModel extends ViewModelScreenContract {
+public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel> {
 
     private final ProdutoService produtoService;
     private final FornecedorService fornecedorService;
@@ -34,7 +34,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
 
     public final ListState<CorModel> cores = ListState.ofEmpty();
 
-    public final ListState<ProdutoModel> produtos = ListState.of(List.of());
     public final State<String> codigoBarras = new State<>("");
     public final State<String> descricao = new State<>("");
     public final State<String> precoCompra = new State<>("0");
@@ -61,6 +60,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
 
     public final State<String> observacoes = new State<>("");
     public final State<String> estoque = new State<>("0");
+    public final State<String> estoqueMinimo = new State<>("0");
     public final State<LocalDate> validade = State.of(null);
 
     public final State<String> imagem = new State<>("/assets/produto-generico.png");
@@ -80,6 +80,18 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         });
     }
 
+    @Override
+    protected boolean matchesSearch(ProdutoModel model, String query) {
+        return contains(model.getDescricao(), query)
+                || contains(model.getCodigoBarras(), query)
+                || contains(model.getMarca(), query)
+                || (model.getCategoria() != null && contains(model.getCategoria().getNome(), query));
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
+    }
+
     private void refreshFornecedores() {
         Async.Run(() -> {
             try {
@@ -94,7 +106,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         });
     }
 
-    public void loadInicial() {
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var produtosList = produtoService.listar();
@@ -103,7 +116,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 var coresList = corService.listar();
 
                 UI.runOnUi(() -> {
-                    this.produtos.set(produtosList);
+                    this.allDataList.set(produtosList);
                     this.cores.set(coresList);
                     this.categorias.set(categoriasList);
                     this.categoriaSelected.set(categoriasList.isEmpty() ? null : categoriasList.getFirst());
@@ -142,7 +155,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
             try {
                 produtoService.excluirById(produtoModel.getId());
                 UI.runOnUi(() -> {
-                    produtos.removeIf(it -> it.getId().equals(produtoModel.getId()));
+                    allDataList.removeIf(it -> it.getId().equals(produtoModel.getId()));
                     clearForm();
                     Components.ShowPopup(ctx, "Produto excluído com sucesso");
                 });
@@ -194,6 +207,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 atualizado.setCategoriaId(selecionado.getCategoriaId());
                 atualizado.setFornecedorId(selecionado.getFornecedorId());
                 atualizado.setEstoque(selecionado.getEstoque());
+                atualizado.setEstoqueMinimo(selecionado.getEstoqueMinimo());
                 atualizado.setObservacoes(selecionado.getObservacoes());
                 atualizado.setImagem(selecionado.getImagem());
                 atualizado.setMarca(selecionado.getMarca());
@@ -209,7 +223,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 atualizado.setFornecedor(selecionado.getFornecedor());
 
                 UI.runOnUi(() -> {
-                    this.produtos.updateIf(p -> p.getId().equals(atualizado.getId()), p -> atualizado);
+                    this.allDataList.updateIf(p -> p.getId().equals(atualizado.getId()), p -> atualizado);
                     Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
                     clearForm();
                 });
@@ -234,7 +248,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
                 salvo.setFornecedor(fornecedorSelected.get());
 
                 UI.runOnUi(() -> {
-                    produtos.add(salvo);
+                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
                     clearForm();
                 });
@@ -264,6 +278,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         model.setGarantia(garantia.get());
         model.setComissao(comissao.get());
         model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
+        var estoqueMinimoField = estoqueMinimo.get();
+        model.setEstoqueMinimo(estoqueMinimoField == null || estoqueMinimoField.trim().isEmpty() ? BigDecimal.ZERO : new BigDecimal(estoqueMinimoField));
     }
 
     @Override
@@ -282,6 +298,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         modelo.set("");
         unidadeSelected.set("UN");
         estoque.set("0");
+        estoqueMinimo.set("0");
         validade.set(null);
         observacoes.set("");
         imagem.set("/assets/produto-generico.png");
@@ -308,6 +325,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract {
         modelo.set(model.getModelo());
         unidadeSelected.set(model.getUnidade());
         estoque.set(Utils.quantidadeTratada(model.getEstoque()));
+        estoqueMinimo.set(Utils.quantidadeTratada(model.getEstoqueMinimo()));
 
         validade.set(model.getValidade() != null ? DateUtils.millisParaLocalDate(model.getValidade()) : null);
         perecivelSelected.set(model.getValidade() != null && model.getValidade() > 0 ? "Sim" : "Não");

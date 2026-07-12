@@ -27,7 +27,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     public void onMount() {
-        vm.loadFornecedores();
+        vm.fetchListData();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     @Override
     public Component table() {
         return new SimpleTable<FornecedorModel>()
-                .fromData(vm.fornecedores)
+                .fromData(vm.filteredList)
                 .header().columns()
                 .column("ID", FornecedorModel::getId)
                 .column("Nome", FornecedorModel::getNome)

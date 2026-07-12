@@ -1,5 +1,71 @@
 # Decisões Arquiteturais
 
+## 2026-07-12: Estoque mínimo no ProdutoScreen
+
+**Problema:** Não havia como definir um estoque mínimo para produtos. O sistema não alertava quando o estoque estava baixo.
+
+**Decisão:**
+1. Migration V29: `ALTER TABLE produtos ADD COLUMN estoque_minimo REAL DEFAULT 0`
+2. `ProdutoModel`: adicionado campo `estoqueMinimo` (BigDecimal) com `@Column(name = "estoque_minimo")`
+3. `ProdutoScreenViewModel`: state `estoqueMinimo` (String), preenchido em `fillModelFromForm`, `populateFromModel`, resetado em `clearForm`, copiado em `asyncAtualizar`
+4. `ProdutoScreen`: input numérico "Estoque Mínimo" no formulário, coluna "Est. Mínimo" na tabela, detalhe no modal
+
+**Arquivos alterados:**
+- `src/main/resources/flyway_migrations/V29__add_estoque_minimo_produtos.sql` (novo)
+- `src/main/java/my_app/db/models/ProdutoModel.java` (+estoqueMinimo)
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreenViewModel.java` (+state, fillModel, clearForm, populate, asyncAtualizar)
+- `src/main/java/my_app/screens/produtoScreen/ProdutoScreen.java` (+input, coluna, detalhe)
+
+---
+
+## 2026-07-12: Busca/Filtro global em todas as telas CRUD
+
+**Problema:** Não havia como filtrar listas nas telas CRUD. Usuários com muitos registros precisavam rolar manualmente para encontrar itens específicos.
+
+**Causa raiz:** `ViewModelScreenContract` não tinha suporte a busca. Cada ViewModel usava sua própria `ListState` local sem mecanismo de filtro integrado.
+
+**Decisão:**
+1. `ViewModelScreenContract<Model>`: adicionado `searchState`, `allDataList`, `filteredList`, `matchesSearch(String)` (abstrato), `fetchListData()` (abstrato)
+2. `ContratoTelaCrudV3.mainView()`: adicionado `Components.searchInput(viewModel().searchState, "")` no topo do layout
+3. Cada ViewModel implementa `matchesSearch()` (busca por campos relevantes) e `fetchListData()` (carrega dados do banco)
+4. Telas com `render()` customizado (ComprasAPagar, OrdemServico, ContasAReceber) recebem `searchInput()` manualmente
+5. Tabelas passam a usar `vm.filteredList` em vez de listas locais
+
+**Telas refatoradas:**
+- CategoriaScreenViewModel: busca por nome
+- TecnicoScreenViewModel: busca por nome
+- FornecedorScreenViewModel: busca por nome, cpfCnpj, email, celular
+- ComprasScreenViewModel: busca por produto descricao, fornecedor nome, numeroNota
+- VendaMercadoriaScreenViewModel: busca por produto descricao, cliente nome, numeroNota
+- ContasAReceberScreenViewModel: busca por descricao, cliente nome
+- ComprasAPagarScreenViewModel: busca por descricao, fornecedor nome
+- OrdemServicoScreenViewModel: busca por equipamento, status, cliente nome, tecnico nome
+- PedidosScreenViewModel: busca por clienteId, formaPagamento
+
+**Arquivos alterados:**
+- `src/main/java/my_app/domain/ViewModelScreenContract.java` (+searchState, allDataList, filteredList, matchesSearch, fetchListData)
+- `src/main/java/my_app/domain/ContratoTelaCrudV3.java` (+searchInput no mainView)
+- `src/main/java/my_app/screens/categoriaScreen/CategoriaScreenViewModel.java`
+- `src/main/java/my_app/screens/categoriaScreen/CategoriaScreen.java`
+- `src/main/java/my_app/screens/tecnicoScreen/TecnicoScreenViewModel.java`
+- `src/main/java/my_app/screens/tecnicoScreen/TecnicoScreen.java`
+- `src/main/java/my_app/screens/fornecedorScreen/FornecedorScreenViewModel.java`
+- `src/main/java/my_app/screens/fornecedorScreen/FornecedorScreen.java`
+- `src/main/java/my_app/screens/comprasScreen/ComprasScreenViewModel.java`
+- `src/main/java/my_app/screens/comprasScreen/ComprasScreen.java`
+- `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreenViewModel.java`
+- `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreen.java`
+- `src/main/java/my_app/screens/contasAReceberScreen/ContasAReceberScreenViewModel.java`
+- `src/main/java/my_app/screens/contasAReceberScreen/ContasAReceberScreen.java`
+- `src/main/java/my_app/screens/comprasAPagarScreen/ComprasAPagarScreenViewModel.java`
+- `src/main/java/my_app/screens/comprasAPagarScreen/ComprasAPagarScreen.java`
+- `src/main/java/my_app/screens/ordemServicoScreen/OrdemServicoScreenViewModel.java`
+- `src/main/java/my_app/screens/ordemServicoScreen/OrdemServicoScreen.java`
+- `src/main/java/my_app/screens/pedidosScreen/PedidosScreenViewModel.java`
+- `src/main/java/my_app/screens/pedidosScreen/PedidosScreen.java`
+
+---
+
 ## 2026-07-11: Correção — falha de impressão ESC/POS no MSI empacotado (jdk.charsets ausente no jlink)
 
 **Problema:** Cliente com impressora térmica EPSON TM-T20X não conseguia imprimir notas de venda. Jobs ficavam presos na fila de impressão do Windows (visível como "Java Printing" com um deles em estado "Erro - Impressão"). Logs via Telegram revelaram `UnsupportedCharsetException: cp860`, lançada por `EscPos.setCharacterCodeTable(CP860_Portuguese)` (lib `escpos-coffee`). O erro só ocorria no MSI empacotado — nunca em `gradle run`.

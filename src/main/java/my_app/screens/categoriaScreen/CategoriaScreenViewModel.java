@@ -4,20 +4,17 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.v2.ListState;
 import my_app.db.models.CategoriaModel;
 import my_app.db.services.CategoriaService;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 
 import java.sql.SQLException;
-import java.util.List;
 
-public class CategoriaScreenViewModel extends ViewModelScreenContract {
+public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaModel> {
 
     private final CategoriaService categoriaService;
 
-    final ListState<CategoriaModel> categorias = ListState.of(List.of());
     final State<CategoriaModel> categoriaSelecionada = State.of(null);
     final State<String> nome = new State<>("");
 
@@ -28,23 +25,30 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
     }
 
     @Override
-    public void populateFromModel() {
-        var data = categoriaSelecionada.get();
-        if (data != null) nome.set(data.getNome());
+    protected boolean matchesSearch(CategoriaModel model, String query) {
+        return contains(model.getNome(), query);
     }
 
-    void loadCategorias() {
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
+    }
+
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var list = categoriaService.listar();
-                UI.runOnUi(() -> {
-                    categorias.clear();
-                    categorias.addAll(list);
-                });
+                UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar categorias"));
             }
         });
+    }
+
+    @Override
+    public void populateFromModel() {
+        var data = categoriaSelecionada.get();
+        if (data != null) nome.set(data.getNome());
     }
 
     @Override
@@ -57,7 +61,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
                     try {
                         categoriaService.excluirById(model.getId());
                         UI.runOnUi(() -> {
-                            categorias.removeIf(it -> it.getId().equals(model.getId()));
+                            allDataList.removeIf(it -> it.getId().equals(model.getId()));
                             Components.ShowPopup(ctx, "Categoria excluída com sucesso");
                         });
                     } catch (Exception e) {
@@ -82,7 +86,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
                     atualizada.setNome(model.getNome());
                     atualizada.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
-                        categorias.updateIf(it -> it.getId().equals(atualizada.getId()), it -> atualizada);
+                        allDataList.updateIf(it -> it.getId().equals(atualizada.getId()), it -> atualizada);
                         Components.ShowPopup(ctx, "Categoria atualizada com sucesso");
                         clearForm();
                     });
@@ -91,7 +95,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract {
                     model.setNome(nome.get().trim());
                     var salvo = categoriaService.salvar(model);
                     UI.runOnUi(() -> {
-                        categorias.add(salvo);
+                        allDataList.add(salvo);
                         Components.ShowPopup(ctx, "Categoria cadastrada com sucesso");
                         clearForm();
                     });

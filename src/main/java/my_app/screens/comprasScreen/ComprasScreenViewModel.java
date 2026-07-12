@@ -31,16 +31,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ComprasScreenViewModel extends ViewModelScreenContract {
+public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel> {
 
     private static final Logger log = LoggerFactory.getLogger(ComprasScreenViewModel.class);
     private final CompraService compraService;
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
     private final ContasPagarService contasPagarService;
-
-    // --- Lista principal ---
-    final ListState<CompraModel> compras = ListState.ofEmpty();
 
     // --- Form states ---
     final State<String> numeroNota = State.of("");
@@ -62,7 +59,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
 
     final State<LocalDate> dataValidade = State.of(null);
 
-    // --- fornecedores ---
+    // --- fornecedores (para o select do form) ---
     final ListState<FornecedorModel> fornecedores = ListState.ofEmpty();
     final State<FornecedorModel> fornecedorSelected = State.of(null);
 
@@ -92,6 +89,17 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
         this.produtoService = createOrReport(ProdutoService::new);
         this.contasPagarService = createOrReport(ContasPagarService::new);
         this.onInit();
+    }
+
+    @Override
+    protected boolean matchesSearch(CompraModel model, String query) {
+        return (model.getProdutoModel() != null && contains(model.getProdutoModel().getDescricao(), query))
+                || (model.getFornecedor() != null && contains(model.getFornecedor().getNome(), query))
+                || contains(model.getNumeroNota(), query);
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
     }
 
     @Override
@@ -200,37 +208,38 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                 : null);
     }
 
-    public void fetchData() {
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var fornecedorModelList = fornecedorService.listar();
-                fornecedores.addAll(fornecedorModelList);
                 var listCompras = compraService.listar();
                 var produtoList = produtoService.listar();
 
+                for (CompraModel compra : listCompras) {
+                    FornecedorModel fornecedor = fornecedorModelList.stream()
+                            .filter(f -> f.getId().equals(compra.getFornecedorId()))
+                            .findFirst()
+                            .orElse(null);
+                    ProdutoModel produtoModel = produtoList.stream()
+                            .filter(f -> f.getCodigoBarras().equals(compra.getProdutoCod()))
+                            .findFirst()
+                            .orElse(null);
+
+                    compra.setFornecedor(fornecedor);
+                    compra.setProdutoModel(produtoModel);
+                }
+
                 UI.runOnUi(() -> {
                     produtoModelListState.set(produtoList);
+                    fornecedores.clear();
+                    fornecedores.addAll(fornecedorModelList);
                     if (!fornecedorModelList.isEmpty()) {
                         fornecedorModelList.stream().filter(f -> f.getId() == 1)
                                 .findFirst()
                                 .ifPresent(fornecedorSelected::set);
                     }
-
-                    for (CompraModel compra : listCompras) {
-                        FornecedorModel fornecedor = fornecedorModelList.stream()
-                                .filter(f -> f.getId().equals(compra.getFornecedorId()))
-                                .findFirst()
-                                .orElse(null);
-                        ProdutoModel produtoModel = produtoList.stream()
-                                .filter(f -> f.getCodigoBarras().equals(compra.getProdutoCod()))
-                                .findFirst()
-                                .orElse(null);
-
-                        compra.setFornecedor(fornecedor);
-                        compra.setProdutoModel(produtoModel);
-                    }
-
-                    compras.addAll(listCompras);
+                    allDataList.set(listCompras);
                 });
 
             } catch (Exception e) {
@@ -271,7 +280,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                     UI.runOnUi(() -> {
                         Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
                         modelAtualizada.setFornecedor(fornecedorSelected.get());
-                        compras.updateIf(it -> it.getId() == selecionado.getId(), it -> modelAtualizada);
+                        allDataList.updateIf(it -> it.getId() == selecionado.getId(), it -> modelAtualizada);
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                         atualizarEstoqueAposOperacao(dto.produtoCod(), dto.quantidade());
                         reloadProdutos();
@@ -310,7 +319,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                     UI.runOnUi(() -> {
                         IO.println("compra foi salva!");
                         compraSalva.setFornecedor(fornecedorSelected.get());
-                        compras.add(compraSalva);
+                        allDataList.add(compraSalva);
                         Components.ShowPopup(ctx, "Sua compra de mercadoria foi salva com sucesso!");
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                         reloadProdutos();
@@ -351,7 +360,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract {
                     removerEstoqueProduto(data.getProdutoCod(), data.getQuantidade());
 
                     UI.runOnUi(() -> {
-                        compras.removeIf(it -> it.getId() == compraId);
+                        allDataList.removeIf(it -> it.getId() == compraId);
                         Components.ShowPopup(ctx, "Compra e contas vinculadas excluídas com sucesso!");
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     });

@@ -30,7 +30,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     @Override
     public void onMount() {
-        vm.loadInicial();
+        vm.fetchListData();
     }
 
     @Override
@@ -42,6 +42,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     public Component render() {
         var mainContent = new Container(new ContainerProps().bgColor(theme.colors().background()))
                 .children(
+                        Components.searchInput(viewModel().searchState, ""),
                         form(),
                         new SpacerVertical(30),
                         table()
@@ -96,7 +97,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     @Override
     public Component table() {
         return new SimpleTable<OrdemServicoModel>()
-                .fromData(vm.ordensDeServico)
+                .fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", it -> it.getId() != null ? "#" + it.getId() : "", (double) 90)

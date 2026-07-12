@@ -5,7 +5,6 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.v2.ListState;
 import my_app.db.models.ContaAreceberModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.ContaAreceberService;
@@ -23,12 +22,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
+public class ContasAReceberScreenViewModel extends ViewModelScreenContract<ContaAreceberModel> {
 
     private final ContaAreceberService contaService;
     private final ClienteService clienteService;
-
-    public final ListState<ContaAreceberModel> contas = ListState.of(List.of());
 
     public final State<String> descricao = State.of("");
     public final State<String> valorOriginal = State.of("0");
@@ -72,6 +69,16 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
         });
     }
 
+    @Override
+    protected boolean matchesSearch(ContaAreceberModel model, String query) {
+        return contains(model.getDescricao(), query)
+                || (model.getCliente() != null && contains(model.getCliente().getNome(), query));
+    }
+
+    private boolean contains(String field, String query) {
+        return field != null && field.toLowerCase().contains(query);
+    }
+
     void loadClientes() {
         try {
             var clientesList = clienteService.listar();
@@ -81,7 +88,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
         }
     }
 
-    public void loadInicial() {
+    @Override
+    public void fetchListData() {
         Async.Run(() -> {
             try {
                 var contasList = contaService.listar();
@@ -99,7 +107,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                 final var clientesCopy = List.copyOf(clientesList);
 
                 UI.runOnUi(() -> {
-                    contas.addAll(contasList);
+                    allDataList.set(contasList);
                     clientes.set(clientesCopy);
                     if (!clientesCopy.isEmpty()) {
                         clienteSelected.set(clientesCopy.getFirst());
@@ -124,8 +132,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                 attachClientes(contasFiltradas);
 
                 UI.runOnUi(() -> {
-                    contas.clear();
-                    contas.addAll(contasFiltradas);
+                    allDataList.set(contasFiltradas);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -140,8 +147,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                 attachClientes(contasVencidas);
 
                 UI.runOnUi(() -> {
-                    contas.clear();
-                    contas.addAll(contasVencidas);
+                    allDataList.set(contasVencidas);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -212,7 +218,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
             try {
                 contaService.excluir(selected.getId());
                 UI.runOnUi(() -> {
-                    contas.removeIf(c -> c.getId().equals(selected.getId()));
+                    allDataList.removeIf(c -> c.getId().equals(selected.getId()));
                     Components.ShowPopup(ctx, "Conta excluída com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
@@ -255,7 +261,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                 }
 
                 UI.runOnUi(() -> {
-                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
                     Components.ShowPopup(ctx, "Recebimento registrado com sucesso!");
                     valorRecebimento.set("0");
                     modoRecebimento.set(false);
@@ -287,7 +293,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                 }
 
                 UI.runOnUi(() -> {
-                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
                     Components.ShowPopup(ctx, "Conta quitada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
@@ -306,7 +312,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                 salvo.setCliente(clienteSelected.get());
 
                 UI.runOnUi(() -> {
-                    contas.add(salvo);
+                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
@@ -327,7 +333,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract {
                 selected.setCliente(clienteSelected.get());
 
                 UI.runOnUi(() -> {
-                    contas.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
+                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
                     Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                     clearForm();
                 });

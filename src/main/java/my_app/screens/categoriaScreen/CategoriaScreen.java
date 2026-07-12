@@ -18,7 +18,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     public CategoriaScreen(ScreenContext ctx) {this.vm = new CategoriaScreenViewModel(ctx);}
 
-    public void onMount() {vm.loadCategorias();}
+    public void onMount() {vm.fetchListData();}
 
     @Override
     public void onDestroy() {
@@ -50,7 +50,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     @Override
     public Component table() {
         var simpleTable = new SimpleTable<CategoriaModel>();
-        simpleTable.fromData(vm.categorias)
+        simpleTable.fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", CategoriaModel::getId, 70.0)

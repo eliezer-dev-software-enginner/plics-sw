@@ -25,7 +25,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     @Override
     public void onMount() {
-        vm.fetchData();
+        vm.fetchListData();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
     @Override
     public Component table() {
         return new SimpleTable<CompraModel>()
-                .fromData(vm.compras)
+                .fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", CompraModel::getId, (double) 90)

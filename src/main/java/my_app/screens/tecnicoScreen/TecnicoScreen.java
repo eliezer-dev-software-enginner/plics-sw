@@ -26,7 +26,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     @Override
     public void onMount() {
-        vm.loadTecnicos();
+        vm.fetchListData();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     @Override
     public Component table() {
         var simpleTable = new SimpleTable<TecnicoModel>();
-        simpleTable.fromData(vm.tecnicos)
+        simpleTable.fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", TecnicoModel::getId, 90.0)

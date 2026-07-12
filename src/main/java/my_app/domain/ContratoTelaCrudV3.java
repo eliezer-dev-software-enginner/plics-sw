@@ -52,7 +52,10 @@ public interface ContratoTelaCrudV3 {
     default <T> Component mainView(State<Boolean> focusState) {
         var mainContent = new Container(new ContainerProps().bgColor("#fff"))
                 .children(
-                        form(), new SpacerVertical(30), table()
+                        Components.searchInput(viewModel().searchState,""),
+                        form(),
+                        new SpacerVertical(30),
+                        table()
         );
 
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))

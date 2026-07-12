@@ -33,7 +33,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     }
 
     @Override
-    public void onMount() { vm.fetchData(); }
+    public void onMount() { vm.fetchListData(); }
 
     @Override
     public void onDestroy() {
@@ -87,7 +87,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     @Override
     public Component table() {
         return new SimpleTable<VendaModel>()
-                .fromData(vm.vendas)
+                .fromData(vm.filteredList)
                 .header()
                 .columns()
                 .column("ID", VendaModel::getId)

@@ -40,6 +40,9 @@ public class ProdutoModel {
     private Integer fornecedorId;
 
     private BigDecimal estoque;
+
+    @Column(name = "estoque_minimo")
+    private BigDecimal estoqueMinimo;
     private String observacoes;
     private String imagem;
 
