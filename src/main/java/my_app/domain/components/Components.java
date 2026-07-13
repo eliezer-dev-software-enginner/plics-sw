@@ -13,7 +13,6 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.base.Animations;
@@ -288,21 +287,12 @@ public class Components {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Erro");
 
-        Window focusedWindow = Window.getWindows().stream()
-                .filter(Window::isShowing)
-                .filter(Window::isFocused)
-                .findFirst()
-                .orElse(null);
-        if (focusedWindow != null) {
-            alert.initOwner(focusedWindow);
-        }
-
         ButtonType okButton = new ButtonType("Fechar", ButtonBar.ButtonData.OK_DONE);
 
         alert.getButtonTypes().add(okButton);
         alert.setOnCloseRequest(event -> alert.close());
         alert.setContentText(message);
-        alert.showAndWait();
+        alert.show();
     }
 
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label) {

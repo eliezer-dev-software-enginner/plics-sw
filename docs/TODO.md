@@ -103,9 +103,9 @@
 - [x] **Tabelas**: todas usam `vm.filteredList` em vez de listas locais
 
 ## Concluído (Correção barra de título maximize — 2026-07-13)
-- [x] **`ShowAlertError()`**: adicionado `initOwner(Window)` via `Window.getWindows()` — janela focada vira owner do Alert, restaurando controles ao fechar
-- [x] **`ShowModal()`**: removido `initOwner()` e alterado `WINDOW_MODAL` → `APPLICATION_MODAL` — screens CRUD são independentes, sem necessidade de relação pai-filho
-- [x] **Arquivo alterado**: `Components.java` (+Window import, ShowAlertError, ShowModal)
+- [x] **`ShowModal()`**: removido `initOwner()` e alterado `WINDOW_MODAL` → `APPLICATION_MODAL` — sem relação pai-filho, o window manager não desabilita maximize
+- [x] **`ShowAlertError()`**: trocado `showAndWait()` por `show()` — sem event loop aninhado, o window manager restaura controles normalmente
+- [x] **Arquivo alterado**: `Components.java`
 
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
