@@ -34,7 +34,7 @@ public class AppRoutes {
         var routes = Set.of(
                 new Router.Route("ler-planilha-ia", LerPlanilhaScreen::new, new RouteProps(650, 500, "Extrair dados com IA", true)),
                 new Router.Route("welcome", WelcomeScreen::new, new RouteProps(950, 550, Main.BASE_TITLE, true)),
-                new Router.Route("home", HomeScreen::new, new RouteProps(1180, 700,Main.BASE_TITLE, true)),
+                new Router.Route("home", HomeScreen::new, new RouteProps(1180, 650,Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
                 new Router.Route("produtos", ProdutoScreen::new, new RouteProps(1210, 650,"Cadastro de produtos", true)),
                 //ok

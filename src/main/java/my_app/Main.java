@@ -74,7 +74,7 @@ public class Main {
         // registra o handler de erro o quanto antes — antes de qualquer Async.Run rodar
         ErrorReporter.register(Main::handleAppError);
         context.useView(new SplashScreen()); // mostra algo imediatamente
-            initialize(context);
+        initialize(context);
 
             if (devMode) {
                 hotReload = new HotReload()
@@ -146,18 +146,6 @@ public class Main {
             UI.runOnUi(() -> {
                 context.useRouter(router);
                 context.useView(router.entrypoint());
-
-                if (devMode) {
-                    hotReload = new HotReload()
-                            .sourcePath("src/main/java")
-                            .classesPath("build/classes/java/main")
-                            .resourcesPath("src/main/resources")
-                            .implementationClassName("my_app.hotreload.Reloader")
-                            .screenClassName(null)
-                            .reloadContext(context)
-                            .classesToExclude(Set.of("my_app.Main"));
-                    hotReload.start();
-                }
             });
         });
     }

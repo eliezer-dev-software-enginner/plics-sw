@@ -54,8 +54,8 @@
 ## Últimas alterações
 
 ### 2026-07-13: Correção — barra de título com maximize desabilitado após modal/alerta
-- **`ShowModal()`**: removido `initOwner()` e alterado `WINDOW_MODAL` → `APPLICATION_MODAL` — elimina relação pai-filho que o window manager do Linux usava para desabilitar maximize da janela pai
-- **`ShowAlertError()`**: trocado `showAndWait()` por `show()` — elimina event loop aninhado que impedia o window manager de restaurar controles da janela pai ao fechar o dialog
+- **`ShowModal()`**: adicionado `initOwner(context.selfStage())` sem `initModality` (default NONE), `setOnHidden(requestFocus + toFront)` no owner, conteúdo envolto em `Scroll` (width 800)
+- **`ShowAlertError()`**: adicionado `alert.initModality(Modality.NONE)` — Glass toolkit não toca nas decorações da janela owner. Trocado `showAndWait()` por `show()`. Removido `setOnCloseRequest`
 
 ### 2026-07-12: Estoque mínimo no ProdutoScreen
 - **Migration V29**: adicionada coluna `estoque_minimo REAL DEFAULT 0` à tabela `produtos`

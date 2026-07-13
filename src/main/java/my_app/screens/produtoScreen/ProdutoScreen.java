@@ -104,7 +104,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), vm.getCtx(), 550));
+                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), vm.getCtx(), 600));
 
         return simpleTable;
     }

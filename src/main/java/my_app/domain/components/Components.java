@@ -9,10 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.*;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.base.Animations;
@@ -246,9 +243,19 @@ public class Components {
 
     public static void ShowModal(Component ui, ScreenContext context, int height) {
         Stage stage = new Stage();
-        stage.setScene(new Scene((Parent) ui.getJavaFxNode(), 700, height));
+
+        Scroll scroll = new Scroll(ui);
+        stage.setScene(new Scene((Parent) scroll.getJavaFxNode(), 800, height));
         stage.setTitle("Detalhes");
-        stage.initModality(Modality.APPLICATION_MODAL);
+
+        Stage owner = context.selfStage();
+        stage.initOwner(owner);
+
+        stage.setOnHidden(event -> {
+            owner.requestFocus();
+            owner.toFront();
+        });
+
         stage.show();
     }
 
@@ -286,11 +293,10 @@ public class Components {
     public static void ShowAlertError(String message) {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Erro");
+        alert.initModality(Modality.NONE); // não deixa o Glass tocar na janela owner
 
         ButtonType okButton = new ButtonType("Fechar", ButtonBar.ButtonData.OK_DONE);
-
         alert.getButtonTypes().add(okButton);
-        alert.setOnCloseRequest(event -> alert.close());
         alert.setContentText(message);
         alert.show();
     }

@@ -4,16 +4,14 @@
 
 **Problema:** Ao abrir `ItemDetails` (via `ShowModal`) ou exibir alerta de erro (via `ShowAlertError`), a janela que chamou ficava com apenas os controles "minimizar" e "fechar" ativados na barra de título — o botão de maximizar ficava desabilitado.
 
-**Causa raiz:**
-1. **`ShowModal`**: usava `initOwner(context.selfStage())`, criando relação pai-filho entre a Stage do modal e a Stage da screen. O window manager do Linux (Mutter/GNOME) desabilitava o botão de maximizar da janela pai enquanto o filho estivesse aberto, e **não restaurava** ao fechar.
-2. **`ShowAlertError`**: usava `showAndWait()` que cria um **event loop aninhado**. Esse event loop impedia o window manager de processar corretamente a restauração dos controles da janela pai ao fechar o dialog.
+**Causa raiz:** O Glass toolkit (JavaFX) associava a Stage do modal/alerta como filho da Stage owner e, ao fechar, o window manager do Linux (Mutter/GNOME) não restaurava os controles da janela pai. O problema persistia mesmo com `APPLICATION_MODAL` sem `initOwner()`, indicando que o próprio `Alert.show()` ou `Stage.show()` com modalidade qualquer (exceto NONE) causava a perda dos botões de decoração no Mutter.
 
 **Decisão:**
-1. `ShowModal()`: removido `initOwner(context.selfStage())` e alterado `WINDOW_MODAL` para `APPLICATION_MODAL`. Screens CRUD são janelas independentes (criadas via `spawnWindow()` sem owner). Sem `initOwner()`, não há relação pai-filho e o window manager não desabilita nenhum controle da janela pai.
-2. `ShowAlertError()`: trocado `showAndWait()` por `show()` (não-bloqueante). Sem o event loop aninhado, o window manager processa normalmente a exibição/fechamento do dialog sem afetar os controles da janela pai. Todos os callers já usam `return` imediatamente após a chamada, então nenhum depende do comportamento bloqueante.
+1. `ShowModal()`: adicionado `initOwner(context.selfStage())` para manter relação de foco, mas sem definir `initModality` (default `NONE` — sem modalidade que bloqueie a janela pai). Adicionado `setOnHidden()` com `owner.requestFocus()` + `owner.toFront()` para restaurar foco ao fechar. Envolve o conteúdo em `Scroll` (width 800). Sem `Modality.NONE` explícito, o Glass não toca nas decorações da janela owner.
+2. `ShowAlertError()`: adicionado `alert.initModality(Modality.NONE)` explicitamente — impede que o Glass toolkit modifique as decorações da janela owner. Trocado `showAndWait()` por `show()` (não-bloqueante). Removido `setOnCloseRequest` (redundante com NONE). Todos os callers já usam `return` imediatamente.
 
 **Arquivo alterado:**
-- `src/main/java/my_app/domain/components/Components.java` (-initOwner em ShowModal, WINDOW_MODAL → APPLICATION_MODAL, showAndWait → show em ShowAlertError)
+- `src/main/java/my_app/domain/components/Components.java` (+initOwner +setOnHidden em ShowModal, +Modality.NONE em ShowAlertError, showAndWait→show, +Scroll wrapper)
 
 ---
 

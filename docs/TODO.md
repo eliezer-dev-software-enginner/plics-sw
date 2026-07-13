@@ -103,9 +103,10 @@
 - [x] **Tabelas**: todas usam `vm.filteredList` em vez de listas locais
 
 ## Concluído (Correção barra de título maximize — 2026-07-13)
-- [x] **`ShowModal()`**: removido `initOwner()` e alterado `WINDOW_MODAL` → `APPLICATION_MODAL` — sem relação pai-filho, o window manager não desabilita maximize
-- [x] **`ShowAlertError()`**: trocado `showAndWait()` por `show()` — sem event loop aninhado, o window manager restaura controles normalmente
-- [x] **Arquivo alterado**: `Components.java`
+- [x] **`ShowModal()`**: adicionado `initOwner(context.selfStage())` sem `initModality` (default NONE), `setOnHidden(requestFocus + toFront)` no owner, conteúdo envolto em `Scroll` (width 800)
+- [x] **`ShowAlertError()`**: adicionado `alert.initModality(Modality.NONE)` — Glass toolkit não toca nas decorações da janela owner. Trocado `showAndWait()` por `show()`. Removido `setOnCloseRequest`
+- [x] **HotReload removido** de `Main.java` (código descontinuado)
+- [x] **Arquivo alterado**: `Components.java`, `Main.java`, `AppRoutes.java`, `ProdutoScreen.java`
 
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅

@@ -29,6 +29,4 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-estou modelando um mecanismo de listar na tabela, apenas os itens filtrados, vide ViewModelScreenContract e ContratoTelaCrudV3.
-Por exemplo atualmente as Screens implementam table, mas não possuimos campo de pesquisa acima da table. Já comecei a implementar na CLienteScreen e ProdutoSceen e em suas ViewModels correspondentes.
-Finalize para mim esse mecanismo nas demais screens e suas resepctivas viewmodels que façam uso de ViewModelScreenContract, comece a refatoração.
+Quando ItemDetails é spanwnada ou quando aparece alert de erro vindo da chamada Components.ShowAlertError() a tela que chamou fica com apenas as opções "minimizar" e "fechar" ativadas.
