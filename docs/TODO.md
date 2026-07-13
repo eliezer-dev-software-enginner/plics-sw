@@ -102,6 +102,11 @@
 - [x] **9 telas refatoradas**: Categoria, Tecnico, Fornecedor, Compras, VendaMercadoria, ContasAReceber, ComprasAPagar, OrdemServico, Pedidos
 - [x] **Tabelas**: todas usam `vm.filteredList` em vez de listas locais
 
+## Concluído (Correção barra de título maximize — 2026-07-13)
+- [x] **`ShowAlertError()`**: adicionado `initOwner(Window)` via `Window.getWindows()` — janela focada vira owner do Alert, restaurando controles ao fechar
+- [x] **`ShowModal()`**: removido `initOwner()` e alterado `WINDOW_MODAL` → `APPLICATION_MODAL` — screens CRUD são independentes, sem necessidade de relação pai-filho
+- [x] **Arquivo alterado**: `Components.java` (+Window import, ShowAlertError, ShowModal)
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

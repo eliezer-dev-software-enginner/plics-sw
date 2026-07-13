@@ -53,6 +53,10 @@
 
 ## Últimas alterações
 
+### 2026-07-13: Correção — barra de título com maximize desabilitado após modal/alerta
+- **`ShowAlertError()`**: adicionado `initOwner(Window)` via `Window.getWindows()` para encontrar a janela focada — garante que o Alert seja filho da janela que o chamou, restaurando controles ao fechar
+- **`ShowModal()`**: removido `initOwner()` e alterado `WINDOW_MODAL` → `APPLICATION_MODAL` — screens CRUD são independentes, sem necessidade de relação pai-filho que desabilita controles da janela pai
+
 ### 2026-07-12: Estoque mínimo no ProdutoScreen
 - **Migration V29**: adicionada coluna `estoque_minimo REAL DEFAULT 0` à tabela `produtos`
 - **`ProdutoModel`**: adicionado campo `estoqueMinimo` (BigDecimal)

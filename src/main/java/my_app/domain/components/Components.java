@@ -13,6 +13,7 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.base.Animations;
@@ -248,8 +249,7 @@ public class Components {
         Stage stage = new Stage();
         stage.setScene(new Scene((Parent) ui.getJavaFxNode(), 700, height));
         stage.setTitle("Detalhes");
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(context.selfStage());
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.show();
     }
 
@@ -287,6 +287,15 @@ public class Components {
     public static void ShowAlertError(String message) {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Erro");
+
+        Window focusedWindow = Window.getWindows().stream()
+                .filter(Window::isShowing)
+                .filter(Window::isFocused)
+                .findFirst()
+                .orElse(null);
+        if (focusedWindow != null) {
+            alert.initOwner(focusedWindow);
+        }
 
         ButtonType okButton = new ButtonType("Fechar", ButtonBar.ButtonData.OK_DONE);
 

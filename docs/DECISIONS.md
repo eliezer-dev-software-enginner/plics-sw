@@ -1,6 +1,21 @@
 # Decisões Arquiteturais
 
-## 2026-07-12: Estoque mínimo no ProdutoScreen
+## 2026-07-13: Correção — barra de título com maximize desabilitado após modal/alerta
+
+**Problema:** Ao abrir `ItemDetails` (via `ShowModal`) ou exibir alerta de erro (via `ShowAlertError`), a janela que chamou ficava com apenas os controles "minimizar" e "fechar" ativados na barra de título — o botão de maximizar ficava desabilitado.
+
+**Causa raiz:**
+1. **`ShowAlertError`**: criava um `Alert` **sem `initOwner()`**. Sem dono, o JavaFX criava o dialog como janela independente com `APPLICATION_MODAL` (bloqueia todas as janelas). No Linux, ao fechar, o window manager não restaurava corretamente os controles da janela pai.
+2. **`ShowModal`**: usava `initOwner(context.selfStage())`, criando relação pai-filho. O window manager do Linux desabilitava o botão de maximizar da janela pai enquanto o filho estivesse aberto, e não restaurava ao fechar.
+
+**Decisão:**
+1. `ShowAlertError()`: adicionado `initOwner(Window)` usando `Window.getWindows()` para encontrar a janela focada. O Alert agora é filho da janela que o chamou, garantindo que os controles sejam restaurados corretamente ao fechar.
+2. `ShowModal()`: removido `initOwner(context.selfStage())` e alterado `WINDOW_MODAL` para `APPLICATION_MODAL`. Como as screens CRUD são janelas independentes (criadas via `spawnWindow()` sem owner), não há necessidade de relação pai-filho. `APPLICATION_MODAL` sem owner bloqueia todas as janelas (comportamento aceitável para modal de detalhes) sem desabilitar controles da janela pai.
+
+**Arquivo alterado:**
+- `src/main/java/my_app/domain/components/Components.java` (+Window import, +initOwner em ShowAlertError, -initOwner em ShowModal, WINDOW_MODAL → APPLICATION_MODAL)
+
+---
 
 **Problema:** Não havia como definir um estoque mínimo para produtos. O sistema não alertava quando o estoque estava baixo.
 
