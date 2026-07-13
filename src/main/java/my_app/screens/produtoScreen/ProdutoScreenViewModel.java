@@ -83,9 +83,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     @Override
     protected boolean matchesSearch(ProdutoModel model, String query) {
         return contains(model.getDescricao(), query)
-                || contains(model.getCodigoBarras(), query)
-                || contains(model.getMarca(), query)
-                || (model.getCategoria() != null && contains(model.getCategoria().getNome(), query));
+                || contains(model.getCodigoBarras(), query);
     }
 
     private boolean contains(String field, String query) {

@@ -52,9 +52,9 @@ public interface ContratoTelaCrudV3 {
     default <T> Component mainView(State<Boolean> focusState) {
         var mainContent = new Container(new ContainerProps().bgColor("#fff"))
                 .children(
-                        Components.searchInput(viewModel().searchState,""),
                         form(),
                         new SpacerVertical(30),
+                        Components.searchInput(viewModel().searchState,"Pesquisar"),
                         table()
         );
 
