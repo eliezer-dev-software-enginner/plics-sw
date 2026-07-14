@@ -102,6 +102,14 @@
 - [x] **9 telas refatoradas**: Categoria, Tecnico, Fornecedor, Compras, VendaMercadoria, ContasAReceber, ComprasAPagar, OrdemServico, Pedidos
 - [x] **Tabelas**: todas usam `vm.filteredList` em vez de listas locais
 
+## Concluído (Impressão nota crediário com parcelas e assinatura — 2026-07-14)
+- [x] **`PDVScreenViewModel`**: state `numeroParcelas` (default "1"), `finalizarVenda()` passa `numeroParcelas` e `formaPagamento` ("CREDIARIO" fiado)
+- [x] **`PDVScreen`**: input "Nº Parcelas" visível quando fiado marcado
+- [x] **`PDVService.finalizarVenda()`**: novo param `numeroParcelas`, usa `Parcela.gerarParcelas()` para N parcelas mensais
+- [x] **`EscPosPrinter`**: sobrecarga `imprimir(VendaModel, List<ContaAreceberModel>)`, seção "PARCELAS" + assinatura
+- [x] **`VendaMercadoriaScreenViewModel`**: `imprimirNotaDeVenda()` busca parcelas quando "A PRAZO"
+- [x] **`PDVServiceTest`**: atualizado para nova assinatura, teste fiado com 3 parcelas
+
 ## Concluído (Correção barra de título maximize — 2026-07-13)
 - [x] **`ShowModal()`**: adicionado `initOwner(context.selfStage())` sem `initModality` (default NONE), `setOnHidden(requestFocus + toFront)` no owner, conteúdo envolto em `Scroll` (width 800)
 - [x] **`ShowAlertError()`**: adicionado `alert.initModality(Modality.NONE)` — Glass toolkit não toca nas decorações da janela owner. Trocado `showAndWait()` por `show()`. Removido `setOnCloseRequest`

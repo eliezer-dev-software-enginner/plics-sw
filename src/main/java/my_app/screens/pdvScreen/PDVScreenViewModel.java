@@ -55,6 +55,7 @@ public class PDVScreenViewModel {
     final ListState<ItemVenda> itensCarrinho = ListState.ofEmpty();
 
     final State<Boolean> isVendaFiada = State.of(false);
+    final State<String> numeroParcelas = State.of("1");
 
     // Estado do campo de busca
     final State<String> codigoBarrasInput = State.of("");
@@ -253,13 +254,16 @@ public class PDVScreenViewModel {
         }
 
         final Integer finalClienteId = clienteId;
+        final int qtdParcelas = fiado ? Math.max(1, Integer.parseInt(numeroParcelas.get())) : 1;
+        final String formaPagamento = fiado ? "CREDIARIO" : "A VISTA";
         Async.Run(() -> {
             try {
                 lastPedido = pdvService.finalizarVenda(
                         itensCarrinho.get(),
-                        "A VISTA",
+                        formaPagamento,
                         finalClienteId,
-                        fiado
+                        fiado,
+                        qtdParcelas
                 );
                 UI.runOnUi(() -> {
                     itensCarrinho.clear();
@@ -270,6 +274,7 @@ public class PDVScreenViewModel {
                     troco.set("0");
                     clienteSelected.set(null);
                     isVendaFiada.set(false);
+                    numeroParcelas.set("1");
                     Components.ShowPopup(ctx, "Venda finalizada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     isPrintNotaVendaVisible.set(true);
@@ -301,10 +306,18 @@ public class PDVScreenViewModel {
                     cliente = null;
                 }
 
+                java.util.List<my_app.db.models.ContaAreceberModel> parcelas = null;
+                if (lastPedido.getFiado() != null && lastPedido.getFiado() == 1) {
+                    try (var contaService = new my_app.db.services.ContaAreceberService()) {
+                        parcelas = contaService.buscarPorVenda(lastPedido.getId());
+                    }
+                }
+
                 final var pedido = lastPedido;
+                final var finalParcelas = parcelas;
 
                 try {
-                    escPosPrinter.imprimirNotaVenda(pedido, itens, cliente, empresa);
+                    escPosPrinter.imprimirNotaVenda(pedido, itens, cliente, empresa, finalParcelas);
                     } catch (Exception e) {
                         UI.runOnUi(()->Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
                     }

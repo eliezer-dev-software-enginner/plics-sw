@@ -13,6 +13,7 @@ import net.sf.persism.Session;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,7 +33,8 @@ public final class PDVService {
             List<ItemVenda> itens,
             String formaPagamento,
             Integer clienteId,
-            boolean isFiado
+            boolean isFiado,
+            int numeroParcelas
     ) throws SQLException {
 
         var sess = session != null ? session : DB.getPersismSession();
@@ -73,9 +75,8 @@ public final class PDVService {
 
                 if (isFiado && clienteId != null) {
                     var contaService = new ContaAreceberService(sess);
-                    long vencimento = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000);
-                    var parcela = new Parcela(1, vencimento, total);
-                    contaService.gerarContasDeVenda(pedido.getId(), clienteId, List.of(parcela));
+                    var parcelas = Parcela.gerarParcelas(LocalDate.now(), Math.max(1, numeroParcelas), total.doubleValue());
+                    contaService.gerarContasDeVenda(pedido.getId(), clienteId, parcelas);
                 }
 
                 result[0] = pedido;

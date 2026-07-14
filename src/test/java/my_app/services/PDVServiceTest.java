@@ -54,7 +54,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveFinalizarVendaComClientePadrao() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
 
         assertNotNull(pedido.getId());
         assertEquals(1, pedido.getClienteId());
@@ -66,7 +66,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveFinalizarVendaSemCliente() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", null, false);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", null, false, 1);
 
         assertNotNull(pedido.getId());
         assertNull(pedido.getClienteId());
@@ -74,17 +74,17 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveFinalizarVendaFiadaComCliente() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "DINHEIRO", 1, true);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 3);
 
         assertNotNull(pedido.getId());
         assertEquals(1, pedido.getFiado());
 
-        assertEquals(1, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+        assertEquals(3, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
     }
 
     @Test
     void naoDeveGerarContasQuandoNaoFiado() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
 
         assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
     }

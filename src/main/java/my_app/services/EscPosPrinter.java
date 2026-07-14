@@ -9,6 +9,7 @@ import com.github.anastaciocintra.escpos.Style;
 import com.github.anastaciocintra.output.PrinterOutputStream;
 import com.github.anastaciocintra.output.TcpIpOutputStream;
 import my_app.db.models.ClienteModel;
+import my_app.db.models.ContaAreceberModel;
 import my_app.db.models.EmpresaModel;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
@@ -90,6 +91,10 @@ public class EscPosPrinter implements ComprovanteBuilder {
 
     @Override
     public void imprimir(VendaModel venda) {
+        imprimir(venda, null);
+    }
+
+    public void imprimir(VendaModel venda, List<ContaAreceberModel> parcelas) {
         try {
             telegramNotifier.enviarMensagem("Vai imprimir venda model: " + objectMapper.writeValueAsString(venda));
         } catch (JsonProcessingException e) {
@@ -118,16 +123,35 @@ public class EscPosPrinter implements ComprovanteBuilder {
             linha(escpos, "Total: " + Utils.toBRLCurrency(venda.getTotalLiquido()));
             separador(escpos);
             linha(escpos, "Pagamento: " + venda.getTipoPagamento());
+            if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
+                separador(escpos);
+                titulo(escpos, "PARCELAS");
+                for (var parcela : parcelas) {
+                    linha(escpos, parcela.getNumeroDocumento() + " - " + Utils.toBRLCurrency(parcela.getValorOriginal())
+                            + " - Venc: " + DateUtils.millisToBrazilianDate(parcela.getDataVencimento()));
+                }
+            }
+            if (parcelas != null && !parcelas.isEmpty()) {
+                separador(escpos);
+                rodape(escpos);
+                escpos.feed(6);
+                centralizado(escpos, "_______________________________", false, Style.FontSize._1);
+                centralizado(escpos, "Assinatura do cliente", false, Style.FontSize._1);
+                escpos.feed(4);
+                escpos.cut(EscPos.CutMode.FULL);
+                escpos.flush();
+                return;
+            }
             if (venda.getObservacao() != null && !venda.getObservacao().isBlank()) {
                 linha(escpos, "Obs: " + venda.getObservacao());
             }
             rodape(escpos);
         })) {
-            salvarPreviewTxt(gerarPreviewNotaVenda(venda, empresa));
+            salvarPreviewTxt(gerarPreviewNotaVenda(venda, empresa, parcelas));
         }
     }
 
-    public void imprimirNotaVenda(PedidoModel pedido, List<PedidoItemModel> itens, ClienteModel cliente, EmpresaModel empresa) {
+    public void imprimirNotaVenda(PedidoModel pedido, List<PedidoItemModel> itens, ClienteModel cliente, EmpresaModel empresa, List<ContaAreceberModel> parcelas) {
         if (!tentarEscPos(escpos -> {
             if (empresa != null) cabecalho(escpos, empresa);
             separador(escpos);
@@ -150,12 +174,31 @@ public class EscPosPrinter implements ComprovanteBuilder {
                 linha(escpos, "Desconto: " + Utils.toBRLCurrency(pedido.getDesconto()));
             }
             linha(escpos, "Pagamento: " + (pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA"));
+            if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
+                separador(escpos);
+                titulo(escpos, "PARCELAS");
+                for (var parcela : parcelas) {
+                    linha(escpos, parcela.getNumeroDocumento() + " - " + Utils.toBRLCurrency(parcela.getValorOriginal())
+                            + " - Venc: " + DateUtils.millisToBrazilianDate(parcela.getDataVencimento()));
+                }
+            }
+            if (parcelas != null && !parcelas.isEmpty()) {
+                separador(escpos);
+                rodape(escpos);
+                escpos.feed(6);
+                centralizado(escpos, "_______________________________", false, Style.FontSize._1);
+                centralizado(escpos, "Assinatura do cliente", false, Style.FontSize._1);
+                escpos.feed(4);
+                escpos.cut(EscPos.CutMode.FULL);
+                escpos.flush();
+                return;
+            }
             if (pedido.getObservacao() != null && !pedido.getObservacao().isBlank()) {
                 linha(escpos, "Obs: " + pedido.getObservacao());
             }
             rodape(escpos);
         })) {
-            salvarPreviewTxt(gerarPreviewNotaVendaPedido(pedido, itens, cliente, empresa));
+            salvarPreviewTxt(gerarPreviewNotaVendaPedido(pedido, itens, cliente, empresa, parcelas));
         }
     }
 
@@ -344,7 +387,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
         }
     }
 
-    private String gerarPreviewNotaVenda(VendaModel venda, EmpresaModel empresa) {
+    private String gerarPreviewNotaVenda(VendaModel venda, EmpresaModel empresa, List<ContaAreceberModel> parcelas) {
         var sb = new StringBuilder();
         if (empresa != null) {
             sb.append(centrado(empresa.getNome())).append("\n");
@@ -378,6 +421,24 @@ public class EscPosPrinter implements ComprovanteBuilder {
         sb.append("Total: ").append(Utils.toBRLCurrency(venda.getTotalLiquido())).append("\n");
         sb.append(SEP).append("\n");
         sb.append("Pagamento: ").append(venda.getTipoPagamento()).append("\n");
+        if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
+            sb.append(SEP).append("\n");
+            sb.append(centrado("PARCELAS")).append("\n");
+            for (var parcela : parcelas) {
+                sb.append(parcela.getNumeroDocumento()).append(" - ")
+                        .append(Utils.toBRLCurrency(parcela.getValorOriginal()))
+                        .append(" - Venc: ").append(DateUtils.millisToBrazilianDate(parcela.getDataVencimento()))
+                        .append("\n");
+            }
+        }
+        if (parcelas != null && !parcelas.isEmpty()) {
+            sb.append(SEP).append("\n");
+            sb.append("\n\n");
+            sb.append(centrado("_______________________________")).append("\n");
+            sb.append(centrado("Assinatura do cliente")).append("\n");
+            sb.append("\n");
+            return sb.toString();
+        }
         if (venda.getObservacao() != null && !venda.getObservacao().isBlank()) {
             sb.append("Obs: ").append(venda.getObservacao()).append("\n");
         }
@@ -386,7 +447,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
         return sb.toString();
     }
 
-    private String gerarPreviewNotaVendaPedido(PedidoModel pedido, List<PedidoItemModel> itens, ClienteModel cliente, EmpresaModel empresa) {
+    private String gerarPreviewNotaVendaPedido(PedidoModel pedido, List<PedidoItemModel> itens, ClienteModel cliente, EmpresaModel empresa, List<ContaAreceberModel> parcelas) {
         var sb = new StringBuilder();
         if (empresa != null) {
             sb.append(centrado(empresa.getNome())).append("\n");
@@ -422,6 +483,24 @@ public class EscPosPrinter implements ComprovanteBuilder {
             sb.append("Desconto: ").append(Utils.toBRLCurrency(pedido.getDesconto())).append("\n");
         }
         sb.append("Pagamento: ").append(pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA").append("\n");
+        if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
+            sb.append(SEP).append("\n");
+            sb.append(centrado("PARCELAS")).append("\n");
+            for (var parcela : parcelas) {
+                sb.append(parcela.getNumeroDocumento()).append(" - ")
+                        .append(Utils.toBRLCurrency(parcela.getValorOriginal()))
+                        .append(" - Venc: ").append(DateUtils.millisToBrazilianDate(parcela.getDataVencimento()))
+                        .append("\n");
+            }
+        }
+        if (parcelas != null && !parcelas.isEmpty()) {
+            sb.append(SEP).append("\n");
+            sb.append("\n\n");
+            sb.append(centrado("_______________________________")).append("\n");
+            sb.append(centrado("Assinatura do cliente")).append("\n");
+            sb.append("\n");
+            return sb.toString();
+        }
         if (pedido.getObservacao() != null && !pedido.getObservacao().isBlank()) {
             sb.append("Obs: ").append(pedido.getObservacao()).append("\n");
         }

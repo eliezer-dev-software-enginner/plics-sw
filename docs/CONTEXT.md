@@ -53,6 +53,14 @@
 
 ## Últimas alterações
 
+### 2026-07-14: Impressão de nota de venda no crediário com parcelas e assinatura
+- **`PDVScreenViewModel`**: state `numeroParcelas` (default "1"), `finalizarVenda()` passa `numeroParcelas` e `formaPagamento` ("CREDIARIO" fiado, "A VISTA" contrário)
+- **`PDVScreen`**: input "Nº Parcelas" visível quando fiado marcado
+- **`PDVService.finalizarVenda()`**: novo param `numeroParcelas`, usa `Parcela.gerarParcelas()` para N parcelas mensais
+- **`EscPosPrinter`**: sobrecarga `imprimir(VendaModel, List<ContaAreceberModel>)`, seção "PARCELAS" + assinatura do cliente na nota
+- **`VendaMercadoriaScreenViewModel`**: `imprimirNotaDeVenda()` busca parcelas quando "A PRAZO"
+- **`PDVServiceTest`**: atualizado para nova assinatura, teste fiado com 3 parcelas
+
 ### 2026-07-13: Correção — barra de título com maximize desabilitado após modal/alerta
 - **`ShowModal()`**: adicionado `initOwner(context.selfStage())` sem `initModality` (default NONE), `setOnHidden(requestFocus + toFront)` no owner, conteúdo envolto em `Scroll` (width 800)
 - **`ShowAlertError()`**: adicionado `alert.initModality(Modality.NONE)` — Glass toolkit não toca nas decorações da janela owner. Trocado `showAndWait()` por `show()`. Removido `setOnCloseRequest`

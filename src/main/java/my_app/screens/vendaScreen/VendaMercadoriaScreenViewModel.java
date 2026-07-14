@@ -426,7 +426,12 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     void imprimirNotaDeVenda(VendaModel vendaModel){
         Async.Run(() -> {
             try {
-                escPosPrinter.imprimir(vendaModel);
+                List<ContaAreceberModel> parcelas = null;
+                if ("A PRAZO".equals(vendaModel.getTipoPagamento()) && vendaModel.getId() != null) {
+                    parcelas = contaService.buscarPorVenda(vendaModel.getId());
+                }
+                final var finalParcelas = parcelas;
+                escPosPrinter.imprimir(vendaModel, finalParcelas);
             } catch (Exception e) {
                 e.printStackTrace();
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));

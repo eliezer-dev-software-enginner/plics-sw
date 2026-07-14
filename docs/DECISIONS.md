@@ -1,5 +1,26 @@
 # Decisões Arquiteturais
 
+## 2026-07-14: Impressão de nota de venda no crediário com parcelas e assinatura
+
+**Problema:** O cliente quer imprimir a nota de venda no crediário com o número de parcelas na notinha, para que o cliente possa assinar a via. Atualmente, o PDV criava apenas 1 parcela fixa (valor total, vencimento 30 dias) e não mostrava informações de parcelas na impressão. A VendaMercadoriaScreen já gerava parcelas via "A PRAZO" mas também não imprimia.
+
+**Decisão:**
+1. **PDVScreenViewModel**: adicionado state `numeroParcelas` (String, default "1"). `finalizarVenda()` agora passa `numeroParcelas` e `formaPagamento` ("CREDIARIO" quando fiado, "A VISTA" caso contrário) para o `PDVService`. `imprimirNota()` busca parcelas via `ContaAreceberService.buscarPorVenda()` e passa ao `EscPosPrinter`.
+2. **PDVScreen**: adicionado input "Nº Parcelas" visível quando "É uma venda fiada?" está marcado, usando `Components.InputColumn`.
+3. **PDVService.finalizarVenda()**: novo parâmetro `int numeroParcelas`. Usa `Parcela.gerarParcelas(LocalDate.now(), numeroParcelas, total.doubleValue())` para gerar N parcelas com vencimentos mensais, substituindo a parcela fixa hardcoded.
+4. **EscPosPrinter**: `imprimir(VendaModel)` sobrecarregado com `imprimir(VendaModel, List<ContaAreceberModel>)`. `imprimirNotaVenda()` agora aceita `List<Parcela>`. Quando há parcelas: seção "PARCELAS" com número, valor e vencimento de cada uma + linha de assinatura (`_______________________________` / `Assinatura do cliente`) no lugar do "Obrigado pela preferência". Preview .txt segue o mesmo formato.
+5. **VendaMercadoriaScreenViewModel**: `imprimirNotaDeVenda()` agora busca parcelas via `contaService.buscarPorVenda()` quando pagamento é "A PRAZO" e passa ao `EscPosPrinter.imprimir(venda, parcelas)`.
+
+**Arquivos alterados:**
+- `src/main/java/my_app/screens/pdvScreen/PDVScreenViewModel.java` (+numeroParcelas, formaPagamento CREDIARIO, imprimirNota busca parcelas)
+- `src/main/java/my_app/screens/pdvScreen/PDVScreen.java` (+input Nº Parcelas no vendaFiadaComponent)
+- `src/main/java/my_app/services/PDVService.java` (+numeroParcelas param, Parcela.gerarParcelas)
+- `src/main/java/my_app/services/EscPosPrinter.java` (+sobrecarga imprimir com parcelas, +seção PARCELAS, +assinatura)
+- `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreenViewModel.java` (+buscar parcelas na impressão)
+- `src/test/java/my_app/services/PDVServiceTest.java` (atualizado para nova assinatura, teste fiado com 3 parcelas)
+
+---
+
 ## 2026-07-13: Correção — barra de título com maximize desabilitado após modal/alerta
 
 **Problema:** Ao abrir `ItemDetails` (via `ShowModal`) ou exibir alerta de erro (via `ShowAlertError`), a janela que chamou ficava com apenas os controles "minimizar" e "fechar" ativados na barra de título — o botão de maximizar ficava desabilitado.
