@@ -246,6 +246,8 @@ public class HotReload {
 
         String lombokPath = findLombokJar();
         if (lombokPath != null) {
+            args.add("-cp");
+            args.add(lombokPath);
             args.add("-processorpath");
             args.add(lombokPath);
             log.info("[HotReload] Lombok annotation processor: {}", lombokPath);
