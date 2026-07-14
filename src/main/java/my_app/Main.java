@@ -81,7 +81,6 @@ public class Main {
                         .sourcePath("src/main/java")
                         .classesPath("build/classes/java/main")
                         .resourcesPath("src/main/resources")
-                        .implementationClassName("my_app.hotreload.Reloader")
                         .screenClassName(null)
                         .reloadContext(context)
                         .classesToExclude(Set.of("my_app.Main"));

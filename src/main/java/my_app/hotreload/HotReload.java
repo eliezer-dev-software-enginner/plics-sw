@@ -215,48 +215,55 @@ public class HotReload {
     private boolean compile() throws IOException {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) {
-            System.err.println("[HotReload] No Java compiler available.");
+            log.error("[HotReload] No Java compiler available.");
             return false;
         }
 
-        // listar todos os arquivos .java
         List<String> files = new ArrayList<>();
         Files.walk(sourcePath)
                 .filter(p -> p.toString().endsWith(".java"))
                 .forEach(p -> {
-                    String fqcn = this.getFullyQualifiedClassName(p);
-                    log.info("[HotReload] Compiling file: {}", fqcn);
+                    log.info("[HotReload] Compiling file: {}", getFullyQualifiedClassName(p));
                     files.add(p.toString());
                 });
 
         log.info("[HotReload] Compiling {} files...", files.size());
 
-        // argumentos do javac DEVEM ser separados
         List<String> args = new ArrayList<>();
         args.add("-d");
         args.add(classesPath.toString());
 
+        String lombokPath = findLombokJar();
+
+        // Monta o classpath: runtime cp + lombok (para resolver imports)
         String runtimeClasspath = System.getProperty("java.class.path");
+        StringBuilder cp = new StringBuilder();
         if (runtimeClasspath != null && !runtimeClasspath.isBlank()) {
-            args.add("-cp");
-            args.add(runtimeClasspath);
-            log.info("[HotReload] Classpath from runtime ({} entries)", runtimeClasspath.split(File.pathSeparator).length);
+            cp.append(runtimeClasspath);
+        }
+        if (lombokPath != null) {
+            if (!cp.isEmpty()) cp.append(File.pathSeparator);
+            cp.append(lombokPath);
         }
 
-        String lombokPath = findLombokJar();
+        if (!cp.isEmpty()) {
+            args.add("-cp");
+            args.add(cp.toString());
+            log.info("[HotReload] Classpath entries: {}", cp.toString().split(File.pathSeparator).length);
+        }
+
+        // Lombok também como processorpath (para rodar o annotation processor)
         if (lombokPath != null) {
             args.add("-processorpath");
             args.add(lombokPath);
-            log.info("[HotReload] Lombok annotation processor: {}", lombokPath);
+            log.info("[HotReload] Lombok processor: {}", lombokPath);
         } else {
-            log.warn("[HotReload] Lombok JAR not found — annotation processors will not run");
+            log.warn("[HotReload] Lombok JAR not found — @Getter/@Setter não serão processados");
         }
 
         args.addAll(files);
 
-        int result = compiler.run(null, null, null,
-                args.toArray(new String[0]));
-
+        int result = compiler.run(null, null, null, args.toArray(new String[0]));
         log.info("[HotReload] Compile status: {}", result == 0);
         return result == 0;
     }
