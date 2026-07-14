@@ -125,11 +125,23 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.register<JavaExec>("runDevicesTest") {
-    classpath = sourceSets.test.get().runtimeClasspath
-    mainClass.set("my_app.DevicesTest")
-}
+tasks.named<JavaExec>("run") {
+    val os = System.getProperty("os.name").lowercase()
+    val fxPath = if (os.contains("win")) {
+        "./java_fx_modules/windows-25.0.1/lib"
+    } else {
+        "./java_fx_modules/linux-25.0.1/lib"
+    }
 
+    jvmArgs = listOf(
+        "--module-path", fxPath,
+        "--add-modules", "javafx.controls,javafx.graphics",
+        "--enable-native-access=ALL-UNNAMED",
+        "-Dprism.verbose=true"
+    )
+
+    environment("DEV_MODE", "true")
+}
 application {
     mainClass.set(props.getProperty("appMainClass"))
 }

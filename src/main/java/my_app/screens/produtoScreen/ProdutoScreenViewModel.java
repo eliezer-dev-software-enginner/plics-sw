@@ -1,5 +1,6 @@
 package my_app.screens.produtoScreen;
 
+import megalodonte.ComputedState;
 import megalodonte.v2.ListState;
 import megalodonte.base.state.State;
 import megalodonte.base.async.Async;
@@ -66,6 +67,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     public final State<String> imagem = new State<>("/assets/produto-generico.png");
     public final State<ProdutoModel> produtoSelected = new State<>(null);
     public final State<String> perecivelSelected = new State<>("Não");
+
+    public final State<Boolean> formIsVisible = new State<>(true);
 
     public ProdutoScreenViewModel(ScreenContext ctx) {
         super(ctx);
@@ -139,6 +142,10 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
+    }
+
+    public void handleToggleFormVisible(){
+        formIsVisible.set(!formIsVisible.get());
     }
 
     @Override

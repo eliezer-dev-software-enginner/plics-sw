@@ -29,4 +29,5 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Quando ItemDetails é spanwnada ou quando aparece alert de erro vindo da chamada Components.ShowAlertError() a tela que chamou fica com apenas as opções "minimizar" e "fechar" ativadas.
+Cliente me perguntou isso: "Uma dúvida eu consigo imprimir uma venda no crediário com o número de parcelas na notinha que dai peço pro cliente assinar a via?. O pessoal aqui da cidade é da moda antiga gosta de assinar nota".
+Mas atualmente não temos essa opção.

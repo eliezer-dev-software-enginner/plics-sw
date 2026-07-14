@@ -70,6 +70,10 @@ public class AuthScreenViewModel {
         });
     }
 
+    public static boolean isLicensaInvalid(String licensa) {
+        return LICENCAS_PRODUCAO.equals(licensa);
+    }
+
     public static boolean isLicensaTesteExpirada(String licensa) {
         return LICENSA_TESTE.equals(licensa) && LocalDate.now().getDayOfMonth() > 7;
     }

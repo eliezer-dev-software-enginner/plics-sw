@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.sql.SQLException;
 import java.util.Objects;
-import java.util.Set;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -22,13 +20,11 @@ import my_app.core.Themes;
 import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
-import my_app.hotreload.HotReload;
 import my_app.core.AppRoutes;
 import my_app.infra.ProcessKiller;
 import org.flywaydb.core.Flyway;
 
 public class Main {
-    static HotReload hotReload;
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
     public static final String APP_VERSION = "1.0.9 - patch 02";
@@ -75,17 +71,6 @@ public class Main {
         ErrorReporter.register(Main::handleAppError);
         context.useView(new SplashScreen()); // mostra algo imediatamente
         initialize(context);
-
-            if (devMode) {
-                hotReload = new HotReload()
-                        .sourcePath("src/main/java")
-                        .classesPath("build/classes/java/main")
-                        .resourcesPath("src/main/resources")
-                        .screenClassName(null)
-                        .reloadContext(context)
-                        .classesToExclude(Set.of("my_app.Main"));
-                hotReload.start();
-            }
     }
 
     private static void onEvent(MegalodonteApp.Event ev) {

@@ -93,12 +93,12 @@ public class HomeScreenViewModel {
         }
     }
 
-    public boolean isLicensaTesteExpirada() {
+    public boolean isLicensaInvalida() {
         try {
             var prefs = preferenciasService.listar();
             if (!prefs.isEmpty()) {
                 String saved = prefs.getFirst().getLicensa();
-                return AuthScreenViewModel.isLicensaTesteExpirada(saved);
+                return AuthScreenViewModel.isLicensaTesteExpirada(saved) || AuthScreenViewModel.isLicensaInvalid(saved);
             }
         } catch (Exception e) {
             log.error("Erro ao verificar licença", e);
@@ -185,16 +185,18 @@ public class HomeScreenViewModel {
 
     //código que busca atualização
     // UI.runOnUi(()->Components.ShowPopup(screenContext,"Baixando última versão do repositório..."));
-    public void update() {
+    public void update(boolean fromClicked) {
         new Thread(() -> {
             var updater = new UpdaterService();
-            UI.runOnUi(()->Components.ShowPopup(screenContext,"Baixando última versão do repositório..."));
+            UI.runOnUi(()->Components.ShowPopup(screenContext,"Buscando por atualizações do repositório..."));
             try {
                 if (!updater.hasUpdate(Main.APP_VERSION)) {
-                    UI.runOnUi(() -> Components.ShowAlertAdvice(
-                            "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
-                            () -> {}
-                    ));
+                    if(fromClicked){
+                        UI.runOnUi(() -> Components.ShowAlertAdvice(
+                                "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
+                                () -> {}
+                        ));
+                    }
                     return;
                 }
             } catch (Exception e) {
@@ -212,7 +214,7 @@ public class HomeScreenViewModel {
             try {
                 msiPath = updater.downloadLatestPkg();
             } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao baixar: " + e.getMessage()));
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao baixar nova versão: " + e.getMessage()));
                 return;
             }
 

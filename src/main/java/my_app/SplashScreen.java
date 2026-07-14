@@ -2,10 +2,10 @@ package my_app;
 
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
+import megalodonte.base.UI;
 import megalodonte.base.components.Component;
+import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.theme.ThemeInterface;
-import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Image;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
@@ -17,6 +17,20 @@ import megalodonte.utils.related.TextVariant;
 
 public class SplashScreen implements ScreenComponent {
 
+    private final Ref<Text> carregandoRef = new Ref<>();
+
+    @Override
+    public void onMount() {
+        UI.runOnUi(() -> {
+            var pulse = new FadeTransition(Duration.millis(700), carregandoRef.current().getNode());
+            pulse.setFromValue(0.4);
+            pulse.setToValue(1.0);
+            pulse.setAutoReverse(true);
+            pulse.setCycleCount(FadeTransition.INDEFINITE);
+            pulse.play();
+        });
+    }
+
     @Override
     public Component render() {
         return new Column(new ColumnProps().centerHorizontally().centerVertically())
@@ -26,14 +40,7 @@ public class SplashScreen implements ScreenComponent {
                         new Text("Plics SW", new TextProps().variant(TextVariant.TITLE).bold()),
                         new SpacerVertical(8),
                         new Text("Carregando...", new TextProps().variant(TextVariant.SUBTITLE))
-                                .attachAnimation(it -> {
-                                    var pulse = new FadeTransition(Duration.millis(700), it.getNode());
-                                    pulse.setFromValue(0.4);
-                                    pulse.setToValue(1.0);
-                                    pulse.setAutoReverse(true);
-                                    pulse.setCycleCount(FadeTransition.INDEFINITE);
-                                    return pulse;
-                                })
+                                .ref(carregandoRef)
                 );
     }
 }

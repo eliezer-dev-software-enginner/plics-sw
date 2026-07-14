@@ -72,6 +72,11 @@ python scripts/create-msi-with-updater.py   # Windows
 python scripts/create-deb-with-updater.py   # Linux
 ```
 
+**Rodar em modo watch dog:
+```bash
+pip install watchdog
+python dev.py
+```
 ## Versão
 
 **Versão:** 1.0.0  

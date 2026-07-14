@@ -1,9 +1,12 @@
 package my_app.screens.homeScreen;
 
-import javafx.application.Platform;
+import javafx.util.Duration;
+import megalodonte.base.Redirect;
+import megalodonte.base.UI;
 import megalodonte.base.state.State;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
+import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
@@ -25,23 +28,30 @@ public class HomeScreen implements ScreenComponent {
 
     private final ScreenContext ctx;
 
+    private final Ref<Image> bannerRef = new Ref<>();
+
     public HomeScreen(ScreenContext ctx) {
         this.ctx = ctx;
         this.viewModel = new HomeScreenViewModel(ctx);
     }
 
-    private void buscarAtualizacao() {
-        viewModel.update();
+    private void buscarAtualizacao(boolean fromClicked) {
+        viewModel.update(fromClicked);
     }
 
     @Override
     public void onMount() {
-        if (viewModel.isLicensaTesteExpirada()) {
-            //ctx.navigate("entrar-com-credenciais");
-            Platform.runLater(() -> ctx.navigate("entrar-com-credenciais"));
+        if (viewModel.isLicensaInvalida()) {
+            UI.runOnUi(() -> ctx.navigate("entrar-com-credenciais"));
             return;
         }
         viewModel.calcularFinanceiroMesAtual();
+        buscarAtualizacao(false);
+
+        UI.runOnUi(() -> {
+            var anim = Animations.pulse(bannerRef.current(), 4,Duration.millis(600) ,Duration.seconds(1));
+            if (anim != null) anim.play();
+        });
     }
 
     public Component render (){
@@ -54,7 +64,14 @@ public class HomeScreen implements ScreenComponent {
                                         new Column().children(
                                                 financeCard("Receitas", AntDesignIconsOutlined.RISE, viewModel.receitas),
                                                 financeCard("Despesas", AntDesignIconsOutlined.FALL, viewModel.despesas),
-                                                financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, viewModel.lucroLiquido)
+                                                financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, viewModel.lucroLiquido),
+                                                new SpacerVertical(20),
+                                                new Clickable(
+                                                        new Image("assets/banners/banner_convite_playlist_ytb.png",
+                                                                new ImageProps().width(200).height(90))
+                                                                .ref(bannerRef),
+                                                        ()-> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK")
+                                                )
                                         ),
                                         centerContent()
                                 )
@@ -125,7 +142,7 @@ public class HomeScreen implements ScreenComponent {
                         .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
                         .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
                         .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow("info-update",e->{}))
-                        .item("Buscar atualização", this::buscarAtualizacao)
+                        .item("Buscar atualização", ()->buscarAtualizacao(true))
                 );
     }
 

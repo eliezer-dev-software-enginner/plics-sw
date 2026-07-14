@@ -1,11 +1,14 @@
 package my_app.screens.produtoScreen;
 
+import javafx.animation.Transition;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.CheckBox;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import megalodonte.ComputedState;
 import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
+import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
@@ -31,6 +34,7 @@ import java.util.List;
 public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final ProdutoScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
+    private final Ref<Card> formCardRef = new Ref<>();
 
     public ProdutoScreen(ScreenContext ctx) {
         this.vm = new ProdutoScreenViewModel(ctx);
@@ -67,10 +71,16 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
             }
         };
 
-        return new Card(
+        return Show.when(vm.formIsVisible, ()-> new Card(
                 new Column(new ColumnProps().paddingAll(5))
-                        .c_child(new Text("Dados do Produto",
-                                new TextProps().variant(TextVariant.BODY).bold()))
+                        .c_child(
+                                new Row().children(
+                                        new Button("Minimizar")
+                                                .onClick(vm::handleToggleFormVisible),
+                                        new Text("Dados do Produto",
+                                                new TextProps().variant(TextVariant.BODY).bold())
+                                )
+                        )
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row()
                                 .r_child(ContainerLeft(vm))
@@ -81,7 +91,26 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 new CardProps()
                         .padding(10)
                         .borderRadius(12)
-        );
+
+        ).ref(formCardRef),()->new Button("Maximizar").onClick(vm::handleToggleFormVisible) )
+                .withTransition((c, entering) -> {
+                    if (entering) {
+                        var anim = Animations.pop(c, true, Duration.millis(100));
+                        anim.setOnFinished(e -> {
+                            var n = c.getNode().getParent();
+                            while (n != null) {
+                                if (n instanceof ScrollPane sp) {
+                                    sp.setVvalue(0);
+                                    break;
+                                }
+                                n = n.getParent();
+                            }
+                        });
+                        return anim;
+                    } else {
+                        return Animations.fadeScale(c, false, Duration.millis(250));
+                    }
+                });
     }
 
     @Override
@@ -194,7 +223,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .c_child(new SpacerVertical(20))
                 .c_child(Show.when(model.getImagem()!=null,
                         ()->new Image(model.getImagem(), new ImageProps().size(100))
-                                .attachAnimation(it-> Animations.fadeScale(it,true, Duration.millis(600)))
                         )
                 )
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))

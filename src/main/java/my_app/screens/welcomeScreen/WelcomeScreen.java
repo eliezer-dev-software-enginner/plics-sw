@@ -2,7 +2,9 @@ package my_app.screens.welcomeScreen;
 
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
+import megalodonte.base.UI;
 import megalodonte.base.components.Component;
+import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
@@ -15,6 +17,7 @@ import megalodonte.utils.related.TextVariant;
 
 public class WelcomeScreen implements ScreenComponent {
     private final ScreenContext ctx;
+    private final Ref<Image> logoRef = new Ref<>();
 
     public WelcomeScreen(ScreenContext ctx) {
         this.ctx = ctx;
@@ -23,22 +26,27 @@ public class WelcomeScreen implements ScreenComponent {
 
     private final ThemeInterface theme = ThemeManager.theme();
 
+    @Override
+    public void onMount() {
+        UI.runOnUi(() -> {
+            ScaleTransition zoom = new ScaleTransition(Duration.millis(850), logoRef.current().getNode());
+            zoom.setFromX(1.0);
+            zoom.setFromY(1.0);
+            zoom.setToX(1.5);
+            zoom.setToY(1.5);
+            zoom.setAutoReverse(true);
+            zoom.setCycleCount(2);
+            zoom.play();
+        });
+    }
+
     public Component render() {
         return new Column(new ColumnProps().centerHorizontally()).c_child(
                 new Column(new ColumnProps().centerHorizontally().width(400)
                         .maxWidth(400).paddingTop(100).spacingOf(10))
                         .children(
                                 new Image("logo_256x256.png", new ImageProps().size(100))
-                                        .attachAnimation(it -> {
-                                            ScaleTransition zoom = new ScaleTransition(Duration.millis(850), it.getNode());
-                                            zoom.setFromX(1.0);
-                                            zoom.setFromY(1.0);
-                                            zoom.setToX(1.5);
-                                            zoom.setToY(1.5);
-                                            zoom.setAutoReverse(true);
-                                            zoom.setCycleCount(2);
-                                            return zoom;
-                                        }),
+                                        .ref(logoRef),
                                 new Text("Plics SW", new TextProps().variant(TextVariant.TITLE).bold()),
                                 new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
                                         new TextProps().variant(TextVariant.SUBTITLE)),
