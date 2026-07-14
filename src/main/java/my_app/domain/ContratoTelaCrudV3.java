@@ -1,11 +1,18 @@
 package my_app.domain;
 
+import javafx.scene.control.ScrollPane;
+import javafx.util.Duration;
+import megalodonte.base.Animations;
 import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.base.state.State;
+import megalodonte.components.Button;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.ContainerProps;
+import megalodonte.props.RowProps;
+import megalodonte.v2.Show;
 import my_app.domain.components.Components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +59,31 @@ public interface ContratoTelaCrudV3 {
     default <T> Component mainView(State<Boolean> focusState) {
         var mainContent = new Container(new ContainerProps().bgColor("#fff"))
                 .children(
-                        form(),
+                        new Row(new RowProps().fillWidth().centerHorizontally()).children(
+                                new Button(viewModel().formIsVisibleTextComputed).onClick(()->viewModel().handleToggleFormVisible())
+                        ),
+                        new SpacerVertical(20),
+                        Show.when(viewModel().formIsVisible, ()->  new Row(new RowProps().
+                                fillWidth().centerHorizontally())
+                                .children(form())
+                        ).withTransition((c, entering) -> {
+                            if (entering) {
+                                var anim = Animations.pop(c, true, Duration.millis(100));
+                                anim.setOnFinished(e -> {
+                                    var n = c.getNode().getParent();
+                                    while (n != null) {
+                                        if (n instanceof ScrollPane sp) {
+                                            sp.setVvalue(0);
+                                            break;
+                                        }
+                                        n = n.getParent();
+                                    }
+                                });
+                                return anim;
+                            } else {
+                                return Animations.fadeScale(c, false, Duration.millis(250));
+                            }
+                        }),
                         new SpacerVertical(30),
                         Components.searchInput(viewModel().searchState,"Pesquisar"),
                         table()

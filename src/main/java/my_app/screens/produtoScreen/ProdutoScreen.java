@@ -71,12 +71,10 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
             }
         };
 
-        return Show.when(vm.formIsVisible, ()-> new Card(
+        return new Card(
                 new Column(new ColumnProps().paddingAll(5))
                         .c_child(
-                                new Row().children(
-                                        new Button("Minimizar")
-                                                .onClick(vm::handleToggleFormVisible),
+                                new Row(new RowProps().fillWidth().centerHorizontally()).children(
                                         new Text("Dados do Produto",
                                                 new TextProps().variant(TextVariant.BODY).bold())
                                 )
@@ -92,25 +90,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .padding(10)
                         .borderRadius(12)
 
-        ).ref(formCardRef),()->new Button("Maximizar").onClick(vm::handleToggleFormVisible) )
-                .withTransition((c, entering) -> {
-                    if (entering) {
-                        var anim = Animations.pop(c, true, Duration.millis(100));
-                        anim.setOnFinished(e -> {
-                            var n = c.getNode().getParent();
-                            while (n != null) {
-                                if (n instanceof ScrollPane sp) {
-                                    sp.setVvalue(0);
-                                    break;
-                                }
-                                n = n.getParent();
-                            }
-                        });
-                        return anim;
-                    } else {
-                        return Animations.fadeScale(c, false, Duration.millis(250));
-                    }
-                });
+        );
     }
 
     @Override

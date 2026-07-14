@@ -12,12 +12,18 @@ public abstract class ViewModelScreenContract<Model> {
     protected final State<Boolean> modoEdicao = State.of(false);
 
     public final State<Boolean> focusState = new State<>(false);
+    public final State<Boolean> formIsVisible = new State<>(true);
+    public final ComputedState<String> formIsVisibleTextComputed = ComputedState.
+            of(()-> formIsVisible.get()? "Minimizar formulário":"Expandir formulário",formIsVisible);
 
     public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
 
     public final State<String> searchState = new State<>("");
     public final ListState<Model> allDataList = ListState.ofEmpty();
     public final ListState<Model> filteredList = ListState.ofEmpty();
+
+
+
 
     public ViewModelScreenContract(ScreenContext ctx) {
         this.ctx = ctx;
@@ -69,5 +75,7 @@ public abstract class ViewModelScreenContract<Model> {
         }
     }
 
-
+    public void handleToggleFormVisible(){
+        formIsVisible.set(!formIsVisible.get());
+    }
 }

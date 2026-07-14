@@ -104,6 +104,8 @@ public class AppRoutes {
         } else {
             rotaInicial = "home";
         }
+
+        //if(Main.devMode)rotaInicial = "produtos";
         return new Router(routes, rotaInicial);
     }
 }

@@ -144,9 +144,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         });
     }
 
-    public void handleToggleFormVisible(){
-        formIsVisible.set(!formIsVisible.get());
-    }
 
     @Override
     public void handleClickMenuDelete() {

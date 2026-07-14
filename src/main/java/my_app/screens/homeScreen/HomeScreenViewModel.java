@@ -186,6 +186,8 @@ public class HomeScreenViewModel {
     //código que busca atualização
     // UI.runOnUi(()->Components.ShowPopup(screenContext,"Baixando última versão do repositório..."));
     public void update(boolean fromClicked) {
+        if(Main.devMode)return;
+
         new Thread(() -> {
             var updater = new UpdaterService();
             UI.runOnUi(()->Components.ShowPopup(screenContext,"Buscando por atualizações do repositório..."));
