@@ -268,6 +268,7 @@ public class HotReload {
         if (cp != null) {
             for (String entry : cp.split(File.pathSeparator)) {
                 if (entry.toLowerCase().contains("lombok") && entry.endsWith(".jar")) {
+                    log.info("[HotReload] Lombok found on classpath: {}", entry);
                     return entry;
                 }
             }
@@ -278,6 +279,7 @@ public class HotReload {
         if (mp != null) {
             for (String entry : mp.split(File.pathSeparator)) {
                 if (entry.toLowerCase().contains("lombok") && entry.endsWith(".jar")) {
+                    log.info("[HotReload] Lombok found on module path: {}", entry);
                     return entry;
                 }
             }
@@ -288,19 +290,28 @@ public class HotReload {
         if (Files.isDirectory(gradleCache)) {
             try {
                 Path lombokDir = gradleCache.resolve("org.projectlombok/lombok");
+                log.info("[HotReload] Searching Lombok in Gradle cache: {}", lombokDir);
                 if (Files.isDirectory(lombokDir)) {
-                    try (var walk = Files.walk(lombokDir)) {
-                        return walk.filter(p -> p.toString().endsWith(".jar"))
+                    try (var walk = Files.walk(lombokDir, 5)) {
+                        var found = walk.filter(p -> p.toString().endsWith(".jar"))
                                 .findFirst()
-                                .map(Path::toString)
-                                .orElse(null);
+                                .map(Path::toString);
+                        if (found.isPresent()) {
+                            log.info("[HotReload] Lombok found in Gradle cache: {}", found.get());
+                            return found.get();
+                        }
                     }
+                } else {
+                    log.warn("[HotReload] Lombok dir not found: {}", lombokDir);
                 }
             } catch (IOException e) {
                 log.debug("[HotReload] Erro ao buscar Lombok no Gradle cache: {}", e.getMessage());
             }
+        } else {
+            log.warn("[HotReload] Gradle cache not found: {}", gradleCache);
         }
 
+        log.warn("[HotReload] Lombok JAR not found anywhere");
         return null;
     }
 
