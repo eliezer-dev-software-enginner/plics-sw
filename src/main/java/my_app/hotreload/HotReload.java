@@ -245,9 +245,13 @@ public class HotReload {
         }
 
         String lombokPath = findLombokJar();
-        if (lombokPath != null) {
+        String runtimeClasspath = System.getProperty("java.class.path");
+        if (runtimeClasspath != null && !runtimeClasspath.isBlank()) {
             args.add("-cp");
-            args.add(lombokPath);
+            args.add(runtimeClasspath);
+            log.info("[HotReload] Classpath from runtime ({} entries)", runtimeClasspath.split(File.pathSeparator).length);
+        }
+        if (lombokPath != null) {
             args.add("-processorpath");
             args.add(lombokPath);
             log.info("[HotReload] Lombok annotation processor: {}", lombokPath);
