@@ -1,6 +1,7 @@
 .gradle
 build/
 __pycache__/
+.venv/
 plics-sw-new-version-for-test/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
