@@ -783,7 +783,7 @@ public class Components {
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int height) {
         TextAreaInput textAreaInput = new TextAreaInput(inputState,
-                getInputProps(placeholder, height).width(40)
+                getInputProps(placeholder, height).width(400)
         );
 
         return new Column()
