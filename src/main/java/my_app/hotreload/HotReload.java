@@ -1,5 +1,6 @@
 package my_app.hotreload;
 
+import javafx.application.Platform;
 import megalodonte.application.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,6 @@ public class HotReload {
 
     private Path sourcePath;
     private Path classesPath;
-    private String implementationClassName;
     private String screenClassName;
     private Context reloadContext;
     private Set<String> classesToExclude = new HashSet<>();
@@ -50,11 +50,6 @@ public class HotReload {
 
     public HotReload resourcesPath(String resourcesPath) {
         this.resourcesPath = Paths.get(resourcesPath);
-        return this;
-    }
-
-    public HotReload implementationClassName(String implementationClassName) {
-        this.implementationClassName = implementationClassName;
         return this;
     }
 
@@ -93,7 +88,7 @@ public class HotReload {
             // 2. Registra o Resources Path (recursos)
             resourcesPath.register(ws, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
 
-            System.out.println(
+            log.info(
                     "[HotReload] started, watching Java source: " + sourcePath + " and Resources: " + resourcesPath);
 
             while (running) {
@@ -140,11 +135,11 @@ public class HotReload {
 
                 // Process Resources
                 for (Path res : resourceCandidates) {
-                    System.out.println("[HotReload] Resource Change detected: " + res);
+                    log.info("[HotReload] Resource Change detected: " + res);
                     Path targetCss = classesPath.resolve(res.getFileName());
                     try {
                         Files.copy(res, targetCss, StandardCopyOption.REPLACE_EXISTING);
-                        System.out.println("[HotReload] Resource copied to target/classes.");
+                        log.info("[HotReload] Resource copied to target/classes.");
                         needsReload = true;
                     } catch (IOException e) {
                         System.err.println("[HotReload] Failed to copy Resource: " + e.getMessage());
@@ -153,7 +148,7 @@ public class HotReload {
 
                 // Process Java
                 if (!javaCandidates.isEmpty()) {
-                    System.out.println("[HotReload] Java Changes detected (" + javaCandidates.size() + " files).");
+                    log.info("[HotReload] Java Changes detected (" + javaCandidates.size() + " files).");
                     needsCompile = true;
                 }
 
@@ -169,7 +164,7 @@ public class HotReload {
                                 hasReloadableChanges = true;
                                 break;
                             } else {
-                                System.out.println(
+                                log.info(
                                         "[HotReload] Change in excluded class (skipping reload trigger): " + fqcn);
                             }
                         }
@@ -199,7 +194,7 @@ public class HotReload {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 dir.register(ws, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
-                System.out.println("[HotReload] Watching directory: " + dir.getFileName());
+                log.info("[HotReload] Watching directory: {}", dir.getFileName());
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -230,11 +225,11 @@ public class HotReload {
                 .filter(p -> p.toString().endsWith(".java"))
                 .forEach(p -> {
                     String fqcn = this.getFullyQualifiedClassName(p);
-                    System.out.println("[HotReload] Compiling file: " + fqcn); // NOVO LOG
+                    log.info("[HotReload] Compiling file: {}", fqcn);
                     files.add(p.toString());
                 });
 
-        System.out.println("[HotReload] Compiling " + files.size() + " files...");
+        log.info("[HotReload] Compiling {} files...", files.size());
 
         // argumentos do javac DEVEM ser separados
         List<String> args = new ArrayList<>();
@@ -249,13 +244,64 @@ public class HotReload {
             args.add("javafx.controls,javafx.graphics,javafx.base");
         }
 
+        String lombokPath = findLombokJar();
+        if (lombokPath != null) {
+            args.add("-processorpath");
+            args.add(lombokPath);
+            log.info("[HotReload] Lombok annotation processor: {}", lombokPath);
+        } else {
+            log.warn("[HotReload] Lombok JAR not found — annotation processors will not run");
+        }
+
         args.addAll(files);
 
         int result = compiler.run(null, null, null,
                 args.toArray(new String[0]));
 
-        System.out.println("[HotReload] Compile status: " + (result == 0));
+        log.info("[HotReload] Compile status: {}", result == 0);
         return result == 0;
+    }
+
+    private String findLombokJar() {
+        // 1. Procura no classpath (quando roda via gradle run)
+        String cp = System.getProperty("java.class.path");
+        if (cp != null) {
+            for (String entry : cp.split(File.pathSeparator)) {
+                if (entry.toLowerCase().contains("lombok") && entry.endsWith(".jar")) {
+                    return entry;
+                }
+            }
+        }
+
+        // 2. Procura no module path
+        String mp = getModulePath();
+        if (mp != null) {
+            for (String entry : mp.split(File.pathSeparator)) {
+                if (entry.toLowerCase().contains("lombok") && entry.endsWith(".jar")) {
+                    return entry;
+                }
+            }
+        }
+
+        // 3. Procura no Gradle cache (~/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/)
+        Path gradleCache = Path.of(System.getProperty("user.home"), ".gradle", "caches", "modules-2", "files-2.1");
+        if (Files.isDirectory(gradleCache)) {
+            try {
+                Path lombokDir = gradleCache.resolve("org.projectlombok/lombok");
+                if (Files.isDirectory(lombokDir)) {
+                    try (var walk = Files.walk(lombokDir)) {
+                        return walk.filter(p -> p.toString().endsWith(".jar"))
+                                .findFirst()
+                                .map(Path::toString)
+                                .orElse(null);
+                    }
+                }
+            } catch (IOException e) {
+                log.debug("[HotReload] Erro ao buscar Lombok no Gradle cache: {}", e.getMessage());
+            }
+        }
+
+        return null;
     }
 
     private void callReloadEntry() throws Exception {
@@ -266,23 +312,17 @@ public class HotReload {
 
         // Carrega a classe de recarga NO NOVO ClassLoader, usando o nome da classe
         // injetada
-        Class<?> reloaderClass = cl.loadClass(implementationClassName);
+        Class<?> reloaderClass = cl.loadClass("my_app.hotreload.Reloader");
 
         // Cria uma nova instância da classe de recarga
         var reloader = (Reloader) reloaderClass.getDeclaredConstructor().newInstance();
 
-        System.out.println("[HotReload] Invoking new Reloader implementation: " + implementationClassName);
+        log.info("[HotReload] Invoking new Reloader implementation: {}", reloader);
 
-        // Usamos reflection para chamar o Platform.runLater do JavaFX para não depender
-        // diretamente do módulo javafx.controls.
-        Class<?> platformClass = Class.forName("javafx.application.Platform");
-        Method runLaterMethod = platformClass.getMethod("runLater", Runnable.class);
-
-        runLaterMethod.invoke(null, (Runnable) () -> {
+        Platform.runLater(()->{
             try {
                 // Passa o contexto, o nome da screen class e o classesPath
-                Method reloadWithScreen = reloaderClass.getMethod("reload", Context.class, String.class, String.class);
-                reloadWithScreen.invoke(reloader, reloadContext, screenClassName, classesPath.toString());
+                reloader.reload(reloadContext, screenClassName, classesPath.toString());
                 log.info("Reload finished.");
             } catch (Exception e) {
                 log.error("Error during reload execution", e);
@@ -291,7 +331,7 @@ public class HotReload {
     }
 
     public void stop() {
-        System.out.println("[HotReload Debug] HotReload was stopped");
+        log.info("[HotReload Debug] HotReload was stopped");
         running = false;
     }
 
@@ -300,7 +340,7 @@ public class HotReload {
         List<String> arguments = runtimeMxBean.getInputArguments();
         List<String> paths = new ArrayList<>();
 
-        System.out.println("[HotReload Debug] Runtime Arguments: " + arguments);
+        log.info("[HotReload Debug] Runtime Arguments: {}", arguments);
 
         for (int i = 0; i < arguments.size(); i++) {
             String arg = arguments.get(i);
@@ -317,12 +357,12 @@ public class HotReload {
         }
 
         if (paths.isEmpty()) {
-            System.out.println("[HotReload Debug] Module path NOT found in arguments.");
+            log.info("[HotReload Debug] Module path NOT found in arguments.");
             return null;
         }
 
         String combinedPath = String.join(File.pathSeparator, paths);
-        System.out.println("[HotReload Debug] Combined module path: " + combinedPath);
+        log.info("[HotReload Debug] Combined module path: " + combinedPath);
         return combinedPath;
     }
 }
