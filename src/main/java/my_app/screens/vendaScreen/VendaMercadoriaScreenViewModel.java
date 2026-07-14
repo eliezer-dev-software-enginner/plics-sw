@@ -256,6 +256,22 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             return;
         }
 
+        if (!modoEdicao.get() && "Sim".equalsIgnoreCase(opcaoEstoqueSelected.get())) {
+            var produto = produtoEncontrado.get();
+            var estoqueBase = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
+            var estoqueMinimo = produto.getEstoqueMinimo() != null ? produto.getEstoqueMinimo() : BigDecimal.ZERO;
+            var estoquePostVenda = estoqueBase.subtract(new BigDecimal(qtdStr));
+
+            if (estoquePostVenda.compareTo(estoqueMinimo) < 0) {
+                var nome = produto.getDescricao() != null ? produto.getDescricao() : produto.getCodigoBarras();
+                Components.ShowAlertAdvice(
+                        "O estoque de \"" + nome + "\" ficará abaixo do mínimo (" + estoquePostVenda + " / mínimo: " + estoqueMinimo + "). Deseja continuar?",
+                        () -> Async.Run(this::salvarVenda)
+                );
+                return;
+            }
+        }
+
         Async.Run(() -> {
             if (modoEdicao.get()) {
                 final var selecionado = vendaSelected.get();
@@ -277,37 +293,41 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
                     clearForm();
                 });
             } else {
-                var model = new VendaModel();
-                fillModelFromForm(model, true);
-                boolean atualizarEstoque = opcaoEstoqueSelected.get().equalsIgnoreCase("Sim");
-
-                VendaModel salvo;
-                try {
-                    salvo = vendaService.salvar(model, atualizarEstoque);
-                } catch (Exception e) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar venda: " + e.getMessage()));
-                    return;
-                }
-
-                if ("A PRAZO".equals(tipoPagamentoSelecionado.get()) && !parcelas.get().isEmpty()) {
-                    try {
-                        contaService.gerarContasDeVenda(salvo.getId(), salvo.getClienteId(), parcelas.get());
-                    } catch (Exception e) {
-                        UI.runOnUi(() -> Components.ShowAlertError("Erro ao gerar contas: " + e.getMessage()));
-                        return;
-                    }
-                }
-
-                VendaModel finalVenda = salvo;
-                UI.runOnUi(() -> {
-                    allDataList.add(finalVenda);
-                    clearForm();
-                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                    reloadProdutos();
-                    clearForm();
-                    Components.ShowPopupWithButton(ctx,"Salvo com sucesso","Imprimir", ()-> imprimirNotaDeVenda(finalVenda));
-                });
+                salvarVenda();
             }
+        });
+    }
+
+    private void salvarVenda() {
+        var model = new VendaModel();
+        fillModelFromForm(model, true);
+        boolean atualizarEstoque = opcaoEstoqueSelected.get().equalsIgnoreCase("Sim");
+
+        VendaModel salvo;
+        try {
+            salvo = vendaService.salvar(model, atualizarEstoque);
+        } catch (Exception e) {
+            UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar venda: " + e.getMessage()));
+            return;
+        }
+
+        if ("A PRAZO".equals(tipoPagamentoSelecionado.get()) && !parcelas.get().isEmpty()) {
+            try {
+                contaService.gerarContasDeVenda(salvo.getId(), salvo.getClienteId(), parcelas.get());
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao gerar contas: " + e.getMessage()));
+                return;
+            }
+        }
+
+        VendaModel finalVenda = salvo;
+        UI.runOnUi(() -> {
+            allDataList.add(finalVenda);
+            clearForm();
+            EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+            reloadProdutos();
+            clearForm();
+            Components.ShowPopupWithButton(ctx,"Salvo com sucesso","Imprimir", ()-> imprimirNotaDeVenda(finalVenda));
         });
     }
 
