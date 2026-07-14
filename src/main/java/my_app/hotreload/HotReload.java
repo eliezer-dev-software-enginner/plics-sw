@@ -236,21 +236,14 @@ public class HotReload {
         args.add("-d");
         args.add(classesPath.toString());
 
-        String modulePath = getModulePath();
-        if (modulePath != null) {
-            args.add("--module-path");
-            args.add(modulePath);
-            args.add("--add-modules");
-            args.add("javafx.controls,javafx.graphics,javafx.base");
-        }
-
-        String lombokPath = findLombokJar();
         String runtimeClasspath = System.getProperty("java.class.path");
         if (runtimeClasspath != null && !runtimeClasspath.isBlank()) {
             args.add("-cp");
             args.add(runtimeClasspath);
             log.info("[HotReload] Classpath from runtime ({} entries)", runtimeClasspath.split(File.pathSeparator).length);
         }
+
+        String lombokPath = findLombokJar();
         if (lombokPath != null) {
             args.add("-processorpath");
             args.add(lombokPath);
