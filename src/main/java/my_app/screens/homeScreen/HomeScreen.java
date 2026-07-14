@@ -89,7 +89,7 @@ public class HomeScreen implements ScreenComponent {
 
     public Component saudacaoComponent(){
         return new Column().children(
-                Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(80)))
+                Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(90)))
                         .withTransition(Animations::fadeSlide),
                 new Text(viewModel.vendasHoje, new TextProps().variant(TextVariant.BODY).bold().textColor("#fff"))
         );

@@ -62,11 +62,16 @@ public class HomeScreenViewModel {
             "/assets/gifs/aguardando-apreencivamente.gif",
             "/assets/gifs/feliz-2.gif",
             "/assets/gifs/negativa.gif",
-            "/assets/gifs/de-boa-relaxando.gif"
+            "/assets/gifs/de-boa-relaxando.gif",
+            "/assets/gifs/chegando_e_voltando.gif"
     );
 
-    final List<String> gifsFeliz = List.of(gifsList.getFirst(), gifsList.get(2));
-    final List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4));
+    final List<String> gifsFeliz = List.of(gifsList.getFirst(), gifsList.get(2),"assets/gifs/crazy-dancing-dog.gif");
+    final List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4),
+            gifsList.get(5),"/assets/gifs/dog-abanando-rabo.gif",
+            "assets/gifs/gjirlfriend.gif","assets/gifs/mr-bean-waiting.gif","assets/gifs/waiting.gif"
+
+            );
 
     public HomeScreenViewModel(ScreenContext screenContext) {
         this.screenContext = screenContext;
