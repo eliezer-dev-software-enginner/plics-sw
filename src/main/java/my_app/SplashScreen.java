@@ -22,7 +22,7 @@ public class SplashScreen implements ScreenComponent {
     @Override
     public void onMount() {
         UI.runOnUi(() -> {
-            var pulse = new FadeTransition(Duration.millis(700), carregandoRef.current().getNode());
+            var pulse = new FadeTransition(Duration.millis(700), carregandoRef.current().getJavaFxNode());
             pulse.setFromValue(0.4);
             pulse.setToValue(1.0);
             pulse.setAutoReverse(true);
@@ -37,7 +37,7 @@ public class SplashScreen implements ScreenComponent {
                 .children(
                         new Image("logo_256x256.png", new ImageProps().size(96)),
                         new SpacerVertical(16),
-                        new Text("Plics SW", new TextProps().variant(TextVariant.TITLE).bold()),
+                        new Text("Plics SW - " + Main.APP_VERSION, new TextProps().variant(TextVariant.TITLE).bold()),
                         new SpacerVertical(8),
                         new Text("Carregando...", new TextProps().variant(TextVariant.SUBTITLE))
                                 .ref(carregandoRef)

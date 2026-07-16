@@ -12,6 +12,7 @@ import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -34,7 +35,6 @@ import java.util.List;
 public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final ProdutoScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
-    private final Ref<Card> formCardRef = new Ref<>();
 
     public ProdutoScreen(ScreenContext ctx) {
         this.vm = new ProdutoScreenViewModel(ctx);
@@ -197,14 +197,21 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     Component ItemDetails(ProdutoModel model) {
+        log.info("Imagem: {}", model.getImagem());
+
         var validade = model.getValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getValidade()) : "Sem validade";
+
+        String img = model.getImagem();
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes do produto", new TextProps().variant(TextVariant.SUBTITLE)))
                 .c_child(new SpacerVertical(20))
-                .c_child(Show.when(model.getImagem()!=null,
-                        ()->new Image(model.getImagem(), new ImageProps().size(100))
-                        )
+                .c_child(
+                      img == null? new Container() : new Image(model.getImagem(), new ImageProps().size(100))
                 )
+//                .c_child(Show.when(model.getImagem()!=null,
+//                        ()->new Image(model.getImagem(), new ImageProps().size(100))
+//                        )
+//                )
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Código: ", model.getCodigoBarras()))
                 .c_child(Components.TextWithDetails("Cor: ", model.getCor() != null ? model.getCor() : "-"))

@@ -12,8 +12,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.*;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
+import megalodonte.application.ErrorReporter;
 import megalodonte.base.Animations;
 import megalodonte.base.UI;
+import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.state.ReadableState;
 import megalodonte.base.state.State;
@@ -261,7 +263,7 @@ public class Components {
         ShowModal(ui, context, 500);
     }
 
-    public static void ShowAlertAdvice(String bodyMessage, Runnable handleSuccessEvent) {
+    public static void ShowAlertAdvice(String bodyMessage, RunnableThrowing handleSuccessEvent) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmação");
         alert.setHeaderText(bodyMessage);
@@ -270,7 +272,12 @@ public class Components {
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            handleSuccessEvent.run();
+            try {
+                handleSuccessEvent.run();
+            } catch (Exception e) {
+                ErrorReporter.handle(e);
+                throw new IllegalStateException(e);
+            }
         }
     }
 

@@ -29,9 +29,8 @@ import java.sql.SQLException;
 import java.util.Set;
 
 public class AppRoutes {
-    public Router defineRoutes(boolean askCredentials, boolean forceAccessRoute) throws ReflectiveOperationException {
-
-        var routes = Set.of(
+    public Set<Router.Route> routes() {
+        return Set.of(
                 new Router.Route("ler-planilha-ia", LerPlanilhaScreen::new, new RouteProps(650, 500, "Extrair dados com IA", true)),
                 new Router.Route("welcome", WelcomeScreen::new, new RouteProps(950, 550, Main.BASE_TITLE, true)),
                 new Router.Route("home", HomeScreen::new, new RouteProps(1180, 650,Main.BASE_TITLE, true)),
@@ -41,9 +40,9 @@ public class AppRoutes {
                 new Router.Route("categorias", CategoriaScreen::new, new RouteProps(1000, 650, "Gerenciamento de categorias", false)),
                 //ok
                 new Router.Route("fornecedores", FornecedorScreen::new, new RouteProps(1210, 650, "Gerenciamento de Fornecedores", true)),
-                //ok
+
                 new Router.Route("empresa", CadastroEmpresaScreen::new, new RouteProps(900, 650, "Informações da empresa", false)),
-               //ok
+                //ok
                 new Router.Route("compras", ComprasScreen::new, new RouteProps(1000, 650, "Compras de mercadorias", true)),
                 //ok
                 new Router.Route("clientes", ClienteScreen::new, new RouteProps(1150, 650, "Gerenciamento de clientes", true)),
@@ -70,51 +69,5 @@ public class AppRoutes {
                 new Router.Route("info-update", InfoUpdateScreen::new,
                         new RouteProps(900, 650, "Atualizações do aplicativo", false))
         );
-
-        //String rotaInicial = "categorias";//ok completo
-        //String rotaInicial = "produtos";//ok
-
-        //String rotaInicial = "vendas"; //ok
-        //String rotaInicial = "pedidos";//ok
-        //String rotaInicial = "home"; //ok
-        //String rotaInicial = "fornecedores";//ok
-        //String rotaInicial = "clientes";//ok
-        //String rotaInicial = "relatar-erro";//ok
-        //String rotaInicial = "sugerir-melhoria";//ok
-        //String rotaInicial = "preferencias";ok
-        //String rotaInicial = "compras";ok
-
-        //String rotaInicial = "entrar-com-credenciais";
-        //String rotaInicial = "pdv-screen";
-
-
-        //TODO: TRATAR ESSAS TELAS NA V4
-        //String rotaInicial = "contas-a-pagar";
-        //String rotaInicial = "tecnicos";
-        //String rotaInicial = "ordem-de-servico";
-
-        //String rotaInicial = "empresa";
-        //String rotaInicial = "info-update";
-
-        String rotaInicial;
-        if (forceAccessRoute) {
-            rotaInicial = "welcome";
-        } else if (askCredentials) {
-            rotaInicial = "entrar-com-credenciais";
-        } else {
-            rotaInicial = "home";
-        }
-
-        //if(Main.devMode)rotaInicial = "produtos";
-        return new Router(routes, rotaInicial);
     }
 }
-
-/**
- * Exemplo ed navegacoes:
- * "cad-produtos/teste}"
- *
- * --- Fechando
- * router.closeSpawn()))
- * .r_child(MenuItem("Sair", Entypo.REPLY, "red", () -> router.closeSpawn("cad-produtos/"+id)))
- */

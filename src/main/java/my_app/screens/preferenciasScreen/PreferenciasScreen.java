@@ -52,13 +52,12 @@ public class PreferenciasScreen implements ScreenComponent {
                 new SpacerVertical(30),
                 new LineHorizontal(),
                 new SpacerVertical(10),
-                new Text("Risco"),
-                new Button("Excluir todos os dados",
+                new Button("Encerrar sessão",
                         new ButtonProps().fillWidth().height(31)
                                 .fontSize(14).textColor("white").bgColor("#dc2626"))
                         .onClick(() -> Components.ShowAlertAdvice(
-                                "Tem certeza que deseja excluir todos os dados?",
-                                vm::deletarTodosDados
+                                "Tem certeza que deseja sair? Não se preocupe seus dados serão mantidos ;)",
+                                vm::signOut
                         ))
         );
     }

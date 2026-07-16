@@ -16,12 +16,14 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.router.v4.Router;
+import my_app.core.InitialRouteResolver;
 import my_app.core.Themes;
 import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
 import my_app.core.AppRoutes;
 import my_app.infra.ProcessKiller;
+import my_app.screens.authScreen.AuthScreenViewModel;
 import org.flywaydb.core.Flyway;
 
 public class Main {
@@ -30,9 +32,6 @@ public class Main {
     public static final String APP_VERSION = "1.0.9 - patch 02";
     public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
-
-    static boolean askCredentials = false;
-    static boolean forceAccessRoute = false;
 
     public static final String ICON_PATH = "/assets/app_ico.png";
 
@@ -70,6 +69,7 @@ public class Main {
         // registra o handler de erro o quanto antes — antes de qualquer Async.Run rodar
         ErrorReporter.register(Main::handleAppError);
         context.useView(new SplashScreen()); // mostra algo imediatamente
+
         initialize(context);
     }
 
@@ -103,7 +103,6 @@ public class Main {
         } catch (IOException ignored) {}
     }
 
-    // mandatory for hotreload
     public static void initialize(Context context) {
         ThemeManager.setTheme(Themes.LIGHT); // mexe em Scene/Stylesheets -> FX thread, fica fora do Async.Run
 
@@ -117,14 +116,21 @@ public class Main {
             flyway.repair();
             flyway.migrate();
 
-            var prefs = new PreferenciasService().listar();
-            if (!prefs.isEmpty()) {
-                var pref = prefs.getFirst();
-                askCredentials = pref.getCredenciaisHabilitadas() == 1;
-                forceAccessRoute = pref.isFirstAccess();
+            boolean enterWithCredentials = false;
+            boolean isFirstAccess = false;
+
+            try(var preferenciasService = new PreferenciasService()){
+                var prefs = preferenciasService.listar();
+                if (!prefs.isEmpty()) {
+                    var pref = prefs.getFirst();
+                    isFirstAccess = pref.isFirstAccess();
+                    enterWithCredentials = pref.getCredenciaisHabilitadas() == 1|| AuthScreenViewModel.isLicenseInvalid(pref.getLicensa());
+                }
             }
 
-            Router router = new AppRoutes().defineRoutes(askCredentials, forceAccessRoute);
+            var routes = new AppRoutes().routes();
+            String rotaInicial = InitialRouteResolver.resolve(isFirstAccess, enterWithCredentials);
+            Router router = new Router(routes, rotaInicial);
 
             // ---- volta pra FX thread só pra montar a tela ----
             UI.runOnUi(() -> {

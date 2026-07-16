@@ -20,7 +20,6 @@ public class AuthScreen implements ScreenComponent {
 
     public AuthScreen(ScreenContext ctx) {
         this.ctx = ctx;
-        ctx.selfStage().getIcons().add(Main.loadIcon());
         this.vm = new AuthScreenViewModel();
     }
 

@@ -51,7 +51,7 @@ public class HomeScreenViewModel {
     public final State<String> vendasHoje = new State<>("R$ 0,00");
 
     public final State<Boolean> gifVisible = State.of(true);
-    private ScreenContext screenContext;
+    private final ScreenContext screenContext;
     public final State<String> currentGif = new State<>(null);
     private final Random random = new Random();
 
@@ -90,19 +90,6 @@ public class HomeScreenViewModel {
             megalodonte.application.ErrorReporter.handle(e);
             throw new IllegalStateException(e);
         }
-    }
-
-    public boolean isLicensaInvalida() {
-        try {
-            var prefs = preferenciasService.listar();
-            if (!prefs.isEmpty()) {
-                String saved = prefs.getFirst().getLicensa();
-                return AuthScreenViewModel.isLicensaTesteExpirada(saved) || AuthScreenViewModel.isLicensaInvalid(saved);
-            }
-        } catch (Exception e) {
-            log.error("Erro ao verificar licença", e);
-        }
-        return false;
     }
 
     private void onInit() {

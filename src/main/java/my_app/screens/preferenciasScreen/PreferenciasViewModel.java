@@ -121,16 +121,24 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
         }
     }
 
+
+    public void signOut() throws SQLException {
+       prefLoaded.setCredenciaisHabilitadas(1);
+       prefLoaded.setPrimeiroAcesso(1);
+       prefLoaded.setLogin("admin");
+       prefLoaded.setSenha("1234");
+
+        preferenciasService.atualizar(prefLoaded);
+
+        ctx.navigateAndCloseOthers("welcome");
+    }
+
     String validar() {
         var habilitar = habilitarCredenciaisSelected.get().equals("Sim");
         if (!habilitar) return null;
         if (loginState.get().isBlank()) return "Login é obrigatório";
         if (passwordState.get().isBlank()) return "Senha é obrigatória";
         return null;
-    }
-
-    void deletarTodosDados() {
-      Components.ShowAlertError("Opção temporariamente indisponível!");
     }
 
     @Override

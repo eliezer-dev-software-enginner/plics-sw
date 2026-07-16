@@ -68,8 +68,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     public final State<ProdutoModel> produtoSelected = new State<>(null);
     public final State<String> perecivelSelected = new State<>("Não");
 
-    public final State<Boolean> formIsVisible = new State<>(true);
-
     public ProdutoScreenViewModel(ScreenContext ctx) {
         super(ctx);
         this.produtoService = createOrReport(ProdutoService::new);

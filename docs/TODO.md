@@ -222,8 +222,8 @@
 - **PDVServiceTest**: criado com 4 testes (cliente padrão, sem cliente, fiado, não fiado)
 
 ## Concluído (licença de teste)
-- Migration V17: coluna `licensa` adicionada à tabela `preferencias`
-- `PreferenciasModel`: campo `licensa` adicionado
+- Migration V17: coluna `license` adicionada à tabela `preferencias`
+- `PreferenciasModel`: campo `license` adicionado
 - `AuthScreenViewModel`: aceita licença de teste até dia 3; salva licença no banco; exibe campo novamente se expirou
 - `HomeScreenViewModel`: método `isLicensaTesteExpirada()` adicionado
 - `HomeScreen.onMount()`: redireciona para AuthScreen se licença de teste expirou

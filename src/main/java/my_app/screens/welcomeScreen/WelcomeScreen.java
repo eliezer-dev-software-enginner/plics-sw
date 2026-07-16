@@ -10,6 +10,7 @@ import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -21,7 +22,6 @@ public class WelcomeScreen implements ScreenComponent {
 
     public WelcomeScreen(ScreenContext ctx) {
         this.ctx = ctx;
-        WelcomeScreenViewModel vm = new WelcomeScreenViewModel();
     }
 
     private final ThemeInterface theme = ThemeManager.theme();
@@ -41,24 +41,28 @@ public class WelcomeScreen implements ScreenComponent {
     }
 
     public Component render() {
-        return new Column(new ColumnProps().centerHorizontally()).c_child(
-                new Column(new ColumnProps().centerHorizontally().width(400)
-                        .maxWidth(400).paddingTop(100).spacingOf(10))
-                        .children(
-                                new Image("logo_256x256.png", new ImageProps().size(100))
-                                        .ref(logoRef),
-                                new Text("Plics SW", new TextProps().variant(TextVariant.TITLE).bold()),
-                                new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
-                                        new TextProps().variant(TextVariant.SUBTITLE)),
-                                new LineHorizontal(),
-                                new Text("Acesso padrão configurado como", new TextProps().variant(TextVariant.BODY)),
-                                textRow(),
-                                new SpacerVertical(20),
-                                new Button("Entrar no sistema",
-                                        new ButtonProps()
-                                                .fontSize(theme.typography().body()).textColor("#fff").bgColor(theme.colors().primary()))
-                                        .onClick(this::handleClick)
-                        )
+        return new Container(new ContainerProps().bgImage("/assets/wallpapers/welcome.jpg")).children(
+                new Column(new ColumnProps().centerHorizontally()).c_child(
+                        new Column(new ColumnProps().centerHorizontally().width(400)
+                                .maxWidth(400).paddingTop(100).spacingOf(10))
+                                .children(
+                                        new Image("assets/app_banner.png", new ImageProps().width(400).height(200).preserveRatio(true))
+                                                .ref(logoRef),
+                                        //new Text("Plics SW", new TextProps().variant(TextVariant.TITLE).bold().color(ThemeManager.theme().colors().secondary())),
+                                        new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
+                                                new TextProps().variant(TextVariant.SUBTITLE).color("#fff")),
+                                        new LineHorizontal(),
+                                        new Text("Acesso padrão configurado como",
+                                                new TextProps().variant(TextVariant.BODY).color("#fff")),
+                                        textRow(),
+                                        new SpacerVertical(20),
+                                        new Button("Entrar no sistema",
+                                                new ButtonProps()
+                                                        .fontSize(theme.typography().body()).textColor("#fff")
+                                                        .bgColor(theme.colors().primary()))
+                                                .onClick(this::handleClick)
+                                )
+                )
         );
     }
 
@@ -67,12 +71,12 @@ public class WelcomeScreen implements ScreenComponent {
     }
 
     public Component textRow() {
-        return new Row(new RowProps().width(200).maxWidth(300).centerHorizontally().bgColor("yellow"))
+        return new Row(new RowProps().width(200).maxWidth(300).centerHorizontally().bgColor(ThemeManager.theme().colors().border()))
                 .children(
-                        new Text("usuário", new TextProps().variant(TextVariant.BODY)),
-                        new Text(" admin", new TextProps().variant(TextVariant.BODY).bold()),
-                        new Text(" e senha", new TextProps().variant(TextVariant.BODY)),
-                        new Text(" 1234", new TextProps().variant(TextVariant.BODY).bold())
+                        new Text("usuário", new TextProps().variant(TextVariant.BODY).color("#fff")),
+                        new Text(" admin", new TextProps().variant(TextVariant.BODY).bold().color("#fff")),
+                        new Text(" e senha", new TextProps().variant(TextVariant.BODY).color("#fff")),
+                        new Text(" 1234", new TextProps().variant(TextVariant.BODY).bold().color("#fff"))
                 );
     }
 }

@@ -41,10 +41,6 @@ public class HomeScreen implements ScreenComponent {
 
     @Override
     public void onMount() {
-        if (viewModel.isLicensaInvalida()) {
-            UI.runOnUi(() -> ctx.navigate("entrar-com-credenciais"));
-            return;
-        }
         viewModel.calcularFinanceiroMesAtual();
         buscarAtualizacao(false);
 
