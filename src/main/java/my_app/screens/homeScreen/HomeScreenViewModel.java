@@ -70,8 +70,7 @@ public class HomeScreenViewModel {
     final List<String> gifsOcioso = List.of(gifsList.get(1), gifsList.get(4),
             gifsList.get(5),"/assets/gifs/dog-abanando-rabo.gif",
             "assets/gifs/gjirlfriend.gif","assets/gifs/mr-bean-waiting.gif","assets/gifs/waiting.gif"
-
-            );
+    );
 
     public HomeScreenViewModel(ScreenContext screenContext) {
         this.screenContext = screenContext;

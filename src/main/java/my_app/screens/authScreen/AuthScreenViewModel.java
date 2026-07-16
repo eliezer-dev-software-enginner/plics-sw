@@ -40,10 +40,6 @@ public class AuthScreenViewModel {
         this.preferenciasService = createOrReport(PreferenciasService::new);
     }
 
-    public AuthScreenViewModel(PreferenciasService preferenciasService) {
-        this.preferenciasService = preferenciasService;
-    }
-
     private static <T> T createOrReport(megalodonte.utils.ThrowingSupplier<T> supplier) {
         try {
             return supplier.get();
@@ -60,8 +56,8 @@ public class AuthScreenViewModel {
                 if (!prefs.isEmpty()) {
                     prefRecuperada = prefs.getFirst();
                     UI.runOnUi(() -> {
-                        boolean expiredTest = isLicensaTesteExpirada(prefRecuperada.getLicensa());
-                        showLicensaState.set(prefRecuperada.isFirstAccess() || expiredTest);
+                        boolean invalid = isLicensaTesteExpirada(prefRecuperada.getLicensa()) || isLicensaInvalid(prefRecuperada.getLicensa());
+                        showLicensaState.set(prefRecuperada.isFirstAccess() || invalid);
                     });
                 }
             } catch (SQLException e) {
@@ -71,7 +67,7 @@ public class AuthScreenViewModel {
     }
 
     public static boolean isLicensaInvalid(String licensa) {
-        return LICENCAS_PRODUCAO.equals(licensa);
+        return LICENCAS_PRODUCAO.contains(licensa);
     }
 
     public static boolean isLicensaTesteExpirada(String licensa) {

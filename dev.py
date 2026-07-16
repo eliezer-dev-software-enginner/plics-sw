@@ -27,12 +27,27 @@ def start():
     print("[dev] Iniciando aplicação...")
     process = subprocess.Popen(GRADLE_RUN)
 
-def restart():
+def kill_process():
     global process
-    if process and process.poll() is None:
-        print("[dev] Mudança detectada — reiniciando...")
+    if process is None:
+        return
+
+    if sys.platform == "win32":
+        subprocess.run(
+            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    else:
         process.terminate()
         process.wait()
+
+    process = None
+
+
+def restart():
+    print("[dev] Mudança detectada — reiniciando...")
+    kill_process()
     start()
 
 if __name__ == "__main__":
