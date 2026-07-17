@@ -78,7 +78,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         return new SimpleTable<CompraModel>()
                 .fromData(vm.filteredList)
                 .header()

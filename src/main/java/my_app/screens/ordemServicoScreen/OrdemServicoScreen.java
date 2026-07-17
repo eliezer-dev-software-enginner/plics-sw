@@ -95,7 +95,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         return new SimpleTable<OrdemServicoModel>()
                 .fromData(vm.filteredList)
                 .header()

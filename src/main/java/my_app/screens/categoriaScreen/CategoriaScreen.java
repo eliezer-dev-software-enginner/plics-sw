@@ -48,7 +48,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         var simpleTable = new SimpleTable<CategoriaModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()

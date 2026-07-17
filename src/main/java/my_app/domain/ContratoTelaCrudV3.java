@@ -7,6 +7,7 @@ import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.base.state.State;
 import megalodonte.components.Button;
+import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
@@ -53,14 +54,15 @@ public interface ContratoTelaCrudV3 {
         );
     }
 
-    Component table();
+    SimpleTable table();
     Component form();
 
     default <T> Component mainView(State<Boolean> focusState) {
         var mainContent = new Container(new ContainerProps().bgColor("#fff"))
                 .children(
                         new Row(new RowProps().fillWidth().centerHorizontally()).children(
-                                new Button(viewModel().formIsVisibleTextComputed).onClick(()->viewModel().handleToggleFormVisible())
+                                new Button(viewModel().formIsVisibleTextComputed)
+                                        .onClick(()->viewModel().handleToggleFormVisible())
                         ),
                         new SpacerVertical(20),
                         Show.when(viewModel().formIsVisible, ()->  new Row(new RowProps().
@@ -85,8 +87,12 @@ public interface ContratoTelaCrudV3 {
                             }
                         }),
                         new SpacerVertical(30),
-                        Components.searchInput(viewModel().searchState,"Pesquisar"),
-                        table()
+                        new Container(new ContainerProps().paddingLeft(20).paddingRight(20).fillHeight())
+                                .children(
+                                Components.searchInput(viewModel().searchState,"Pesquisar"),
+                                table()
+                        )
+
         );
 
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))

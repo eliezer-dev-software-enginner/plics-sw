@@ -8,6 +8,7 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
+import my_app.core.AppRoutes;
 import my_app.db.models.PreferenciasModel;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
@@ -130,7 +131,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
 
         preferenciasService.atualizar(prefLoaded);
 
-        ctx.navigateAndCloseOthers("welcome");
+        ctx.navigateAndCloseOthers(AppRoutes.Screens.WELCOME.name());
     }
 
     String validar() {

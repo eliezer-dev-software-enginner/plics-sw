@@ -191,7 +191,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         var simpleTable = new SimpleTable<ContaAreceberModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()

@@ -8,8 +8,10 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
+import megalodonte.props.FlowRowProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
@@ -53,21 +55,20 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 new Column(new ColumnProps().paddingAll(20))
                         .c_child(Components.FormTitle("Cadastrar cliente"))
                         .c_child(new SpacerVertical(20))
-                        .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.InputColumn("Nome", vm.nome, "Ex: João"))
-                                .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
-                                .r_child(Show.when(vm.tipoPessoaEhFisica,
-                                        () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
-                                        () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
-                                ))
-                                .r_child(Components.InputColumnPhone("Celular", vm.celular))
-                                .r_child(Components.InputColumn("Email", vm.email, ""))
-                                .r_child(Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"))
-                        )
-                        .c_child(
-                                new Row(new RowProps().spacingOf(10)).children(
+                        .c_child(new FlowRow(new FlowRowProps().spacingOf(10))
+                                .children(
+                                        Components.InputColumn("Nome", vm.nome, "Ex: João"),
+                                        Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it),
+                                        Show.when(vm.tipoPessoaEhFisica,
+                                                () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
+                                                () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
+                                        ),
+                                        Components.InputColumnPhone("Celular", vm.celular),
+                                        Components.InputColumn("Email", vm.email, ""),
+                                        Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"),
                                         Components.SelectColumn("É gestante?", Data.simNaoList, vm.isGestante, it -> it),
                                         Show.when(vm.isGestanteComputed,()->Components.DatePickerColumn(vm.dataNascimentoBebe,"Data de nascimento do bebê") )
+
                                 )
                         )
                         .c_child(new SpacerVertical(10))
@@ -83,7 +84,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public Component table() {
+    public SimpleTable<ClienteModel> table() {
         var simpleTable = new SimpleTable<ClienteModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()

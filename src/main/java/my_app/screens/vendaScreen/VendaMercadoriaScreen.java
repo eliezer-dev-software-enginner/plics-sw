@@ -85,7 +85,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         return new SimpleTable<VendaModel>()
                 .fromData(vm.filteredList)
                 .header()

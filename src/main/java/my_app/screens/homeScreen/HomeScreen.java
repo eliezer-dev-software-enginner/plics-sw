@@ -16,6 +16,7 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
+import my_app.core.AppRoutes;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -122,22 +123,21 @@ public class HomeScreen implements ScreenComponent {
 
     private Component menuBar(){
         return new MenuBar()
-                .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow("preferencias",e->{})))
+                .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow(AppRoutes.Screens.PREFERENCIAS.name(),e->{})))
                 .menu(new Menu("Cadastros")
-                        .item("Fornecedores", ()-> ctx.router().spawnWindow("fornecedores",e->{}))
-                        .item("Clientes", ()-> ctx.router().spawnWindow("clientes",e->{}))
-                        .item("Categorias", ()-> ctx.router().spawnWindow("categorias",e->{}))
-                        .item("Produtos", ()-> ctx.router().spawnWindow("produtos",e->{}))
-                        .item("Técnicos", ()-> ctx.router().spawnWindow("tecnicos",e->{}))
-                        //.item("Ler planilha IA", ()-> ctx.router().spawnWindow("ler-planilha-ia",e->{}))
+                        .item("Fornecedores", ()-> ctx.router().spawnWindow(AppRoutes.Screens.FORNECEDORES.name(), e->{}))
+                        .item("Clientes", ()-> ctx.router().spawnWindow(AppRoutes.Screens.CLIENTES.name(),e->{}))
+                        .item("Categorias", ()-> ctx.router().spawnWindow(AppRoutes.Screens.CATEGORIAS.name(),e->{}))
+                        .item("Produtos", ()-> ctx.router().spawnWindow(AppRoutes.Screens.PRODUTOS.name(),e->{}))
+                        .item("Técnicos", ()-> ctx.router().spawnWindow(AppRoutes.Screens.TECNICOS.name(),e->{}))
                 )
                 .menu(new Menu("Gerencial")
-                        .item("Empresa", ()-> ctx.router().spawnWindow("empresa",e->{}))
+                        .item("Empresa", ()-> ctx.router().spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
                 )
                 .menu(new Menu("Suporte")
-                        .item("Relatar erro", ()-> ctx.router().spawnWindow("relatar-erro",e->{}))
-                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow("sugerir-melhoria",e->{}))
-                        .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow("info-update",e->{}))
+                        .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
+                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
+                        .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
                         .item("Buscar atualização", ()->buscarAtualizacao(true))
                 );
     }
@@ -146,15 +146,15 @@ public class HomeScreen implements ScreenComponent {
     //TODO: HISTÓRICO DE CAICXA, COMPRAS DE MERCADORIA E CONTAS A PAGAR NÃO APARECEM
     record CardItem(String img, String title, String desc, String destination){}
     final List<CardItem> cardItemList = List.of(
-            new CardItem("/assets/venda.png", "Venda","Tela de vendas","vendas"),
-            new CardItem("/assets/ordem_servico.png", "Ordem de serviço","Tela de ordem de serviço","ordem-de-servico"),
-            new CardItem("/assets/produtos.png", "Produtos","Gerencie seus produtos","produtos"),
-            new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes","clientes"),
-            new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber","contas-a-receber"),
-            new CardItem("/assets/pdv.png", "PDV","Abrir caixa","pdv-screen"),
-            new CardItem("/assets/despesas.png", "Contas a pagar","Tela de contas a pagar","contas-a-pagar"),
-            new CardItem("/assets/compras.png", "Compras de mercadorias","Tela de compras","compras"),
-            new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa","pedidos")
+            new CardItem("/assets/venda.png", "Venda","Tela de vendas",AppRoutes.Screens.VENDAS.name()),
+            new CardItem("/assets/ordem_servico.png", "Ordem de serviço","Tela de ordem de serviço",AppRoutes.Screens.ORDEM_SERVICO.name()),
+            new CardItem("/assets/produtos.png", "Produtos","Gerencie seus produtos",AppRoutes.Screens.PRODUTOS.name()),
+            new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes",AppRoutes.Screens.CLIENTES.name()),
+            new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber",AppRoutes.Screens.COMPRAS_A_RECEBER.name()),
+            new CardItem("/assets/pdv.png", "PDV","Abrir caixa",AppRoutes.Screens.PDV.name()),
+            new CardItem("/assets/despesas.png", "Contas a pagar","Tela de contas a pagar",AppRoutes.Screens.COMPRAS_A_PAGAR.name()),
+            new CardItem("/assets/compras.png", "Compras de mercadorias","Tela de compras",AppRoutes.Screens.COMPRAS.name()),
+            new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa",AppRoutes.Screens.PEDIDOS.name())
            // new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
     );
     Component CardColumn(CardItem cardItem){

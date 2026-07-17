@@ -163,7 +163,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         var simpleTable = new SimpleTable<ContasPagarModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()

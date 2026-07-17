@@ -1,18 +1,12 @@
 package my_app.screens.produtoScreen;
 
-import javafx.animation.Transition;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.CheckBox;
 import javafx.stage.FileChooser;
-import javafx.util.Duration;
 import megalodonte.ComputedState;
-import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
-import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -94,7 +88,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         var simpleTable = new SimpleTable<ProdutoModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()

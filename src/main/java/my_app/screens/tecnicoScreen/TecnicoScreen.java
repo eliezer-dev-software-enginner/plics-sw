@@ -55,7 +55,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         var simpleTable = new SimpleTable<TecnicoModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()

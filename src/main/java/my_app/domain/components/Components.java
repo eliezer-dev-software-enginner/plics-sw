@@ -29,6 +29,7 @@ import megalodonte.components.inputs.OnChangeResult;
 import megalodonte.components.inputs.TextAreaInput;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -74,13 +75,15 @@ public class Components {
     public static Component enderecoComponent(EnderecoState enderecoState){
         return new Container().children(
                 Components.FormTitle("Endereço"),
-                new Row(new RowProps().bottomVertically().spacingOf(10))
-                        .r_child(Components.InputColumnCep("Cep", enderecoState.cep))
-                        .r_child(Components.SelectColumn("UF", Data.ufList, enderecoState.ufSelected, it -> it))
-                        .r_child(Components.InputColumn("Cidade", enderecoState.cidade, ""))
-                        .r_child(Components.InputColumn("Bairro", enderecoState.bairro, ""))
-                        .r_child(Components.InputColumn("Rua", enderecoState.rua, ""))
-                        .r_child(Components.InputColumnNumeric("Número", enderecoState.numero, ""))
+                new FlowRow(new FlowRowProps().spacingOf(10))
+                        .children(
+                                Components.InputColumnCep("Cep", enderecoState.cep),
+                                Components.SelectColumn("UF", Data.ufList, enderecoState.ufSelected, it -> it),
+                                Components.InputColumn("Cidade", enderecoState.cidade, ""),
+                                Components.InputColumn("Bairro", enderecoState.bairro, ""),
+                                Components.InputColumn("Rua", enderecoState.rua, ""),
+                                Components.InputColumnNumeric("Número", enderecoState.numero, "")
+                        )
         );
     }
 

@@ -75,7 +75,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public Component table() {
+    public SimpleTable table() {
         return new SimpleTable<FornecedorModel>()
                 .fromData(vm.filteredList)
                 .header().columns()

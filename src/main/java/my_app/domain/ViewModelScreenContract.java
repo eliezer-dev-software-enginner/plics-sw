@@ -22,9 +22,6 @@ public abstract class ViewModelScreenContract<Model> {
     public final ListState<Model> allDataList = ListState.ofEmpty();
     public final ListState<Model> filteredList = ListState.ofEmpty();
 
-
-
-
     public ViewModelScreenContract(ScreenContext ctx) {
         this.ctx = ctx;
         searchState.subscribe(_ -> applyFilter());

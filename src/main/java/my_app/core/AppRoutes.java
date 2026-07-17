@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.Set;
 
 public class AppRoutes {
-    public enum Screens{
+    public enum Screens {
         SPLASH,
         WELCOME,
         AUTH,
@@ -60,9 +60,9 @@ public class AppRoutes {
                         new RouteProps(600, 500, Main.BASE_TITLE, false)),
                 new Router.Route(Screens.WELCOME.name(), WelcomeScreen::new, new RouteProps(950, 550, Main.BASE_TITLE, true)),
                 new Router.Route(Screens.AUTH.name(), AuthScreen::new, new RouteProps(950, 550, "Seja muito bem vindo", true)),
-                new Router.Route(Screens.HOME.name(), HomeScreen::new, new RouteProps(1180, 650,Main.BASE_TITLE, true)),
+                new Router.Route(Screens.HOME.name(), HomeScreen::new, new RouteProps(1180, 670, Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
-                new Router.Route(Screens.PRODUTOS.name(), ProdutoScreen::new, new RouteProps(1210, 650,"Cadastro de produtos", true)),
+                new Router.Route(Screens.PRODUTOS.name(), ProdutoScreen::new, new RouteProps(1210, 650, "Cadastro de produtos", true)),
                 //ok
                 new Router.Route(Screens.CATEGORIAS.name(), CategoriaScreen::new, new RouteProps(1000, 650, "Gerenciamento de categorias", false)),
                 //ok
