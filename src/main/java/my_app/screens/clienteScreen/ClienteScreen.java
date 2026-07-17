@@ -68,7 +68,6 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                         Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"),
                                         Components.SelectColumn("É gestante?", Data.simNaoList, vm.isGestante, it -> it),
                                         Show.when(vm.isGestanteComputed,()->Components.DatePickerColumn(vm.dataNascimentoBebe,"Data de nascimento do bebê") )
-
                                 )
                         )
                         .c_child(new SpacerVertical(10))

@@ -4,6 +4,7 @@ import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -56,8 +57,8 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)));
     }
 
-    private Row informacoesPessoais() {
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
+    private Component informacoesPessoais() {
+        return new FlowRow(new FlowRowProps().spacingOf(10))
                 .r_child(Components.InputColumn("Nome Fantasia", vm.nome, "Ex: Empresa 123"))
                 .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
                 .r_child(Show.when(vm.tipoPessoaEhFisica,
