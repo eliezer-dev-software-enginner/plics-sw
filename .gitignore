@@ -78,3 +78,4 @@ SECURITY.md
 criptografando-dados-sensiveis.png
 temp
 dist
+/scripts/__pycache__
