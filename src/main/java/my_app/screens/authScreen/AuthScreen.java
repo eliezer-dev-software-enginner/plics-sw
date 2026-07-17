@@ -3,6 +3,7 @@ package my_app.screens.authScreen;
 import megalodonte.base.Redirect;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -49,7 +50,7 @@ public class AuthScreen implements ScreenComponent {
                                 Show.when(vm.showLicensaState, () -> Components.InputColumnAuth("Licença", vm.licensaState, "")),
                                 Components.InputColumnAuth("Login", vm.loginState, ""),
                                 Components.InputColumnAuth("Senha", vm.passwordState, ""),
-                                new SpacerVertical(10),
+                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
                                 Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
                         ),
                         new Row(new RowProps().fillWidth()),

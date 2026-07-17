@@ -18,11 +18,12 @@ import megalodonte.utils.related.TextVariant;
 public class SplashScreen implements ScreenComponent {
 
     private final Ref<Text> carregandoRef = new Ref<>();
+    private FadeTransition pulse;
 
     @Override
     public void onMount() {
         UI.runOnUi(() -> {
-            var pulse = new FadeTransition(Duration.millis(700), carregandoRef.current().getJavaFxNode());
+            pulse = new FadeTransition(Duration.millis(700), carregandoRef.current().getJavaFxNode());
             pulse.setFromValue(0.4);
             pulse.setToValue(1.0);
             pulse.setAutoReverse(true);
@@ -43,4 +44,13 @@ public class SplashScreen implements ScreenComponent {
                                 .ref(carregandoRef)
                 );
     }
+
+
+    @Override
+    public void onDestroy() {
+        if (pulse != null) {
+            pulse.stop();
+        }
+    }
+
 }

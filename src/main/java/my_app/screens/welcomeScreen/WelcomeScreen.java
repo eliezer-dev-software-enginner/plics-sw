@@ -15,6 +15,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
+import my_app.core.AppRoutes;
 
 public class WelcomeScreen implements ScreenComponent {
     private final ScreenContext ctx;
@@ -67,7 +68,7 @@ public class WelcomeScreen implements ScreenComponent {
     }
 
     private void handleClick() {
-        ctx.navigate("entrar-com-credenciais");
+        ctx.navigate(AppRoutes.Screens.AUTH.name());
     }
 
     public Component textRow() {

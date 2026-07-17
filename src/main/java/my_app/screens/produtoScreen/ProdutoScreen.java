@@ -197,44 +197,37 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     Component ItemDetails(ProdutoModel model) {
-        log.info("Imagem: {}", model.getImagem());
-
         var validade = model.getValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getValidade()) : "Sem validade";
 
-        String img = model.getImagem();
         return new Column(new ColumnProps().paddingAll(20))
-                .c_child(new Text("Detalhes do produto", new TextProps().variant(TextVariant.SUBTITLE)))
-                .c_child(new SpacerVertical(20))
-                .c_child(
-                      img == null? new Container() : new Image(model.getImagem(), new ImageProps().size(100))
-                )
-//                .c_child(Show.when(model.getImagem()!=null,
-//                        ()->new Image(model.getImagem(), new ImageProps().size(100))
-//                        )
-//                )
-                .c_child(Components.TextWithDetails("ID: ", model.getId()))
-                .c_child(Components.TextWithDetails("Código: ", model.getCodigoBarras()))
-                .c_child(Components.TextWithDetails("Cor: ", model.getCor() != null ? model.getCor() : "-"))
-                .c_child(Components.TextWithDetails("Tamanho: ", model.getTamanho() != null ? model.getTamanho() : "-"))
-                .c_child(Components.TextWithDetails("Modelo: ", model.getModelo() != null ? model.getModelo() : "-"))
-                .c_child(Components.TextWithDetails("Descrição: ", model.getDescricao()))
-                .c_child(Components.TextWithDetails("Fornecedor: ", model.getFornecedor().getNome()))
-                .c_child(Components.TextWithDetails("Categoria: ", model.getCategoria().getNome()))
-                .c_child(Components.TextWithDetails("Tipo de unidade: ", model.getUnidade()))
-                .c_child(Components.TextWithDetails("Marca: ", model.getMarca()))
-                .c_child(Components.TextWithDetails("Estoque: ", model.getEstoque()))
-                .c_child(Components.TextWithDetails("Estoque Mínimo: ", model.getEstoqueMinimo()))
-                .c_child(Components.TextWithDetails("Preço de compra (R$): ", Utils.toBRLCurrency(model.getPrecoCompra())))
-                .c_child(Components.TextWithDetails("Preço de venda (R$): ", Utils.toBRLCurrency(model.getPrecoVenda())))
-                .c_child(Components.TextWithDetails("Ganho líquido estimado (R$): ", Utils.toBRLCurrency(model.getTotalLiquido())))
-                .c_child(Components.TextWithDetails("Garantia: ", model.getGarantia()))
-                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
-                .c_child(Components.TextWithDetails("Validade: ", validade))
-                .c_child(Components.TextWithDetails("Observação: ", model.getObservacoes(), true));
+                .children(
+                        new Text("Detalhes do produto", new TextProps().variant(TextVariant.SUBTITLE)),
+                        new SpacerVertical(20),
+                        Show.when(model.getImagem()!=null, ()->new Image(model.getImagem(), new ImageProps().size(100))),
+                        Components.TextWithDetails("ID: ", model.getId()),
+                        Components.TextWithDetails("Código: ", model.getCodigoBarras()),
+                        Components.TextWithDetails("Cor: ", model.getCor() != null ? model.getCor() : "-"),
+                        Components.TextWithDetails("Tamanho: ", model.getTamanho() != null ? model.getTamanho() : "-"),
+                        Components.TextWithDetails("Modelo: ", model.getModelo() != null ? model.getModelo() : "-"),
+                        Components.TextWithDetails("Descrição: ", model.getDescricao()),
+                        Components.TextWithDetails("Fornecedor: ", model.getFornecedor().getNome()),
+                        Components.TextWithDetails("Categoria: ", model.getCategoria().getNome()),
+                        Components.TextWithDetails("Tipo de unidade: ", model.getUnidade()),
+                        Components.TextWithDetails("Marca: ", model.getMarca()),
+                        Components.TextWithDetails("Estoque: ", model.getEstoque()),
+                        Components.TextWithDetails("Estoque Mínimo: ", model.getEstoqueMinimo()),
+                        Components.TextWithDetails("Preço de compra (R$): ", Utils.toBRLCurrency(model.getPrecoCompra())),
+                        Components.TextWithDetails("Preço de venda (R$): ", Utils.toBRLCurrency(model.getPrecoVenda())),
+                        Components.TextWithDetails("Ganho líquido estimado (R$): ", Utils.toBRLCurrency(model.getTotalLiquido())),
+                        Components.TextWithDetails("Garantia: ", model.getGarantia()),
+                        Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())),
+                        Components.TextWithDetails("Validade: ", validade),
+                        Components.TextWithDetails("Observação: ", model.getObservacoes(), true)
+                );
     }
 
     @Override
-    public ViewModelScreenContract viewModel() {
+    public ViewModelScreenContract<ProdutoModel> viewModel() {
         return vm;
     }
 }

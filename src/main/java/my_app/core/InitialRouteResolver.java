@@ -4,11 +4,11 @@ public class InitialRouteResolver {
 
     public static String resolve(boolean isFirstAccess, boolean enterWithCredentials) {
         if (isFirstAccess) {
-            return "welcome";
+            return AppRoutes.Screens.WELCOME.name();
         }
         if (enterWithCredentials) {
-            return "entrar-com-credenciais";
+            return AppRoutes.Screens.AUTH.name();
         }
-        return "home";
+        return AppRoutes.Screens.HOME.name();
     }
 }

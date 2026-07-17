@@ -4,6 +4,7 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
+import my_app.core.AppRoutes;
 import my_app.db.models.PreferenciasModel;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
@@ -100,7 +101,7 @@ public class AuthScreenViewModel {
                 prefRecuperada.setPrimeiroAcesso(0);
                 prefRecuperada.setCredenciaisHabilitadas(1);
                 preferenciasService.atualizar(prefRecuperada);
-                UI.runOnUi(() -> ctx.navigate("home"));
+                UI.runOnUi(() -> ctx.navigate(AppRoutes.Screens.HOME.name()));
             } catch (Exception e) {
                 log.error("Erro ao fazer login", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao entrar: " + e.getMessage()));

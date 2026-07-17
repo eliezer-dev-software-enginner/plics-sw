@@ -68,8 +68,6 @@ public class Main {
             stage.getIcons().add(Main.loadIcon());
         // registra o handler de erro o quanto antes — antes de qualquer Async.Run rodar
         ErrorReporter.register(Main::handleAppError);
-        context.useView(new SplashScreen()); // mostra algo imediatamente
-
         initialize(context);
     }
 
@@ -106,6 +104,12 @@ public class Main {
     public static void initialize(Context context) {
         ThemeManager.setTheme(Themes.LIGHT); // mexe em Scene/Stylesheets -> FX thread, fica fora do Async.Run
 
+
+        var routes = new AppRoutes().routes();
+        Router router = new Router(routes, AppRoutes.Screens.SPLASH.name());
+        context.useRouter(router).start(); // mostra a splash via fluxo normal do Router
+
+
         Async.Run(() -> {
             // ---- tudo aqui roda fora da FX thread ----
             var flyway = Flyway.configure()
@@ -128,14 +132,13 @@ public class Main {
                 }
             }
 
-            var routes = new AppRoutes().routes();
-            String rotaInicial = InitialRouteResolver.resolve(isFirstAccess, enterWithCredentials);
-            Router router = new Router(routes, rotaInicial);
 
-            // ---- volta pra FX thread só pra montar a tela ----
+            String rotaInicial = InitialRouteResolver.resolve(isFirstAccess, enterWithCredentials);
+
+            // ---- volta pra FX thread só pra trocar a splash pela rota real ----
             UI.runOnUi(() -> {
-                context.useRouter(router);
-                context.useView(router.entrypoint());
+                var result = router.navigateOnStage(rotaInicial, context.javafxStage());
+                context.useView(result);
             });
         });
     }
