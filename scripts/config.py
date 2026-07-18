@@ -33,7 +33,14 @@ def get_platform():
 
 
 def javafx_dir():
-    return ROOT / f"java_fx_modules/{get_platform()}-{JAVAFX_VERSION}"
+    javafx_modules_home = os.environ.get("JAVAFX_MODULES_HOME")
+    if not javafx_modules_home:
+        raise EnvironmentError(
+            "Variável de ambiente JAVAFX_MODULES_HOME não definida. "
+            "Defina-a apontando para a pasta que contém "
+            f"{get_platform()}-{JAVAFX_VERSION}/."
+        )
+    return Path(javafx_modules_home) / f"{get_platform()}-{JAVAFX_VERSION}"
 
 
 def _java_home():

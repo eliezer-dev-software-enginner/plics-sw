@@ -34,11 +34,7 @@ java {
 
 // 🛑 2. CONFIGURA O PLUGIN DO JAVAFX
 javafx {
-    // Define a versão do JavaFX para ser usada em todos os módulos
-    version = "17" // Mantida a versão 17.0.10.
-
-    // Lista os módulos JavaFX que sua biblioteca PRECISA para compilar.
-    // O plugin adiciona automaticamente a dependência para a sua plataforma de build.
+    version = "25.0.1"
 
     //esse meu projeto como é simples, só o modulo de controls e graphics foi o suficiente
     //modules("javafx.controls", "javafx.graphics", "javafx.fxml", "javafx.media", "javafx.web")
@@ -127,10 +123,17 @@ tasks.test {
 
 tasks.named<JavaExec>("run") {
     val os = System.getProperty("os.name").lowercase()
+
+    val javafxModulesHome = System.getenv("JAVAFX_MODULES_HOME")
+        ?: throw GradleException(
+            "Variável de ambiente JAVAFX_MODULES_HOME não definida. " +
+                    "Defina-a apontando para a pasta que contém linux-25.0.1/ e windows-25.0.1/."
+        )
+
     val fxPath = if (os.contains("win")) {
-        "./java_fx_modules/windows-25.0.1/lib"
+        "$javafxModulesHome/windows-25.0.1/lib"
     } else {
-        "./java_fx_modules/linux-25.0.1/lib"
+        "$javafxModulesHome/linux-25.0.1/lib"
     }
 
     jvmArgs = listOf(
