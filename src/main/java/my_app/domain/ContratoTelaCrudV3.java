@@ -15,6 +15,7 @@ import megalodonte.props.ContainerProps;
 import megalodonte.props.RowProps;
 import megalodonte.v2.Show;
 import my_app.domain.components.Components;
+import org.kordamp.ikonli.entypo.Entypo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,27 +25,27 @@ public interface ContratoTelaCrudV3 {
 
     ViewModelScreenContract viewModel();
 
-    default void handleClickNew(){
-       viewModel().modoEdicaoState().set(false);
-       clearForm();
+    default void handleClickNew() {
+        viewModel().modoEdicaoState().set(false);
+        clearForm();
     }
 
-    default void handleClickMenuDelete(){
+    default void handleClickMenuDelete() {
         viewModel().modoEdicaoState().set(false);
         viewModel().handleClickMenuDelete();
     }
 
-    default void handleClickMenuClone(){
+    default void handleClickMenuClone() {
         populateFromModel();
         viewModel().modoEdicaoState().set(false);
     }
 
-    default void handleClickMenuEdit(){
+    default void handleClickMenuEdit() {
         populateFromModel();
         viewModel().modoEdicaoState().set(true);
     }
 
-     default <T> Component commonCustomMenus(State<Boolean> focusState){
+    default <T> Component commonCustomMenus(State<Boolean> focusState) {
         return Components.commonCustomMenusv3(
                 focusState,
                 this::handleClickNew,
@@ -55,6 +56,7 @@ public interface ContratoTelaCrudV3 {
     }
 
     SimpleTable table();
+
     Component form();
 
     default <T> Component mainView(State<Boolean> focusState) {
@@ -62,10 +64,11 @@ public interface ContratoTelaCrudV3 {
                 .children(
                         new Row(new RowProps().fillWidth().centerHorizontally()).children(
                                 new Button(viewModel().formIsVisibleTextComputed)
-                                        .onClick(()->viewModel().handleToggleFormVisible())
+                                        .onClick(() -> viewModel().handleToggleFormVisible())
+                                        .icon(viewModel().createToggleIcon())
                         ),
                         new SpacerVertical(20),
-                        Show.when(viewModel().formIsVisible, ()->  new Row(new RowProps().
+                        Show.when(viewModel().formIsVisible, () -> new Row(new RowProps().
                                 fillWidth().centerHorizontally())
                                 .children(form())
                         ).withTransition((c, entering) -> {
@@ -89,11 +92,11 @@ public interface ContratoTelaCrudV3 {
                         new SpacerVertical(30),
                         new Container(new ContainerProps().paddingLeft(20).paddingRight(20).fillHeight())
                                 .children(
-                                Components.searchInput(viewModel().searchState,"Pesquisar"),
-                                table()
-                        )
+                                        Components.searchInput(viewModel().searchState, "Pesquisar"),
+                                        table()
+                                )
 
-        );
+                );
 
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))
                 .children(
@@ -103,21 +106,21 @@ public interface ContratoTelaCrudV3 {
                 );
     }
 
-   default void populateFromModel(){
-       viewModel().populateFromModel();
-   }
+    default void populateFromModel() {
+        viewModel().populateFromModel();
+    }
 
     default void clearForm() {
         viewModel().clearForm();
     }
 
     default void handleAddOrUpdate() {
-        try{
+        try {
             viewModel().handleAddOrUpdate();
             viewModel().modoEdicaoState().set(false);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("Erro em handleAddOrUpdate", e);
-            UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
+            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
         }
 
     }

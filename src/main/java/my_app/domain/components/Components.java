@@ -17,6 +17,7 @@ import megalodonte.base.Animations;
 import megalodonte.base.UI;
 import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
+import megalodonte.base.components.IconInterface;
 import megalodonte.base.state.ReadableState;
 import megalodonte.base.state.State;
 import megalodonte.base.theme.ThemeInterface;
@@ -60,6 +61,9 @@ import static my_app.utils.Utils.*;
 
 public class Components {
 
+    public static IconInterface ikon(Ikon ikon, double size, String color) {
+        return IconInterface.of(FontIcon.of(ikon, (int) size, Color.web(color)));
+    }
 
     public record Endereco(String uf, String cep, String cidade, String bairro,String rua, String numero){}
     public static Component ItemDetailEndereco(Endereco endereco){
