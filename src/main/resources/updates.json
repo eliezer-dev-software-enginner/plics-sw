@@ -1,5 +1,28 @@
 [
   {
+    "version": "v1.1.0",
+    "notes": [
+      "Feat: Splash screen, error reporter e padrão createOrReport em ViewModels",
+      "Feat: Busca/filtro global em todas as telas CRUD + estoque mínimo no produto",
+      "Feat: Aviso de estoque mínimo na VendaMercadoriaScreen",
+      "Feat: Impressão de nota de venda no crediário com parcelas e assinatura",
+      "Feat: Envio de feedback ao Telegram agora é assíncrono",
+      "Feat: Redesign da tela de boas-vindas",
+      "Feat: Logout — possibilidade de sair da conta atual",
+      "Feat: Maximize/minimize na tela de produtos",
+      "Feat: Banner de playlist YouTube",
+      "Feat: Animação ao carregar imagem + ícones animados em botões",
+      "Feat: FlowRow em clientes e fornecedores — permite quebra de linha",
+      "Feat: Pesquisa de produto por nome e código de barras",
+      "Fix: Barra de título perde maximize ao abrir modal/alerta (Linux)",
+      "Fix: Bordas azuis em inputs de CEP, calendário e CPF",
+      "Fix: Cor das labels na tela de preferências",
+      "Fix: Licença revogada/expirada redireciona para AuthScreen e exibe campo de licença",
+      "Fix: NPE ao expandir produto na tela de produtos",
+      "Fix: JDK charsets adicionado ao jlink para impressão ESC/POS"
+    ]
+  },
+  {
     "version": "v1.0.9",
     "notes": [
       "Feat: adicionado campo de cep no fornecedor",

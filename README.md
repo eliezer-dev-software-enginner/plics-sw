@@ -79,7 +79,7 @@ python dev.py
 ```
 ## Versão
 
-**Versão:** 1.0.0  
+**Versão:** 1.1.0  
 **Status:** Estável para Produção
 
 ## Benefícios

@@ -26,9 +26,15 @@
 - Analisar arquivos de testes *.md (testes.md, testes-gerais.md, testes-*.md) por erros relatados e resolvê-los na sessão atual.
 - Não substituir funcionalidades sem autorização.
 
-## Ao alterar versão do app
-- Atualizar em: `gradle.properties`, `src/main/java/my_app/Main.java`, `src/main/resources/updates.json`
-- `scripts/config.py` lê `gradle.properties` automaticamente
+## Ao alterar versão do app (etapas obrigatórias)
+1. Ler todos os commits desde a última versão: `git log --since="DATA_ULTIMA_RELEASE" --reverse --format="%h %s"`
+2. Ler `docs/DECISIONS.md` para contexto das decisões arquiteturais relevantes
+3. Interpretar e agrupar commits em Feat, Fix, Refactor e Chore (notas concisas em português)
+4. Adicionar nova entrada no topo de `src/main/resources/updates.json` com version e notes
+5. Atualizar versão em `src/main/java/my_app/Main.java`: campo `APP_VERSION`
+6. Atualizar versão em `gradle.properties`: campo `appVersion`
+7. Atualizar versão em `README.md`: campo `Versão`
+8. `scripts/config.py` lê `gradle.properties` automaticamente (não precisa alterar)
 
 ## Ao executar testes (workaround para pipe closed / GradleWorkerMain)
 - O path `C:\Users\Usuário` contém `ç` (caractere não-ASCII). O Gradle gera arquivos `@` classpath que corrompem esse caractere, causando `ClassNotFoundException: GradleWorkerMain`.

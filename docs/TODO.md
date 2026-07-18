@@ -116,6 +116,14 @@
 - [x] **HotReload removido** de `Main.java` (código descontinuado)
 - [x] **Arquivo alterado**: `Components.java`, `Main.java`, `AppRoutes.java`, `ProdutoScreen.java`
 
+## Concluído (Release v1.1.0 — 2026-07-18)
+- [x] **updates.json**: nova entrada v1.1.0 com 25 notas interpretadas dos commits desde 10/07/2026
+- [x] **Main.java**: APP_VERSION "1.0.9 - patch 02" → "1.1.0"
+- [x] **gradle.properties**: appVersion "1.0.9.2" → "1.1.0"
+- [x] **README.md**: Versão "1.0.0" → "1.1.0"
+- [x] **AI_RULES.md**: etapas obrigatórias para atualização de versão documentadas
+- [x] **CONTEXT.md**: registro da release v1.1.0
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅

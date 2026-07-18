@@ -53,6 +53,13 @@
 
 ## Últimas alterações
 
+### 2026-07-18: Release v1.1.0
+- **Versão atualizada**: Main.java → "1.1.0", gradle.properties → 1.1.0, README.md → 1.1.0
+- **updates.json**: nova entrada v1.1.0 com 25 notas (Feat, Fix, Chore)
+- **Notas incluem**: splash screen, HotReload+Lombok, busca/filtro global, estoque mínimo, impressão crediário com parcelas, redesign boas-vindas, logout, maximize/minimize, FlowRow, ícones animados, e 10 correções
+
+
+
 ### 2026-07-14: Impressão de nota de venda no crediário com parcelas e assinatura
 - **`PDVScreenViewModel`**: state `numeroParcelas` (default "1"), `finalizarVenda()` passa `numeroParcelas` e `formaPagamento` ("CREDIARIO" fiado, "A VISTA" contrário)
 - **`PDVScreen`**: input "Nº Parcelas" visível quando fiado marcado

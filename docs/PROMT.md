@@ -29,5 +29,5 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Cliente me perguntou isso: "Uma dúvida eu consigo imprimir uma venda no crediário com o número de parcelas na notinha que dai peço pro cliente assinar a via?. O pessoal aqui da cidade é da moda antiga gosta de assinar nota".
-Mas atualmente não temos essa opção.
+Vou gerar uma nova versão do aplicativo. Para isso interprete todos os commits desde o dia Jul 10, 2026 e também docs/DECISIONS.md. Então você vai colocar as notas de atualização lá em resources/updates.json.
+A nova atualização será v1.1.0 e você vai alterar em Main.version também e também no gradle.properties. E dado isso, salve essas etapas em docs/CONTEXT.md ou no docs/AI_RULES.md para que sempre que eu pedir para atualizar o projeto, o agente deverá seguir as etapas descritas.
