@@ -124,6 +124,27 @@
 - [x] **AI_RULES.md**: etapas obrigatórias para atualização de versão documentadas
 - [x] **CONTEXT.md**: registro da release v1.1.0
 
+## Concluído (Simplificação cadastros válidos clientes — 2026-07-19)
+- [x] **testes-gerais.md ClienteScreen**: reduzido de 27 para 13 testes — removidos 14 "cadastro válido" redundantes
+- [x] **Tabela de dados de teste**: adicionada seção com clientes usados nos perfis (8 clientes reutilizáveis)
+- [x] **Clientes não usados removidos**: Luana Costa, Thiago Santos, Renata Oliveira, Paulo Sérgio, Juliana Costa
+- [x] **testes-lanchonete.md**: cabeçalho atualizado (3→1 cliente)
+- [x] **testes-acougue.md**: cabeçalho atualizado (3→1 cliente)
+- [x] **testes-mercado.md**: cabeçalho atualizado (removido Juliana Costa)
+
+## Concluído (Cobertura de testes manuais — campos ausentes — 2026-07-19)
+- [x] **Análise completa** de todos os campos das screens vs colunas dos arquivos .md de teste
+- [x] **ClienteScreen**: adicionadas colunas Data Nasc., Gestante, Bebê, CEP, UF, Cidade, Bairro, Rua, Número + 4 novos casos (#24-#27)
+- [x] **ProdutoScreen** (5 perfis): adicionadas colunas Garantia, Comissão, Observações, Imagem + 1 novo caso por perfil
+- [x] **PDVScreen** (loja/petshop): adicionada coluna Nº Parcelas + 1 novo caso fiado por perfil
+- [x] **ContasAReceberScreen** (loja/petshop): adicionadas colunas Data Recebimento, N° Doc, Observação + 1 novo caso por perfil
+- [x] **ComprasAPagarScreen** (loja/petshop): adicionadas colunas Data Pagamento, N° Doc, Observação + 1 novo caso por perfil
+- [x] **PreferenciasScreen**: adicionada coluna Select Impressora + 2 novos casos (#107-#108)
+- [x] **PedidosScreen**: nova seção em testes-gerais.md com 4 casos (#109-#112)
+- [x] **SugerirMelhoriaScreen**: nova seção com 3 casos (#113-#115)
+- [x] **RelatarErroScreen**: nova seção com 3 casos (#116-#118)
+- [x] **testes.md**: index atualizado com links para 3 novas screens (18→21 screens)
+
 ## Pendências
 - [x] Testar fluxo completo: gerar MSI com `python scripts/create-msi-with-updater.py`, instalar e clicar "Buscar atualização" ✅
 - [x] Testar desinstalação: MSI remove sem deixar processos presos ✅
