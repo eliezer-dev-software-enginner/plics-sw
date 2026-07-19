@@ -40,14 +40,14 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 ## FornecedorScreen
 
 | # | Cenário | Nome Fantasia | CNPJ | Celular | IE | Email | UF | Cidade | Bairro | Rua | Número | Obs | Efeito Esperado | Erro | Resultado |
-|---|---------|--------------|------|---------|----|-------|----|--------|--------|-----|--------|-----|-----------------|------|---|
-| 39 | Cadastro completo | Malharia Silva | 11.111.111/0001-91 | (11) 98888-7777 | 111.222.333.444 | silva@malharia.com | SP | São Paulo | Brás | Rua da Malharia | 123 | - | Salvo com sucesso. | | |
-| 40 | Cadastro mínimo obrigatório | Avan Calçados | 22.222.222/0001-91 | (11) 97777-6666 | - | - | SP | São Paulo | - | - | - | - | Salvo com sucesso (nome e CNPJ obrigatórios?). | | |
-| 41 | Nome vazio | (vazio) | 33.333.333/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "Nome é obrigatório". | | |
-| 42 | CNPJ duplicado | (CNPJ já existente) | 11.111.111/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". | | |
-| 43 | Editar dados do fornecedor | Malharia Silva (novo telefone) | - | (11) 99999-0000 | - | - | - | - | - | - | - | - | Atualizado com sucesso. | | |
-| 44 | Email inválido | Fornecedor Teste Email | 44.444.444/0001-91 | - | - | email-errado | RJ | Rio de Janeiro | - | - | - | - | Alerta: "Email inválido". | | |
-| 45 | Excluir fornecedor vinculado a produto | Malharia Silva | - | - | - | - | - | - | - | - | - | - | Alerta: "Fornecedor possui produtos vinculados". | | |
+|---|---------|--------------|------|---------|----|-------|----|--------|--------|-----|--------|-----|-----------------|------|-----------|
+| 39 | Cadastro completo | Malharia Silva | 11.111.111/0001-91 | (11) 98888-7777 | 111.222.333.444 | silva@malharia.com | SP | São Paulo | Brás | Rua da Malharia | 123 | - | Salvo com sucesso. | | ok        |
+| 40 | Cadastro mínimo obrigatório | Avan Calçados | 22.222.222/0001-91 | (11) 97777-6666 | - | - | SP | São Paulo | - | - | - | - | Salvo com sucesso (nome e CNPJ obrigatórios?). | | ok        |
+| 41 | Nome vazio | (vazio) | 33.333.333/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "Nome é obrigatório". | | ok        |
+| 42 | CNPJ duplicado | (CNPJ já existente) | 11.111.111/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". | | ok        |
+| 43 | Editar dados do fornecedor | Malharia Silva (novo telefone) | - | (11) 99999-0000 | - | - | - | - | - | - | - | - | Atualizado com sucesso. | | ok        |
+| 44 | Email inválido | Fornecedor Teste Email | 44.444.444/0001-91 | - | - | email-errado | RJ | Rio de Janeiro | - | - | - | - | Alerta: "Email inválido". | | ok        |
+| 45 | Excluir fornecedor vinculado a produto | Malharia Silva | - | - | - | - | - | - | - | - | - | - | Alerta: "Fornecedor possui produtos vinculados". | |           |
 
 > **Dados de teste (fornecedores usados nas telas):** Os fornecedores abaixo devem ser cadastrados antes de executar os testes dos perfis. Todos testam a mesma regra de "cadastro válido" — basta cadastrar um deles e reutilizar o nome nos demais.
 >
