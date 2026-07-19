@@ -18,18 +18,19 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro                                                                                          | Resultado |
-|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|-----------------------------------------------------------------------------------------------|-----------|
-| 13 | Cadastro válido produto simples | SKU001 | Camiseta Masculina M | UN | Malharia Silva | Azul | M | - | R$ 15,00 | R$ 39,90 | Masculino | Malharia Silva | 100 | Nao | - | Salvo com sucesso. |                                                                                               | ok        |
-| 14 | Cadastro válido produto perecível | SKU002 | Vestido Feminino Algodão | UN | Tecidos ABC | Vermelho | P | - | R$ 35,00 | R$ 89,90 | Feminino | Tecidos ABC | 50 | Sim | 15/12/2026 | Salvo com sucesso. | ~~For input string: "1797044400000"~~ Corrigido — validade REAL aceita Long. | ok        |
-| 15 | SKU duplicado | SKU001 | Jaqueta | UN | Avan Calçados | Preto | G | - | R$ 80,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | Alerta: "Código de barras já cadastrado". | ~~Desmarquei "é perecível" para poder salvar esse produto, e o erro foi semelhante ao de cima. For input string: "1797044400000"~~ Corrigido — fillModelFromForm só seta validade se perecível for "Sim". | ok        |
-| 16 | Descrição vazia | SKU003 | (vazio) | UN | Generica | - | - | - | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Descrição é obrigatória". |                                                                                               | ok        |
-| 17 | SKU vazio | (vazio) | Produto sem SKU | UN | Generica | - | - | - | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | Alerta: "Código de barras é obrigatório". |                                                                                               | ok        |
-| 18 | Preço compra maior que venda | SKU006 | Calça Jeans | UN | Tecidos ABC | Azul | G | Reta | R$ 100,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | Alerta de margem negativa, mas salva? (Validar comportamento). |                                                                                               |           |
-| 19 | Perecível sem validade | SKU005 | Camiseta Promocional | UN | Malharia Silva | Branco | M | - | R$ 15,00 | R$ 29,90 | Masculino | Malharia Silva | 50 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". |                                                                                               | ok        |
-| 20 | Excluir produto vinculado a venda | (produto com venda) | - | - | - | - | - | - | - | - | - | - | - | - | - | Alerta: "Produto possui vendas vinculadas". |                                                                                               |           |
-| 143 | Cadastro válido jaqueta | SKU003 | Jaqueta | UN | Avan Calçados | Preto | G | Couro | R$ 60,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | Salvo com sucesso. | | ok        |
-| 144 | Cadastro válido calça | SKU004 | Calça Jeans | UN | Tecidos ABC | Azul | M | Skinny | R$ 40,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | Salvo com sucesso. | | ok        |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro                                                                                          | Resultado |
+|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|----------|----------|-------------|--------|-----------------|-----------------------------------------------------------------------------------------------|-----------|
+| 13 | Cadastro válido produto simples | SKU001 | Camiseta Masculina M | UN | Malharia Silva | Azul | M | - | R$ 15,00 | R$ 39,90 | Masculino | Malharia Silva | 100 | Nao | - | - | 5% | Tecido algodão | - | Salvo com sucesso. |                                                                                               | ok        |
+| 14 | Cadastro válido produto perecível | SKU002 | Vestido Feminino Algodão | UN | Tecidos ABC | Vermelho | P | - | R$ 35,00 | R$ 89,90 | Feminino | Tecidos ABC | 50 | Sim | 15/12/2026 | - | - | - | - | Salvo com sucesso. | ~~For input string: "1797044400000"~~ Corrigido — validade REAL aceita Long. | ok        |
+| 15 | SKU duplicado | SKU001 | Jaqueta | UN | Avan Calçados | Preto | G | - | R$ 80,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | - | - | - | - | Alerta: "Código de barras já cadastrado". | ~~Desmarquei "é perecível" para poder salvar esse produto, e o erro foi semelhante ao de cima. For input string: "1797044400000"~~ Corrigido — fillModelFromForm só seta validade se perecível for "Sim". | ok        |
+| 16 | Descrição vazia | SKU003 | (vazio) | UN | Generica | - | - | - | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | - | - | - | - | Alerta: "Descrição é obrigatória". |                                                                                               | ok        |
+| 17 | SKU vazio | (vazio) | Produto sem SKU | UN | Generica | - | - | - | R$ 10,00 | R$ 25,00 | Acessórios | Malharia Silva | 20 | Nao | - | - | - | - | - | Alerta: "Código de barras é obrigatório". |                                                                                               | ok        |
+| 18 | Preço compra maior que venda | SKU006 | Calça Jeans | UN | Tecidos ABC | Azul | G | Reta | R$ 100,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | - | - | - | - | Alerta de margem negativa, mas salva? (Validar comportamento). |                                                                                               |           |
+| 19 | Perecível sem validade | SKU005 | Camiseta Promocional | UN | Malharia Silva | Branco | M | - | R$ 15,00 | R$ 29,90 | Masculino | Malharia Silva | 50 | Sim | (vazio) | - | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". |                                                                                               | ok        |
+| 20 | Excluir produto vinculado a venda | (produto com venda) | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | Alerta: "Produto possui vendas vinculadas". |                                                                                               |           |
+| 143 | Cadastro válido jaqueta | SKU003 | Jaqueta | UN | Avan Calçados | Preto | G | Couro | R$ 60,00 | R$ 199,90 | Masculino | Avan Calçados | 30 | Nao | - | 3 meses | - | Jaqueta de couro sintético | - | Salvo com sucesso. | | ok        |
+| 144 | Cadastro válido calça | SKU004 | Calça Jeans | UN | Tecidos ABC | Azul | M | Skinny | R$ 40,00 | R$ 80,00 | Feminino | Tecidos ABC | 30 | Nao | - | - | 10% | Calça jeans stretch | - | Salvo com sucesso. | | ok        |
+| 148 | Produto com garantia e imagem | SKU007 | Blazer Feminino | UN | Tecidos ABC | Preto | M | Social | R$ 120,00 | R$ 299,90 | Feminino | Tecidos ABC | 15 | Nao | - | 6 meses | - | Blazer social feminino, tecido importado | (arquivo jpg) | Salvo com sucesso. Imagem armazenada. | |           |
 
 ---
 
@@ -68,25 +69,27 @@
 
 ## ComprasAPagarScreen
 
-| # | Cenário | Descrição | Valor Original | Fornecedor | Status | Vencimento | Tipo Doc | Nº Doc | Observação | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|--------------|-----------|--------|------------|----------|--------|------------|-----------------|------|---|
-| 63 | Cadastro manual de conta | Compra Tecidos ABC | R$ 700,00 | Tecidos ABC | PENDENTE | 15/07/2026 | DUPLICATA | NF-COM-002 | - | Salvo com sucesso. | | |
-| 64 | Pagamento parcial | (conta existente) | - | - | PARCIAL | - | - | - | - | Pagamento parcial registrado. Status atualizado. | | |
-| 65 | Pagamento total | (conta existente) | - | - | PAGO | - | - | - | - | Status alterado para PAGO. | | |
-| 66 | Descrição vazia | (vazio) | R$ 100,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | Alerta: "Descrição é obrigatória". | | |
-| 67 | Valor zerado | Conta teste | R$ 0,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | Alerta: "Valor deve ser maior que zero". | | |
-| 66 | Pagamento maior que restante | (conta R$ 100) | Pagamento: R$ 200 | - | - | - | - | - | - | Alerta: "Valor do pagamento excede o restante". | | |
+| # | Cenário | Descrição | Valor Original | Fornecedor | Status | Vencimento | Tipo Doc | Nº Doc | Data Pagamento | Observação | Efeito Esperado | Erro | Resultado |
+|---|---------|-----------|--------------|-----------|--------|------------|----------|--------|----------------|------------|-----------------|------|---|
+| 63 | Cadastro manual de conta | Compra Tecidos ABC | R$ 700,00 | Tecidos ABC | PENDENTE | 15/07/2026 | DUPLICATA | NF-COM-002 | - | - | Salvo com sucesso. | | |
+| 64 | Pagamento parcial | (conta existente) | - | - | PARCIAL | - | - | - | 20/07/2026 | - | Pagamento parcial registrado. Status atualizado. | | |
+| 65 | Pagamento total | (conta existente) | - | - | PAGO | - | - | - | 25/07/2026 | - | Status alterado para PAGO. | | |
+| 66 | Descrição vazia | (vazio) | R$ 100,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Descrição é obrigatória". | | |
+| 67 | Valor zerado | Conta teste | R$ 0,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Valor deve ser maior que zero". | | |
+| 66 | Pagamento maior que restante | (conta R$ 100) | Pagamento: R$ 200 | - | - | - | - | - | - | - | Alerta: "Valor do pagamento excede o restante". | | |
+| 121 | Conta com N° Doc e observação | Compra Avan Calçados | R$ 2.400,00 | Avan Calçados | PENDENTE | 01/08/2026 | BOLETO | BOL-7890 | - | Compra de jaquetas para revenda | Salvo com sucesso. N° Doc e observação registrados. | | |
 
 ---
 
 ## ContasAReceberScreen
 
-| # | Cenário | Descrição | Valor Original | Cliente | Status | Vencimento | Tipo Doc | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|--------------|--------|--------|------------|----------|-----------------|------|---|
-| 70 | Conta gerada por venda a prazo | Venda Carla Lima (Vestido) | R$ 89,90 | Carla Lima | PENDENTE | 15/07/2026 | - | Gerada automaticamente. 3 parcelas de ~R$ 29,97. | | |
-| 71 | Recebimento parcial | (conta existente) | Recebimento: R$ 50,00 | - | PARCIAL | - | - | Valor restante atualizado. | | |
-| 72 | Recebimento total | (conta existente) | Restante integral | - | RECEBIDO | - | - | Status alterado para RECEBIDO. | | |
-| 73 | Descrição vazia | (vazio) | R$ 200,00 | Maria Souza | PENDENTE | 15/08/2026 | - | Alerta: "Descrição é obrigatória". | | |
+| # | Cenário | Descrição | Valor Original | Cliente | Status | Vencimento | Tipo Doc | N° Doc | Data Recebimento | Observação | Efeito Esperado | Erro | Resultado |
+|---|---------|-----------|--------------|--------|--------|------------|----------|--------|------------------|------------|-----------------|------|---|
+| 70 | Conta gerada por venda a prazo | Venda Carla Lima (Vestido) | R$ 89,90 | Carla Lima | PENDENTE | 15/07/2026 | - | - | - | - | Gerada automaticamente. 3 parcelas de ~R$ 29,97. | | |
+| 71 | Recebimento parcial | (conta existente) | Recebimento: R$ 50,00 | - | PARCIAL | - | - | - | 20/07/2026 | - | Valor restante atualizado. | | |
+| 72 | Recebimento total | (conta existente) | Restante integral | - | RECEBIDO | - | - | - | 25/07/2026 | Quitado | Status alterado para RECEBIDO. | | |
+| 73 | Descrição vazia | (vazio) | R$ 200,00 | Maria Souza | PENDENTE | 15/08/2026 | - | - | - | - | Alerta: "Descrição é obrigatória". | | |
+| 120 | Conta com N° Doc e observação | Venda João Pedro (Camisetas) | R$ 119,70 | João Pedro | PENDENTE | 20/07/2026 | NOTA FISCAL | NF-0042 | - | Cliente fiado recorrente | Salvo com sucesso. N° Doc e observação registrados. | | |
 
 ---
 
@@ -103,13 +106,14 @@
 
 ## PDVScreen
 
-| # | Cenário | Produto | Qtd | Total | Recebido | Fiado | Cliente (fiado) | Efeito Esperado | Erro | Resultado |
-|---|---------|---------|-----|-------|----------|-------|-----------------|-----------------|------|-----------|
-| 84 | Venda avulsa (não fiada) | Camiseta M | 2 | R$ 79,80 | R$ 100,00 | Não | - | Troco: R$ 20,20. Pedido registrado. | | ok        |
-| 85 | Venda fiada | Calça Jeans | 1 | R$ 80,00 | - | Sim | Maria Souza | Pedido registrado como fiado. Gera conta a receber. | |           |
-| 86 | Venda fiada sem cliente | Jaqueta | 1 | R$ 199,90 | - | Sim | (vazio) | Alerta: "Selecione um cliente para venda fiada". | |           |
-| 87 | Recebimento menor que total | Camiseta M | 3 | R$ 119,70 | R$ 50,00 | Não | - | Alerta: "Valor recebido é insuficiente". | |           |
-| 88 | Carrinho vazio | (nenhum) | 0 | R$ 0 | - | - | - | Alerta: "Adicione produtos ao carrinho". | |           |
+| # | Cenário | Produto | Qtd | Total | Recebido | Fiado | Cliente (fiado) | Nº Parcelas | Efeito Esperado | Erro | Resultado |
+|---|---------|---------|-----|-------|----------|-------|-----------------|-------------|-----------------|------|-----------|
+| 84 | Venda avulsa (não fiada) | Camiseta M | 2 | R$ 79,80 | R$ 100,00 | Não | - | - | Troco: R$ 20,20. Pedido registrado. | | ok        |
+| 85 | Venda fiada | Calça Jeans | 1 | R$ 80,00 | - | Sim | Maria Souza | 3 | Pedido registrado como fiado. Gera 3 parcelas na conta a receber. | |           |
+| 86 | Venda fiada sem cliente | Jaqueta | 1 | R$ 199,90 | - | Sim | (vazio) | 1 | Alerta: "Selecione um cliente para venda fiada". | |           |
+| 87 | Recebimento menor que total | Camiseta M | 3 | R$ 119,70 | R$ 50,00 | Não | - | - | Alerta: "Valor recebido é insuficiente". | |           |
+| 88 | Carrinho vazio | (nenhum) | 0 | R$ 0 | - | - | - | - | Alerta: "Adicione produtos ao carrinho". | |           |
+| 119 | Venda fiada 1 parcela | Vestido | 1 | R$ 89,90 | - | Sim | Carla Lima | 1 | Pedido fiado com 1 parcela (valor total). | |           |
 
 ---
 

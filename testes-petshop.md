@@ -21,15 +21,16 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
-| 113 | Ração cães 15kg | RAC-C-001 | Ração Cães 15kg | KG | Purina Pet | - | - | - | R$ 45,00 | R$ 79,90 | Cachorros | Purina Pet | 20 | Sim | 15/12/2026 | Salvo com sucesso. | | |
-| 114 | Ração gatos 10kg | RAC-G-001 | Ração Gatos 10kg | KG | Royal Canin | - | - | - | R$ 55,00 | R$ 89,90 | Gatos | Royal Canin | 15 | Sim | 20/01/2027 | Salvo com sucesso. | | |
-| 115 | Areia sanitária 4kg | ARE-001 | Areia Sanitária 4kg | KG | PetBrasil | - | - | - | R$ 12,00 | R$ 24,90 | Gatos | PetBrasil | 30 | Nao | - | Salvo com sucesso. | | |
-| 116 | Brinquedo (unidade) | BRI-001 | Brinquedo Osso Borracha | UN | PetBrasil | - | - | - | R$ 3,50 | R$ 9,90 | Cachorros | PetBrasil | 50 | Nao | - | Salvo com sucesso com unidade UN. | | |
-| 117 | Shampoo 500ml | SHA-001 | Shampoo Cães 500ml | ml | PetBrasil | - | - | - | R$ 8,00 | R$ 19,90 | Cachorros | PetBrasil | 40 | Nao | - | Salvo com sucesso com unidade ml. | | |
-| 118 | Petisco 100g (gramas) | PET-001 | Petisco Cães 100g | g | Purina Pet | - | - | - | R$ 5,00 | R$ 12,90 | Cachorros | Purina Pet | 60 | Nao | - | Salvo com sucesso com unidade "g". | | |
-| 119 | Perecível sem validade | RAC-T-001 | Ração Teste | KG | Purina Pet | - | - | - | R$ 20,00 | R$ 39,90 | Cachorros | Purina Pet | 10 | Sim | (vazio) | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|----------|----------|-------------|--------|-----------------|------|---|
+| 113 | Ração cães 15kg | RAC-C-001 | Ração Cães 15kg | KG | Purina Pet | - | - | - | R$ 45,00 | R$ 79,90 | Cachorros | Purina Pet | 20 | Sim | 15/12/2026 | - | - | Ração premium cães adultos | - | Salvo com sucesso. | | |
+| 114 | Ração gatos 10kg | RAC-G-001 | Ração Gatos 10kg | KG | Royal Canin | - | - | - | R$ 55,00 | R$ 89,90 | Gatos | Royal Canin | 15 | Sim | 20/01/2027 | - | - | - | - | Salvo com sucesso. | | |
+| 115 | Areia sanitária 4kg | ARE-001 | Areia Sanitária 4kg | KG | PetBrasil | - | - | - | R$ 12,00 | R$ 24,90 | Gatos | PetBrasil | 30 | Nao | - | - | 5% | Areia aglomerante | - | Salvo com sucesso. | | |
+| 116 | Brinquedo (unidade) | BRI-001 | Brinquedo Osso Borracha | UN | PetBrasil | - | - | - | R$ 3,50 | R$ 9,90 | Cachorros | PetBrasil | 50 | Nao | - | 1 mês | - | Brinquedo resistente para cães | - | Salvo com sucesso com unidade UN. | | |
+| 117 | Shampoo 500ml | SHA-001 | Shampoo Cães 500ml | ml | PetBrasil | - | - | - | R$ 8,00 | R$ 19,90 | Cachorros | PetBrasil | 40 | Nao | - | - | - | Shampoo hipoalergênico | - | Salvo com sucesso com unidade ml. | | |
+| 118 | Petisco 100g (gramas) | PET-001 | Petisco Cães 100g | g | Purina Pet | - | - | - | R$ 5,00 | R$ 12,90 | Cachorros | Purina Pet | 60 | Nao | - | - | - | Petisco natural sabor frango | - | Salvo com sucesso com unidade "g". | | |
+| 119 | Perecível sem validade | RAC-T-001 | Ração Teste | KG | Purina Pet | - | - | - | R$ 20,00 | R$ 39,90 | Cachorros | Purina Pet | 10 | Sim | (vazio) | - | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
+| 149 | Produto com imagem e garantia | MON-001 | Monitor Pet Câmera | UN | PetBrasil | - | - | - | R$ 150,00 | R$ 299,90 | Cachorros | PetBrasil | 10 | Nao | - | 12 meses | - | Monitoramento remoto para pets | (arquivo jpg) | Salvo com sucesso. Imagem e garantia registradas. | | |
 
 ---
 
@@ -83,29 +84,32 @@
 
 ## PDVScreen
 
-| # | Cenário | Produto | Qtd | Total | Recebido | Fiado | Cliente (fiado) | Efeito Esperado | Erro | Resultado |
-|---|---------|---------|-----|-------|----------|-------|-----------------|-----------------|------|---|
-| 137 | Venda avulsa ração 15kg | Ração Cães 15kg | 1 | R$ 79,90 | R$ 100,00 | Não | - | Troco: R$ 20,10. Pedido registrado. | | |
-| 138 | Venda mix (ração + brinquedo) | Ração Cães + Brinquedo | 1+2 | R$ 99,70 | R$ 100,00 | Não | - | Troco: R$ 0,30. Estoque ração 30 -> 29, brinquedo 50 -> 48. | | |
-| 139 | Venda fiada para cliente fiel | Ração Gatos 10kg | 1 | R$ 89,90 | - | Sim | Sofia Rocha | Pedido fiado registrado. Gera conta a receber. | | |
-| 140 | Carrinho vazio | (nenhum) | 0 | R$ 0 | - | - | - | Alerta: "Adicione produtos ao carrinho". | | |
+| # | Cenário | Produto | Qtd | Total | Recebido | Fiado | Cliente (fiado) | Nº Parcelas | Efeito Esperado | Erro | Resultado |
+|---|---------|---------|-----|-------|----------|-------|-----------------|-------------|-----------------|------|---|
+| 137 | Venda avulsa ração 15kg | Ração Cães 15kg | 1 | R$ 79,90 | R$ 100,00 | Não | - | - | Troco: R$ 20,10. Pedido registrado. | | |
+| 138 | Venda mix (ração + brinquedo) | Ração Cães + Brinquedo | 1+2 | R$ 99,70 | R$ 100,00 | Não | - | - | Troco: R$ 0,30. Estoque ração 30 -> 29, brinquedo 50 -> 48. | | |
+| 139 | Venda fiada para cliente fiel | Ração Gatos 10kg | 1 | R$ 89,90 | - | Sim | Sofia Rocha | 2 | Pedido fiado registrado. Gera 2 parcelas na conta a receber. | | |
+| 140 | Carrinho vazio | (nenhum) | 0 | R$ 0 | - | - | - | - | Alerta: "Adicione produtos ao carrinho". | | |
+| 122 | Venda fiada 1 parcela | Brinquedo Osso | 3 | R$ 29,70 | - | Sim | Carlos Mendes | 1 | Pedido fiado com 1 parcela (valor total). | | |
 
 ---
 
 ## ContasAReceberScreen
 
-| # | Cenário | Descrição | Valor Original | Cliente | Status | Vencimento | Tipo Doc | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|--------------|--------|--------|------------|----------|-----------------|------|---|
-| 141 | Conta gerada por venda fiada | Venda fiada Sofia Rocha (Ração Gatos) | R$ 89,90 | Sofia Rocha | PENDENTE | 15/07/2026 | - | Gerada automaticamente. | | |
-| 142 | Recebimento total | (conta existente) | Restante integral | Sofia Rocha | RECEBIDO | - | - | Status alterado para RECEBIDO. | | |
+| # | Cenário | Descrição | Valor Original | Cliente | Status | Vencimento | Tipo Doc | N° Doc | Data Recebimento | Observação | Efeito Esperado | Erro | Resultado |
+|---|---------|-----------|--------------|--------|--------|------------|----------|--------|------------------|------------|-----------------|------|---|
+| 141 | Conta gerada por venda fiada | Venda fiada Sofia Rocha (Ração Gatos) | R$ 89,90 | Sofia Rocha | PENDENTE | 15/07/2026 | - | - | - | - | Gerada automaticamente. | | |
+| 142 | Recebimento total | (conta existente) | Restante integral | Sofia Rocha | RECEBIDO | - | - | - | 20/07/2026 | Quitado | Status alterado para RECEBIDO. | | |
+| 123 | Conta com N° Doc | Venda fiada Carlos Mendes | R$ 29,70 | Carlos Mendes | PENDENTE | 20/07/2026 | NOTA FISCAL | NF-PET-010 | - | Venda de brinquedos | Salvo com sucesso. | | |
 
 ---
 
 ## ComprasAPagarScreen
 
-| # | Cenário | Descrição | Valor | Fornecedor | Vencimento | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|-------|-----------|------------|-----------------|------|---|
-| 69 | Conta gerada por compra | Compra Purina Pet | R$ 1.500,00 | Purina Pet | 15/08/2026 | Gerada automaticamente pela compra a prazo. | | |
+| # | Cenário | Descrição | Valor | Fornecedor | Vencimento | N° Doc | Data Pagamento | Observação | Efeito Esperado | Erro | Resultado |
+|---|---------|-----------|-------|-----------|------------|--------|----------------|------------|-----------------|------|---|
+| 69 | Conta gerada por compra | Compra Purina Pet | R$ 1.500,00 | Purina Pet | 15/08/2026 | - | - | - | Gerada automaticamente pela compra a prazo. | | |
+| 124 | Conta com N° Doc e pagamento | Compra Royal Canin | R$ 440,00 | Royal Canin | 01/08/2026 | NF-COM-PET-002 | 05/08/2026 | Ração gatos a prazo | Pagamento registrado. Status: PAGO. | | |
 
 ---
 

@@ -1,5 +1,54 @@
 # Decisões Arquiteturais
 
+## 2026-07-19: Simplificação de cadastros válidos de clientes nos testes
+
+**Problema:** A seção ClienteScreen em `testes-gerais.md` possuía 27 testes, sendo 14 deles "cadastro válido" com dados diferentes para cada perfil (Loja Roupas, PetShop, Lanchonete, Açougue, Mercado). Todos testavam a mesma regra: "salvar cliente PF/PJ com sucesso". Isso era repetição desnecessária.
+
+**Decisão:**
+1. Reduzir de 27 para 13 testes na ClienteScreen — manter apenas os testes de validação efetivos (cadastro válido PF/PJ, nome vazio, email inválido, CPF repetido, campos opcionais, edição, exclusão, CNPJ duplicado, gestante, endereço)
+2. Os clientes usados nos testes de perfil (Maria Souza, João Pedro, Carla Lima, Ana Beatriz, Carlos Mendes, Sofia Rocha, Pedro Alves, José Moura) são documentados em uma tabela de "Dados de teste" abaixo da tabela, indicando que devem ser cadastrados antes dos testes e reutilizados
+3. Clientes não usados em nenhum teste removidos: Luana Costa, Thiago Santos, Renata Oliveira, Paulo Sérgio, Juliana Costa
+4. Cabeçalhos dos perfis atualizados — apenas clientes efetivamente referenciados nos testes
+
+**Arquivos alterados:**
+- `testes-gerais.md` (27→13 testes, +tabela de dados de teste)
+- `testes-lanchonete.md` (clientes: 3→1)
+- `testes-acougue.md` (clientes: 3→1)
+- `testes-mercado.md` (clientes: 3→2 — removido Juliana Costa)
+
+---
+
+## 2026-07-19: Cobertura de testes manuais — campos ausentes nas telas
+
+**Problema:** Análise revelou que vários campos presentes nas screens não tinham colunas correspondentes nos arquivos `.md` de teste, impedindo que os testes manuais cobrissem todos os casos de uso.
+
+**Campos identificados como ausentes:**
+1. **ClienteScreen**: Data de nascimento, É gestante, Data nascimento bebê, Endereço (CEP, UF, Cidade, Bairro, Rua, Número)
+2. **ProdutoScreen** (todos perfis): Garantia, Comissão, Observações, Imagem
+3. **PDVScreen** (loja/petshop): Nº Parcelas (visível quando fiado)
+4. **ContasAReceberScreen** (loja/petshop): Data Recebimento, N° Doc, Observação
+5. **ComprasAPagarScreen** (loja/petshop): Data Pagamento, N° Doc, Observação
+6. **PreferenciasScreen**: Select Impressora
+7. **PedidosScreen, SugerirMelhoriaScreen, RelatarErroScreen**: ZERO cobertura
+
+**Decisão:**
+1. Adicionar novas colunas nas tabelas de teste existentes para cobrir os campos ausentes
+2. Adicionar novos casos de teste para validar os campos adicionados (gestante, endereço, garantia, parcelas, etc.)
+3. Criar seções novas em `testes-gerais.md` para PedidosScreen (4 testes), SugerirMelhoriaScreen (3 testes) e RelatarErroScreen (3 testes)
+4. Atualizar `testes.md` index com links para as novas seções
+5. Screens sem teste: WelcomeScreen, HomeScreen, InfoUpdateScreen, LerPlanilhaScreen — não possuem campos de formulário relevantes para teste manual (são read-only, splash ou dashboard)
+
+**Arquivos alterados:**
+- `testes-gerais.md` (+6 colunas ClienteScreen, +4 novos casos, +coluna Impressora Preferencias, +seções Pedidos/SugerirMelhoria/RelatarErro)
+- `testes-loja-de-roupas.md` (+4 colunas ProdutoScreen, +1 caso, +coluna Parcelas PDV, +colunas ContasAReceber/ComprasAPagar, +2 casos)
+- `testes-petshop.md` (+4 colunas ProdutoScreen, +1 caso, +coluna Parcelas PDV, +colunas ContasAReceber/ComprasAPagar, +3 casos)
+- `testes-lanchonete.md` (+4 colunas ProdutoScreen, +1 caso)
+- `testes-acougue.md` (+4 colunas ProdutoScreen, +1 caso)
+- `testes-mercado.md` (+4 colunas ProdutoScreen, +1 caso)
+- `testes.md` (+3 novos links de screens)
+
+---
+
 ## 2026-07-14: Impressão de nota de venda no crediário com parcelas e assinatura
 
 **Problema:** O cliente quer imprimir a nota de venda no crediário com o número de parcelas na notinha, para que o cliente possa assinar a via. Atualmente, o PDV criava apenas 1 parcela fixa (valor total, vencimento 30 dias) e não mostrava informações de parcelas na impressão. A VendaMercadoriaScreen já gerava parcelas via "A PRAZO" mas também não imprimia.

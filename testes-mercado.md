@@ -12,7 +12,7 @@
 | Produtos típicos | Arroz 5kg, Feijão 1kg, Óleo 900ml, Café 500g, Leite 1L | |
 | Categorias | Alimentos, Bebidas, Limpeza, Higiene | |
 | Fornecedores | Alimentos Brasil, Bebidas DF, LimpMax | |
-| Clientes | Fernanda Lima, Ricardo Gomes, Juliana Costa | |
+| Clientes | Fernanda Lima, Ricardo Gomes | |
 
 ---
 
@@ -24,11 +24,12 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|-----------------|------|---|
-| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | - | - | - | R$ 8,00 | R$ 12,00 | Alimentos | Alimentos Brasil | 200 | Nao | - | Salvo com sucesso. | | |
-| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | - | - | - | R$ 5,00 | R$ 8,00 | Alimentos | Alimentos Brasil | 150 | Nao | - | Salvo com sucesso. | | |
-| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | - | - | - | R$ 4,50 | R$ 7,50 | Alimentos | Alimentos Brasil | 100 | Nao | - | Salvo com sucesso. | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|----------|----------|-------------|--------|-----------------|------|---|
+| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | - | - | - | R$ 8,00 | R$ 12,00 | Alimentos | Alimentos Brasil | 200 | Nao | - | - | - | Arroz tipo 1, pacote 5kg | - | Salvo com sucesso. | | |
+| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | - | - | - | R$ 5,00 | R$ 8,00 | Alimentos | Alimentos Brasil | 150 | Nao | - | - | - | Feijão carioca 1kg | - | Salvo com sucesso. | | |
+| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | - | - | - | R$ 4,50 | R$ 7,50 | Alimentos | Alimentos Brasil | 100 | Nao | - | - | 2% | Óleo de soja refinado | - | Salvo com sucesso. | | |
+| 150 | Produto com imagem | SKU-CAFE | Café 500g | g | Alimentos Brasil | - | - | - | R$ 12,00 | R$ 22,00 | Alimentos | Alimentos Brasil | 80 | Nao | - | - | - | Café torrado e moído 500g | (arquivo jpg) | Salvo com sucesso. Imagem registrada. | | |
 
 ---
 
