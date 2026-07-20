@@ -139,9 +139,9 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 | # | Cenário | Texto (max 300) | Efeito Esperado | Erro | Resultado |
 |---|---------|-----------------|-----------------|------|-----------|
-| 116 | Relato válido | "Erro ao salvar produto com preço zero" | Enviado com sucesso via Telegram. | | |
-| 117 | Texto vazio | (vazio) | Botão de envio desabilitado ou alerta. | | |
-| 118 | Texto excede 300 caracteres | (texto muito longo) | Texto truncado ou alerta de limite. | | |
+| 116 | Relato válido | "Erro ao salvar produto com preço zero" | Enviado com sucesso via Telegram. | | ok        |
+| 117 | Texto vazio | (vazio) | Botão de envio desabilitado ou alerta. | | ok        |
+| 118 | Texto excede 300 caracteres | (texto muito longo) | Texto truncado ou alerta de limite. | | ok        |
 
 ---
 

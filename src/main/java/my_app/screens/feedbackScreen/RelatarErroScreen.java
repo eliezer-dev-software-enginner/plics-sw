@@ -2,6 +2,7 @@ package my_app.screens.feedbackScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Card;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
@@ -25,7 +26,7 @@ public class RelatarErroScreen implements ScreenComponent {
                 new Column(new ColumnProps().paddingAll(20))
                         .c_child(new Row(new RowProps().centerHorizontally()))
                         .c_child(Components.TextAreaColumn("Detalhes do erro", vm.content, "", 300))
-                        .c_child(new SpacerVertical(20))
+                        .c_child(new SpacerVertical(ThemeManager.theme().spacing().md()))
                         .c_child(Components.ButtonCadastro(vm.btnText, () -> vm.send(() ->
                                 Components.ShowPopup(ctx, "Enviado com sucesso")))));
     }

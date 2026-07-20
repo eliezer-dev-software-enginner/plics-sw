@@ -19,6 +19,11 @@ public class FeedbackViewModel {
 
     public void send(Runnable onSuccess) {
         if (isSending.get() || content.get() == null || content.get().trim().isEmpty()) return;
+
+        if (content.get().trim().length() > 300) {
+            Components.ShowAlertError("Erro ao enviar, texto muito longo. Seu texto deve possuir no máximo 300 caracteres!");
+            return;
+        };
         isSending.set(true);
 
         Async.Run(() -> {
