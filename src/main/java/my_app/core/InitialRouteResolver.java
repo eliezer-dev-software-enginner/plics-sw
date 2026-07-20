@@ -5,7 +5,7 @@ import my_app.Main;
 public class InitialRouteResolver {
 
     public static String resolve(boolean isFirstAccess, boolean enterWithCredentials) {
-        if(Main.devMode)return AppRoutes.Screens.VENDAS.name();
+        if(Main.devMode)return AppRoutes.Screens.COMPRAS_A_PAGAR.name();
         if (isFirstAccess) {
             return AppRoutes.Screens.WELCOME.name();
         }

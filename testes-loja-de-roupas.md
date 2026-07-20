@@ -48,7 +48,7 @@
 | 48 | Venda com desconto | 15/06/2026 | João Pedro | NF002 | Calça Jeans (SKU004) | 1 | R$ 80,00 | R$ 10,00 | CREDITO | Sim | - | Venda registrada com total líquido R$ 70,00. | | ok                                                                  |
 | 49 | Venda a prazo (parcelado) | 15/06/2026 | Carla Lima | - | Vestido (SKU002) | 1 | R$ 89,90 | R$ 0 | A PRAZO | Sim | - | Gera 3 parcelas no Contas a Receber. | ~~ArrayIndexOutOfBoundsException ao clicar "Adicionar" sem preencher quantidade.~~ Corrigido — validação de quantidade adicionada em handleAddOrUpdate(). | OK (fix: validação de quantidade em VendaMercadoriaScreenViewModel) |
 | 50 | Produto sem estoque | 15/06/2026 | Maria Souza | - | Camiseta M | 500 | R$ 39,90 | R$ 0 | A VISTA | Sim | - | Alerta: "Estoque insuficiente". | | ok                                                                  |
-| 52 | Produto não encontrado | 15/06/2026 | Maria Souza | - | INEXISTENTE | 1 | - | - | - | - | - | Alerta: "Produto não encontrado". | |                                                                     |
+| 52 | Produto não encontrado | 15/06/2026 | Maria Souza | - | INEXISTENTE | 1 | - | - | - | - | - | Alerta: "Produto não encontrado". | | ok                                                                  |
 | 53 | Venda sem refletir estoque | 15/06/2026 | Maria Souza | NF003 | Jaqueta (SKU003) | 1 | R$ 199,90 | R$ 0 | DEBITO | Nao | - | Venda registrada. Estoque permanece 30. | | ok                                                                  |
 | 54 | Venda com observação | 15/06/2026 | João Pedro | NF004 | Camiseta M | 3 | R$ 39,90 | R$ 5,00 | PIX | Sim | "Presente" | Venda registrada com observação. | | ok                                                                  |
 
@@ -68,14 +68,14 @@
 ## ComprasAPagarScreen
 
 | # | Cenário | Descrição | Valor Original | Fornecedor | Status | Vencimento | Tipo Doc | Nº Doc | Data Pagamento | Observação | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|--------------|-----------|--------|------------|----------|--------|----------------|------------|-----------------|------|---|
-| 63 | Cadastro manual de conta | Compra Tecidos ABC | R$ 700,00 | Tecidos ABC | PENDENTE | 15/07/2026 | DUPLICATA | NF-COM-002 | - | - | Salvo com sucesso. | | |
-| 64 | Pagamento parcial | (conta existente) | - | - | PARCIAL | - | - | - | 20/07/2026 | - | Pagamento parcial registrado. Status atualizado. | | |
-| 65 | Pagamento total | (conta existente) | - | - | PAGO | - | - | - | 25/07/2026 | - | Status alterado para PAGO. | | |
-| 66 | Descrição vazia | (vazio) | R$ 100,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Descrição é obrigatória". | | |
-| 67 | Valor zerado | Conta teste | R$ 0,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Valor deve ser maior que zero". | | |
-| 66 | Pagamento maior que restante | (conta R$ 100) | Pagamento: R$ 200 | - | - | - | - | - | - | - | Alerta: "Valor do pagamento excede o restante". | | |
-| 121 | Conta com N° Doc e observação | Compra Avan Calçados | R$ 2.400,00 | Avan Calçados | PENDENTE | 01/08/2026 | BOLETO | BOL-7890 | - | Compra de jaquetas para revenda | Salvo com sucesso. N° Doc e observação registrados. | | |
+|---|---------|-----------|--------------|-----------|--------|------------|----------|--------|----------------|------------|-----------------|------|-----------|
+| 63 | Cadastro manual de conta | Compra Tecidos ABC | R$ 700,00 | Tecidos ABC | PENDENTE | 15/07/2026 | DUPLICATA | NF-COM-002 | - | - | Salvo com sucesso. | | ok         |
+| 64 | Pagamento parcial | (conta existente) | - | - | PARCIAL | - | - | - | 20/07/2026 | - | Pagamento parcial registrado. Status atualizado. | |           |
+| 65 | Pagamento total | (conta existente) | - | - | PAGO | - | - | - | 25/07/2026 | - | Status alterado para PAGO. | |           |
+| 66 | Descrição vazia | (vazio) | R$ 100,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Descrição é obrigatória". | |           |
+| 67 | Valor zerado | Conta teste | R$ 0,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Valor deve ser maior que zero". | |           |
+| 66 | Pagamento maior que restante | (conta R$ 100) | Pagamento: R$ 200 | - | - | - | - | - | - | - | Alerta: "Valor do pagamento excede o restante". | |           |
+| 121 | Conta com N° Doc e observação | Compra Avan Calçados | R$ 2.400,00 | Avan Calçados | PENDENTE | 01/08/2026 | BOLETO | BOL-7890 | - | Compra de jaquetas para revenda | Salvo com sucesso. N° Doc e observação registrados. | |           |
 
 ---
 
