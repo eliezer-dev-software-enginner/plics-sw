@@ -2,7 +2,9 @@ package my_app.screens.comprasScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.CompraModel;
 import my_app.db.models.FornecedorModel;
@@ -42,7 +44,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
     public Component form() {
         return new Column(new ColumnProps().spacingOf(10)).children(
                 Components.FormTitle("Cadastrar Nova Compra"),
-                new SpacerVertical(20),
+                new SpacerVertical(ThemeManager.theme().spacing().lg()),
                 formFirstRow(),
                 formSecondRow(),
                 new Row(new RowProps().spacingOf(15))
@@ -54,8 +56,8 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
         );
     }
 
-    private Row formFirstRow() {
-        return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
+    private Component formFirstRow() {
+        return new FlowRow(new FlowRowProps().spacingOf(10)).children(
                 Components.DatePickerColumn(vm.dataCompra, "Data de compra"),
                 Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),

@@ -129,9 +129,9 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 | # | Cenário | Texto (max 300) | Efeito Esperado | Erro | Resultado |
 |---|---------|-----------------|-----------------|------|-----------|
-| 113 | Sugestão válida | "Seria útil ter um relatório de vendas mensal" | Enviado com sucesso via Telegram. | | |
-| 114 | Texto vazio | (vazio) | Botão de envio desabilitado ou alerta. | | |
-| 115 | Texto excede 300 caracteres | (texto muito longo) | Texto truncado ou alerta de limite. | | |
+| 113 | Sugestão válida | "Seria útil ter um relatório de vendas mensal" | Enviado com sucesso via Telegram. | | ok        |
+| 114 | Texto vazio | (vazio) | Botão de envio desabilitado ou alerta. | | ok        |
+| 115 | Texto excede 300 caracteres | (texto muito longo) | Texto truncado ou alerta de limite. | | ok        |
 
 ---
 
