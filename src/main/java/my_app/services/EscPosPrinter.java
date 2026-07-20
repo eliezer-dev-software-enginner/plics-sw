@@ -133,8 +133,9 @@ public class EscPosPrinter implements ComprovanteBuilder {
             }
             if (parcelas != null && !parcelas.isEmpty()) {
                 separador(escpos);
-                rodape(escpos);
-                escpos.feed(6);
+                escpos.feed(2);
+                centralizado(escpos, "Obrigado pela preferencia!", true, Style.FontSize._1);
+                escpos.feed(4);
                 centralizado(escpos, "_______________________________", false, Style.FontSize._1);
                 centralizado(escpos, "Assinatura do cliente", false, Style.FontSize._1);
                 escpos.feed(4);
@@ -184,8 +185,9 @@ public class EscPosPrinter implements ComprovanteBuilder {
             }
             if (parcelas != null && !parcelas.isEmpty()) {
                 separador(escpos);
-                rodape(escpos);
-                escpos.feed(6);
+                escpos.feed(2);
+                centralizado(escpos, "Obrigado pela preferencia!", true, Style.FontSize._1);
+                escpos.feed(4);
                 centralizado(escpos, "_______________________________", false, Style.FontSize._1);
                 centralizado(escpos, "Assinatura do cliente", false, Style.FontSize._1);
                 escpos.feed(4);
