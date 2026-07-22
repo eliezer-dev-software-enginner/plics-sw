@@ -1,5 +1,11 @@
 [
   {
+    "version": "v1.1.0.1 Patch 3",
+    "notes": [
+      "Fix: Correção na impressão de nota de venda. Assinatura do cliente deve ficar na primeira folha."
+    ]
+  },
+  {
     "version": "v1.1.0",
     "notes": [
       "Feat: Splash screen, error reporter e padrão createOrReport em ViewModels",
