@@ -167,6 +167,7 @@ public class Components {
         scroll.setContent(child.getJavaFxNode());
         VBox.setVgrow(scroll, Priority.ALWAYS);
         scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
         scroll.setStyle("-fx-background-color: transparent;-fx-border-color: transparent;");
 
         return Component.CreateFromJavaFxNode(scroll);
@@ -297,7 +298,7 @@ public class Components {
                                 new ButtonProps().fontSize(ThemeManager.theme().typography().small()).bgColor("#A6B1E1"))
                                 .onClick(handleChangeImage)
                         ),
-                new CardProps().height(300).padding(20).bgColor("yellow")
+                new CardProps().height(300).padding(20)
         );
     }
 

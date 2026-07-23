@@ -65,13 +65,15 @@ public interface ContratoTelaCrudV3 {
                         commonCustomMenus(focusState),
                         new SpacerVertical(10),
                         Components.ScrollPaneDefault(
-                                new Container(new ContainerProps().bgColor("#fff"))
+                                new Container(new ContainerProps().bgColor("#fff").fillHeight())
                                         .children(
                                                 buttonExpandMinimizeWrapper(),
                                                 new SpacerVertical(20),
-                                                Show.when(viewModel().formIsVisible, () -> new Row(new RowProps().
-                                                        fillWidth().centerHorizontally())
-                                                        .children(form())
+//                                                Show.when(viewModel().formIsVisible, () -> new Row(new RowProps().
+//                                                        fillWidth().centerHorizontally())
+//                                                        .children(form())
+//                                                ).withTransition((c, entering) -> {
+                                                Show.when(viewModel().formIsVisible, () -> form()
                                                 ).withTransition((c, entering) -> {
                                                     if (entering) {
                                                         var anim = Animations.pop(c, true, Duration.millis(100));
@@ -91,7 +93,7 @@ public interface ContratoTelaCrudV3 {
                                                     }
                                                 }),
                                                 new SpacerVertical(30),
-                                                new Container(new ContainerProps().paddingLeft(20).paddingRight(20))
+                                                new Container(new ContainerProps().paddingLeft(20).paddingRight(20).fillHeight())
                                                         .children(
                                                                 Components.searchInput(viewModel().searchState, "Pesquisar"),
                                                                 table()

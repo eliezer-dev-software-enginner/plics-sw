@@ -1,5 +1,31 @@
 # Decisões Arquiteturais
 
+## 2026-07-23: Correção — Card do form de ProdutoScreen com espaço vertical gigante
+
+**Problema:** O Card do formulário na ProdutoScreen ficava com altura excessiva, criando um espaço gigante entre os inputs e o botão de ação (`actionButtons`). O `SpacerVertical(25)` entre os inputs e o botão absorvia todo o espaço extra, pois o `Column` interno expandia para preencher a altura disponível do `StackPane` do `Card`.
+
+**Causa raiz (duas partes):**
+1. **`Card` era um `StackPane`**: O `StackPane` alocava altura extra ao `Column` filho, fazendo o `SpacerVertical` expandir. O `Card` foi alterado de `StackPane` para `VBox`, que respeita `maxHeight` dos filhos.
+2. **`SpacerHorizontal().fill()` competia com o `FlowRow`**: Dentro do `Row(HBox)` do form, tanto o `FlowRow` (ContainerLeft) quanto o `SpacerHorizontal` tinham `HBox.setHgrow(Priority.ALWAYS)`. Isso fazia o `FlowRow` receber menos largura que precisava, causando wrapping excessivo dos inputs em muitas linhas e tornando a Row extremamente alta. O `FlowRow` já tinha `fillWidth()` de `FlowRowProps`, então o `SpacerHorizontal` era desnecessário e prejudicial.
+
+**Decisão:**
+1. Remover o `Row(fillWidth, centerHorizontally)` wrapper em torno do título no `form()` — o título `Text` passou a ser filho direto do `Column`, seguindo o padrão do `CategoriaScreen`
+2. Remover `SpacerHorizontal().fill()` do Row interno — o `FlowRow` com `fillWidth()` já ocupa a largura disponível naturalmente
+3. Restaurar `SpacerVertical(25)` entre Row e actionButtons (estava comentado durante debug)
+4. `Card` alterado de `StackPane` para `VBox` (feito pelo usuário)
+5. Remover `bgColor("blue")` debug do Row
+
+**Comparação com outras screens:**
+- `CategoriaScreen`: usa `Text` diretamente como filho do `Column` (sem wrapper `Row`) — funciona corretamente
+- `FornecedorScreen`: usa `c_child(Text(...))` diretamente — funciona corretamente
+- `ClienteScreen`: usa `c_child(Components.FormTitle(...))` diretamente — funciona corretamente
+
+**Arquivos alterados:**
+- `plics-sw/src/main/java/my_app/screens/produtoScreen/ProdutoScreen.java` (removido `Row` wrapper no `form()`, removido `SpacerHorizontal.fill()`, restaurado `SpacerVertical(25)`)
+- `megalodonte-ecossystem/.../Card.java` (alterado de `StackPane` para `VBox` — feito pelo usuário)
+
+---
+
 ## 2026-07-19: Simplificação de cadastros válidos de clientes nos testes
 
 **Problema:** A seção ClienteScreen em `testes-gerais.md` possuía 27 testes, sendo 14 deles "cadastro válido" com dados diferentes para cada perfil (Loja Roupas, PetShop, Lanchonete, Açougue, Mercado). Todos testavam a mesma regra: "salvar cliente PF/PJ com sucesso". Isso era repetição desnecessária.

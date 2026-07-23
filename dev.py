@@ -6,7 +6,7 @@ from watchdog.events import FileSystemEventHandler
 
 WATCH_DIRS = ["src/main/java", "src/main/resources"]
 GRADLE_RUN = ["./gradlew", "run"] if sys.platform != "win32" else ["gradlew.bat", "run"]
-DEBOUNCE_SECONDS = 1.5
+DEBOUNCE_SECONDS = 3.5
 
 process = None
 

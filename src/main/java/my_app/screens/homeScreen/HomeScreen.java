@@ -11,7 +11,9 @@ import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
+import megalodonte.ForEachState;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
@@ -77,27 +79,14 @@ public class HomeScreen implements ScreenComponent {
     }
 
     private Column centerContent() {
-        var rowProps = new RowProps().spacingOf(10);
-        return new Column(new ColumnProps().spacingOf(10)).children(
-                new Row(rowProps)
-                        .children(
-                                CardColumn(cardItemList.get(0)),
-                                CardColumn(cardItemList.get(1)),
-                                CardColumn(cardItemList.get(2)),
-                                CardColumn(cardItemList.get(3))
-                        ),
-                new Row(rowProps)
-                        .children(
-                                CardColumn(cardItemList.get(4)),
-                                CardColumn(cardItemList.get(5)),
-                                CardColumn(cardItemList.get(6)),
-                                CardColumn(cardItemList.get(7))
-                        ),
-                new Row(rowProps)
-                        .children(
-                                CardColumn(cardItemList.get(8)),
-                              saudacaoComponent()
-                        )
+        var cardsState = State.of(cardItemList);
+        ForEachState<CardItem, Component> cardsForEach = ForEachState.of(cardsState, this::CardColumn);
+
+        return new Column(new ColumnProps().spacingOf(10).fillWidth()).children(
+                new FlowRow(new FlowRowProps().fillWidth().spacingOf(10))
+                        .withTransition(Animations::riseIn)
+                        .items(cardsForEach)
+                        .children(saudacaoComponent())
         );
     }
 
