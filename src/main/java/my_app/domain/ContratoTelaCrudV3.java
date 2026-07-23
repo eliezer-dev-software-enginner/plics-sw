@@ -60,50 +60,54 @@ public interface ContratoTelaCrudV3 {
     Component form();
 
     default <T> Component mainView(State<Boolean> focusState) {
-        var mainContent = new Container(new ContainerProps().bgColor("#fff"))
-                .children(
-                        new Row(new RowProps().fillWidth().centerHorizontally()).children(
-                                new Button(viewModel().formIsVisibleTextComputed)
-                                        .onClick(() -> viewModel().handleToggleFormVisible())
-                                        .icon(viewModel().createToggleIcon())
-                        ),
-                        new SpacerVertical(20),
-                        Show.when(viewModel().formIsVisible, () -> new Row(new RowProps().
-                                fillWidth().centerHorizontally())
-                                .children(form())
-                        ).withTransition((c, entering) -> {
-                            if (entering) {
-                                var anim = Animations.pop(c, true, Duration.millis(100));
-                                anim.setOnFinished(e -> {
-                                    var n = c.getNode().getParent();
-                                    while (n != null) {
-                                        if (n instanceof ScrollPane sp) {
-                                            sp.setVvalue(0);
-                                            break;
-                                        }
-                                        n = n.getParent();
-                                    }
-                                });
-                                return anim;
-                            } else {
-                                return Animations.fadeScale(c, false, Duration.millis(250));
-                            }
-                        }),
-                        new SpacerVertical(30),
-                        new Container(new ContainerProps().paddingLeft(20).paddingRight(20).fillHeight())
-                                .children(
-                                        Components.searchInput(viewModel().searchState, "Pesquisar"),
-                                        table()
-                                )
-
-                );
-
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))
                 .children(
                         commonCustomMenus(focusState),
                         new SpacerVertical(10),
-                        Components.ScrollPaneDefault(mainContent)
+                        Components.ScrollPaneDefault(
+                                new Container(new ContainerProps().bgColor("#fff"))
+                                        .children(
+                                                buttonExpandMinimizeWrapper(),
+                                                new SpacerVertical(20),
+                                                Show.when(viewModel().formIsVisible, () -> new Row(new RowProps().
+                                                        fillWidth().centerHorizontally())
+                                                        .children(form())
+                                                ).withTransition((c, entering) -> {
+                                                    if (entering) {
+                                                        var anim = Animations.pop(c, true, Duration.millis(100));
+                                                        anim.setOnFinished(e -> {
+                                                            var n = c.getNode().getParent();
+                                                            while (n != null) {
+                                                                if (n instanceof ScrollPane sp) {
+                                                                    sp.setVvalue(0);
+                                                                    break;
+                                                                }
+                                                                n = n.getParent();
+                                                            }
+                                                        });
+                                                        return anim;
+                                                    } else {
+                                                        return Animations.fadeScale(c, false, Duration.millis(250));
+                                                    }
+                                                }),
+                                                new SpacerVertical(30),
+                                                new Container(new ContainerProps().paddingLeft(20).paddingRight(20))
+                                                        .children(
+                                                                Components.searchInput(viewModel().searchState, "Pesquisar"),
+                                                                table()
+                                                        )
+
+                                        )
+                        )
                 );
+    }
+
+    private Row buttonExpandMinimizeWrapper() {
+        return new Row(new RowProps().fillWidth().centerHorizontally()).children(
+                new Button(viewModel().formIsVisibleTextComputed)
+                        .onClick(() -> viewModel().handleToggleFormVisible())
+                        .icon(viewModel().createToggleIcon())
+        );
     }
 
     default void populateFromModel() {

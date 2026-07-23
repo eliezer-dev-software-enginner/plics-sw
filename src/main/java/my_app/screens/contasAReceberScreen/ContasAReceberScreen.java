@@ -92,7 +92,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                         )
                         .c_child(Components.TextAreaColumn("Observação", vm.observacao, ""))
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm))
+                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
                         .c_child(new Row(new RowProps().spacingOf(8))
                                 .r_child(
                                         Show.when(naoEhRecebimento, () -> new Button(

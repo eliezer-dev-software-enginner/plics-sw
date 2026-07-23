@@ -20,7 +20,6 @@ import megalodonte.base.components.Component;
 import megalodonte.base.components.IconInterface;
 import megalodonte.base.state.ReadableState;
 import megalodonte.base.state.State;
-import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.Button;
@@ -153,7 +152,7 @@ public class Components {
                 .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
     }
 
-    public static Component actionButtons(ComputedState<String> btnText, Runnable onClick, Runnable onClearForm) {
+    public static Component actionButtons(ComputedState<String> btnText, Runnable onClick) {
         return new Button(btnText,
                 new ButtonProps()
                         .fillWidth()
@@ -298,7 +297,7 @@ public class Components {
                                 new ButtonProps().fontSize(ThemeManager.theme().typography().small()).bgColor("#A6B1E1"))
                                 .onClick(handleChangeImage)
                         ),
-                new CardProps().height(300).padding(20)
+                new CardProps().height(300).padding(20).bgColor("yellow")
         );
     }
 
@@ -453,9 +452,7 @@ public class Components {
     }
 
     public static Column TextColumn(String label, String value) {
-        return new Column(new ColumnProps()
-                .borderColor(ThemeManager.theme().colors().primary())
-                .borderWidth(ThemeManager.theme().border().width()))
+        return new Column(new ColumnProps())
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
                 .c_child(new Text(value, new TextProps().fontSize(ThemeManager.theme().typography().body())));
     }

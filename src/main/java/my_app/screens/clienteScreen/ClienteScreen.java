@@ -9,10 +9,8 @@ import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
-import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.FlowRowProps;
-import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
@@ -73,7 +71,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(new SpacerVertical(10))
                         .c_child(Components.enderecoComponent(vm.enderecoState.get()))
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, vm::clearForm))
+                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
         );
     }
 
