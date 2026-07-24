@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Plics SW
+Comment=Sistema de gestão para pequenos negócios
+Exec=plics-sw
+Icon=io.github.eliezerdevsoftwareenginner.PlicsSW
+Terminal=false
+Categories=Office;Finance;
+StartupWMClass=my_app.Main$AppHost

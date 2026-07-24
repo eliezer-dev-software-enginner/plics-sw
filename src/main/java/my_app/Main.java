@@ -31,6 +31,12 @@ import org.flywaydb.core.Flyway;
 public class Main {
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
+    // Presente sempre que a app roda dentro do sandbox do Flatpak. Nesse caso quem
+    // atualiza é o próprio `flatpak update`, não o updater customizado (baixar
+    // .msi/.deb e reinstalar não roda dentro do sandbox, e é justamente o tipo de
+    // coisa que a revisão do Flathub reprova).
+    public static final boolean isFlatpak = System.getenv("FLATPAK_ID") != null;
+
     public static final String APP_NAME = "Plics SW";
     public static final String APP_VERSION = "1.1.0.1_Patch_3";
     public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",

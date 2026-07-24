@@ -3,6 +3,11 @@ build/
 __pycache__/
 .venv/
 plics-sw-new-version-for-test/
+
+# Gerado por scripts/create-flatpak.py / flatpak-builder — reproduzível, não versiona
+flatpak/app-image/
+flatpak/_build/
+flatpak/.flatpak-builder/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

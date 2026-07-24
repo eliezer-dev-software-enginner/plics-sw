@@ -1,5 +1,69 @@
 # Decisões Arquiteturais
 
+## 2026-07-24: Empacotamento Flatpak (teste local) + updater desativado no sandbox
+
+**Contexto:** Objetivo é eventualmente publicar o Plics SW no Flathub (a loja "Software"
+do GNOME/Zorin também instala a partir dali). Por enquanto o escopo é só empacotar e
+testar localmente via `flatpak-builder --user --install` — publicar de verdade exige
+abrir um Pull Request manual em `github.com/flathub/flathub` e passar pela revisão
+deles, isso não é algo que dá pra automatizar daqui.
+
+**Problema 1 — updater incompatível com o modelo do Flatpak:** apps no Flathub são
+atualizados pelo próprio `flatpak update`. Um app que baixa um `.msi`/`.deb` e se
+reinstala sozinho (como o updater do Plics SW faz) não roda assim dentro do sandbox, e
+é justamente o tipo de coisa que a revisão do Flathub reprova.
+
+**Decisão 1:** `Main.isFlatpak` detecta `FLATPAK_ID` no ambiente (só existe quando
+rodando dentro do sandbox). `HomeScreenViewModel.update(boolean fromClicked)` vira
+no-op nesse caso — mostra um aviso explicando que a atualização é via `flatpak update`
+se o usuário clicar manualmente em "Buscar atualização"; fica silencioso na checagem
+automática do `onMount()`.
+
+**Decisão 2 — empacotamento:** `scripts/create-flatpak.py` reaproveita os helpers de
+`scripts/config.py` (mesmos usados por `create-deb.py`) pra gerar o app-image via
+jpackage (`--type app-image`, o mesmo runtime jlink que o `.deb` usa), copia pra
+`flatpak/app-image/` e roda `flatpak-builder --user --install --force-clean` usando o
+manifest em `flatpak/io.github.eliezerdevsoftwareenginner.PlicsSW.yml`. Os metadados
+(`.desktop`, `.metainfo.xml`, ícone) ficam em `flatpak/metadata/`, versionados
+separado do app-image gerado (que é build output, não deveria ir pro git).
+
+**Validado sem rodar o build completo** (não há `flatpak-builder` neste ambiente):
+YAML do manifest (`yaml.safe_load`), `.desktop` (`desktop-file-validate`) e
+`.metainfo.xml` (`appstreamcli validate --pedantic`) — todos passam. O único aviso
+pedante (`cid-contains-uppercase-letter`) é esperado: CamelCase no último componente
+do app ID é a própria convenção do Flathub (`org.gnome.Software`, etc.), não um erro.
+
+**Decisões tomadas sem confirmação — revisar antes de submeter de verdade:**
+1. **App ID**: `io.github.eliezerdevsoftwareenginner.PlicsSW`, baseado no usuário do
+   GitHub já referenciado em `UpdaterService` (repo das releases). Muda se o código
+   for publicado em outro lugar.
+2. **Licença**: `LicenseRef-proprietary` no `metainfo.xml` como placeholder — não há
+   confirmação se o Plics SW é código fechado ou não. Isso afeta diretamente COMO (ou
+   se) ele pode entrar no Flathub.
+3. **`--filesystem=home`** no `finish-args`: mantido porque `DB.resolveDbPath()` salva
+   direto em `~/.plics-sw/erp.db`. Pra tirar essa permissão ampla (que a revisão do
+   Flathub cobra), seria necessário migrar pra `~/.local/share/plics-sw` — o Flatpak
+   redireciona esse caminho sozinho pra dentro do sandbox (`~/.var/app/<id>/data/`)
+   sem precisar de permissão nenhuma. Não migrado ainda.
+4. **`--device=all`**: assumindo que a impressão térmica ESC/POS (portas serial/USB —
+   ver decisão de 2026-07-08 sobre JSSC) precisa de acesso a dispositivo. Vale
+   confirmar/restringir quando testar com uma impressora de verdade dentro do sandbox.
+
+**Arquivos criados:**
+- `flatpak/io.github.eliezerdevsoftwareenginner.PlicsSW.yml`
+- `flatpak/metadata/io.github.eliezerdevsoftwareenginner.PlicsSW.desktop`
+- `flatpak/metadata/io.github.eliezerdevsoftwareenginner.PlicsSW.metainfo.xml`
+- `flatpak/metadata/icon.png` (cópia de `src/main/resources/assets/app_ico.png`)
+- `scripts/create-flatpak.py`
+
+**Arquivos alterados:**
+- `src/main/java/my_app/Main.java` (+`isFlatpak`)
+- `src/main/java/my_app/screens/homeScreen/HomeScreenViewModel.java` (`update()` vira
+  no-op dentro do Flatpak)
+- `README.md` (+seção "Flatpak (teste local)")
+
+---
+
 ## 2026-07-23: Correção — Card do form de ProdutoScreen com espaço vertical gigante
 
 **Problema:** O Card do formulário na ProdutoScreen ficava com altura excessiva, criando um espaço gigante entre os inputs e o botão de ação (`actionButtons`). O `SpacerVertical(25)` entre os inputs e o botão absorvia todo o espaço extra, pois o `Column` interno expandia para preencher a altura disponível do `StackPane` do `Card`.

@@ -172,7 +172,15 @@ public class HomeScreenViewModel {
     //código que busca atualização
     // UI.runOnUi(()->Components.ShowPopup(screenContext,"Baixando última versão do repositório..."));
     public void update(boolean fromClicked) {
-        //if(Main.devMode)return;
+        if (Main.isFlatpak) {
+            if (fromClicked) {
+                UI.runOnUi(() -> Components.ShowAlertAdvice(
+                        "Instalado via Flatpak — as atualizações são feitas pelo próprio sistema (flatpak update), não por aqui.",
+                        () -> {}
+                ));
+            }
+            return;
+        }
 
         new Thread(() -> {
             var updater = new UpdaterService();
