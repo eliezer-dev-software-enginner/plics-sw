@@ -102,6 +102,8 @@ public class Main {
     }
 
     public static void initialize(Context context) {
+        // Fontes de assets/fonts/ (Roboto incluso) já foram carregadas automaticamente
+        // pelo Bootstrap antes disso rodar — ver megalodonte.base.theme.FontLoader.
         ThemeManager.setTheme(Themes.LIGHT); // mexe em Scene/Stylesheets -> FX thread, fica fora do Async.Run
 
 
