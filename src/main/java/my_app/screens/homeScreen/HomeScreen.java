@@ -153,7 +153,7 @@ public class HomeScreen implements ScreenComponent {
                         .c_child(new Image(cardItem.img, new ImageProps().size(60)))
                         .c_child(new Text(cardItem.title, new TextProps().variant(TextVariant.BODY).bold()))
                         .c_child(new Text(cardItem.desc,  new TextProps().variant(TextVariant.SMALL))),
-                       new CardProps().padding(0).height(200).width(230).borderRadius(20)),
+                       new CardProps().padding(0).height(170).width(230).borderRadius(20)),
                ()-> ctx.router().spawnWindow(cardItem.destination,e->{})
        );
     }
