@@ -12,6 +12,7 @@ import megalodonte.ListenerManager;
 import megalodonte.application.Context;
 import megalodonte.application.ErrorReporter;
 import megalodonte.application.MegalodonteApp;
+import megalodonte.application.MegalodonteApplication;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.theme.ThemeManager;
@@ -40,15 +41,23 @@ public class Main {
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(ICON_PATH)));
     }
 
+    /**
+     * Classe própria de launch (em vez do JavaFXHost padrão compartilhado) — no
+     * Linux/GTK o WM_CLASS reportado é o nome desta classe concreta, então isso é o
+     * que garante que o Plics SW tenha um ícone de dock/taskbar próprio, e não
+     * compartilhado com outras apps megalodonte que porventura rodem na mesma
+     * máquina. Ver MegalodonteApplication.
+     */
+    public static class AppHost extends MegalodonteApplication {}
+
     static void main(String[] args) {
         corrigirArquiteturaNativa();
-        // Define javafx.application.name (via Bootstrap.applyAppName) antes de abrir
-        // qualquer Stage. No Linux/GNOME (Zorin incluso), a dock/taskbar resolve o
-        // ícone casando o WM_CLASS da janela com o StartupWMClass de um .desktop
-        // instalado — sem isso a janela reporta um WM_CLASS genérico que não bate com
-        // nada, e a dock cai pro ícone padrão do Java em vez do da aplicação.
         MegalodonteApp.appName(APP_NAME);
-        MegalodonteApp.run(args, Main::start, Main::onEvent);
+        // Em Linux, garante um .desktop local pra rodar direto de JVM (IDE, gradle
+        // run, dev.py) também ter ícone na dock — sem pacote instalado não existe
+        // .desktop nenhum pra casar o WM_CLASS. Ver LinuxDesktopEntry.
+        MegalodonteApp.appIcon(ICON_PATH);
+        MegalodonteApp.run(AppHost.class, args, Main::start, Main::onEvent);
     }
 
     private static void corrigirArquiteturaNativa() {
