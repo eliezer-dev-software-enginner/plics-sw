@@ -29,5 +29,4 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Vou gerar uma nova versão do aplicativo. Para isso interprete todos os commits desde o dia Jul 10, 2026 e também docs/DECISIONS.md. Então você vai colocar as notas de atualização lá em resources/updates.json.
-A nova atualização será v1.1.0 e você vai alterar em Main.version também e também no gradle.properties. E dado isso, salve essas etapas em docs/CONTEXT.md ou no docs/AI_RULES.md para que sempre que eu pedir para atualizar o projeto, o agente deverá seguir as etapas descritas.
+Analise todos os campos que estão presentes nas screens, e veja se os testes manuais nos arquivos ".md" cobrem todos os casos de uso.Se necessário crie novas colunas e novos casos de uso para cobrir os testes manuais.
