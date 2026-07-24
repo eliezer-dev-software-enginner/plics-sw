@@ -7,6 +7,7 @@ import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.EmpresaModel;
 import my_app.db.services.EmpresaService;
+import my_app.domain.components.Components;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -99,10 +100,10 @@ public class EmpresaViewModel {
         Async.Run(()->{
             try{
                 empresaService.salvarOuAtualizar(model);
-                UI.runOnUi(()-> IO.println("Empresa atualizada com sucesso!"));
+                UI.runOnUi(()->  Components.ShowPopup(ctx, "Fornecedor atualizado com sucesso"));
 
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
     }

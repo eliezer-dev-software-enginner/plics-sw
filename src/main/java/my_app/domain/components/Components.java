@@ -468,7 +468,7 @@ public class Components {
     }
 
     public static Row displayOperationsRow(TotaisState totais) {
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
+        return new Row(new RowProps().bottomVertically().spacingOf(ThemeManager.theme().spacing().sm()))
                 .r_child(TextWithValue("Valor total(bruto): ", totais.totalBruto))
                 .r_child(TextWithValue("Desconto: ", totais.descontoComputed))
                 .r_child(TextWithValue("Total geral(líquido): ", totais.totalLiquido.map(Utils::toBRLCurrency)));
@@ -802,6 +802,16 @@ public class Components {
         return TextAreaColumn(label, inputState, placeholder, 80);
     }
 
+    public static Component TextAreaColumnWidthNoRestricted(String label, State<String> inputState, String placeholder, int height) {
+        TextAreaInput textAreaInput = new TextAreaInput(inputState,
+                getInputProps(placeholder, height)
+        );
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
+                .c_child(textAreaInput);
+    }
+
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int height) {
         TextAreaInput textAreaInput = new TextAreaInput(inputState,
                 getInputProps(placeholder, height).width(400)
@@ -832,10 +842,10 @@ public class Components {
             State<Boolean> focusState, Runnable onClickNew,
             Runnable onEdit, Runnable onDelete, Runnable onClone) {
 
-        return new Row(new RowProps().spacingOf(20))
+        return new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md()))
                 .children(
                         MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", () -> executar(onClickNew::run)),
-                        Show.when(focusState, ()-> new Row(new RowProps().spacingOf(20)).children(
+                        Show.when(focusState, ()-> new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md())).children(
                                 MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)),
                                 MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)),
                                 MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run))
@@ -894,10 +904,8 @@ public class Components {
     private static void executar(Action action) {
         try {
             action.run();
-            IO.println("Operation completed successfully");
         } catch (Exception e) {
             IO.println("Error: " + e.getMessage());
-
         }
     }
 

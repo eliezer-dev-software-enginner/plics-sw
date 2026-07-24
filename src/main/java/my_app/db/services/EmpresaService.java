@@ -3,6 +3,7 @@ package my_app.db.services;
 import my_app.db.DB;
 import my_app.db.models.EmpresaModel;
 import my_app.db.repositories.EmpresaRepository;
+import my_app.utils.Utils;
 import net.sf.persism.Session;
 
 
@@ -47,6 +48,12 @@ public class EmpresaService extends BaseService<EmpresaModel> {
     private void validarCampos(EmpresaModel model) {
         if (model.getNome() == null || model.getNome().isBlank()) {
             throw new IllegalArgumentException("Nome é obrigatório");
+        }
+        if (model.getTelefone() != null && !model.getTelefone().isBlank() && !Utils.isValidPhone(model.getTelefone())) {
+            throw new IllegalArgumentException("Celular/Telefone inválido");
+        }
+        if (model.getCep() != null && !model.getCep().isBlank() && !Utils.isValidCep(model.getCep())) {
+            throw new IllegalArgumentException("Cep inválido");
         }
     }
 }

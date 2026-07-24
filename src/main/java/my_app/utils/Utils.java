@@ -121,6 +121,11 @@ public static BigDecimal deCentavosParaReal(String centavos){
         return !email.matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
     }
 
+    public static boolean isValidCep(String cep) {
+        String clean = cep == null ? "" : cep.replaceAll("[^0-9]", "");
+        return clean.length() == 8;
+    }
+
     public static boolean isValidCnpj(String cnpj) {
         String clean = cnpj == null ? "" : cnpj.toUpperCase().replaceAll("[^0-9A-Z]", "");
         if (clean.length() != 14) return false;
