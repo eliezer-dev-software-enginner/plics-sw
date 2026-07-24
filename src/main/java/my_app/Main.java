@@ -29,6 +29,7 @@ import org.flywaydb.core.Flyway;
 public class Main {
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
+    public static final String APP_NAME = "Plics SW";
     public static final String APP_VERSION = "1.1.0.1_Patch_3";
     public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
@@ -41,6 +42,12 @@ public class Main {
 
     static void main(String[] args) {
         corrigirArquiteturaNativa();
+        // Define javafx.application.name (via Bootstrap.applyAppName) antes de abrir
+        // qualquer Stage. No Linux/GNOME (Zorin incluso), a dock/taskbar resolve o
+        // ícone casando o WM_CLASS da janela com o StartupWMClass de um .desktop
+        // instalado — sem isso a janela reporta um WM_CLASS genérico que não bate com
+        // nada, e a dock cai pro ícone padrão do Java em vez do da aplicação.
+        MegalodonteApp.appName(APP_NAME);
         MegalodonteApp.run(args, Main::start, Main::onEvent);
     }
 
