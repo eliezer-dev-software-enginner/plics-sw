@@ -109,9 +109,10 @@ flatpak uninstall io.github.eliezerdevsoftwareenginner.PlicsSW
 Dentro do Flatpak, o updater automático (menu Suporte > Buscar atualização) fica
 desativado — quem atualiza é o próprio `flatpak update` (ver `Main.isFlatpak`).
 
-Manifest e metadados ficam em `flatpak/`. Antes de submeter ao Flathub de verdade,
-veja as ressalvas em `docs/DECISIONS.md` (2026-07-24) — tem pontos em aberto sobre
-licença, permissão de acesso à home e ao dispositivo.
+Manifest e metadados ficam em `flatpak/`. Pra **publicar de verdade** no Flathub
+(não só testar local), veja o passo a passo em [`flatpak/README.md`](flatpak/README.md)
+— tem um bloqueio importante ali (a fonte do manifest hoje não é reproduzível, só
+funciona pra build local) e as ressalvas sobre licença/permissões.
 
 ## Versão
 
