@@ -314,17 +314,26 @@ public class Components {
     }
 
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label) {
+        return DatePickerColumn(localDateState, label, null);
+    }
+
+    public static Component DatePickerColumn(State<LocalDate> localDateState, String label, IconInterface icon) {
+        var datePicker = new DatePicker(localDateState,
+                new DatePickerProps().fontSize(ThemeManager.theme().typography().small()).height(31)
+                        .placeHolder("dd/mm/yyyy")
+                        .locale(new Locale("pt", "BR"))
+                        .pattern("dd/MM/yyyy")
+                        .width(140)
+                        .editable(false)
+        );
+
+        if (icon != null) {
+            datePicker.icon(icon);
+        }
+
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(new DatePicker(localDateState,
-                                new DatePickerProps().fontSize(ThemeManager.theme().typography().small()).height(31)
-                                        .placeHolder("dd/mm/yyyy")
-                                        .locale(new Locale("pt", "BR"))
-                                        .pattern("dd/MM/yyyy")
-                                        .width(140)
-                                        .editable(false)
-                        )
-                );
+                .c_child(datePicker);
     }
 
     public static Column ImageSelector(String title, State<String> imageState,

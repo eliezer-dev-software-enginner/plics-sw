@@ -1,6 +1,7 @@
 package my_app.screens.vendaScreen;
 
 import megalodonte.base.components.Component;
+import megalodonte.base.components.IconInterface;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.Button;
 import megalodonte.components.SpacerVertical;
@@ -22,6 +23,8 @@ import my_app.utils.Utils;
 import megalodonte.components.SimpleTable;
 import megalodonte.props.RowProps;
 import my_app.db.models.VendaModel;
+import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private final VendaMercadoriaScreenViewModel vm;
@@ -72,7 +75,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
 
     private Row formFirstRow() {
         return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
-                Components.DatePickerColumn(vm.dataVenda, "Data de venda"),
+                Components.DatePickerColumn(vm.dataVenda, "Data de venda",
+                        IconInterface.of(FontIcon.of(AntDesignIconsOutlined.CALENDAR))),
                 Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
