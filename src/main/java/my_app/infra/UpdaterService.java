@@ -120,11 +120,25 @@ public class UpdaterService {
         return slash >= 0 ? url.substring(slash + 1) : "update.msi";
     }
 
+    /**
+     * Remove diretórios temporários deixados por atualizações/kills anteriores:
+     * "plics-update-*" (pacote baixado + scripts de instalação, criados tanto aqui
+     * quanto pelo updater em HomeScreenViewModel.runWindowsUpdate/runLinuxUpdate) e
+     * "plics-kill-*" (scripts do ProcessKiller). Nenhum dos dois se autolimpa depois
+     * de terminar — só remove a tarefa agendada, não os arquivos. Chamado no startup
+     * da aplicação principal: nesse momento, qualquer diretório desses já é de uma
+     * sessão anterior (a atual ainda não criou nenhum), então é sempre seguro apagar.
+     */
     public static void cleanTempDirs() {
+        cleanTempDirsWithPrefix("plics-update-");
+        cleanTempDirsWithPrefix("plics-kill-");
+    }
+
+    private static void cleanTempDirsWithPrefix(String prefix) {
         try {
             var temp = Path.of(System.getProperty("java.io.tmpdir"));
             try (var dirs = Files.list(temp)) {
-                dirs.filter(p -> p.getFileName().toString().startsWith("plics-update-"))
+                dirs.filter(p -> p.getFileName().toString().startsWith(prefix))
                     .forEach(p -> {
                         try (var files = Files.walk(p)) {
                             files.sorted(Comparator.reverseOrder())

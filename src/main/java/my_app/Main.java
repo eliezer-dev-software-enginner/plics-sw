@@ -24,6 +24,7 @@ import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
 import my_app.core.AppRoutes;
 import my_app.infra.ProcessKiller;
+import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
 import org.flywaydb.core.Flyway;
 
@@ -101,8 +102,15 @@ public class Main {
                 .filter(t -> !t.isDaemon())
                 .forEach(t -> log("Thread non-daemon viva: " + t.getName() + " (" + t.getState() + ")"));
 
+        // ProcessKiller continua como rede de segurança externa (Agendador de Tarefas
+        // do Windows), pro caso de algo travar a própria JVM na saída (ex: código
+        // nativo via JNI). Mas Platform.exit() sozinho não mata a JVM se sobrar
+        // alguma thread non-daemon presa (logadas acima) — é exatamente esse cenário
+        // que deixava processos do plics-sw pendurados depois de fechar. System.exit()
+        // força o encerramento de verdade, não espera thread nenhuma.
         ProcessKiller.killCurrentProcessAsync();
         Platform.exit();
+        System.exit(0);
     }
 
     private static final Path LOG_FILE = Path.of(
@@ -122,6 +130,10 @@ public class Main {
         // pelo Bootstrap antes disso rodar — ver megalodonte.base.theme.FontLoader.
         ThemeManager.setTheme(Themes.LIGHT); // mexe em Scene/Stylesheets -> FX thread, fica fora do Async.Run
 
+        // Limpa restos de atualizações/kills anteriores (plics-update-*, plics-kill-*
+        // em %TEMP%) — nenhum dos dois se autolimpa. Se estamos iniciando agora, tudo
+        // que já existia lá é de uma sessão passada, então é sempre seguro remover.
+        Async.Run(UpdaterService::cleanTempDirs);
 
         var routes = new AppRoutes().routes();
         Router router = new Router(routes, AppRoutes.Screens.SPLASH.name());
