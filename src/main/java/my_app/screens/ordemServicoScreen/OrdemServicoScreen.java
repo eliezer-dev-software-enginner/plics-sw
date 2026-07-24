@@ -90,7 +90,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(new SpacerVertical(10))
                         .c_child(Components.TextWithValue("Total geral(líquido): ",
                                 vm.totalLiquido.map(Utils::toBRLCurrency)))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm))
+                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
         ));
     }
 

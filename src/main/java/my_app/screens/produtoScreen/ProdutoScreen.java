@@ -7,6 +7,8 @@ import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -65,25 +67,31 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
             }
         };
 
+//        var leftColumn = new Column().children(ContainerLeft(vm));
+//        javafx.scene.layout.HBox.setHgrow(leftColumn.getNode(), javafx.scene.layout.Priority.ALWAYS);
+
         return new Card(
-                new Column(new ColumnProps().paddingAll(5))
-                        .c_child(
-                                new Row(new RowProps().fillWidth().centerHorizontally()).children(
-                                        new Text("Dados do Produto",
-                                                new TextProps().variant(TextVariant.BODY).bold())
-                                )
-                        )
-                        .c_child(new SpacerVertical(20))
-                        .c_child(new Row()
-                                .r_child(ContainerLeft(vm))
-                                .r_child(new SpacerHorizontal(90))
-                                .r_child(Components.CardImageSelector(vm.imagem, handleChangeImage)))
-                        .c_child(new SpacerVertical(25))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)),
+                //new Container(new ContainerProps().paddingAll(5).bgColor("green"))
+                new Container(new ContainerProps().paddingAll(5))
+                        .children(
+                                new Text("Dados do Produto",
+                                        new TextProps().variant(TextVariant.BODY).bold()),
+                                new SpacerVertical(20),
+                                new Row(new RowProps().spacingOf(10))
+                                        .children(
+                                               ContainerLeft(vm),
+                                                //leftColumn,
+                                                Components.CardImageSelector(vm.imagem, handleChangeImage)
+                                       // ),
+                                        )
+//                                new SpacerVertical(25),
+//                                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
+                        ),
                 new CardProps()
                         .padding(10)
                         .borderRadius(12)
-
+//                        .bgColor("red")
+                        .fillWidth()
         );
     }
 
@@ -150,7 +158,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     public Component ContainerLeft(ProdutoScreenViewModel vm) {
-        var rowProps = new RowProps().spacingOf(10);
+        //var rowProps = new RowProps().spacingOf(10);
 
         Runnable handleGerarCodigoBarras = () -> {
             final var codigo = Utils.gerarCodigoBarrasEAN13();
@@ -159,34 +167,27 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
         var showValidadePicker = ComputedState.of(() -> vm.perecivelSelected.get().equals("Sim"), vm.perecivelSelected);
 
-        return new Column(new ColumnProps().spacingOf(20))
-                .c_child(
-                        new Row(rowProps).children(
-                                Components.InputWithButtonRow("SKU(Código de barras)", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
-                                Components.InputColumn("Descrição curta", vm.descricao, ""),
-                                Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
-                                Components.InputColumn("Marca", vm.marca, "")
-                        )
-                ).c_child(new Row(rowProps)
-                        .r_child(coresCheckboxes())
-                        .r_child(Components.InputColumn("Tamanho", vm.tamanhoSelected, ""))
-                        .r_child(Components.InputColumn("Modelo", vm.modelo, ""))
-                ).c_child(new Row(rowProps)
-                        .r_child(Components.InputColumnCurrency("Preço de compra", vm.precoCompra))
-                        .r_child(Components.InputColumnCurrency("Preço de venda", vm.precoVenda))
-                        .r_child(Components.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, CategoriaModel::getNome))
-                        .r_child(Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome))
-                        .r_child(Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it))
-                        .r_child(Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade"))
-                        )
-                ).c_child(new Row(rowProps)
-                        .r_child(Components.InputColumn("Garantia", vm.garantia, ""))
-                        .r_child(Components.InputColumn("Comissão", vm.comissao, ""))
-                )
-                .c_child(new Row(rowProps)
-                        .r_child(Components.TextAreaColumn("Observações", vm.observacoes, ""))
-                        .r_child(Components.InputColumnNumeric("Estoque", vm.estoque, ""))
-                        .r_child(Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, ""))
+        //return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()).bgColor("yellow"))
+        return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()))
+                .children(
+                        Components.InputWithButtonRow("SKU(Código de barras)", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
+                        Components.InputColumn("Descrição curta", vm.descricao, ""),
+                        Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
+                        Components.InputColumn("Marca", vm.marca, ""),
+                        coresCheckboxes(),
+                        Components.InputColumn("Tamanho", vm.tamanhoSelected, ""),
+                        Components.InputColumn("Modelo", vm.modelo, ""),
+                        Components.InputColumnCurrency("Preço de compra", vm.precoCompra),
+                        Components.InputColumnCurrency("Preço de venda", vm.precoVenda),
+                        Components.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, CategoriaModel::getNome),
+                        Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome),
+                        Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it),
+                        Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade")),
+                        Components.InputColumn("Garantia", vm.garantia, ""),
+                        Components.InputColumn("Comissão", vm.comissao, ""),
+                        Components.TextAreaColumn("Observações", vm.observacoes, ""),
+                        Components.InputColumnNumeric("Estoque", vm.estoque, ""),
+                        Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, "")
                 );
     }
 

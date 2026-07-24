@@ -47,7 +47,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(Components.InputColumn("Nome", vm.nome, "Ex: Matias")))
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)),
+                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate)),
                 new CardProps()
                         .padding(10)
                         .borderRadius(12)

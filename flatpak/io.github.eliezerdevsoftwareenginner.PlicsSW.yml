@@ -1,0 +1,48 @@
+app-id: io.github.eliezerdevsoftwareenginner.PlicsSW
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: plics-sw
+
+# --filesystem=home: hoje o banco SQLite fica em ~/.plics-sw/erp.db (DB.resolveDbPath).
+#   Pra tirar essa permissão (o Flathub cobra isso na revisão), precisaria migrar o
+#   caminho pra ~/.local/share/plics-sw — o Flatpak já redireciona isso sozinho pra
+#   ~/.var/app/<id>/data/ sem precisar de nenhuma permissão especial.
+# --share=network: usado pelo TelegramNotifier (api.telegram.org). O updater
+#   automático (GitHub releases) fica desativado dentro do Flatpak (ver Main.isFlatpak),
+#   quem atualiza aqui é o flatpak update.
+# --device=all: assumindo que features de impressão térmica (ESC/POS, ver os codepages
+#   Cp860/Cp437 no build) precisam de acesso a porta serial/USB. Vale conferir/reduzir
+#   isso quando for testar de verdade com uma impressora.
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --share=network
+  - --filesystem=home
+  - --device=all
+
+modules:
+  - name: plics-sw
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/plics-sw
+      - cp -r app-image/. /app/plics-sw/
+      - chmod +x "/app/plics-sw/bin/Plics SW"
+      - mkdir -p /app/bin
+      - ln -sf "/app/plics-sw/bin/Plics SW" /app/bin/plics-sw
+      - install -Dm644 metadata/io.github.eliezerdevsoftwareenginner.PlicsSW.desktop
+        /app/share/applications/io.github.eliezerdevsoftwareenginner.PlicsSW.desktop
+      - install -Dm644 metadata/io.github.eliezerdevsoftwareenginner.PlicsSW.metainfo.xml
+        /app/share/metainfo/io.github.eliezerdevsoftwareenginner.PlicsSW.metainfo.xml
+      - install -Dm644 metadata/icon.png
+        /app/share/icons/hicolor/256x256/apps/io.github.eliezerdevsoftwareenginner.PlicsSW.png
+    sources:
+      # Gerado por scripts/create-flatpak.py (jpackage --type app-image) — não existe
+      # até você rodar o script; flatpak-builder vai reclamar se rodar direto sem isso.
+      - type: dir
+        path: app-image
+        dest: app-image
+      - type: dir
+        path: metadata
+        dest: metadata

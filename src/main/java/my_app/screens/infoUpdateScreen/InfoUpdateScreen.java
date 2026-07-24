@@ -8,6 +8,7 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.components.Components;
+import my_app.screens.infoUpdateScreen.InfoUpdateScreenViewModel.NotaAtualizacao;
 
 public class InfoUpdateScreen implements ScreenComponent {
     private final InfoUpdateScreenViewModel vm;
@@ -17,22 +18,16 @@ public class InfoUpdateScreen implements ScreenComponent {
     }
 
     public Component render() {
-        var container = new Container();
-
-        vm.getNotas().forEach(it -> {
-            var columnInsideCard = new Column();
-            columnInsideCard.c_child(Components.FormTitle(it.version()));
-            columnInsideCard.c_child(new LineHorizontal());
-            columnInsideCard.c_child(new SpacerHorizontal(10));
-
-            for (String note : it.notes()) {
-                columnInsideCard.c_child(new Text(note));
-            }
-            container.c_child(columnInsideCard);
-        });
-
         return new Scroll(new Container(new ContainerProps().paddingAll(10)).children(
-                new Card(container)
+                new Card(new Column().items(vm.getNotas(), InfoUpdateScreen::notaColumn))
         ));
+    }
+
+    private static Component notaColumn(NotaAtualizacao nota) {
+        return new Column()
+                .c_child(Components.FormTitle(nota.version()))
+                .c_child(new LineHorizontal())
+                .c_child(new SpacerHorizontal(10))
+                .items(nota.notes(), Text::new);
     }
 }

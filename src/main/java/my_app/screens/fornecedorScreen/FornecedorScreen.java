@@ -54,7 +54,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(new LineHorizontal())
                         .c_child(Components.TextAreaColumn("Observação", vm.observacao, ""))
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)));
+                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate)));
     }
 
     private Component informacoesPessoais() {

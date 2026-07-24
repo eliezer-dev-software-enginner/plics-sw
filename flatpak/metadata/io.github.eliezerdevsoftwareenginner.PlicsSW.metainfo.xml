@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.eliezerdevsoftwareenginner.PlicsSW</id>
+  <name>Plics SW</name>
+  <summary>Sistema de gestão para pequenos negócios</summary>
+
+  <!-- TODO: confirmar a licença real antes de submeter ao Flathub. Apps
+       fechados/proprietários têm requisitos próprios de listagem lá. -->
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+
+  <description>
+    <p>
+      Plics SW é um sistema de gestão (ERP) voltado para pequenos negócios,
+      com controle de vendas, produtos, clientes, contas a pagar/receber,
+      ordens de serviço e PDV.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">io.github.eliezerdevsoftwareenginner.PlicsSW.desktop</launchable>
+  <content_rating type="oars-1.1" />
+
+  <!-- TODO: confirmar nome/handle desejado antes de submeter -->
+  <developer id="io.github.eliezerdevsoftwareenginner">
+    <name>Eliezer</name>
+  </developer>
+
+  <url type="homepage">https://plics-sw-webpage.vercel.app/</url>
+
+  <releases>
+    <release version="1.1.0.1" date="2026-07-24">
+      <description>
+        <p>Versão atual em teste de empacotamento Flatpak.</p>
+      </description>
+    </release>
+  </releases>
+</component>

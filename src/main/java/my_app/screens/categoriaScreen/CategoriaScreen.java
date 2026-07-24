@@ -37,7 +37,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(
                                         Components.InputColumn("Nome", vm.nome, "Ex: Eletrônicos")),
-                        Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)
+                        Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
                 )
         );
     }

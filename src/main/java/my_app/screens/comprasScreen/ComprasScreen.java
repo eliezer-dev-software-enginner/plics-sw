@@ -52,7 +52,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .r_child(Components.TextWithValue("Estoque após compra:", vm.estoqueAtual)),
                 Components.displayOperationsRow(vm.totais),
                 Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoSelectedIsAPrazo, vm.totais.totalLiquido),
-                Components.actionButtons(vm.btnText, this::handleAddOrUpdate, this::clearForm)
+                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
         );
     }
 

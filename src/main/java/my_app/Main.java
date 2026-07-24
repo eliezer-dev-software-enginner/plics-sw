@@ -12,6 +12,7 @@ import megalodonte.ListenerManager;
 import megalodonte.application.Context;
 import megalodonte.application.ErrorReporter;
 import megalodonte.application.MegalodonteApp;
+import megalodonte.application.MegalodonteApplication;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.theme.ThemeManager;
@@ -23,13 +24,21 @@ import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
 import my_app.core.AppRoutes;
 import my_app.infra.ProcessKiller;
+import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
 import org.flywaydb.core.Flyway;
 
 public class Main {
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
-    public static final String APP_VERSION = "1.1.0.2_Patch_3";
+    // Presente sempre que a app roda dentro do sandbox do Flatpak. Nesse caso quem
+    // atualiza é o próprio `flatpak update`, não o updater customizado (baixar
+    // .msi/.deb e reinstalar não roda dentro do sandbox, e é justamente o tipo de
+    // coisa que a revisão do Flathub reprova).
+    public static final boolean isFlatpak = System.getenv("FLATPAK_ID") != null;
+
+    public static final String APP_NAME = "Plics SW";
+    public static final String APP_VERSION = "1.1.0.1_Patch_3";
     public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
 
@@ -39,9 +48,23 @@ public class Main {
         return new Image(Objects.requireNonNull(Main.class.getResourceAsStream(ICON_PATH)));
     }
 
+    /**
+     * Classe própria de launch (em vez do JavaFXHost padrão compartilhado) — no
+     * Linux/GTK o WM_CLASS reportado é o nome desta classe concreta, então isso é o
+     * que garante que o Plics SW tenha um ícone de dock/taskbar próprio, e não
+     * compartilhado com outras apps megalodonte que porventura rodem na mesma
+     * máquina. Ver MegalodonteApplication.
+     */
+    public static class AppHost extends MegalodonteApplication {}
+
     static void main(String[] args) {
         corrigirArquiteturaNativa();
-        MegalodonteApp.run(args, Main::start, Main::onEvent);
+        MegalodonteApp.appName(APP_NAME);
+        // Em Linux, garante um .desktop local pra rodar direto de JVM (IDE, gradle
+        // run, dev.py) também ter ícone na dock — sem pacote instalado não existe
+        // .desktop nenhum pra casar o WM_CLASS. Ver LinuxDesktopEntry.
+        MegalodonteApp.appIcon(ICON_PATH);
+        MegalodonteApp.run(AppHost.class, args, Main::start, Main::onEvent);
     }
 
     private static void corrigirArquiteturaNativa() {
@@ -85,8 +108,15 @@ public class Main {
                 .filter(t -> !t.isDaemon())
                 .forEach(t -> log("Thread non-daemon viva: " + t.getName() + " (" + t.getState() + ")"));
 
+        // ProcessKiller continua como rede de segurança externa (Agendador de Tarefas
+        // do Windows), pro caso de algo travar a própria JVM na saída (ex: código
+        // nativo via JNI). Mas Platform.exit() sozinho não mata a JVM se sobrar
+        // alguma thread non-daemon presa (logadas acima) — é exatamente esse cenário
+        // que deixava processos do plics-sw pendurados depois de fechar. System.exit()
+        // força o encerramento de verdade, não espera thread nenhuma.
         ProcessKiller.killCurrentProcessAsync();
         Platform.exit();
+        System.exit(0);
     }
 
     private static final Path LOG_FILE = Path.of(
@@ -102,8 +132,14 @@ public class Main {
     }
 
     public static void initialize(Context context) {
+        // Fontes de assets/fonts/ (Roboto incluso) já foram carregadas automaticamente
+        // pelo Bootstrap antes disso rodar — ver megalodonte.base.theme.FontLoader.
         ThemeManager.setTheme(Themes.LIGHT); // mexe em Scene/Stylesheets -> FX thread, fica fora do Async.Run
 
+        // Limpa restos de atualizações/kills anteriores (plics-update-*, plics-kill-*
+        // em %TEMP%) — nenhum dos dois se autolimpa. Se estamos iniciando agora, tudo
+        // que já existia lá é de uma sessão passada, então é sempre seguro remover.
+        Async.Run(UpdaterService::cleanTempDirs);
 
         var routes = new AppRoutes().routes();
         Router router = new Router(routes, AppRoutes.Screens.SPLASH.name());

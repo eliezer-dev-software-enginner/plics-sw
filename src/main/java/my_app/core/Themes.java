@@ -24,7 +24,7 @@ return new ThemeColors(
 
         @Override
         public ThemeTypography typography() {
-            return new ThemeTypography(35, 20, 16, 13);
+            return new ThemeTypography("Roboto", 35, 20, 16, 13);
         }
 
         @Override
@@ -59,7 +59,7 @@ return new ThemeColors(
 
         @Override
         public ThemeTypography typography() {
-            return new ThemeTypography(35, 20, 16, 13);
+            return new ThemeTypography("Roboto", 35, 20, 16, 13);
         }
 
         @Override

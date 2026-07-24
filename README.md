@@ -77,6 +77,43 @@ python scripts/create-deb-with-updater.py   # Linux
 pip install watchdog
 python dev.py
 ```
+
+### Flatpak (teste local)
+
+Empacotamento experimental pra rodar/testar como Flatpak antes de considerar publicar
+no Flathub (a loja "Software" do GNOME/Zorin instala a partir de lá, entre outras
+fontes). Isso aqui só builda e instala **localmente** — publicar de verdade exige um
+Pull Request manual em `github.com/flathub/flathub` e passar pela revisão deles.
+
+Requer `flatpak` e `flatpak-builder` instalados, e os runtimes:
+```bash
+sudo apt install flatpak-builder
+flatpak install flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
+```
+
+Buildar e instalar:
+```bash
+python3 scripts/create-flatpak.py
+```
+
+Rodar:
+```bash
+flatpak run io.github.eliezerdevsoftwareenginner.PlicsSW
+```
+
+Desinstalar:
+```bash
+flatpak uninstall io.github.eliezerdevsoftwareenginner.PlicsSW
+```
+
+Dentro do Flatpak, o updater automático (menu Suporte > Buscar atualização) fica
+desativado — quem atualiza é o próprio `flatpak update` (ver `Main.isFlatpak`).
+
+Manifest e metadados ficam em `flatpak/`. Pra **publicar de verdade** no Flathub
+(não só testar local), veja o passo a passo em [`flatpak/README.md`](flatpak/README.md)
+— tem um bloqueio importante ali (a fonte do manifest hoje não é reproduzível, só
+funciona pra build local) e as ressalvas sobre licença/permissões.
+
 ## Versão
 
 **Versão:** 1.1.0  
