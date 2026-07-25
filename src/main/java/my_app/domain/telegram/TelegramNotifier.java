@@ -24,7 +24,13 @@ public class TelegramNotifier {
     }
 
 
+
     public void enviarMensagem(String mensagem) {
+        if(Main.devMode){
+            log.info("Em dev mode. Mensagem não será enviada para o Telegram.");
+            return;
+        };
+
         if (botToken == null || chatId == null) {
             log.warn("Configuração do Telegram ausente, notificação ignorada: {}", mensagem);
             return;

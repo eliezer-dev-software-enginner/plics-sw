@@ -6,6 +6,7 @@ import megalodonte.base.Animations;
 import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.base.state.State;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Button;
 import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
@@ -68,11 +69,7 @@ public interface ContratoTelaCrudV3 {
                                 new Container(new ContainerProps().bgColor("#fff").fillHeight())
                                         .children(
                                                 buttonExpandMinimizeWrapper(),
-                                                new SpacerVertical(20),
-//                                                Show.when(viewModel().formIsVisible, () -> new Row(new RowProps().
-//                                                        fillWidth().centerHorizontally())
-//                                                        .children(form())
-//                                                ).withTransition((c, entering) -> {
+                                                new SpacerVertical(ThemeManager.theme().spacing().md()),
                                                 Show.when(viewModel().formIsVisible, () -> form()
                                                 ).withTransition((c, entering) -> {
                                                     if (entering) {

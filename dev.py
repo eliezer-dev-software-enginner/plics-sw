@@ -10,7 +10,7 @@ from watchdog.events import FileSystemEventHandler
 ROOT = Path(__file__).resolve().parent
 WATCH_DIRS = ["src/main/java", "src/main/resources"]
 GRADLE_RUN = ["./gradlew", "run"] if sys.platform != "win32" else ["gradlew.bat", "run"]
-DEBOUNCE_SECONDS = 3.5
+DEBOUNCE_SECONDS = 2.5
 
 # Editores (IntelliJ com "safe write", vim swap, etc.) criam/tocam arquivos sem que
 # o conteúdo do seu código tenha de fato mudado — não conta como mudança real.

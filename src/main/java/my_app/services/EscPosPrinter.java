@@ -77,8 +77,6 @@ public class EscPosPrinter implements ComprovanteBuilder {
         this.outputStream = null;
         this.portaImpressora = portaImpressora;
         objectMapper.registerModule(new JavaTimeModule());
-
-        telegramNotifier.enviarMensagem("Porta impressora: " + portaImpressora);
     }
 
     private static EmpresaService createEmpresaService() {
@@ -96,6 +94,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
 
     public void imprimir(VendaModel venda, List<ContaAreceberModel> parcelas) {
         try {
+            telegramNotifier.enviarMensagem("Porta impressora: " + portaImpressora);
             telegramNotifier.enviarMensagem("Vai imprimir venda model: " + objectMapper.writeValueAsString(venda));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

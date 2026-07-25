@@ -189,12 +189,10 @@ public class HomeScreenViewModel {
             UI.runOnUi(()->Components.ShowPopup(screenContext,"Buscando por atualizações do repositório..."));
             try {
                 if (!updater.hasUpdate(Main.APP_VERSION)) {
-                    if(fromClicked){
                         UI.runOnUi(() -> Components.ShowAlertAdvice(
                                 "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
                                 () -> {}
                         ));
-                    }
                     return;
                 }
             } catch (Exception e) {

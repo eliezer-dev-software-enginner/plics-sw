@@ -4,16 +4,13 @@ import megalodonte.base.components.Component;
 import megalodonte.base.components.IconInterface;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.Button;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.Text;
+import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.FlowRow;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.FlowRowProps;
-import megalodonte.props.TextProps;
+import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
+import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
@@ -23,8 +20,6 @@ import megalodonte.components.layout_components.Row;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-import megalodonte.components.SimpleTable;
-import megalodonte.props.RowProps;
 import my_app.db.models.VendaModel;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -63,16 +58,13 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
 
     private FlowRow formFirstRow() {
         return new FlowRow(new FlowRowProps().spacingOf(ThemeManager.theme().spacing().sm())).children(
+                Components.SelectDropDownSearch("Nome/código do produto", vm.codigo, "xxxxxxxx",
+                        vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
                 Components.DatePickerColumn(vm.dataVenda, "Data de venda",
                         IconInterface.of(FontIcon.of(AntDesignIconsOutlined.CALENDAR))),
                 Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
-                Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
-                        vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
                 Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2",vm.quantidadeRef),
-                Components.InputColumn("Descrição do produto",
-                        vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""),
-                        "Ex: Paraiso", true),
                 Components.InputColumnCurrency("Pc. de venda", vm.pcVenda),
                 Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro),
                 Components.SelectColumn("Tipo de pagamento",
@@ -97,6 +89,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .header()
                 .columns()
                 .column("ID", VendaModel::getId)
+                .imageColumn("Imagem", it -> it.getProduto().getImagem())
                 .column("Produto", it -> it.getProduto().getDescricao())
                 .column("Preço de venda", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
                 .column("Quantidade", VendaModel::getQuantidade)
@@ -113,6 +106,9 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes da venda de mercadoria", new TextProps().variant(TextVariant.SUBTITLE)))
                 .c_child(new SpacerVertical(20))
+                .c_child(Show.when(model.getProduto().getImagem()!=null,
+                            ()->new Image(model.getProduto().getImagem(), new ImageProps().size(100)))
+                )
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Código do produto: ", model.getProdutoCod()))
                 .c_child(Components.TextWithDetails("Nome do produto: ", model.getProduto().getDescricao()))

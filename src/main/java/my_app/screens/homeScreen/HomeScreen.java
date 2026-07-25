@@ -45,7 +45,7 @@ public class HomeScreen implements ScreenComponent {
     @Override
     public void onMount() {
         viewModel.calcularFinanceiroMesAtual();
-        buscarAtualizacao(false);
+        //buscarAtualizacao(false);
 
         UI.runOnUi(() -> {
             var anim = Animations.pulse(bannerRef.current(), 4,Duration.millis(600) ,Duration.seconds(1));

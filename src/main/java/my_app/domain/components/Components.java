@@ -732,7 +732,8 @@ public class Components {
 
     static InputProps getInputProps(String placeholder, int height) {
         return new InputProps().height(height)
-                .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small());
+                .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small())
+                .fontSize(ThemeManager.theme().typography().small());
     }
 
     public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder, Runnable onEnter) {
@@ -742,6 +743,35 @@ public class Components {
                                 getInputProps(placeholder).borderWidth(ThemeManager.theme().border().width())
                                         .borderColor(ThemeManager.theme().colors().border()).borderRadius(ThemeManager.theme().border().radiusMd())
                         ).onEnter(onEnter)
+                );
+    }
+
+    public static Component SelectDropDownSearch(String label, ReadableState<String> inputState,
+                                                        String placeholder,
+                                                        megalodonte.v2.ListState<ProdutoModel> produtoModelListState,
+                                                        State<ProdutoModel> produtoSelected,
+                                                        ComputedState<Boolean> sugestoesProdutoVisible) {
+
+        ForEachState<ProdutoModel,Component> produtoModelRowForEachState = ForEachState.of(produtoModelListState,
+                produtoModel ->
+                    new Clickable(
+                            new Card(new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm())).children(
+                                    Show.when(produtoModel.getImagem()!=null, ()-> new Image(produtoModel.getImagem(), new ImageProps().size(30))),
+                                    new Text(produtoModel.getCodigoBarras() + " - " + produtoModel.getDescricao())
+                            )), ()-> produtoSelected.set(produtoModel)
+                    )
+                );
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
+                .c_child(new Input((State<String>) inputState,
+                                getInputProps(placeholder)
+                        )
+                )
+                .c_child(Show.when(sugestoesProdutoVisible,
+                            ()-> new Column(new ColumnProps().maxHeight(200))
+                                    .items(produtoModelRowForEachState,true)
+                        )
                 );
     }
 

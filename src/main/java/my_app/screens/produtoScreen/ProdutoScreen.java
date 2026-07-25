@@ -76,13 +76,11 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .children(
                                 new Text("Dados do Produto",
                                         new TextProps().variant(TextVariant.BODY).bold()),
-                                new SpacerVertical(20),
-                                new Row(new RowProps().spacingOf(10))
+                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
+                                new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm()))
                                         .children(
                                                ContainerLeft(vm),
-                                                //leftColumn,
                                                 Components.CardImageSelector(vm.imagem, handleChangeImage)
-                                       // ),
                                         )
 //                                new SpacerVertical(25),
 //                                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
@@ -102,6 +100,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .header()
                 .columns()
                 .column("ID", ProdutoModel::getId, 70.0)
+                .imageColumn("Imagem", ProdutoModel::getImagem)
                 .column("Código", ProdutoModel::getCodigoBarras)
                 .column("Cor", it -> it.getCor() != null ? it.getCor() : "")
                 .column("Tamanho", it -> it.getTamanho() != null ? it.getTamanho() : "")
@@ -158,8 +157,6 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     public Component ContainerLeft(ProdutoScreenViewModel vm) {
-        //var rowProps = new RowProps().spacingOf(10);
-
         Runnable handleGerarCodigoBarras = () -> {
             final var codigo = Utils.gerarCodigoBarrasEAN13();
             vm.codigoBarras.set(codigo);
