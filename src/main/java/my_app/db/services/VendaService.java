@@ -27,6 +27,7 @@ public class VendaService extends BaseService<VendaModel> {
     public VendaModel salvar(VendaModel model, boolean atualizarEstoque) throws SQLException {
         validar(model);
         model.setDataCriacao(LocalDateTime.now());
+        model.setAfetaEstoque(atualizarEstoque);
 
         if (atualizarEstoque) {
             var produto = produtoService.buscarPorCodigoBarras(model.getProdutoCod());
@@ -49,15 +50,71 @@ public class VendaService extends BaseService<VendaModel> {
 
     @Override
     public void atualizar(VendaModel model) throws SQLException {
-        validar(model);
-        repository.atualizar(model);
+        atualizar(model, false);
     }
 
-    public void excluir(long id, boolean devolverEstoque) throws SQLException {
+    /**
+     * @param atualizarEstoque se esta venda, DAQUI PRA FRENTE, deve refletir no estoque.
+     *                         Comparado com o afetaEstoque JÁ PERSISTIDO da venda (não com
+     *                         nada vindo do formulário) pra decidir o ajuste real: devolver,
+     *                         descontar, ajustar pela diferença de quantidade, ou nada.
+     */
+    public void atualizar(VendaModel model, boolean atualizarEstoque) throws SQLException {
+        validar(model);
+
+        var vendaAnterior = repository.buscarById(model.getId());
+        if (vendaAnterior == null) throw new IllegalArgumentException("Venda não encontrada");
+
+        boolean afetavaAntes = Boolean.TRUE.equals(vendaAnterior.getAfetaEstoque());
+        boolean mesmoProduto = vendaAnterior.getProdutoCod().equals(model.getProdutoCod());
+        boolean ajustePorDelta = afetavaAntes && atualizarEstoque && mesmoProduto;
+
+        // Validar ANTES de gravar: se vai faltar estoque, nada deve ser persistido.
+        if (ajustePorDelta) {
+            var delta = model.getQuantidade().subtract(vendaAnterior.getQuantidade());
+            if (delta.compareTo(BigDecimal.ZERO) > 0) {
+                var produto = produtoService.buscarPorCodigoBarras(model.getProdutoCod());
+                if (produto == null) throw new SQLException("Produto não encontrado: " + model.getProdutoCod());
+                if (produto.getEstoque().subtract(delta).compareTo(BigDecimal.ZERO) < 0) {
+                    throw new SQLException("Estoque não pode ficar negativo. Estoque atual: " +
+                            produto.getEstoque() + ", Tentativa de subtrair: " + delta);
+                }
+            }
+        } else if (atualizarEstoque && !(afetavaAntes && mesmoProduto)) {
+            // passou a afetar (ou trocou de produto): vai descontar a quantidade cheia do produto novo
+            var novoProduto = produtoService.buscarPorCodigoBarras(model.getProdutoCod());
+            if (novoProduto == null) throw new SQLException("Produto não encontrado: " + model.getProdutoCod());
+            if (novoProduto.getEstoque().subtract(model.getQuantidade()).compareTo(BigDecimal.ZERO) < 0) {
+                throw new SQLException("Estoque não pode ficar negativo. Estoque atual: " +
+                        novoProduto.getEstoque() + ", Tentativa de subtrair: " + model.getQuantidade());
+            }
+        }
+
+        model.setAfetaEstoque(atualizarEstoque);
+        repository.atualizar(model);
+
+        if (ajustePorDelta) {
+            var delta = model.getQuantidade().subtract(vendaAnterior.getQuantidade());
+            if (delta.compareTo(BigDecimal.ZERO) > 0) {
+                produtoService.decrementarEstoque(model.getProdutoCod(), delta);
+            } else if (delta.compareTo(BigDecimal.ZERO) < 0) {
+                produtoService.incrementarEstoque(model.getProdutoCod(), delta.negate());
+            }
+        } else {
+            if (afetavaAntes) {
+                produtoService.incrementarEstoque(vendaAnterior.getProdutoCod(), vendaAnterior.getQuantidade());
+            }
+            if (atualizarEstoque) {
+                produtoService.decrementarEstoque(model.getProdutoCod(), model.getQuantidade());
+            }
+        }
+    }
+
+    public void excluir(long id) throws SQLException {
         var venda = repository.buscarById(id);
         if (venda == null) throw new IllegalArgumentException("Venda não encontrada");
 
-        if (devolverEstoque) {
+        if (Boolean.TRUE.equals(venda.getAfetaEstoque())) {
             produtoService.incrementarEstoque(venda.getProdutoCod(), venda.getQuantidade());
         }
 

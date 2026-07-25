@@ -63,6 +63,14 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     final State<String> estoqueAnterior = State.of("0");
     final State<String> estoqueAtual = State.of("0");
 
+    // Snapshot da venda original ao entrar em modo de edição (ver onInit): usado pra
+    // calcular só a DIFERENÇA de quantidade no preview de estoque, em vez da quantidade
+    // inteira — a quantidade atual já foi descontada do estoque quando a venda foi criada
+    // (só se afetavaEstoqueOriginal for true; ver VendaModel.afetaEstoque).
+    private BigDecimal quantidadeOriginal = BigDecimal.ZERO;
+    private String produtoCodOriginal = null;
+    private boolean afetavaEstoqueOriginal = false;
+
     private final ListState<ProdutoModel> produtoModelListState = ListState.ofEmpty();
     final ListState<ProdutoModel> sugestoesProduto = ListState.ofEmpty();
     final State<ProdutoModel> produtoEncontrado = State.of(null);
@@ -123,6 +131,14 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
         produtoEncontrado.subscribe(this::selecionarProduto);
 
+        modoEdicao.subscribe(editando -> {
+            var data = editando ? vendaSelected.get() : null;
+            quantidadeOriginal = data != null && data.getQuantidade() != null ? data.getQuantidade() : BigDecimal.ZERO;
+            produtoCodOriginal = data != null ? data.getProdutoCod() : null;
+            afetavaEstoqueOriginal = data != null && Boolean.TRUE.equals(data.getAfetaEstoque());
+            atualizarEstoqueVisual();
+        });
+
         EventBus.getInstance().subscribe(event -> {
             if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
                 refreshClientes();
@@ -137,7 +153,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         }
 
         var selected = produtoEncontrado.get();
-        if (selected == null || !selected.getCodigoBarras().equals(termo.trim())) {
+        if (selected == null || (!selected.getCodigoBarras().equals(termo.trim()) &&  !selected.getDescricao().equals(termo.trim()))) {
+            log.info("Produto encontrado foi resetado para null!");
             produtoEncontrado.set(null);
         }
 
@@ -152,9 +169,10 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
     void selecionarProduto(ProdutoModel produto) {
         if (produto != null) {
-            codigo.set(produto.getCodigoBarras());
+            codigo.set(produto.getDescricao());
             pcVenda.set(Utils.deRealParaCentavos(produto.getPrecoVenda()));
-            estoqueAnterior.set(produto.getEstoque().toString());
+            var estoque = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
+            estoqueAnterior.set(estoque.toString());
             sugestoesProduto.clear();
             quantidadeRef.requestFocus();
         }
@@ -166,10 +184,26 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         if (data == null) return;
 
         modoEdicao.set(false);
+
+        // Precisa vir antes dos campos abaixo: produtoEncontrado.set() dispara
+        // selecionarProduto(), que também mexe em codigo/pcVenda/estoqueAnterior —
+        // mas com valores do CATÁLOGO atual. Os sets explícitos logo depois
+        // sobrescrevem isso com os valores de fato salvos nesta venda.
+        //
+        // Antes disso não existia: o codigo.set(data.getProdutoCod()) mais embaixo
+        // disparava filtrarProdutos(), que via produtoEncontrado ainda null/stale e
+        // resetava ele sozinho pra null de novo — então "Atualizar" caía direto no
+        // "Produto não encontrado!", mesmo com o produto certo aparecendo no campo.
+        produtoEncontrado.set(data.getProduto());
+        if (data.getProduto() == null) {
+            // Produto original não existe mais no catálogo (foi excluído depois da
+            // venda) — mostra o código registrado mesmo assim; o usuário vai precisar
+            // escolher um produto válido pra conseguir salvar.
+            codigo.set(data.getProdutoCod());
+        }
+
         dataVenda.set(DateUtils.millisParaLocalDate(data.getDataVenda()));
         numeroNota.set(data.getNumeroNota());
-        codigo.set(data.getProdutoCod());
-        produtoEncontrado.set(null);
         qtd.set(Utils.quantidadeTratada(data.getQuantidade()));
         observacao.set(data.getObservacao());
         tipoPagamentoSelecionado.set(data.getTipoPagamento());
@@ -244,6 +278,11 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             return;
         }
 
+        if (clienteSelected.get() == null) {
+            Components.ShowAlertError("Selecione um cliente!");
+            return;
+        }
+
         var qtdStr = qtd.get().trim();
         if (qtdStr.isEmpty()) {
             Components.ShowAlertError("Quantidade é obrigatória!");
@@ -272,21 +311,50 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             }
         }
 
-        Async.Run(() -> {
-            if (modoEdicao.get()) {
-                final var selecionado = vendaSelected.get();
-                if (selecionado == null) return;
+        // Captura modoEdicao ANTES de entrar no Async.Run: ContratoTelaCrudV3.handleAddOrUpdate()
+        // chama viewModel().modoEdicaoState().set(false) logo em seguida, de forma síncrona,
+        // e essa chamada corre em paralelo com a task assíncrona abaixo. Sem essa captura,
+        // o modoEdicao.get() lá dentro quase sempre já lê false, e a edição vira um cadastro novo
+        // (mesmo bug documentado e corrigido em CategoriaScreenViewModel, ver docs/DECISIONS.md).
+        final boolean editando = modoEdicao.get();
 
-                fillModelFromForm(selecionado, false);
+        Async.Run(() -> {
+            if (editando) {
+                final var original = vendaSelected.get();
+                if (original == null) return;
+
+                // Não reaproveita/muta "original": ele é a MESMA referência que já está
+                // dentro de allDataList (veio da seleção da linha na tabela). Mutar e
+                // devolver essa mesma referência faz o allDataList.updateIf() "substituir"
+                // o item por ele mesmo — ListState.set() vê as duas listas como iguais
+                // (mesmas referências, mesma posição) e não notifica ninguém, então a
+                // tabela nunca redesenha essa linha sozinha.
+                var atualizado = new VendaModel();
+                atualizado.setId(original.getId());
+                atualizado.setDataCriacao(original.getDataCriacao());
+                fillModelFromForm(atualizado, false);
+
+                boolean atualizarEstoque = "Sim".equalsIgnoreCase(opcaoEstoqueSelected.get());
                 try {
-                    vendaService.atualizar(selecionado);
+                    vendaService.atualizar(atualizado, atualizarEstoque);
                 } catch (Exception e) {
                     UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
                     return;
                 }
 
+                // atualizado.getProduto() ainda é o snapshot de ANTES do ajuste de estoque
+                // (fillModelFromForm setou com produtoEncontrado.get(), capturado antes do
+                // vendaService.atualizar() acima). Sem recarregar aqui, essa venda fica com
+                // estoque desatualizado em allDataList até o app reiniciar — reloadProdutos()
+                // só atualiza a lista de busca/catálogo, não o que já está embutido nas vendas.
+                try {
+                    atualizado.setProduto(produtoService.buscarPorCodigoBarras(atualizado.getProdutoCod()));
+                } catch (Exception e) {
+                    log.error("Erro ao recarregar produto após atualizar venda", e);
+                }
+
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(it -> it.getId().equals(selecionado.getId()), it -> selecionado);
+                    allDataList.updateIf(it -> it.getId().equals(atualizado.getId()), it -> atualizado);
                     Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                     reloadProdutos();
@@ -309,6 +377,14 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         } catch (Exception e) {
             UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar venda: " + e.getMessage()));
             return;
+        }
+
+        // Mesmo motivo do atualizar(): salvo.getProduto() ainda reflete o estoque de
+        // ANTES do decremento feito dentro de vendaService.salvar() acima.
+        try {
+            salvo.setProduto(produtoService.buscarPorCodigoBarras(salvo.getProdutoCod()));
+        } catch (Exception e) {
+            log.error("Erro ao recarregar produto após salvar venda", e);
         }
 
         if ("A PRAZO".equals(tipoPagamentoSelecionado.get()) && !parcelas.get().isEmpty()) {
@@ -339,13 +415,29 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         Async.Run(() -> {
             try {
                 Integer vendaId = data.getId();
+                // excluir() primeiro: ele pode falhar (ex: produto da venda não existe mais
+                // no catálogo e não dá pra devolver estoque). Se excluirPorVendaId rodasse
+                // antes e excluir() falhasse depois, as contas a receber já teriam sido
+                // apagadas mas a venda continuaria lá — corrompendo o vínculo silenciosamente.
+                // Devolução de estoque agora é decidida pelo afetaEstoque PERSISTIDO na
+                // própria venda (setado na criação/edição), não pelo dropdown do formulário
+                // — que não tem nenhuma relação com a venda sendo excluída aqui.
+                vendaService.excluir(vendaId);
                 contaService.excluirPorVendaId(vendaId);
-                vendaService.excluir(vendaId, opcaoEstoqueSelected.get().equals("Sim"));
                 reloadProdutos();
 
                 UI.runOnUi(() -> {
                     allDataList.removeIf(it -> it.getId().equals(vendaId));
-                    Components.ShowPopup(ctx, "Venda e contas vinculadas excluídas!");
+
+                    String mensagem = "Venda e contas vinculadas excluídas!";
+                    if (Boolean.TRUE.equals(data.getAfetaEstoque())) {
+                        String nomeProduto = data.getProduto() != null
+                                ? data.getProduto().getDescricao()
+                                : data.getProdutoCod();
+                        mensagem += " " + Utils.quantidadeTratada(data.getQuantidade())
+                                + " unidade(s) de \"" + nomeProduto + "\" devolvida(s) ao estoque.";
+                    }
+                    Components.ShowPopup(ctx, mensagem);
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
@@ -375,11 +467,12 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     }
 
     private void fillModelFromForm(VendaModel model, boolean isNew) {
-        String cod = produtoEncontrado.get().getCodigoBarras();
+        //String cod = produtoEncontrado.get().getCodigoBarras();
         Integer clienteId = clienteSelected.get().getId();
 
-        model.setProduto(produtoModelListState.get().stream().filter(prod-> prod.getCodigoBarras().equals(cod)).findFirst().get());
-        model.setProdutoCod(cod);
+        //model.setProduto(produtoModelListState.get().stream().filter(prod-> prod.getCodigoBarras().equals(cod)).findFirst().get());
+        model.setProduto(produtoEncontrado.get());
+        model.setProdutoCod(produtoEncontrado.get().getCodigoBarras());
 
         model.setCliente(clientes.get().stream().filter(c-> c.getId().equals(clienteId)).findFirst().get());
         model.setClienteId(clienteId);
@@ -413,8 +506,19 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
         if ("Sim".equals(opcaoEstoqueSelected.get())) {
             try {
-                int qtdValue = Integer.parseInt(qtd.get().trim().isEmpty() ? "0" : qtd.get());
-                estoqueAtual.set(estoqueBase.subtract(BigDecimal.valueOf(qtdValue)).toString());
+                var qtdValue = new BigDecimal(qtd.get().trim().isEmpty() ? "0" : qtd.get());
+
+                // Editando a mesma venda/produto que JÁ afetava o estoque: a quantidade
+                // original já foi descontada na criação, então o impacto adicional é só a
+                // diferença pra quantidadeOriginal. Se a venda original não afetava estoque
+                // (afetavaEstoqueOriginal=false), nada foi descontado ainda — o impacto é a
+                // quantidade cheia, igual a uma venda nova.
+                boolean editandoMesmoProdutoQueJaAfetava = produtoCodOriginal != null
+                        && produtoCodOriginal.equals(produtoEncontrado.get().getCodigoBarras())
+                        && afetavaEstoqueOriginal;
+                var impacto = editandoMesmoProdutoQueJaAfetava ? qtdValue.subtract(quantidadeOriginal) : qtdValue;
+
+                estoqueAtual.set(estoqueBase.subtract(impacto).toString());
             } catch (NumberFormatException e) {
                 estoqueAtual.set(estoqueBase.toString());
             }

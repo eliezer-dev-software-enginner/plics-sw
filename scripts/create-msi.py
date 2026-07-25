@@ -24,3 +24,4 @@ run_jpackage(temp_dir, "msi", [
 print("[5/5] 📝 Renomeando pacote...")
 final = rename_output("msi")
 print(f"\n✅ MSI criado: {final}")
+open_dist_folder()

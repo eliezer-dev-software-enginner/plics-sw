@@ -163,6 +163,14 @@ def smoke_test(temp_dir):
         proc.terminate()
         proc.wait()
 
+def open_dist_folder():
+    dist_dir = ROOT / "dist"
+    if os.name == "nt":
+        os.startfile(dist_dir)
+    else:
+        subprocess.run(["xdg-open", str(dist_dir)])
+
+
 def rename_output(pkg_type: str):
     dist_dir = ROOT / "dist"
     ext = f".{pkg_type}"

@@ -4,7 +4,17 @@
     "notes": [
       "Feat: Validações na tela de Empresa (cep, número de telefone).",
       "Feat: Responsividade adicionada na tela de vendas",
-      "Fix: Encerramento do aplicativo completamente ao ser fechado"
+      "Feat: Estoque agora é ajustado pela diferença de quantidade ao editar uma venda, em vez de ignorado",
+      "Feat: Campo afeta_estoque persistido na venda — edição e exclusão agora refletem o estoque corretamente, sem depender do formulário",
+      "Feat: Aviso ao excluir venda informa a quantidade devolvida ao estoque",
+      "Fix: Encerramento do aplicativo completamente ao ser fechado",
+      "Fix: Produto não encontrado ao clicar em Atualizar na edição de venda de mercadoria",
+      "Fix: Validação de cliente obrigatório ao salvar/atualizar venda",
+      "Fix: Race condition na edição de venda — Atualizar criava um cadastro novo em vez de atualizar",
+      "Fix: Tabela de vendas não atualizava instantaneamente após editar um item",
+      "Fix: Preview de estoque anterior/atual incorreto ao editar venda sem ainda ter mudado a quantidade",
+      "Fix: Preview de estoque desatualizado ao reeditar uma venda sem reiniciar o app",
+      "Fix: Ordem de exclusão de venda podia apagar contas a receber vinculadas mesmo se a exclusão da venda falhasse"
     ]
   },
   {

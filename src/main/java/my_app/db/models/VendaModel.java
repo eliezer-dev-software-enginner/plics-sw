@@ -49,6 +49,9 @@ public class VendaModel {
     @Column(name = "data_validade")
     private Long dataValidade;
 
+    @Column(name = "afeta_estoque")
+    private Boolean afetaEstoque;
+
     private transient ProdutoModel produto;
     private transient ClienteModel cliente;
 }
