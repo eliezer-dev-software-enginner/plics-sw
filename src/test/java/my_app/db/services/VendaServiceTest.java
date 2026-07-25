@@ -94,7 +94,7 @@ class VendaServiceTest extends BaseServiceTest {
         var p = criarProduto();
         var v = criarVendaValida(p.getCodigoBarras());
         var salvo = vendaService.salvar(v, false);
-        vendaService.excluir(salvo.getId(), false);
+        vendaService.excluir(salvo.getId());
         assertNull(vendaService.buscarById(salvo.getId()));
     }
 
@@ -104,7 +104,7 @@ class VendaServiceTest extends BaseServiceTest {
         produtoService.definirEstoque(p.getCodigoBarras(), BigDecimal.TEN);
         var v = criarVendaValida(p.getCodigoBarras());
         var salvo = vendaService.salvar(v, true);
-        vendaService.excluir(salvo.getId(), true);
+        vendaService.excluir(salvo.getId());
         var atualizado = produtoService.buscarPorCodigoBarras(p.getCodigoBarras());
         assertBigDecimalEquals(BigDecimal.TEN, atualizado.getEstoque());
     }
