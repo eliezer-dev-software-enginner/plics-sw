@@ -3,11 +3,14 @@ package my_app.screens.vendaScreen;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.IconInterface;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Button;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.props.ColumnProps;
+import megalodonte.props.FlowRowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
@@ -52,29 +55,14 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.FormTitle("Cadastrar Nova Venda"),
                 new SpacerVertical(20),
                 formFirstRow(),
-                formSecondRow(),
-                new Row(new RowProps().spacingOf(15))
-                        .r_child(Components.TextWithValue("Estoque anterior:", vm.estoqueAnterior))
-                        .r_child(Components.TextWithValue("Estoque após venda:", vm.estoqueAtual)),
                 Components.displayOperationsRow(vm.totais),
                 Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totais.totalLiquido),
                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
         );
     }
 
-    private Row formSecondRow() {
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(Components.InputColumnCurrency("Pc. de venda", vm.pcVenda))
-                .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
-                .r_child(Components.SelectColumn("Tipo de pagamento",
-                        Data.tiposPagamentoList, vm.tipoPagamentoSelecionado, it -> it))
-                .r_child(Components.SelectColumn("Refletir no estoque?",
-                        Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
-                .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
-    }
-
-    private Row formFirstRow() {
-        return new Row(new RowProps().bottomVertically().spacingOf(10)).children(
+    private FlowRow formFirstRow() {
+        return new FlowRow(new FlowRowProps().spacingOf(ThemeManager.theme().spacing().sm())).children(
                 Components.DatePickerColumn(vm.dataVenda, "Data de venda",
                         IconInterface.of(FontIcon.of(AntDesignIconsOutlined.CALENDAR))),
                 Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome, true),
@@ -84,7 +72,21 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2",vm.quantidadeRef),
                 Components.InputColumn("Descrição do produto",
                         vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""),
-                        "Ex: Paraiso", true)
+                        "Ex: Paraiso", true),
+                Components.InputColumnCurrency("Pc. de venda", vm.pcVenda),
+                Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro),
+                Components.SelectColumn("Tipo de pagamento",
+                        Data.tiposPagamentoList, vm.tipoPagamentoSelecionado, it -> it),
+                Components.SelectColumn("Refletir no estoque?",
+                        Data.simNaoList, vm.opcaoEstoqueSelected, it -> it),
+                Components.TextAreaColumn("Observação", vm.observacao, ""),
+                new Row(
+                    new RowProps().spacingOf(ThemeManager.theme().spacing().sm())
+                ).children(
+                        Components.TextWithValue("Estoque anterior:", vm.estoqueAnterior),
+                        Components.TextWithValue("Estoque após venda:", vm.estoqueAtual)
+                )
+
         );
     }
 
