@@ -18,6 +18,7 @@ import megalodonte.base.UI;
 import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.IconInterface;
+import megalodonte.base.components.Ref;
 import megalodonte.base.state.ReadableState;
 import megalodonte.base.state.State;
 import megalodonte.base.theme.ThemeManager;
@@ -737,13 +738,20 @@ public class Components {
     }
 
     public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder, Runnable onEnter) {
+        return InputColumnComEnterHandler(label, inputState, placeholder, onEnter, null);
+    }
+
+    public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder,
+                                                         Runnable onEnter, Ref<Input> ref) {
+        var input = new Input((State<String>) inputState,
+                        getInputProps(placeholder).borderWidth(ThemeManager.theme().border().width())
+                                .borderColor(ThemeManager.theme().colors().border()).borderRadius(ThemeManager.theme().border().radiusMd())
+                ).onEnter(onEnter);
+        if (ref != null) input.ref(ref);
+
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(new Input((State<String>) inputState,
-                                getInputProps(placeholder).borderWidth(ThemeManager.theme().border().width())
-                                        .borderColor(ThemeManager.theme().colors().border()).borderRadius(ThemeManager.theme().border().radiusMd())
-                        ).onEnter(onEnter)
-                );
+                .c_child(input);
     }
 
     public static Component SelectDropDownSearch(String label, ReadableState<String> inputState,

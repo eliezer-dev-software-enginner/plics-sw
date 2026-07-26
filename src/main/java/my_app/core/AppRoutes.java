@@ -54,38 +54,49 @@ public class AppRoutes {
         INFO_UPDATE
     }
 
+    final int MIN_WIDTH = 600;
+    final int MIN_HEIGHT = 500;
+
+    final int MEDIUM_WIDTH = 950;
+    final int MEDIUM_HEIGHT = 550;
+
+    final int MAX_WIDTH = 1200;
+    final int MAX_HEIGHT = 650;
+
+
     public Set<Router.Route> routes() {
+
         return Set.of(
                 new Router.Route(Screens.SPLASH.name(), ctx -> new SplashScreen(),
-                        new RouteProps(600, 500, Main.BASE_TITLE, false)),
+                        new RouteProps(MIN_WIDTH, MIN_HEIGHT, Main.BASE_TITLE, false)),
                 new Router.Route(Screens.WELCOME.name(), WelcomeScreen::new, new RouteProps(950, 550, Main.BASE_TITLE, true)),
                 new Router.Route(Screens.AUTH.name(), AuthScreen::new, new RouteProps(950, 550, "Seja muito bem vindo", true)),
-                new Router.Route(Screens.HOME.name(), HomeScreen::new, new RouteProps(1180, 670, Main.BASE_TITLE, true)),
+                new Router.Route(Screens.HOME.name(), HomeScreen::new, new RouteProps(MAX_WIDTH, 670, Main.BASE_TITLE, true)),
                 //new Router.Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
-                new Router.Route(Screens.PRODUTOS.name(), ProdutoScreen::new, new RouteProps(1210, 650, "Cadastro de produtos", true)),
+                new Router.Route(Screens.PRODUTOS.name(), ProdutoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Cadastro de produtos", true)),
                 //ok
-                new Router.Route(Screens.CATEGORIAS.name(), CategoriaScreen::new, new RouteProps(1000, 650, "Gerenciamento de categorias", false)),
+                new Router.Route(Screens.CATEGORIAS.name(), CategoriaScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Gerenciamento de categorias", false)),
                 //ok
-                new Router.Route(Screens.FORNECEDORES.name(), FornecedorScreen::new, new RouteProps(1210, 650, "Gerenciamento de Fornecedores", true)),
+                new Router.Route(Screens.FORNECEDORES.name(), FornecedorScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de Fornecedores", true)),
 
-                new Router.Route(Screens.EMPRESA.name(), CadastroEmpresaScreen::new, new RouteProps(900, 650, "Informações da empresa", false)),
+                new Router.Route(Screens.EMPRESA.name(), CadastroEmpresaScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Informações da empresa", false)),
                 //ok
-                new Router.Route(Screens.COMPRAS.name(), ComprasScreen::new, new RouteProps(1000, 650, "Compras de mercadorias", true)),
+                new Router.Route(Screens.COMPRAS.name(), ComprasScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Compras de mercadorias", true)),
                 //ok
-                new Router.Route(Screens.CLIENTES.name(), ClienteScreen::new, new RouteProps(1150, 650, "Gerenciamento de clientes", true)),
+                new Router.Route(Screens.CLIENTES.name(), ClienteScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de clientes", true)),
                 //ok
-                new Router.Route(Screens.COMPRAS_A_PAGAR.name(), ComprasAPagarScreen::new, new RouteProps(1000, 650, "Gerenciamento de contas a pagar", true)),
+                new Router.Route(Screens.COMPRAS_A_PAGAR.name(), ComprasAPagarScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de contas a pagar", true)),
                 //ok
-                new Router.Route(Screens.TECNICOS.name(), TecnicoScreen::new, new RouteProps(1000, 650, "Gerenciamento de Técnicos para ordem de serviço", true)),
-                new Router.Route(Screens.ORDEM_SERVICO.name(), OrdemServicoScreen::new, new RouteProps(1000, 650, "Gerenciamento de ordens de serviço", true)),
-                new Router.Route(Screens.RELATAR_ERRO.name(), RelatarErroScreen::new, new RouteProps(1000, 650, "Relatar erros", true)),
-                new Router.Route(Screens.SUGERIR_MELHORIA.name(), SugerirMelhoriaScreen::new, new RouteProps(1000, 650, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
-                new Router.Route(Screens.PDV.name(), PDVScreen::new, new RouteProps(1025, 650, "Seu caixa está aberto", true)),
-                new Router.Route(Screens.COMPRAS_A_RECEBER.name(), ContasAReceberScreen::new, new RouteProps(1000, 650, "Gerenciamento de contas a receber", true)),
-                new Router.Route(Screens.VENDAS.name(), VendaMercadoriaScreen::new, new RouteProps(1200, 650, "Gerencie sua venda de mercadorias", true)),
-                new Router.Route(Screens.PEDIDOS.name(), PedidosScreen::new, new RouteProps(1000, 650, "Analise suas vendas feitas no PDV", true)),
-                new Router.Route(Screens.PREFERENCIAS.name(), PreferenciasScreen::new, new RouteProps(650, 500, "Alteração de preferências do comportamento do aplicativo", true)),
-                new Router.Route(Screens.INFO_UPDATE.name(), InfoUpdateScreen::new, new RouteProps(900, 650, "Atualizações do aplicativo", false))
+                new Router.Route(Screens.TECNICOS.name(), TecnicoScreen::new, new RouteProps(MIN_WIDTH, MAX_HEIGHT, "Gerenciamento de Técnicos para ordem de serviço", true)),
+                new Router.Route(Screens.ORDEM_SERVICO.name(), OrdemServicoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de ordens de serviço", true)),
+                new Router.Route(Screens.RELATAR_ERRO.name(), RelatarErroScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Relatar erros", true)),
+                new Router.Route(Screens.SUGERIR_MELHORIA.name(), SugerirMelhoriaScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
+                new Router.Route(Screens.PDV.name(), PDVScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Seu caixa está aberto", true)),
+                new Router.Route(Screens.COMPRAS_A_RECEBER.name(), ContasAReceberScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de contas a receber", true)),
+                new Router.Route(Screens.VENDAS.name(), VendaMercadoriaScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerencie sua venda de mercadorias", true)),
+                new Router.Route(Screens.PEDIDOS.name(), PedidosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Analise suas vendas feitas no PDV", true)),
+                new Router.Route(Screens.PREFERENCIAS.name(), PreferenciasScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Alteração de preferências do comportamento do aplicativo", true)),
+                new Router.Route(Screens.INFO_UPDATE.name(), InfoUpdateScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Atualizações do aplicativo", false))
         );
     }
 }

@@ -27,6 +27,7 @@ public interface ContratoTelaCrudV3 {
     ViewModelScreenContract viewModel();
 
     default void handleClickNew() {
+        viewModel().formIsVisible.set(true);
         viewModel().modoEdicaoState().set(false);
         clearForm();
     }
@@ -37,11 +38,13 @@ public interface ContratoTelaCrudV3 {
     }
 
     default void handleClickMenuClone() {
+        viewModel().formIsVisible.set(true);
         populateFromModel();
         viewModel().modoEdicaoState().set(false);
     }
 
     default void handleClickMenuEdit() {
+        viewModel().formIsVisible.set(true);
         populateFromModel();
         viewModel().modoEdicaoState().set(true);
     }

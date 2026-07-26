@@ -23,6 +23,7 @@ import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
 import my_app.core.AppRoutes;
+import my_app.domain.telegram.TelegramNotifierFactory;
 import my_app.infra.ProcessKiller;
 import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
@@ -181,6 +182,8 @@ public class Main {
     }
 
     private static void handleAppError(Throwable t) {
+        TelegramNotifierFactory.create().enviarMensagem("ERRO NA APLICAÇÃO: " + t.getMessage());
+
         Platform.runLater(() -> {
             if (t instanceof IllegalArgumentException) {
                 Components.ShowAlertError(t.getMessage());

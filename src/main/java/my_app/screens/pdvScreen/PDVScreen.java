@@ -11,6 +11,7 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
+import my_app.domain.Data;
 import my_app.domain.components.Components;
 
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ public class PDVScreen implements ScreenComponent {
     @Override
     public void onMount() {
         vm.loadProdutos();
+        vm.loadClientes();
     }
 
     @Override
@@ -84,24 +86,26 @@ public class PDVScreen implements ScreenComponent {
                         Components.FormTitle("Buscar produto"),
                         new SpacerVertical(5),
                         //Components.InputColumn("Código do produto", vm.codigoBarrasInput, "Ex: João"),
-                        Components.InputColumnComDynamicSearch("Código do produto", vm.codigoBarrasInput, "xxxxxxxx",
+                        Components.SelectDropDownSearch("Código do produto", vm.codigoBarrasInput, "xxxxxxxx",
                                 vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
                         Components.InputColumnComEnterHandler("Quantidade",
                                         vm.quantidadeInput, "Ex: 1",
-                                        () -> vm.adicionarPorCodigo(vm.codigoBarrasInput.get())
+                                        () -> vm.adicionarPorCodigo(vm.codigoBarrasInput.get()),
+                                        vm.qtdRef
                                 )
                 )
         );
     }
 
     public Component table() {
-        return new Column().children(
+        return new Column(new ColumnProps().fillWidth()).children(
                 Components.FormTitle("LISTA DE PRODUTOS"),
                 //codigo, descricao(nome), qtd, vlr. Unit., Total
                 new SimpleTable<ItemVenda>()
                     .fromData(vm.itensCarrinho)
                     .header()
                         .columns()
+                            .imageColumn("Imagem", it -> it.produto.getImagem())
                             .column("Cod",          it -> it.produto.getCodigoBarras())
                             .column("Nome",          it -> it.produto.getDescricao())
                             .editableColumn("Qtd.", it -> it.quantidade,
@@ -121,13 +125,13 @@ public class PDVScreen implements ScreenComponent {
 
     Component vendaFiadaComponent(){
         return new Column().children(
-                new Checkbox("É uma venda fiada?",vm.isVendaFiada),
-                Show.when(vm.isVendaFiada, ()-> new Column().children(
-                        Components.FormTitle("Quem é o cliente?"),
-                        Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome,
-                                true,"+ Criar cliente", vm::handleCriarCliente),
+                Components.FormTitle("Cliente e pagamento"),
+                Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome,
+                        true,"+ Criar cliente", vm::handleCriarCliente),
+                Components.SelectColumn("Forma de pagamento", Data.tiposPagamentoList, vm.formaPagamentoSelecionado, it -> it),
+                Show.when(vm.tipoPagamentoIsAPrazo, ()->
                         Components.InputColumn("Nº Parcelas", vm.numeroParcelas, "Ex: 3")
-                ))
+                )
         );
     }
 

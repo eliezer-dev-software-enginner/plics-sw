@@ -1,7 +1,9 @@
 package my_app.screens.pdvScreen;
 
 import megalodonte.ComputedState;
+import megalodonte.base.components.Ref;
 import megalodonte.base.state.State;
+import megalodonte.components.inputs.Input;
 import megalodonte.v2.ListState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
@@ -17,6 +19,7 @@ import my_app.db.services.ProdutoService;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
+import my_app.domain.Data;
 import my_app.domain.components.Components;
 import my_app.services.EscPosPrinter;
 import my_app.services.PDVService;
@@ -54,7 +57,10 @@ public class PDVScreenViewModel {
     // Estado reativo: itens no carrinho
     final ListState<ItemVenda> itensCarrinho = ListState.ofEmpty();
 
-    final State<Boolean> isVendaFiada = State.of(false);
+    final State<String> formaPagamentoSelecionado = State.of(Data.tiposPagamentoList.getFirst());
+    final ComputedState<Boolean> tipoPagamentoIsAPrazo = ComputedState.of(
+            () -> formaPagamentoSelecionado.get().equals("A PRAZO"),
+            formaPagamentoSelecionado);
     final State<String> numeroParcelas = State.of("1");
 
     // Estado do campo de busca
@@ -62,6 +68,7 @@ public class PDVScreenViewModel {
 
     //item atual buscado
     final State<String> quantidadeInput = State.of("1");
+    final Ref<Input> qtdRef = new Ref<>();
 
     // Subtotal derivado — recalculado sempre que itensCarrinho mudar
     final State<String> subtotal = State.of("0");
@@ -144,7 +151,13 @@ public class PDVScreenViewModel {
     void selecionarProduto(ProdutoModel produto) {
         if (produto != null) {
             codigoBarrasInput.set(produto.getCodigoBarras());
-            //quantidadeRef.requestFocus();
+            // codigoBarrasInput.set() acima já disparou filtrarProdutos(), que repopulou
+            // sugestoesProduto (o próprio produto selecionado bate no filtro) — precisa
+            // limpar de novo aqui, depois, pra fechar o dropdown de fato.
+            sugestoesProduto.clear();
+            if (qtdRef.current() != null) {
+                qtdRef.current().requestFocus();
+            }
         }
     }
 
@@ -172,6 +185,22 @@ public class PDVScreenViewModel {
                 .toList();
 
         sugestoesProduto.set(filtrados);
+    }
+
+    void loadClientes() {
+        Async.Run(() -> {
+            try {
+                var list = clienteService.listar();
+                UI.runOnUi(() -> {
+                    clientes.clear();
+                    clientes.addAll(list);
+                    list.stream().filter(c -> c.getId() == 1).findFirst().ifPresent(clienteSelected::set);
+                });
+            } catch (Exception e) {
+                log.error("Erro ao buscar clientes", e);
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar clientes: " + e.getMessage()));
+            }
+        });
     }
 
     void loadProdutos() {
@@ -204,17 +233,45 @@ public class PDVScreenViewModel {
             return;
         }
 
+        BigDecimal quantidadeDesejada;
+        try {
+            quantidadeDesejada = new BigDecimal(quantidadeInput.get().trim());
+        } catch (NumberFormatException e) {
+            Components.ShowAlertError("Quantidade inválida.");
+            return;
+        }
+        if (quantidadeDesejada.compareTo(BigDecimal.ZERO) <= 0) {
+            Components.ShowAlertError("Quantidade deve ser maior que zero.");
+            return;
+        }
+
+        var estoqueDisponivel = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
+        if (estoqueDisponivel.compareTo(BigDecimal.ZERO) <= 0) {
+            Components.ShowAlertError("\"" + produto.getDescricao() + "\" está sem estoque disponível.");
+            return;
+        }
+
         // Se já existe no carrinho, incrementa a qtd
         var existente = itensCarrinho.get().stream()
                 .filter(i -> i.produto.getCodigoBarras().equals(codigo))
                 .findFirst();
 
+        var quantidadeAtualCarrinho = existente.map(i -> i.quantidade).orElse(BigDecimal.ZERO);
+        var quantidadeAdicional = existente.isPresent() ? BigDecimal.ONE : quantidadeDesejada;
+        var quantidadeFinal = quantidadeAtualCarrinho.add(quantidadeAdicional);
+
+        if (quantidadeFinal.compareTo(estoqueDisponivel) > 0) {
+            Components.ShowAlertError("Estoque insuficiente para \"" + produto.getDescricao() + "\". Disponível: "
+                    + Utils.quantidadeTratada(estoqueDisponivel) + ", já no carrinho: " + Utils.quantidadeTratada(quantidadeAtualCarrinho));
+            return;
+        }
+
         if (existente.isPresent()) {
-            existente.get().quantidade = existente.get().quantidade.add(BigDecimal.ONE);
+            existente.get().quantidade = quantidadeFinal;
             itensCarrinho.refresh(); // notifica observers sem substituir a lista
         } else {
             var item = new ItemVenda(produto);
-            item.quantidade = new BigDecimal(quantidadeInput.get());
+            item.quantidade = quantidadeDesejada;
             itensCarrinho.add(item);
         }
 
@@ -225,10 +282,21 @@ public class PDVScreenViewModel {
     void atualizarQuantidade(ItemVenda item, BigDecimal novaQtd) {
         if (novaQtd.compareTo(BigDecimal.ZERO) <= 0) {
             itensCarrinho.remove(item);
-        } else {
-            item.quantidade = novaQtd;
-            itensCarrinho.refresh();
+            return;
         }
+
+        // Sem isso, dava pra contornar a checagem de estoque de adicionarPorCodigo()
+        // simplesmente editando a quantidade direto na célula da tabela.
+        var estoqueDisponivel = item.produto.getEstoque() != null ? item.produto.getEstoque() : BigDecimal.ZERO;
+        if (novaQtd.compareTo(estoqueDisponivel) > 0) {
+            Components.ShowAlertError("Estoque insuficiente para \"" + item.produto.getDescricao() + "\". Disponível: "
+                    + Utils.quantidadeTratada(estoqueDisponivel));
+            itensCarrinho.refresh(); // reverte a célula pro valor anterior
+            return;
+        }
+
+        item.quantidade = novaQtd;
+        itensCarrinho.refresh();
     }
 
     void removerItem(ItemVenda item) {
@@ -241,21 +309,37 @@ public class PDVScreenViewModel {
             return;
         }
 
-        boolean fiado = isVendaFiada.get();
+        boolean fiado = tipoPagamentoIsAPrazo.get();
         Integer clienteId = clienteSelected.get() != null ? clienteSelected.get().getId() : null;
 
         if (fiado && clienteId == null) {
-            Components.ShowAlertError("Selecione um cliente para venda fiada.");
+            Components.ShowAlertError("Selecione um cliente para venda a prazo.");
             return;
         }
 
-        if (!fiado && clienteId == null) {
+        if (clienteId == null) {
             clienteId = 1; // CLIENTE PADRÃO (inserido pela migration V16)
+        }
+
+        // Vendas a prazo não recebem em dinheiro no ato — só validar recebido/troco
+        // quando o pagamento é esperado na hora (a vista, crédito, débito, pix).
+        if (!fiado) {
+            try {
+                BigDecimal recebidoBD = Utils.deCentavosParaReal(totalRecebido.get());
+                BigDecimal subtotalBD = Utils.deCentavosParaReal(subtotal.get());
+                if (recebidoBD.compareTo(subtotalBD) < 0) {
+                    Components.ShowAlertError("Valor recebido insuficiente. Informe o total recebido do cliente.");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Components.ShowAlertError("Valor recebido inválido.");
+                return;
+            }
         }
 
         final Integer finalClienteId = clienteId;
         final int qtdParcelas = fiado ? Math.max(1, Integer.parseInt(numeroParcelas.get())) : 1;
-        final String formaPagamento = fiado ? "CREDIARIO" : "A VISTA";
+        final String formaPagamento = formaPagamentoSelecionado.get();
         Async.Run(() -> {
             try {
                 lastPedido = pdvService.finalizarVenda(
@@ -272,8 +356,8 @@ public class PDVScreenViewModel {
                     subtotal.set("0");
                     totalRecebido.set("0");
                     troco.set("0");
-                    clienteSelected.set(null);
-                    isVendaFiada.set(false);
+                    clientes.get().stream().filter(c -> c.getId() == 1).findFirst().ifPresent(clienteSelected::set);
+                    formaPagamentoSelecionado.set(Data.tiposPagamentoList.getFirst());
                     numeroParcelas.set("1");
                     Components.ShowPopup(ctx, "Venda finalizada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());

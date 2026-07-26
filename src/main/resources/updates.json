@@ -2,7 +2,12 @@
   {
     "version": "v1.1.1",
     "notes": [
+      "Feat: Ao clicar em Novo, Editar ou Clone o formulário é expandido",
+      "Feat: Agora é possível escolher tipos de pagamento no PDV",
+      "Feat: Agora é possível escolher clientes no PDV para qualquer tipo de pagamento",
+      "Feat: Exibição de imagem do produto no PDV na busca e na tabela",
       "Feat: Validações na tela de Empresa (cep, número de telefone).",
+      "Feat: Validação na tela de PDV (impede adicionar produto sem estoque, impede confirmar venda sem ter entrado com valor)",
       "Feat: Responsividade adicionada na tela de vendas",
       "Feat: Estoque agora é ajustado pela diferença de quantidade ao editar uma venda, em vez de ignorado",
       "Feat: Campo afeta_estoque persistido na venda — edição e exclusão agora refletem o estoque corretamente, sem depender do formulário",
