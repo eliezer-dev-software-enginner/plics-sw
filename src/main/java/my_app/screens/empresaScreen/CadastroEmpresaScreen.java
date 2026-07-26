@@ -34,9 +34,11 @@ public class CadastroEmpresaScreen implements ScreenComponent {
     }
 
     public Component render() {
-        return new Container(new ContainerProps().paddingAll(5))
-                .c_child(new SpacerVertical(10))
-                .c_child(form());
+        return new Scroll(
+                new Container(new ContainerProps().paddingAll(5))
+                        .c_child(new SpacerVertical(10))
+                        .c_child(form())
+        );
     }
 
     Component form(){

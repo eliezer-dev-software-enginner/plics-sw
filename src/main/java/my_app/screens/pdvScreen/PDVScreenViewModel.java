@@ -9,6 +9,7 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.Main;
+import my_app.core.AppRoutes;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.ClienteService;
@@ -413,7 +414,7 @@ public class PDVScreenViewModel {
     }
 
     void handleCriarCliente(){
-        ctx.router().spawnWindow("clientes",e->{});
+        ctx.router().spawnWindow(AppRoutes.Screens.CLIENTES.name(), e->{});
     }
 
     public void onDestroy() throws Exception {

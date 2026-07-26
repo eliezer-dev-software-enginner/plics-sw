@@ -1,5 +1,12 @@
 [
   {
+    "version": "v1.1.1.0_Patch_4",
+    "notes": [
+      "Fix: (corrigido) Botão criar cliente não fazia nada no PDV",
+      "Fix: (corrigido) Botão salvar não aparecia mais na tela de Empresas. (adicionado Scroll)"
+    ]
+  },
+  {
     "version": "v1.1.1",
     "notes": [
       "Feat: Ao clicar em Novo, Editar ou Clone o formulário é expandido",
