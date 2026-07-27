@@ -1,5 +1,11 @@
 [
   {
+    "version": "v1.1.1.1_Patch_5",
+    "notes": [
+      "Fix: (corrigido) Botão de adicionar/atualizar não estava aparecendo na tela de Produtos"
+    ]
+  },
+  {
     "version": "v1.1.1.0_Patch_4",
     "notes": [
       "Fix: (corrigido) Botão criar cliente não fazia nada no PDV",

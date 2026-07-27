@@ -39,7 +39,7 @@ public class Main {
     public static final boolean isFlatpak = System.getenv("FLATPAK_ID") != null;
 
     public static final String APP_NAME = "Plics SW";
-    public static final String APP_VERSION = "1.1.1.0_Patch_4";
+    public static final String APP_VERSION = "1.1.1.1_Patch_5";
     //public static final String APP_VERSION = "1.1.1";
     public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
