@@ -16,7 +16,7 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 | 6 | Todos campos opcionais vazios | Pedro Alves | Fisica | 111.222.333-44 | (vazio) | (vazio) | - | Nao | - | - | - | - | - | - | - | Salvo com sucesso (nome é único obrigatório). |                     | OK        |
 | 7 | Editar cliente existente | Maria Souza (alterar celular) | Fisica | 123.456.789-09 | (11) 99999-8888 | maria@email.com | 15/03/1990 | Nao | - | 01001-000 | SP | São Paulo | Centro | Rua da Paz | 100 | Atualizado com sucesso. | | OK        |
 | 8 | Excluir cliente com vendas | (cliente com vínculo) | - | - | - | - | - | - | - | - | - | - | - | - | - | Alerta: "Cliente possui vendas vinculadas". Não exclui. |                     |           |
-| 9 | CNPJ duplicado | PetShop Amigo | Juridica | 98.765.432/0001-98 | (21) 91234-5678 | outro@email.com | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". |                     | OK        |
+| 9 | CNPJ duplicado | Moda & Estilo Ltda | Juridica | 12.345.678/0001-95 | (21) 91234-5678 | outro@email.com | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". |                     | OK        |
 | 10 | Cliente gestante | Beatriz Gravidez | Fisica | 888.999.000-11 | (11) 97777-8888 | beatriz@email.com | 20/06/1995 | Sim | 15/10/2026 | 01234-567 | SP | São Paulo | Liberdade | Rua Galvão Bueno | 50 | Salvo com sucesso. Data nasc. bebê registrada. | |           |
 | 11 | Gestante sem data do bebê | Ana Nascimentos | Fisica | 777.888.111-22 | (11) 96666-7777 | ana.n@email.com | 10/01/1993 | Sim | (vazio) | - | SP | São Paulo | - | - | - | Alerta: "Data de nascimento do bebê é obrigatória para gestantes". | |           |
 | 12 | Endereço completo | Carlos Endereco | Fisica | 444.555.111-22 | (21) 95555-4444 | carlos.e@email.com | - | Nao | - | 22040-020 | RJ | Rio de Janeiro | Copacabana | Rua Barata Ribeiro | 1000 | Salvo com sucesso. Endereço completo registrado. | |           |
@@ -39,15 +39,17 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 ## FornecedorScreen
 
-| # | Cenário | Nome Fantasia | CNPJ | Celular | IE | Email | UF | Cidade | Bairro | Rua | Número | Obs | Efeito Esperado | Erro | Resultado |
-|---|---------|--------------|------|---------|----|-------|----|--------|--------|-----|--------|-----|-----------------|------|-----------|
-| 39 | Cadastro completo | Malharia Silva | 11.111.111/0001-91 | (11) 98888-7777 | 111.222.333.444 | silva@malharia.com | SP | São Paulo | Brás | Rua da Malharia | 123 | - | Salvo com sucesso. | | ok        |
-| 40 | Cadastro mínimo obrigatório | Avan Calçados | 22.222.222/0001-91 | (11) 97777-6666 | - | - | SP | São Paulo | - | - | - | - | Salvo com sucesso (nome e CNPJ obrigatórios?). | | ok        |
-| 41 | Nome vazio | (vazio) | 33.333.333/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "Nome é obrigatório". | | ok        |
-| 42 | CNPJ duplicado | (CNPJ já existente) | 11.111.111/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". | | ok        |
-| 43 | Editar dados do fornecedor | Malharia Silva (novo telefone) | - | (11) 99999-0000 | - | - | - | - | - | - | - | - | Atualizado com sucesso. | | ok        |
-| 44 | Email inválido | Fornecedor Teste Email | 44.444.444/0001-91 | - | - | email-errado | RJ | Rio de Janeiro | - | - | - | - | Alerta: "Email inválido". | | ok        |
-| 45 | Excluir fornecedor vinculado a produto | Malharia Silva | - | - | - | - | - | - | - | - | - | - | Alerta: "Fornecedor possui produtos vinculados". | |           |
+| # | Cenário | Nome Fantasia | Tipo Pessoa | CPF/CNPJ | Celular | IE | Email | UF | Cidade | Bairro | Rua | Número | Obs | Efeito Esperado | Erro | Resultado |
+|---|---------|--------------|-------------|----------|---------|----|-------|----|--------|--------|-----|--------|-----|-----------------|------|-----------|
+| 39 | Cadastro completo | Malharia Silva | Juridica | 11.111.111/0001-91 | (11) 98888-7777 | 111.222.333.444 | silva@malharia.com | SP | São Paulo | Brás | Rua da Malharia | 123 | - | Salvo com sucesso. | | ok        |
+| 40 | Cadastro mínimo obrigatório | Avan Calçados | Juridica | 22.222.222/0001-91 | (11) 97777-6666 | - | - | SP | São Paulo | - | - | - | - | Salvo com sucesso (nome e CNPJ obrigatórios?). | | ok        |
+| 41 | Nome vazio | (vazio) | Juridica | 33.333.333/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "Nome é obrigatório". | | ok        |
+| 42 | CNPJ duplicado | (CNPJ já existente) | Juridica | 11.111.111/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "CNPJ já cadastrado". | | ok        |
+| 43 | Editar dados do fornecedor | Malharia Silva (novo telefone) | Juridica | - | (11) 99999-0000 | - | - | - | - | - | - | - | - | Atualizado com sucesso. | | ok        |
+| 44 | Email inválido | Fornecedor Teste Email | Juridica | 44.444.444/0001-91 | - | - | email-errado | RJ | Rio de Janeiro | - | - | - | - | Alerta: "Email inválido". | | ok        |
+| 45 | Excluir fornecedor vinculado a produto | Malharia Silva | Juridica | - | - | - | - | - | - | - | - | - | - | Alerta: "Fornecedor possui produtos vinculados". | |           |
+| 46 | Cadastro Pessoa Física | João Freelancer | Fisica | 123.456.789-09 | (11) 96666-5555 | - | joao.freela@email.com | SP | São Paulo | - | - | - | - | Salvo com sucesso. | | |
+| 151 | CNPJ informado com Pessoa Física selecionada | Fornecedor PF Errado | Fisica | 11.111.111/0001-91 | - | - | - | - | - | - | - | - | - | Alerta: "CPF inválido". | | |
 
 > **Dados de teste (fornecedores usados nas telas):** Os fornecedores abaixo devem ser cadastrados antes de executar os testes dos perfis. Todos testam a mesma regra de "cadastro válido" — basta cadastrar um deles e reutilizar o nome nos demais.
 >
@@ -72,8 +74,25 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 |----|--------------------------------|------|-----------------|------|--------------------------------------------------------------|
 | 33 | Nome vazio                     | (vazio) | Alerta: "Nome é obrigatório". |      | OK                                                           |
 | 34 | Excluir categoria com produtos | (categoria vinculada) | Alerta: "Categoria possui produtos vinculados". |      |                                                              |
-| 35 | Editar nome                    | Masculino -> Moda Masculina | Atualizado com sucesso. | OK   | Fix: race condition no modoEdicao dentro de Async.Run |
-| 36 | Nome duplicado                 | Masculino | Alerta: "Categoria já existe". | OK    |                                                              |
+| 35 | Nome duplicado                 | Masculino | Alerta: "Categoria já existe". | OK    |                                                              |
+| 36 | Editar nome                    | Masculino -> Moda Masculina | Atualizado com sucesso. | OK   | Fix: race condition no modoEdicao dentro de Async.Run |
+
+> **Dados de teste (categorias usadas nos perfis):** As categorias abaixo devem ser cadastradas antes de executar os testes de ProdutoScreen dos perfis — ficam referenciadas nas tabelas de produto sem repetir o cadastro em cada arquivo.
+>
+> | Nome | Perfil |
+> |------|--------|
+> | Masculino | Loja Roupas |
+> | Feminino | Loja Roupas |
+> | Acessórios | Loja Roupas |
+> | Cachorros | PetShop |
+> | Gatos | PetShop |
+> | Salgados | Lanchonete |
+> | Bebidas | Lanchonete |
+> | Doces | Lanchonete |
+> | Bovinos | Açougue |
+> | Aves | Açougue |
+> | Embutidos | Açougue |
+> | Alimentos | Mercado |
 
 ---
 
@@ -111,6 +130,7 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 | 106 | Habilitar com senha vazia | Sim | - | admin | (vazio) | Alerta: "Senha é obrigatória". | Senha não era validada. Deixava salvar normalmente. | OK (fix: validar() em PreferenciasViewModel) |
 | 107 | Selecionar impressora | Nao | Impressora Padrão - Spooler | - | - | Impressora selecionada salva nas preferências. | | |
 | 108 | Selecionar porta serial | Nao | COM3 - Serial | - | - | Porta serial selecionada salva. | | |
+| 152 | Encerrar sessão | - | - | - | - | Modal de confirmação exibido; ao confirmar, credenciais são reabilitadas (login "admin"/senha "1234") e app volta para WelcomeScreen. | | |
 
 ---
 
@@ -118,8 +138,7 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 | # | Cenário | Efeito Esperado | Erro | Resultado |
 |---|---------|-----------------|------|-----------|
-| 109 | Visualizar pedidos existentes | Lista exibe pedidos com ID, Cliente, Total, Pagamento, Data. | | |
-| 110 | Filtrar pedidos por busca | Busca por nome do cliente filtra a lista. | | |
+| 109 | Visualizar pedidos existentes | Lista exibe pedidos com ID, Cliente (ID numérico), Total, Pagamento, Fiado?, Data. | | |
 | 111 | Visualizar itens de um pedido | Duplo clique no pedido exibe itens com Produto, Qtd, Vl. Unit., Total. | | |
 | 112 | Lista de pedidos vazia | Quando não há vendas PDV, tabela exibe "Nenhum pedido encontrado". | | |
 

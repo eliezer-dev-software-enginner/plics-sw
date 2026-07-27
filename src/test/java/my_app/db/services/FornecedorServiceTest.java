@@ -130,4 +130,49 @@ class FornecedorServiceTest extends BaseServiceTest {
         var salvo = fornecedorService.salvar(f);
         assertDoesNotThrow(() -> fornecedorService.atualizar(salvo));
     }
+
+    @Test
+    void deveRejeitarCnpjQuandoPessoaFisicaSelecionada() {
+        var f = fornecedorValido();
+        f.setPessoaFisica(true);
+        var erro = assertThrows(IllegalArgumentException.class, () -> fornecedorService.salvar(f));
+        assertEquals("CPF inválido", erro.getMessage());
+    }
+
+    @Test
+    void deveRejeitarCpfQuandoPessoaJuridicaSelecionada() {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("12345678901");
+        f.setPessoaFisica(false);
+        var erro = assertThrows(IllegalArgumentException.class, () -> fornecedorService.salvar(f));
+        assertEquals("CNPJ inválido", erro.getMessage());
+    }
+
+    @Test
+    void deveAceitarCpfQuandoPessoaFisicaSelecionada() throws Exception {
+        var f = new FornecedorModel();
+        f.setNome("Fornecedor PF");
+        f.setCpfCnpj("12345678901");
+        f.setPessoaFisica(true);
+        var salvo = fornecedorService.salvar(f);
+        assertNotNull(salvo.getId());
+        assertTrue(salvo.getPessoaFisica());
+    }
+
+    @Test
+    void deveAceitarCnpjQuandoPessoaJuridicaSelecionada() throws Exception {
+        var f = fornecedorValido();
+        f.setPessoaFisica(false);
+        var salvo = fornecedorService.salvar(f);
+        assertNotNull(salvo.getId());
+        assertFalse(salvo.getPessoaFisica());
+    }
+
+    @Test
+    void deveAceitarCnpjTecnicamenteValidoQuandoTipoPessoaNaoInformado() throws Exception {
+        var f = fornecedorValido();
+        f.setPessoaFisica(null);
+        assertDoesNotThrow(() -> fornecedorService.salvar(f));
+    }
 }

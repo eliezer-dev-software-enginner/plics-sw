@@ -88,40 +88,17 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
     }
 
     void salvar() {
-        var erro = validar();
-        if (erro != null) {
-            UI.runOnUi(() -> Components.ShowAlertError(erro));
-            return;
-        }
-
-        var habilitar = habilitarCredenciaisSelected.get().equals("Sim");
-        var login = loginState.get();
-        var senha = passwordState.get();
+        var model = populateModelFromFields();
 
         Async.Run(() -> {
             try {
-                prefLoaded.setCredenciaisHabilitadas(habilitar ? 1 : 0);
-                prefLoaded.setLogin(login);
-                prefLoaded.setSenha(senha);
-                savePrinterPort();
-                preferenciasService.atualizar(prefLoaded);
+                preferenciasService.atualizar(model);
                 UI.runOnUi(() -> Components.ShowPopup(ctx, "Preferências salvas com sucesso!"));
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
     }
-
-    private void savePrinterPort() {
-        var selected = comportsStateSelected.get();
-        if (selected != null && !selected.equals("N/D")) {
-            var systemPortName = selected.split(" - ")[0];
-            prefLoaded.setPortaImpressora(systemPortName);
-        } else {
-            prefLoaded.setPortaImpressora(null);
-        }
-    }
-
 
     public void signOut() throws SQLException {
        prefLoaded.setCredenciaisHabilitadas(1);
@@ -132,14 +109,6 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
         preferenciasService.atualizar(prefLoaded);
 
         ctx.navigateAndCloseOthers(AppRoutes.Screens.WELCOME.name());
-    }
-
-    String validar() {
-        var habilitar = habilitarCredenciaisSelected.get().equals("Sim");
-        if (!habilitar) return null;
-        if (loginState.get().isBlank()) return "Login é obrigatório";
-        if (passwordState.get().isBlank()) return "Senha é obrigatória";
-        return null;
     }
 
     @Override
@@ -153,7 +122,21 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
     }
 
     @Override
-    public void populateFromModel() {}
+    public void populateFieldsFromModel() {}
+
+    @Override
+    public PreferenciasModel populateModelFromFields() {
+        prefLoaded.setCredenciaisHabilitadas(habilitarCredenciaisSelected.get().equals("Sim") ? 1 : 0);
+        prefLoaded.setLogin(loginState.get());
+        prefLoaded.setSenha(passwordState.get());
+
+        var selectedPort = comportsStateSelected.get();
+        prefLoaded.setPortaImpressora(selectedPort != null && !selectedPort.equals("N/D")
+                ? selectedPort.split(" - ")[0]
+                : null);
+
+        return prefLoaded;
+    }
 
     @Override
     public void clearForm() {}

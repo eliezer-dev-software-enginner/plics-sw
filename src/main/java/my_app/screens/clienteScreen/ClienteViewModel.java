@@ -67,7 +67,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         final var data = clienteSelecionado.get();
         if (data == null) return;
         tipoPessoaSelected.set(
@@ -99,7 +99,12 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         enderecoState.get().populateFromClienteModel(data);
     }
 
-    private ClienteModel getModelFromFields(ClienteModel model){
+    @Override
+    public ClienteModel populateModelFromFields() {
+        var model = modoEdicao.get() && clienteSelecionado.get() != null
+                ? clienteSelecionado.get()
+                : new ClienteModel();
+
         String nomeValue    = nome.get().trim();
         String cnpjCpfValue = cnpjCpf.get().trim();
         String celularValue = celular.get().trim();
@@ -171,7 +176,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
             try {
                 if (modoEdicao.get()) {
                     if(clienteSelecionado.get() == null)return;
-                    var model = getModelFromFields(clienteSelecionado.get());
+                    var model = populateModelFromFields();
                     clienteService.atualizar(model);
                     ClienteModel finalModel = new ClienteModel();
                     finalModel.setId(model.getId());
@@ -188,7 +193,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                         EventBus.getInstance().publish(EntityEvent.editado(finalModel));
                     });
                 } else {
-                    var model = getModelFromFields(new ClienteModel());
+                    var model = populateModelFromFields();
                     clienteService.salvar(model);
                     UI.runOnUi(() -> {
                         allDataList.add(model);

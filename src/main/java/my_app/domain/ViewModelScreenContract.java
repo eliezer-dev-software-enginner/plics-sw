@@ -84,7 +84,11 @@ public abstract class ViewModelScreenContract<Model> {
         // no-op por padrão, subclasses sobrescrevem se precisar
     }
 
-    public abstract void populateFromModel();
+    public abstract void populateFieldsFromModel();
+
+    //inverso de populateFieldsFromModel(): monta um Model a partir do estado atual dos campos do formulário
+    public abstract Model populateModelFromFields();
+
     public abstract void clearForm();
     public abstract void handleAddOrUpdate();
     public abstract void handleClickMenuDelete();

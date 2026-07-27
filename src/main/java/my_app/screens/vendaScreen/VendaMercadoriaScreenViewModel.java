@@ -179,7 +179,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         final var data = vendaSelected.get();
         if (data == null) return;
 
@@ -283,13 +283,9 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             return;
         }
 
-        var qtdStr = qtd.get().trim();
-        if (qtdStr.isEmpty()) {
-            Components.ShowAlertError("Quantidade é obrigatória!");
-            return;
-        }
+        BigDecimal qtdValue;
         try {
-            new BigDecimal(qtdStr);
+            qtdValue = new BigDecimal(qtd.get().trim());
         } catch (NumberFormatException e) {
             Components.ShowAlertError("Quantidade inválida!");
             return;
@@ -299,7 +295,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             var produto = produtoEncontrado.get();
             var estoqueBase = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
             var estoqueMinimo = produto.getEstoqueMinimo() != null ? produto.getEstoqueMinimo() : BigDecimal.ZERO;
-            var estoquePostVenda = estoqueBase.subtract(new BigDecimal(qtdStr));
+            var estoquePostVenda = estoqueBase.subtract(qtdValue);
 
             if (estoquePostVenda.compareTo(estoqueMinimo) < 0) {
                 var nome = produto.getDescricao() != null ? produto.getDescricao() : produto.getCodigoBarras();
@@ -329,10 +325,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
                 // o item por ele mesmo — ListState.set() vê as duas listas como iguais
                 // (mesmas referências, mesma posição) e não notifica ninguém, então a
                 // tabela nunca redesenha essa linha sozinha.
-                var atualizado = new VendaModel();
-                atualizado.setId(original.getId());
-                atualizado.setDataCriacao(original.getDataCriacao());
-                fillModelFromForm(atualizado, false);
+                var atualizado = populateModelFromFields();
 
                 boolean atualizarEstoque = "Sim".equalsIgnoreCase(opcaoEstoqueSelected.get());
                 try {
@@ -343,7 +336,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
                 }
 
                 // atualizado.getProduto() ainda é o snapshot de ANTES do ajuste de estoque
-                // (fillModelFromForm setou com produtoEncontrado.get(), capturado antes do
+                // (populateModelFromFields setou com produtoEncontrado.get(), capturado antes do
                 // vendaService.atualizar() acima). Sem recarregar aqui, essa venda fica com
                 // estoque desatualizado em allDataList até o app reiniciar — reloadProdutos()
                 // só atualiza a lista de busca/catálogo, não o que já está embutido nas vendas.
@@ -367,8 +360,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     }
 
     private void salvarVenda() {
-        var model = new VendaModel();
-        fillModelFromForm(model, true);
+        var model = populateModelFromFields();
         boolean atualizarEstoque = opcaoEstoqueSelected.get().equalsIgnoreCase("Sim");
 
         VendaModel salvo;
@@ -466,16 +458,28 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         estoqueAtual.set("0");
     }
 
-    private void fillModelFromForm(VendaModel model, boolean isNew) {
-        //String cod = produtoEncontrado.get().getCodigoBarras();
-        Integer clienteId = clienteSelected.get().getId();
+    // Sempre retorna um VendaModel NOVO (nunca reaproveita vendaSelected), mesmo editando:
+    // allDataList.updateIf() compara por referência, então mutar e devolver o mesmo objeto
+    // que já está na lista faz o ListState achar que nada mudou e não redesenha a linha.
+    @Override
+    public VendaModel populateModelFromFields() {
+        var model = new VendaModel();
 
-        //model.setProduto(produtoModelListState.get().stream().filter(prod-> prod.getCodigoBarras().equals(cod)).findFirst().get());
+        if (modoEdicao.get() && vendaSelected.get() != null) {
+            var original = vendaSelected.get();
+            model.setId(original.getId());
+            model.setDataCriacao(original.getDataCriacao());
+        }
+
         model.setProduto(produtoEncontrado.get());
-        model.setProdutoCod(produtoEncontrado.get().getCodigoBarras());
+        model.setProdutoCod(produtoEncontrado.get() != null ? produtoEncontrado.get().getCodigoBarras() : null);
 
-        model.setCliente(clientes.get().stream().filter(c-> c.getId().equals(clienteId)).findFirst().get());
+        var cliente = clienteSelected.get();
+        Integer clienteId = cliente != null ? cliente.getId() : null;
         model.setClienteId(clienteId);
+        model.setCliente(clienteId != null
+                ? clientes.get().stream().filter(c -> c.getId().equals(clienteId)).findFirst().orElse(cliente)
+                : null);
 
         model.setQuantidade(new BigDecimal(qtd.get()));
         model.setPrecoUnitario(Utils.deCentavosParaReal(pcVenda.get()));
@@ -486,9 +490,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         model.setDataValidade(dataValidade.get() != null ? DateUtils.localDateParaMillis(dataValidade.get()) : null);
         model.setDataVenda(DateUtils.localDateParaMillis(dataVenda.get()));
         model.setNumeroNota(numeroNota.get());
-        if (isNew) {
-            model.setTotalLiquido(new BigDecimal(totais.totalLiquido.get()));
-        }
+
+        return model;
     }
 
     private void atualizarEstoqueVisual() {

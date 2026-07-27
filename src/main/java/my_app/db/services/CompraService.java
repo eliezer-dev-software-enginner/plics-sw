@@ -23,7 +23,11 @@ public class CompraService extends BaseService<CompraModel> {
     }
 
     public CompraModel salvar(CompraDto dto) throws SQLException {
-        var model = toModel(dto);
+        return salvar(toModel(dto));
+    }
+
+    @Override
+    public CompraModel salvar(CompraModel model) throws SQLException {
         model.setDataCriacaoMillis(System.currentTimeMillis());
         return repository.salvar(model);
     }

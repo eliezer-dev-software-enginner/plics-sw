@@ -11,21 +11,22 @@
 | Cidade | Curitiba - PR | |
 | Produtos típicos | Picanha kg, Alcatra kg, Coxa de frango kg, Linguiça kg | |
 | Categorias | Bovinos, Aves, Suínos, Embutidos | |
-| Fornecedores | Frigorífico Paraná, Avícola Sul, Distribuidora de Carnes PR | |
+| Fornecedores | Frigorífico Paraná | |
 | Clientes | José Moura | |
 
 ---
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Estoque | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-----|---------|--------|-------------|-------------|-----------|---------|----------|----------|-------------|--------|-----------------|------|---|
-| 25 | Produto kg | CAR001 | Picanha | KG | - | - | - | R$ 45,00 | R$ 79,90 | Bovinos | 50 | - | 3% | Carne bovina premium | - | Salvo com sucesso. | | |
-| 26 | Produto kg aves | CAR002 | Coxa de Frango | KG | - | - | - | R$ 8,00 | R$ 14,90 | Aves | 80 | - | - | Frango resfriado | - | Salvo com sucesso. | | |
-| 27 | Produto em gramas | CAR003 | Bacon fatiado 500g | g | - | - | - | R$ 18,00 | R$ 35,00 | Embutidos | 30 | - | - | Bacon defumado fatiado | - | Salvo com sucesso com unidade "g". | | |
-| 28 | Unidade não selecionada | CAR004 | Linguiça | (vazio) | - | - | - | R$ 10,00 | R$ 19,90 | Embutidos | 40 | - | - | - | - | Alerta: "Unidade é obrigatória". | | |
-| 29 | Preço venda zerado | CAR005 | Alcatra | KG | - | - | - | R$ 35,00 | R$ 0,00 | Bovinos | 30 | - | - | - | - | Alerta: "Preço de venda deve ser maior que zero". | | |
-| 126 | Produto com garantia | CAR006 | Acém | KG | - | - | - | R$ 28,00 | R$ 49,90 | Bovinos | 40 | 3 dias | - | Carne bovina para cozimento lento | - | Salvo com sucesso. Garantia de validade registrada. | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Fornecedor | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----------|-----|---------|--------|-------------|-------------|-----------|---------|-------------|-----------|----------|----------|----------|-------------|--------|-----------------|------|---|
+| 25 | Produto kg | CAR001 | Picanha | KG | Generica | Frigorífico Paraná | - | - | - | R$ 45,00 | R$ 79,90 | Bovinos | 50 | 10 | Sim | 05/08/2026 | - | 3% | Carne bovina premium | - | Salvo com sucesso. | | |
+| 26 | Produto kg aves | CAR002 | Coxa de Frango | KG | Generica | Frigorífico Paraná | - | - | - | R$ 8,00 | R$ 14,90 | Aves | 80 | 15 | Sim | 30/07/2026 | - | - | Frango resfriado | - | Salvo com sucesso. | | |
+| 27 | Produto em gramas | CAR003 | Bacon fatiado 500g | g | Generica | Frigorífico Paraná | - | - | - | R$ 18,00 | R$ 35,00 | Embutidos | 30 | 5 | Sim | 10/09/2026 | - | - | Bacon defumado fatiado | - | Salvo com sucesso com unidade "g". | | |
+| 28 | Unidade não selecionada | CAR004 | Linguiça | (vazio) | Generica | Frigorífico Paraná | - | - | - | R$ 10,00 | R$ 19,90 | Embutidos | 40 | 5 | Nao | - | - | - | - | - | Alerta: "Unidade é obrigatória". | | |
+| 29 | Preço venda zerado | CAR005 | Alcatra | KG | Generica | Frigorífico Paraná | - | - | - | R$ 35,00 | R$ 0,00 | Bovinos | 30 | 5 | Nao | - | - | - | - | - | Alerta: "Preço de venda deve ser maior que zero". | | |
+| 126 | Produto com garantia | CAR006 | Acém | KG | Generica | Frigorífico Paraná | - | - | - | R$ 28,00 | R$ 49,90 | Bovinos | 40 | 5 | Nao | - | 3 dias | - | Carne bovina para cozimento lento | - | Salvo com sucesso. Garantia de validade registrada. | | |
+| 163 | Produto perecível sem validade | CAR007 | Costela Bovina | KG | Generica | Frigorífico Paraná | - | - | - | R$ 22,00 | R$ 39,90 | Bovinos | 25 | 5 | Sim | (vazio) | - | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
 
 ---
 
@@ -75,9 +76,9 @@
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
 | 1 | Técnico | Criar "João Mecânico" | Nome: João Mecânico | OK | | |
-| 2 | Cliente | Criar "José Moura" | CPF: 555.666.777-88 | OK | | |
-| 3 | Produto | Criar "Picanha kg" | CAR001, R$ 45,00/R$ 79,90, KG, Est: 50 | OK | | |
-| 4 | Produto | Criar "Bacon fatiado g" | CAR003, R$ 18,00/R$ 35,00, g, Est: 5000 | OK. Unidade "g" selecionada e salva. | | |
+| 2 | Cliente | Reaproveitar cadastro de "José Moura" (dados de teste — Clientes, testes-gerais.md) | CPF: 555.666.777-88 | OK | | |
+| 3 | Produto | Reaproveitar cadastro de "Picanha kg" (caso #25, ProdutoScreen) | CAR001, R$ 45,00/R$ 79,90, KG, Est: 50 | OK | | |
+| 4 | Produto | Reaproveitar cadastro de "Bacon fatiado g" (caso #27, ProdutoScreen) | CAR003, R$ 18,00/R$ 35,00, g, Est: 5000 | OK. Unidade "g" selecionada e salva. | | |
 | 5 | Ordem Serviço | Abrir OS | José Moura, João Mecânico, "Serra fita", R$ 200/R$ 100 | OS Aberta, Total R$ 300 | | |
 | 6 | Ordem Serviço | Finalizar OS | Status: Finalizado | OS finalizada | | |
 | 7 | PDV | Vender Picanha | 2kg, R$ 79,90/kg, Total R$ 159,80 | Estoque: 48 kg | | |

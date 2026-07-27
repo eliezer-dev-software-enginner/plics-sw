@@ -42,8 +42,19 @@ public class FornecedorService extends BaseService<FornecedorModel> {
             throw new IllegalArgumentException("Nome é obrigatório");
 
         String cpfCnpj = model.getCpfCnpj();
-        if (cpfCnpj != null && !cpfCnpj.isBlank() && !isValidCpf(cpfCnpj) && !isValidCnpj(cpfCnpj))
-            throw new IllegalArgumentException("CPF/CNPJ inválido (deve conter 11 ou 14 dígitos)");
+        if (cpfCnpj != null && !cpfCnpj.isBlank()) {
+            Boolean pessoaFisica = model.getPessoaFisica();
+            if (pessoaFisica == null) {
+                if (!isValidCpf(cpfCnpj) && !isValidCnpj(cpfCnpj))
+                    throw new IllegalArgumentException("CPF/CNPJ inválido (deve conter 11 ou 14 dígitos)");
+            } else if (pessoaFisica) {
+                if (!isValidCpf(cpfCnpj))
+                    throw new IllegalArgumentException("CPF inválido");
+            } else {
+                if (!isValidCnpj(cpfCnpj))
+                    throw new IllegalArgumentException("CNPJ inválido");
+            }
+        }
 
         if (cpfCnpj != null && !cpfCnpj.isBlank()) {
             var existente = fornecedorRepository.buscarPorCpfCnpj(cpfCnpj);

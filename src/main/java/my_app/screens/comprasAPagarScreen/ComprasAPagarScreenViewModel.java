@@ -49,12 +49,6 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
     public final ComputedState<String> btnPagamentoText = ComputedState.of(() ->
             modoPagamento.get() ? "Registrar Pagamento" : "Pagar", modoPagamento);
 
-    public final ComputedState<Boolean> formValido = ComputedState.of(() ->
-            !descricao.get().trim().isEmpty() &&
-                    !valorOriginal.get().equals("0") &&
-                    fornecedorSelected.get() != null &&
-                    dataVencimento.get() != null, descricao, valorOriginal, fornecedorSelected, dataVencimento);
-
     public final ComputedState<Boolean> pagamentoValido = ComputedState.of(() ->
             contaSelected.get() != null, contaSelected);
 
@@ -142,7 +136,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         if (contaSelected.get() == null) return;
         var conta = contaSelected.get();
 
@@ -183,10 +177,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
     @Override
     public void handleAddOrUpdate() {
-        if (!formValido.get()) {
-            UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
-            return;
-        }
+        if (modoEdicao.get() && contaSelected.get() == null) return;
 
         if (modoEdicao.get()) {
             asyncAtualizar();
@@ -222,16 +213,6 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         }
 
         var valorPagamentoBig = Utils.deCentavosParaReal(valorPagamento.get());
-
-        if (valorPagamentoBig.compareTo(BigDecimal.ZERO) <= 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Informe um valor de pagamento maior que zero"));
-            return;
-        }
-
-        if (valorPagamentoBig.compareTo(selected.getValorRestante()) > 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Valor do pagamento não pode ser maior que o valor restante"));
-            return;
-        }
 
         Async.Run(() -> {
             try {
@@ -289,8 +270,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
     private void asyncSalvar() {
         Async.Run(() -> {
             try {
-                var model = new ContasPagarModel();
-                fillModelFromForm(model, true);
+                var model = populateModelFromFields();
                 var salvo = contaService.salvar(model);
                 salvo.setFornecedor(fornecedorSelected.get());
 
@@ -308,14 +288,12 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
     private void asyncAtualizar() {
         Async.Run(() -> {
             try {
-                var selected = contaSelected.get();
-                if (selected == null) return;
-                fillModelFromForm(selected, false);
-                contaService.atualizar(selected);
-                selected.setFornecedor(fornecedorSelected.get());
+                var model = populateModelFromFields();
+                contaService.atualizar(model);
+                model.setFornecedor(fornecedorSelected.get());
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
+                    allDataList.updateIf(c -> c.getId().equals(model.getId()), c -> model);
                     Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                     clearForm();
                 });
@@ -325,7 +303,11 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         });
     }
 
-    private void fillModelFromForm(ContasPagarModel model, boolean isNew) {
+    @Override
+    public ContasPagarModel populateModelFromFields() {
+        boolean isNew = !(modoEdicao.get() && contaSelected.get() != null);
+        var model = isNew ? new ContasPagarModel() : contaSelected.get();
+
         model.setDescricao(descricao.get());
         model.setValorOriginal(Utils.deCentavosParaReal(valorOriginal.get()));
         model.setDataVencimento(DateUtils.localDateParaMillis(dataVencimento.get()));
@@ -348,6 +330,8 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                 model.setValorRestante(restante.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : restante);
             }
         }
+
+        return model;
     }
 
     private void attachFornecedores(List<ContasPagarModel> contasList) {

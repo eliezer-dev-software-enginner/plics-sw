@@ -46,9 +46,18 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         var data = categoriaSelecionada.get();
         if (data != null) nome.set(data.getNome());
+    }
+
+    @Override
+    public CategoriaModel populateModelFromFields() {
+        var model = modoEdicao.get() && categoriaSelecionada.get() != null
+                ? categoriaSelecionada.get()
+                : new CategoriaModel();
+        model.setNome(nome.get().trim());
+        return model;
     }
 
     @Override
@@ -74,12 +83,11 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
     @Override
     public void handleAddOrUpdate() {
         boolean editando = modoEdicao.get();
+        var model = populateModelFromFields();
         Async.Run(() -> {
             try {
                 if (editando) {
-                    var model = categoriaSelecionada.get();
                     if (model == null) return;
-                    model.setNome(nome.get().trim());
                     categoriaService.atualizar(model);
                     CategoriaModel atualizada = new CategoriaModel();
                     atualizada.setId(model.getId());
@@ -91,8 +99,6 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                         clearForm();
                     });
                 } else {
-                    var model = new CategoriaModel();
-                    model.setNome(nome.get().trim());
                     var salvo = categoriaService.salvar(model);
                     UI.runOnUi(() -> {
                         allDataList.add(salvo);

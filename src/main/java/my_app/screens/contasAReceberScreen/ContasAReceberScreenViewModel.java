@@ -52,12 +52,6 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     public final ComputedState<String> btnRecebimentoText = ComputedState.of(() ->
             modoRecebimento.get() ? "Registrar Recebimento" : "Receber", modoRecebimento);
 
-    public final ComputedState<Boolean> formValido = ComputedState.of(() ->
-            !descricao.get().trim().isEmpty() &&
-                    !valorOriginal.get().equals("0") &&
-                    clienteSelected.get() != null &&
-                    dataVencimento.get() != null, descricao, valorOriginal, clienteSelected, dataVencimento);
-
     public ContasAReceberScreenViewModel(ScreenContext ctx) {
         super(ctx);
         this.contaService = createOrReport(ContaAreceberService::new);
@@ -156,7 +150,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         if (contaSelected.get() == null) return;
         var conta = contaSelected.get();
 
@@ -197,10 +191,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public void handleAddOrUpdate() {
-        if (!formValido.get()) {
-            UI.runOnUi(() -> Components.ShowAlertError("Preencha todos os campos obrigatórios"));
-            return;
-        }
+        if (modoEdicao.get() && contaSelected.get() == null) return;
 
         if (modoEdicao.get()) {
             asyncAtualizar();
@@ -237,16 +228,6 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         }
 
         var valorRecebimentoBig = Utils.deCentavosParaReal(valorRecebimento.get());
-
-        if (valorRecebimentoBig.compareTo(BigDecimal.ZERO) <= 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Informe um valor de recebimento maior que zero"));
-            return;
-        }
-
-        if (valorRecebimentoBig.compareTo(selected.getValorRestante()) > 0) {
-            UI.runOnUi(() -> Components.ShowAlertError("Valor do recebimento não pode ser maior que o valor restante"));
-            return;
-        }
 
         Async.Run(() -> {
             try {
@@ -306,8 +287,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     private void asyncSalvar() {
         Async.Run(() -> {
             try {
-                var model = new ContaAreceberModel();
-                fillModelFromForm(model, true);
+                var model = populateModelFromFields();
                 var salvo = contaService.salvar(model);
                 salvo.setCliente(clienteSelected.get());
 
@@ -326,14 +306,12 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     private void asyncAtualizar() {
         Async.Run(() -> {
             try {
-                var selected = contaSelected.get();
-                if (selected == null) return;
-                fillModelFromForm(selected, false);
-                contaService.atualizar(selected);
-                selected.setCliente(clienteSelected.get());
+                var model = populateModelFromFields();
+                contaService.atualizar(model);
+                model.setCliente(clienteSelected.get());
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> selected);
+                    allDataList.updateIf(c -> c.getId().equals(model.getId()), c -> model);
                     Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                     clearForm();
                 });
@@ -343,7 +321,11 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         });
     }
 
-    private void fillModelFromForm(ContaAreceberModel model, boolean isNew) {
+    @Override
+    public ContaAreceberModel populateModelFromFields() {
+        boolean isNew = !(modoEdicao.get() && contaSelected.get() != null);
+        var model = isNew ? new ContaAreceberModel() : contaSelected.get();
+
         model.setDescricao(descricao.get());
         model.setValorOriginal(Utils.deCentavosParaReal(valorOriginal.get()));
         model.setDataVencimento(DateUtils.localDateParaMillis(dataVencimento.get()));
@@ -366,6 +348,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                 model.setValorRestante(restante.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : restante);
             }
         }
+
+        return model;
     }
 
     public BigDecimal getTotalEmAberto() {

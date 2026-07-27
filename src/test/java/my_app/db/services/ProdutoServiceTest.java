@@ -59,6 +59,21 @@ class ProdutoServiceTest extends BaseServiceTest {
     }
 
     @Test
+    void deveLancarExcecaoQuandoValidadeNoPassado() {
+        var p = produtoValido();
+        p.setValidade(System.currentTimeMillis() - java.time.Duration.ofDays(1).toMillis());
+        var erro = assertThrows(IllegalArgumentException.class, () -> produtoService.salvar(p));
+        assertEquals("A data de validade deve ser maior ou igual à data atual", erro.getMessage());
+    }
+
+    @Test
+    void devePermitirValidadeHoje() throws Exception {
+        var p = produtoValido();
+        p.setValidade(my_app.utils.DateUtils.localDateParaMillis(java.time.LocalDate.now()));
+        assertDoesNotThrow(() -> produtoService.salvar(p));
+    }
+
+    @Test
     void deveSalvarProduto() throws Exception {
         var salvo = produtoService.salvar(produtoValido());
         assertNotNull(salvo.getId());

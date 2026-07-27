@@ -13,7 +13,6 @@ import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.domain.states.EnderecoState;
-import my_app.utils.Utils;
 
 import java.sql.SQLException;
 
@@ -68,7 +67,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         final var data = fornecedorSelected.get();
         if (data != null) {
             nome.set(data.getNome());
@@ -76,6 +75,11 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
             celular.set(data.getCelular());
             inscricaoEstadual.set(data.getInscricaoEstadual());
             email.set(data.getEmail());
+            tipoPessoaSelected.set(
+                    Boolean.FALSE.equals(data.getPessoaFisica())
+                            ? Data.tiposPessoaList.getLast()
+                            : Data.tiposPessoaList.getFirst()
+            );
             //
             enderecoState.get().populateFromFornecedorModel(data);
             observacao.set(data.getObservacao());
@@ -83,75 +87,61 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
     }
 
     @Override
+    public FornecedorModel populateModelFromFields() {
+        var model = modoEdicao.get() && fornecedorSelected.get() != null
+                ? fornecedorSelected.get()
+                : new FornecedorModel();
+
+        model.setNome(nome.getOrDefault("").trim());
+        model.setCpfCnpj(cnpjCpf.getOrDefault("").trim());
+        model.setCelular(celular.getOrDefault("").trim());
+        model.setEmail(email.getOrDefault("").trim());
+        model.setInscricaoEstadual(inscricaoEstadual.getOrDefault("").trim());
+        model.setPessoaFisica(tipoPessoaEhFisica.get());
+        model.setUfSelected(enderecoState.get().ufSelected.getOrDefault("").trim());
+        model.setCidade(enderecoState.get().cidade.getOrDefault("").trim());
+        model.setBairro(enderecoState.get().bairro.getOrDefault("").trim());
+        model.setRua(enderecoState.get().rua.getOrDefault("").trim());
+        model.setNumero(enderecoState.get().numero.getOrDefault("").trim());
+        model.setCep(enderecoState.get().cep.getOrDefault("").trim());
+        model.setObservacao(observacao.getOrDefault("").trim());
+
+        return model;
+    }
+
+    @Override
     public void handleAddOrUpdate() {
-        String nomeValue = nome.getOrDefault("").trim();
-        if (nomeValue.isEmpty()) throw new RuntimeException("Nome é obrigatório");
-
-        String cnpjValue = cnpjCpf.getOrDefault("").trim();
-        if (!cnpjValue.isEmpty()) {
-            if (tipoPessoaEhFisica.get() && !Utils.isValidCpf(cnpjValue)) {
-                Components.ShowAlertError("CPF inválido");
-                return;
-            }
-            if (!tipoPessoaEhFisica.get() && !Utils.isValidCnpj(cnpjValue)) {
-                Components.ShowAlertError("CNPJ inválido");
-                return;
-            }
-        }
-
-        String celularValue = celular.getOrDefault("").trim();
-        String emailValue = email.getOrDefault("").trim();
-        String inscricaoValue = inscricaoEstadual.getOrDefault("").trim();
-        String ufValue = enderecoState.get().ufSelected.getOrDefault("").trim();
-        String cidadeValue = enderecoState.get().cidade.getOrDefault("").trim();
-        String bairroValue = enderecoState.get().bairro.getOrDefault("").trim();
-        String ruaValue = enderecoState.get().rua.getOrDefault("").trim();
-        String numeroValue = enderecoState.get().numero.getOrDefault("").trim();
-        String observacaoValue = observacao.getOrDefault("").trim();
-        String cepValue = enderecoState.get().cep.getOrDefault("").trim();
-
         if (modoEdicao.get() && fornecedorSelected.get() == null) return;
 
+        var model = populateModelFromFields();
+
         if (modoEdicao.get()) {
-            asyncAtualizar(nomeValue, cnpjValue, celularValue, emailValue, inscricaoValue, ufValue, cidadeValue, bairroValue, ruaValue, numeroValue, observacaoValue, cepValue);
+            asyncAtualizar(model);
         } else {
-            asyncSalvar(nomeValue, cnpjValue, celularValue, emailValue, inscricaoValue, ufValue, cidadeValue, bairroValue, ruaValue, numeroValue, observacaoValue,cepValue);
+            asyncSalvar(model);
         }
     }
 
-    private void asyncAtualizar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue,
-                                String ufValue, String cidadeValue, String bairroValue, String ruaValue, String numeroValue, String observacaoValue,  String cepValue) {
+    private void asyncAtualizar(FornecedorModel model) {
         Async.Run(() -> {
             try {
-                FornecedorModel selecionado = fornecedorSelected.get();
-                selecionado.setNome(nomeValue);
-                selecionado.setCpfCnpj(cnpjValue);
-                selecionado.setCelular(celularValue);
-                selecionado.setEmail(emailValue);
-                selecionado.setInscricaoEstadual(inscricaoValue);
-                selecionado.setUfSelected(ufValue);
-                selecionado.setCidade(cidadeValue);
-                selecionado.setBairro(bairroValue);
-                selecionado.setRua(ruaValue);
-                selecionado.setNumero(numeroValue);
-                selecionado.setObservacao(observacaoValue);
-
-                fornecedorService.atualizar(selecionado);
+                fornecedorService.atualizar(model);
 
                 FornecedorModel atualizado = new FornecedorModel();
-                atualizado.setId(selecionado.getId());
-                atualizado.setNome(selecionado.getNome());
-                atualizado.setCpfCnpj(selecionado.getCpfCnpj());
-                atualizado.setCelular(selecionado.getCelular());
-                atualizado.setEmail(selecionado.getEmail());
-                atualizado.setInscricaoEstadual(selecionado.getInscricaoEstadual());
-                atualizado.setUfSelected(selecionado.getUfSelected());
-                atualizado.setCidade(selecionado.getCidade());
-                atualizado.setBairro(selecionado.getBairro());
-                atualizado.setRua(selecionado.getRua());
-                atualizado.setNumero(selecionado.getNumero());
-                atualizado.setObservacao(selecionado.getObservacao());
-                atualizado.setDataCriacao(selecionado.getDataCriacao());
+                atualizado.setId(model.getId());
+                atualizado.setNome(model.getNome());
+                atualizado.setCpfCnpj(model.getCpfCnpj());
+                atualizado.setCelular(model.getCelular());
+                atualizado.setEmail(model.getEmail());
+                atualizado.setInscricaoEstadual(model.getInscricaoEstadual());
+                atualizado.setPessoaFisica(model.getPessoaFisica());
+                atualizado.setUfSelected(model.getUfSelected());
+                atualizado.setCidade(model.getCidade());
+                atualizado.setBairro(model.getBairro());
+                atualizado.setRua(model.getRua());
+                atualizado.setNumero(model.getNumero());
+                atualizado.setObservacao(model.getObservacao());
+                atualizado.setDataCriacao(model.getDataCriacao());
 
                 UI.runOnUi(() -> {
                     allDataList.updateIf(f -> f.getId().equals(atualizado.getId()), f -> atualizado);
@@ -165,24 +155,9 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
         });
     }
 
-    private void asyncSalvar(String nomeValue, String cnpjValue, String celularValue, String emailValue, String inscricaoValue, String ufValue, String cidadeValue,
-                             String bairroValue, String ruaValue, String numeroValue, String observacaoValue, String cepValue) {
+    private void asyncSalvar(FornecedorModel model) {
         Async.Run(() -> {
             try {
-                var model = new FornecedorModel();
-                model.setNome(nomeValue);
-                model.setCpfCnpj(cnpjValue);
-                model.setCelular(celularValue);
-                model.setEmail(emailValue);
-                model.setInscricaoEstadual(inscricaoValue);
-                model.setUfSelected(ufValue);
-                model.setCidade(cidadeValue);
-                model.setBairro(bairroValue);
-                model.setRua(ruaValue);
-                model.setNumero(numeroValue);
-                model.setObservacao(observacaoValue);
-                model.setCep(cepValue);
-
                 var salvo = fornecedorService.salvar(model);
 
                 UI.runOnUi(() -> {

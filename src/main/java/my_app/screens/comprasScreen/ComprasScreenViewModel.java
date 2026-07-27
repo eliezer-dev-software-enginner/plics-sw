@@ -190,7 +190,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         final var data = compraSelected.get();
         if (data == null) return;
 
@@ -251,22 +251,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
     @Override
     public void handleAddOrUpdate() {
-        final var dtValidade = dataValidade.get() != null ?
-                DateUtils.localDateParaMillis(dataValidade.get()) : null;
-
-        final var dto = new CompraDto(
-                codigo.get(),
-                Utils.deCentavosParaReal(pcCompra.get()),
-                fornecedorSelected.get().getId(),
-                new BigDecimal(qtd.get()),
-                Utils.deCentavosParaReal(descontoEmDinheiro.get()),
-                tipoPagamentoSelected.get(), observacao.get(),
-                DateUtils.localDateParaMillis(dataCompra.get()),
-                numeroNota.get(),
-                dtValidade,
-                opcaoEstoqueSelected.get(),
-                new BigDecimal(totais.totalLiquido.get())
-        );
+        var model = populateModelFromFields();
 
         Async.Run(() -> {
             if (modoEdicao.get()) {
@@ -274,15 +259,14 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
                 if (selecionado == null) return;
 
                 try {
-                    var modelAtualizada = compraService.toModel(dto, selecionado.getId(), selecionado.getDataCriacaoMillis());
-                    compraService.atualizar(modelAtualizada);
+                    compraService.atualizar(model);
 
                     UI.runOnUi(() -> {
                         Components.ShowPopup(ctx, "Sua compra de mercadoria foi atualizada com sucesso!");
-                        modelAtualizada.setFornecedor(fornecedorSelected.get());
-                        allDataList.updateIf(it -> it.getId() == selecionado.getId(), it -> modelAtualizada);
+                        model.setFornecedor(fornecedorSelected.get());
+                        allDataList.updateIf(it -> it.getId() == selecionado.getId(), it -> model);
                         EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                        atualizarEstoqueAposOperacao(dto.produtoCod(), dto.quantidade());
+                        atualizarEstoqueAposOperacao(model.getProdutoCod(), model.getQuantidade());
                         reloadProdutos();
                         clearForm();
                     });
@@ -291,17 +275,13 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
                 }
             } else {
                 try {
-                    var compraSalva = compraService.salvar(dto);
+                    var compraSalva = compraService.salvar(model);
 
                     if ("Sim".equalsIgnoreCase(opcaoEstoqueSelected.get())) {
-                        produtoService.atualizarEstoque(dto.produtoCod(), dto.quantidade());
+                        produtoService.atualizarEstoque(compraSalva.getProdutoCod(), compraSalva.getQuantidade());
                     }
 
-                    if ("A PRAZO".equals(tipoPagamentoSelected.get()) && parcelas.get().isEmpty()) {
-                        throw new IllegalArgumentException("Você deve gerar pelo menos uma parcela para vendas do tipo \"à prazo\".");
-                    }
-
-                    else if ("A PRAZO".equals(tipoPagamentoSelected.get()) && !parcelas.get().isEmpty()) {
+                    if ("A PRAZO".equals(tipoPagamentoSelected.get())) {
                         try {
                             List<Parcela> parcelasParaService = parcelas.get().stream()
                                     .map(p -> new Parcela(
@@ -330,6 +310,32 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
                 }
             }
         });
+    }
+
+    @Override
+    public CompraModel populateModelFromFields() {
+        final var dtValidade = dataValidade.get() != null ?
+                DateUtils.localDateParaMillis(dataValidade.get()) : null;
+
+        var dto = new CompraDto(
+                codigo.get(),
+                Utils.deCentavosParaReal(pcCompra.get()),
+                fornecedorSelected.get() != null ? fornecedorSelected.get().getId() : null,
+                new BigDecimal(qtd.get()),
+                Utils.deCentavosParaReal(descontoEmDinheiro.get()),
+                tipoPagamentoSelected.get(), observacao.get(),
+                DateUtils.localDateParaMillis(dataCompra.get()),
+                numeroNota.get(),
+                dtValidade,
+                opcaoEstoqueSelected.get(),
+                new BigDecimal(totais.totalLiquido.get())
+        );
+
+        if (modoEdicao.get() && compraSelected.get() != null) {
+            var selecionado = compraSelected.get();
+            return compraService.toModel(dto, selecionado.getId(), selecionado.getDataCriacaoMillis());
+        }
+        return compraService.toModel(dto);
     }
 
     private void atualizarEstoqueAposOperacao(String codigoBarras, BigDecimal quantidade) {

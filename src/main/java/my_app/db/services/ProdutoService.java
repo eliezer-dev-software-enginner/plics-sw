@@ -3,9 +3,11 @@ package my_app.db.services;
 import my_app.db.DB;
 import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.ProdutoRepository;
+import my_app.utils.DateUtils;
 import net.sf.persism.Session;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ProdutoService extends BaseService<ProdutoModel> {
@@ -46,6 +48,8 @@ public class ProdutoService extends BaseService<ProdutoModel> {
             throw new IllegalArgumentException("Adicione Unidade ao produto");
         if (model.getFornecedorId() == null || model.getFornecedorId() <= 0)
             throw new IllegalArgumentException("Fornecedor não encontrado");
+        if (model.getValidade() != null && model.getValidade() < DateUtils.localDateParaMillis(LocalDate.now()))
+            throw new IllegalArgumentException("A data de validade deve ser maior ou igual à data atual");
     }
 
     public ProdutoModel buscarPorCodigoBarras(String codigoBarras) throws SQLException {

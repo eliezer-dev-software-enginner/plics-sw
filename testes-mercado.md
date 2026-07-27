@@ -11,8 +11,8 @@
 | Cidade | Brasília - DF | |
 | Produtos típicos | Arroz 5kg, Feijão 1kg, Óleo 900ml, Café 500g, Leite 1L | |
 | Categorias | Alimentos, Bebidas, Limpeza, Higiene | |
-| Fornecedores | Alimentos Brasil, Bebidas DF, LimpMax | |
-| Clientes | Fernanda Lima, Ricardo Gomes | |
+| Fornecedores | Alimentos Brasil | |
+| Clientes | (nenhum específico — PDVScreen deste perfil não testa seleção de cliente) | |
 
 ---
 
@@ -24,12 +24,12 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-----------|----------|----------|----------|-------------|--------|-----------------|------|---|
-| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | - | - | - | R$ 8,00 | R$ 12,00 | Alimentos | Alimentos Brasil | 200 | Nao | - | - | - | Arroz tipo 1, pacote 5kg | - | Salvo com sucesso. | | |
-| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | - | - | - | R$ 5,00 | R$ 8,00 | Alimentos | Alimentos Brasil | 150 | Nao | - | - | - | Feijão carioca 1kg | - | Salvo com sucesso. | | |
-| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | - | - | - | R$ 4,50 | R$ 7,50 | Alimentos | Alimentos Brasil | 100 | Nao | - | - | 2% | Óleo de soja refinado | - | Salvo com sucesso. | | |
-| 150 | Produto com imagem | SKU-CAFE | Café 500g | g | Alimentos Brasil | - | - | - | R$ 12,00 | R$ 22,00 | Alimentos | Alimentos Brasil | 80 | Nao | - | - | - | Café torrado e moído 500g | (arquivo jpg) | Salvo com sucesso. Imagem registrada. | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-------------|-----------|----------|----------|----------|-------------|--------|-----------------|------|---|
+| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | - | - | - | R$ 8,00 | R$ 12,00 | Alimentos | Alimentos Brasil | 200 | 20 | Nao | - | - | - | Arroz tipo 1, pacote 5kg | - | Salvo com sucesso. | | |
+| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | - | - | - | R$ 5,00 | R$ 8,00 | Alimentos | Alimentos Brasil | 150 | 15 | Nao | - | - | - | Feijão carioca 1kg | - | Salvo com sucesso. | | |
+| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | - | - | - | R$ 4,50 | R$ 7,50 | Alimentos | Alimentos Brasil | 100 | 10 | Nao | - | - | 2% | Óleo de soja refinado | - | Salvo com sucesso. | | |
+| 150 | Produto com imagem | SKU-CAFE | Café 500g | g | Alimentos Brasil | - | - | - | R$ 12,00 | R$ 22,00 | Alimentos | Alimentos Brasil | 80 | 10 | Nao | - | - | - | Café torrado e moído 500g | (arquivo jpg) | Salvo com sucesso. Imagem registrada. | | |
 
 ---
 
@@ -56,9 +56,9 @@
 
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
-| 1 | Categoria | Criar "Alimentos" | Nome: Alimentos | OK | | |
-| 2 | Fornecedor | Criar "Alimentos Brasil" | CNPJ: 66.666.666/0001-91, DF | OK | | |
-| 3 | Produto | Criar "Arroz 5kg" | SKU-ARROZ, R$ 8,00/R$ 12,00, UN, Est: 200 | OK | | |
+| 1 | Categoria | Reaproveitar cadastro de "Alimentos" (dados de teste — Categorias, testes-gerais.md) | Nome: Alimentos | OK | | |
+| 2 | Fornecedor | Reaproveitar cadastro de "Alimentos Brasil" (dados de teste — Fornecedores, testes-gerais.md) | CNPJ: 66.666.666/0001-91, DF | OK | | |
+| 3 | Produto | Reaproveitar cadastro de "Arroz 5kg" (caso #145, ProdutoScreen) | SKU-ARROZ, R$ 8,00/R$ 12,00, UN, Est: 200 | OK | | |
 | 4 | Compras | Comprar 100 Arroz a prazo | Alimentos Brasil, R$ 8,00, A PRAZO (3x) | Estoque: 300. Gera 3 contas a pagar. | | |
 | 5 | Contas a Pagar | Verificar | 3 parcelas geradas automaticamente | OK | | |
 | 6 | Contas a Pagar | Pagar 1ª parcela | Pagamento total da 1ª | Status: PARCIAL | | |

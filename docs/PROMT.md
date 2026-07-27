@@ -29,4 +29,6 @@ Após cada tarefa:
 - Mantenha os arquivos concisos.
 
 Prompt:
-Analise todos os campos que estão presentes nas screens, e veja se os testes manuais nos arquivos ".md" cobrem todos os casos de uso.Se necessário crie novas colunas e novos casos de uso para cobrir os testes manuais.
+Analise todos os campos que estão presentes nas screens, e veja se os testes manuais nos arquivos ".md" cobrem todos os casos de uso.Se necessário crie novas colunas nos testes manuais e novos casos de uso para cobrir os testes manuais.
+Se encontrar testes incoerentes como por exemplo se em um lugar requer a existencia de cliente X mas esse cliente x não foi adicionado ao cadastro, corrija. 
+E quero também que você também tira validações de crud das viewmodels e leve as validações para as services, e corrija testes automatizados que quebrarem. Também quero que você crie um método na ContratoTelaCrud que seja inverso ao populateFromModel(), que se chama populateModelFromFields() isso se dá pois atualmente não existe padronização para criar models nas ViewModels, cada viewmodel faz de um jeito. E ao final troque o nome de populateFromModel() para populateFieldsFromModel().

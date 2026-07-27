@@ -71,25 +71,20 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel
 
     @Override
     public void handleAddOrUpdate() {
-        var value = nome.get().trim();
+        if (modoEdicao.get() && tecnicoSelected.get() == null) return;
 
-        if (value.isEmpty()) {
-            Components.ShowAlertError("Preencha o nome do técnico");
-            return;
-        }
+        var model = populateModelFromFields();
 
         if (modoEdicao.get()) {
-            asyncAtualizar(value);
+            asyncAtualizar(model);
         } else {
-            asyncSalvar(value);
+            asyncSalvar(model);
         }
     }
 
-    private void asyncSalvar(String value) {
+    private void asyncSalvar(TecnicoModel model) {
         Async.Run(() -> {
             try {
-                var model = new TecnicoModel();
-                model.setNome(value);
                 var salvo = tecnicoService.salvar(model);
 
                 EventBus.getInstance().publish(EntityEvent.criado(salvo));
@@ -105,21 +100,17 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel
         });
     }
 
-    private void asyncAtualizar(String value) {
+    private void asyncAtualizar(TecnicoModel model) {
         Async.Run(() -> {
             try {
-                TecnicoModel original = tecnicoSelected.get();
-                if (original == null) return;
+                tecnicoService.atualizar(model);
 
-                original.setNome(value);
-                tecnicoService.atualizar(original);
-
-                EventBus.getInstance().publish(EntityEvent.editado(original));
+                EventBus.getInstance().publish(EntityEvent.editado(model));
 
                 TecnicoModel atualizado = new TecnicoModel();
-                atualizado.setId(original.getId());
-                atualizado.setNome(original.getNome());
-                atualizado.setDataCriacao(original.getDataCriacao());
+                atualizado.setId(model.getId());
+                atualizado.setNome(model.getNome());
+                atualizado.setDataCriacao(model.getDataCriacao());
 
                 UI.runOnUi(() -> {
                     allDataList.updateIf(it -> it.getId().equals(atualizado.getId()), it -> atualizado);
@@ -139,9 +130,18 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         if (tecnicoSelected.get() == null) return;
         nome.set(tecnicoSelected.get().getNome());
+    }
+
+    @Override
+    public TecnicoModel populateModelFromFields() {
+        var model = modoEdicao.get() && tecnicoSelected.get() != null
+                ? tecnicoSelected.get()
+                : new TecnicoModel();
+        model.setNome(nome.get().trim());
+        return model;
     }
 
     @Override

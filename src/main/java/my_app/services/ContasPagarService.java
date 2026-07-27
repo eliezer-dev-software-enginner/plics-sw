@@ -5,6 +5,7 @@ import my_app.db.models.ContasPagarModel;
 import my_app.db.services.CompraService;
 import my_app.db.services.FornecedorService;
 import my_app.domain.Parcela;
+import net.sf.persism.Session;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -17,6 +18,11 @@ public class ContasPagarService {
         this.repo = new my_app.db.services.ContasPagarService();
         CompraService compraService = new CompraService();
         FornecedorService fornecedorService = new FornecedorService();
+    }
+
+    // testes
+    public ContasPagarService(Session session) {
+        this.repo = new my_app.db.services.ContasPagarService(session);
     }
 
     public void salvar(ContasPagarModel conta) throws SQLException {

@@ -22,6 +22,9 @@ public class FornecedorModel {
     private String cpfCnpj;
     private String celular;
 
+    @Column(name = "isPessoaFisica")
+    private Boolean pessoaFisica;
+
     @Column(name = "inscricao_estadual")
     private String inscricaoEstadual;
 

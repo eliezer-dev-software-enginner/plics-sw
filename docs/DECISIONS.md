@@ -1,5 +1,37 @@
 # Decisões Arquiteturais
 
+## 2026-07-27: Contrato CRUD padronizado (populateFieldsFromModel/populateModelFromFields) e validações centralizadas nas Services
+
+**Problema:** `ViewModelScreenContract.populateFromModel()` tinha nome ambíguo (parecia "popular o model", mas na prática populava os campos da UI a partir de um model já selecionado). Além disso, não existia um método simétrico para o caminho inverso — cada uma das 12 ViewModels que implementam `ContratoTelaCrudV3` montava o Model a partir dos campos do formulário do seu próprio jeito: `ClienteViewModel.getModelFromFields(model)`, `ComprasAPagarScreenViewModel.fillModelFromForm(model, isNew)`, `OrdemServicoScreenViewModel.fillModelFromForm(model)` (sem `isNew`), ou código inline dentro de `handleAddOrUpdate()`/`asyncSalvar()`/`asyncAtualizar()` em `CategoriaScreenViewModel`, `FornecedorScreenViewModel`, `TecnicoScreenViewModel`. Isso dificultava reconhecer o padrão da tela e revisar o fluxo de criação/edição.
+
+Paralelamente, várias ViewModels reimplementavam validações de negócio que já existiam (com mensagens ligeiramente diferentes) nas Services correspondentes — ex.: `FornecedorScreenViewModel` checava nome vazio antes de chamar `FornecedorService.salvar()`, que já faz a mesma checagem; `ComprasAPagarScreenViewModel.registrarPagamento()` validava valor > 0 e valor ≤ restante manualmente, duplicando `ContasPagarService.registrarPagamento()`.
+
+**Decisão:**
+1. Renomear `ViewModelScreenContract.populateFromModel()` → `populateFieldsFromModel()` (e o default correspondente em `ContratoTelaCrudV3`).
+2. Adicionar `public abstract Model populateModelFromFields()` — sem parâmetros; cada ViewModel decide internamente se está criando (`new Model()`) ou editando (reaproveita o model selecionado via `modoEdicao`/state de seleção), simétrico ao `populateFieldsFromModel()`. As 12 ViewModels foram migradas pra esse único padrão.
+3. **Exceção documentada — `VendaMercadoriaScreenViewModel`**: sempre retorna um `VendaModel` **novo**, mesmo editando, nunca reaproveitando `vendaSelected.get()`. Motivo (já documentado em comentário no código antes desta mudança): `allDataList.updateIf()` compara por referência — mutar e devolver a mesma referência que já está na lista faz o `ListState` achar que nada mudou e a tabela não redesenha a linha.
+4. **Exceção documentada — `ComprasScreenViewModel`**: como `CompraService` historicamente só aceitava `CompraDto` (não `CompraModel`) pra criação, foi adicionado um overload `CompraService.salvar(CompraModel model)` (o `salvar(CompraDto dto)` existente passou a delegar pra ele). Isso permite que `populateModelFromFields()` monte o DTO internamente e devolva um `CompraModel` pronto via `compraService.toModel(dto[, id, dataCriacaoMillis])`, como as demais telas.
+5. **Exceção documentada — `PedidosScreenViewModel`**: tela somente-leitura (sem formulário de CRUD real); `populateModelFromFields()` é no-op e retorna `null`, espelhando o já-existente `populateFieldsFromModel()` vazio.
+6. Validações de negócio duplicadas foram removidas das ViewModels, deixando a Service como única fonte da regra (a ViewModel só captura `IllegalArgumentException`/`IllegalStateException` e mostra `e.getMessage()`).
+7. Validações que só existiam na ViewModel (e não em nenhuma Service) foram movidas:
+   - `ProdutoService.validar()`: nova checagem "validade não pode ser anterior a hoje" — reconstruível a partir do `Model` sozinho (`ProdutoModel.validade` já existe).
+   - **Exceção que ficou na ViewModel**: a regra "perecível = Sim exige validade preenchida" **não** foi movida — `ProdutoModel` não tem um campo `perecivel` persistido, só infere "é perecível" pela presença de `validade` (decisão de 2026-07-12, documentada no `CONTEXT.md`). Sem esse campo, a Service não consegue distinguir "não é perecível" de "é perecível mas o usuário esqueceu de preencher a validade" — ambos chegam como `validade == null`. Mover essa regra exigiria adicionar o campo `perecivel` + migration, fora do escopo pedido (mover validação existente, não redesenhar o schema).
+   - `PreferenciasService`: ganhou `validar()` (login/senha obrigatórios quando `credenciaisHabilitadas == 1`) — a Service não tinha nenhuma validação antes.
+8. **`FornecedorModel.pessoaFisica`** (Migration V31, `@Column(name = "isPessoaFisica")`, mesmo padrão do `ClienteModel.pessoaFisica`): a ViewModel tinha uma regra de validação de CPF/CNPJ condicionada ao tipo de pessoa selecionado na tela, mas esse tipo nunca era persistido — `FornecedorService.validar()` só conseguia checar "é CPF válido OU CNPJ válido", sem saber qual era esperado. Persistir o campo permite que a Service valide de forma completa e testável (CPF quando `pessoaFisica=true`, CNPJ quando `false`), e como efeito colateral corrige um bug latente: `populateFieldsFromModel()` não restaurava o tipo de pessoa ao editar um fornecedor. Fornecedores existentes (`pessoaFisica == null`) mantêm o fallback antigo pra não quebrar dados legados.
+9. `ContasPagarService` (pacote `my_app.services`, orquestra `gerarContasDeCompra`) ganhou um construtor `(Session)` — não existia nenhuma forma de testar essa classe sem abrir uma conexão de produção. A validação de "parcelas vazias em compra a prazo", que antes só existia duplicada dentro de `ComprasScreenViewModel.handleAddOrUpdate()`, já era feita por `gerarContasDeCompra()` — a duplicata na ViewModel foi removida.
+
+**Não houve testes de ViewModel a atualizar**: o projeto não tem nenhum arquivo `*ViewModelTest.java` (confirmado via busca antes de iniciar). Toda a cobertura de validação está em `*ServiceTest.java`; os testes que dependiam do comportamento antigo continuaram passando (a Service já validava o mesmo, só que agora é o único lugar que valida) e novos testes foram adicionados para as validações que passaram a existir pela primeira vez.
+
+**Arquivos alterados (principais):**
+- `src/main/java/my_app/domain/ViewModelScreenContract.java`, `src/main/java/my_app/domain/ContratoTelaCrudV3.java`
+- As 12 ViewModels CRUD (`categoriaScreen`, `clienteScreen`, `comprasAPagarScreen`, `comprasScreen`, `contasAReceberScreen`, `fornecedorScreen`, `ordemServicoScreen`, `pedidosScreen`, `preferenciasScreen`, `produtoScreen`, `tecnicoScreen`, `vendaScreen`)
+- `src/main/java/my_app/db/services/{ProdutoService,PreferenciasService,FornecedorService,CompraService}.java`
+- `src/main/java/my_app/services/ContasPagarService.java`
+- `src/main/java/my_app/db/models/FornecedorModel.java`, `src/main/resources/flyway_migrations/V31__add_pessoa_fisica_fornecedores.sql`
+- Testes novos: `src/test/java/my_app/db/services/PreferenciasServiceTest.java`, `src/test/java/my_app/services/ContasPagarServiceTest.java`; testes adicionados em `FornecedorServiceTest`, `ProdutoServiceTest`, `CompraServiceTest`
+
+---
+
 ## 2026-07-24: Empacotamento Flatpak (teste local) + updater desativado no sandbox
 
 **Contexto:** Objetivo é eventualmente publicar o Plics SW no Flathub (a loja "Software"

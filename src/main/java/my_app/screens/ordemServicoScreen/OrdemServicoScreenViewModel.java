@@ -122,7 +122,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         if (osSelected.get() == null) return;
         var os = osSelected.get();
 
@@ -153,10 +153,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
 
     @Override
     public void handleAddOrUpdate() {
-        if (tecnicoSelected.get() == null) {
-            UI.runOnUi(() -> Components.ShowAlertError("Técnico não foi selecionado"));
-            return;
-        }
+        if (modoEdicao.get() && osSelected.get() == null) return;
 
         if (modoEdicao.get()) {
             asyncAtualizar();
@@ -191,8 +188,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
     private void asyncSalvar() {
         Async.Run(() -> {
             try {
-                var model = new OrdemServicoModel();
-                fillModelFromForm(model);
+                var model = populateModelFromFields();
                 var salvo = service.salvar(model);
                 salvo.setCliente(clienteSelected.get());
                 salvo.setTecnico(tecnicoSelected.get());
@@ -211,15 +207,13 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
     private void asyncAtualizar() {
         Async.Run(() -> {
             try {
-                var selected = osSelected.get();
-                if (selected == null) return;
-                fillModelFromForm(selected);
-                service.atualizar(selected);
-                selected.setCliente(clienteSelected.get());
-                selected.setTecnico(tecnicoSelected.get());
+                var model = populateModelFromFields();
+                service.atualizar(model);
+                model.setCliente(clienteSelected.get());
+                model.setTecnico(tecnicoSelected.get());
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(os -> os.getId().equals(selected.getId()), os -> selected);
+                    allDataList.updateIf(os -> os.getId().equals(model.getId()), os -> model);
                     Components.ShowPopup(ctx, "Ordem de serviço atualizada com sucesso!");
                     clearForm();
                 });
@@ -229,7 +223,12 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
         });
     }
 
-    private void fillModelFromForm(OrdemServicoModel model) {
+    @Override
+    public OrdemServicoModel populateModelFromFields() {
+        var model = modoEdicao.get() && osSelected.get() != null
+                ? osSelected.get()
+                : new OrdemServicoModel();
+
         model.setClienteId(clienteSelected.get() != null ? clienteSelected.get().getId() : null);
         model.setTecnicoId(tecnicoSelected.get() != null ? tecnicoSelected.get().getId() : null);
         model.setEquipamento(equipamento.get());
@@ -240,6 +239,8 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
         model.setChecklistRelatorio(checklistRelatorio.get());
         model.setDataEscolhida(DateUtils.localDateParaMillis(dataVisita.get()));
         model.setTotalLiquido(new BigDecimal(totalLiquido.get()));
+
+        return model;
     }
 
     private void attachClientesTecnicos(List<OrdemServicoModel> oss, List<ClienteModel> clientesList, List<TecnicoModel> tecnicosList) {

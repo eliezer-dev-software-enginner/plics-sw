@@ -49,6 +49,14 @@ class CompraServiceTest extends BaseServiceTest {
     }
 
     @Test
+    void deveSalvarCompraViaModel() throws Exception {
+        var model = compraService.toModel(dtoValido());
+        var salvo = compraService.salvar(model);
+        assertNotNull(salvo.getId());
+        assertTrue(salvo.getDataCriacaoMillis() > 0);
+    }
+
+    @Test
     void deveLancarExcecaoAoSomarPorPeriodoComDataInicioMaiorQueFim() {
         assertThrows(IllegalArgumentException.class,
                 () -> compraService.somarComprasPorPeriodo(100L, 50L));

@@ -39,13 +39,13 @@ public interface ContratoTelaCrudV3 {
 
     default void handleClickMenuClone() {
         viewModel().formIsVisible.set(true);
-        populateFromModel();
+        populateFieldsFromModel();
         viewModel().modoEdicaoState().set(false);
     }
 
     default void handleClickMenuEdit() {
         viewModel().formIsVisible.set(true);
-        populateFromModel();
+        populateFieldsFromModel();
         viewModel().modoEdicaoState().set(true);
     }
 
@@ -112,8 +112,8 @@ public interface ContratoTelaCrudV3 {
         );
     }
 
-    default void populateFromModel() {
-        viewModel().populateFromModel();
+    default void populateFieldsFromModel() {
+        viewModel().populateFieldsFromModel();
     }
 
     default void clearForm() {

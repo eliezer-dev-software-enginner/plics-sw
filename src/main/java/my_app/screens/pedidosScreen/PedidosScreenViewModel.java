@@ -54,7 +54,13 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
+    }
+
+    // Tela somente-leitura, sem formulário de CRUD.
+    @Override
+    public PedidoModel populateModelFromFields() {
+        return null;
     }
 
     @Override

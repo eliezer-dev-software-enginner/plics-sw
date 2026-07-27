@@ -165,12 +165,11 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         }));
     }
 
+    // "perecível" não é persistido no ProdutoModel (só a presença de validade é salva),
+    // por isso essa checagem de completude do formulário não pode migrar para ProdutoService.
     public String validar() {
         if (perecivelSelected.get().equals("Sim") && validade.isNull()) {
             return "Escolha a data de validade";
-        }
-        if (perecivelSelected.get().equals("Sim") && !validade.isNull() && validade.get().isBefore(LocalDate.now())) {
-            return "A data de validade deve ser maior ou igual à data atual";
         }
         return null;
     }
@@ -193,34 +192,33 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     private void asyncAtualizar() {
         Async.Run(() -> {
             try {
-                var selecionado = produtoSelected.get();
-                fillModelFromForm(selecionado);
-                produtoService.atualizar(selecionado);
+                var model = populateModelFromFields();
+                produtoService.atualizar(model);
 
                 var atualizado = new ProdutoModel();
-                atualizado.setId(selecionado.getId());
-                atualizado.setCodigoBarras(selecionado.getCodigoBarras());
-                atualizado.setDescricao(selecionado.getDescricao());
-                atualizado.setPrecoCompra(selecionado.getPrecoCompra());
-                atualizado.setPrecoVenda(selecionado.getPrecoVenda());
-                atualizado.setUnidade(selecionado.getUnidade());
-                atualizado.setCategoriaId(selecionado.getCategoriaId());
-                atualizado.setFornecedorId(selecionado.getFornecedorId());
-                atualizado.setEstoque(selecionado.getEstoque());
-                atualizado.setEstoqueMinimo(selecionado.getEstoqueMinimo());
-                atualizado.setObservacoes(selecionado.getObservacoes());
-                atualizado.setImagem(selecionado.getImagem());
-                atualizado.setMarca(selecionado.getMarca());
-                atualizado.setCor(selecionado.getCor());
-                atualizado.setTamanho(selecionado.getTamanho());
-                atualizado.setModelo(selecionado.getModelo());
-                atualizado.setValidade(selecionado.getValidade());
-                atualizado.setGarantia(selecionado.getGarantia());
-                atualizado.setComissao(selecionado.getComissao());
-                atualizado.setTotalLiquido(selecionado.getTotalLiquido());
-                atualizado.setDataCriacao(selecionado.getDataCriacao());
-                atualizado.setCategoria(selecionado.getCategoria());
-                atualizado.setFornecedor(selecionado.getFornecedor());
+                atualizado.setId(model.getId());
+                atualizado.setCodigoBarras(model.getCodigoBarras());
+                atualizado.setDescricao(model.getDescricao());
+                atualizado.setPrecoCompra(model.getPrecoCompra());
+                atualizado.setPrecoVenda(model.getPrecoVenda());
+                atualizado.setUnidade(model.getUnidade());
+                atualizado.setCategoriaId(model.getCategoriaId());
+                atualizado.setFornecedorId(model.getFornecedorId());
+                atualizado.setEstoque(model.getEstoque());
+                atualizado.setEstoqueMinimo(model.getEstoqueMinimo());
+                atualizado.setObservacoes(model.getObservacoes());
+                atualizado.setImagem(model.getImagem());
+                atualizado.setMarca(model.getMarca());
+                atualizado.setCor(model.getCor());
+                atualizado.setTamanho(model.getTamanho());
+                atualizado.setModelo(model.getModelo());
+                atualizado.setValidade(model.getValidade());
+                atualizado.setGarantia(model.getGarantia());
+                atualizado.setComissao(model.getComissao());
+                atualizado.setTotalLiquido(model.getTotalLiquido());
+                atualizado.setDataCriacao(model.getDataCriacao());
+                atualizado.setCategoria(model.getCategoria());
+                atualizado.setFornecedor(model.getFornecedor());
 
                 UI.runOnUi(() -> {
                     this.allDataList.updateIf(p -> p.getId().equals(atualizado.getId()), p -> atualizado);
@@ -236,12 +234,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     private void asyncSalvar() {
         Async.Run(() -> {
             try {
-                var model = new ProdutoModel();
-                fillModelFromForm(model);
-
-                //TODO: produto serviçe deveria cuidar disso
-                model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
-
+                var model = populateModelFromFields();
                 var salvo = produtoService.salvar(model);
 
                 salvo.setCategoria(categoriaSelected.get());
@@ -258,7 +251,12 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         });
     }
 
-    private void fillModelFromForm(ProdutoModel model) {
+    @Override
+    public ProdutoModel populateModelFromFields() {
+        var model = modoEdicao.get() && produtoSelected.get() != null
+                ? produtoSelected.get()
+                : new ProdutoModel();
+
         model.setCodigoBarras(codigoBarras.get());
         model.setDescricao(descricao.get());
         model.setPrecoCompra(Utils.deCentavosParaReal(precoCompra.get()));
@@ -280,6 +278,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
         var estoqueMinimoField = estoqueMinimo.get();
         model.setEstoqueMinimo(estoqueMinimoField == null || estoqueMinimoField.trim().isEmpty() ? BigDecimal.ZERO : new BigDecimal(estoqueMinimoField));
+
+        return model;
     }
 
     @Override
@@ -305,7 +305,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     }
 
     @Override
-    public void populateFromModel() {
+    public void populateFieldsFromModel() {
         if (produtoSelected.get() == null) return;
         final var model = produtoSelected.get();
 
