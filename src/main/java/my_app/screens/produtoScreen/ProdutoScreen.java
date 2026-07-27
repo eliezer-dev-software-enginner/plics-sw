@@ -81,9 +81,9 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                         .children(
                                                ContainerLeft(vm),
                                                 Components.CardImageSelector(vm.imagem, handleChangeImage)
-                                        )
-//                                new SpacerVertical(25),
-//                                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
+                                        ),
+                                new SpacerVertical(ThemeManager.theme().spacing().md()),
+                                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
                         ),
                 new CardProps()
                         .padding(10)
