@@ -5,9 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 public class TelegramNotifier {
     private final String botToken;
@@ -46,10 +48,14 @@ public class TelegramNotifier {
                 Descricao: %s
                 """.formatted(Main.APP_VERSION, mensagem);
 
+        // Sem parse_mode: as mensagens daqui são texto de diagnóstico puro (stack
+        // traces, nomes de pacote com "_" etc.), nunca usam sintaxe Markdown de
+        // propósito — só correriam o risco de o Telegram rejeitar a mensagem inteira
+        // por entidade malformada (ex: "my_app" vira itálico não fechado).
         String formData = String.format(
-                "chat_id=%s&text=%s&parse_mode=Markdown",
-                chatId,
-                newMessage
+                "chat_id=%s&text=%s",
+                URLEncoder.encode(chatId, StandardCharsets.UTF_8),
+                URLEncoder.encode(newMessage, StandardCharsets.UTF_8)
         );
 
         HttpRequest request = HttpRequest.newBuilder()

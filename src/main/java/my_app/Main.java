@@ -182,7 +182,7 @@ public class Main {
     }
 
     private static void handleAppError(Throwable t) {
-        TelegramNotifierFactory.create().enviarMensagem("ERRO NA APLICAÇÃO: " + t.getMessage());
+        TelegramNotifierFactory.create().enviarMensagem("ERRO NA APLICAÇÃO: " + descreverErro(t));
 
         Platform.runLater(() -> {
             if (t instanceof IllegalArgumentException) {
@@ -191,5 +191,19 @@ public class Main {
                 Components.ShowAlertError("Ocorreu um erro inesperado. Detalhes foram registrados.");
             }
         });
+    }
+
+    // t.getMessage() é frequentemente null (ex: NullPointerException sem mensagem) —
+    // sem tipo da exceção nem origem, a notificação chegava só como "null", sem
+    // nenhuma pista de causa. Inclui o tipo e as primeiras linhas do stack trace.
+    private static String descreverErro(Throwable t) {
+        var sb = new StringBuilder(t.getClass().getName())
+                .append(": ")
+                .append(t.getMessage() != null ? t.getMessage() : "(sem mensagem)");
+        var stack = t.getStackTrace();
+        for (int i = 0; i < Math.min(3, stack.length); i++) {
+            sb.append("\n  em ").append(stack[i]);
+        }
+        return sb.toString();
     }
 }
