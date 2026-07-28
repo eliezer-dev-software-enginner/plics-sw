@@ -22,6 +22,7 @@ _gradle_props = _read_gradle_properties()
 APP_NAME = "Plics SW"
 APP_VERSION = _gradle_props["appVersion"]
 MAIN_CLASS = _gradle_props["appMainClass"]
+VENDOR = _gradle_props["appVendor"]
 ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
 JAVAFX_VERSION = "25.0.1"
 
@@ -136,6 +137,7 @@ def run_jpackage(temp_dir: Path, pkg_type: str, extra_args: list = None):
         "--input", str(temp_dir),
         "--name", APP_NAME,
         "--app-version", APP_VERSION,
+        "--vendor", VENDOR,
         "--main-jar", "app.jar",
         "--main-class", MAIN_CLASS,
         "--dest", "dist",
