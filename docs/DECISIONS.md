@@ -1,5 +1,21 @@
 # Decisões Arquiteturais
 
+## 2026-07-28: `create-msi.py` (sem updater) como build oficial pra Microsoft Store, sinalizado via `Main.isMicrosoftStore`
+
+**Contexto:** o pacote MSI "normal" do Plics SW inclui um updater embutido (`--add-launcher` em `create-msi-with-updater.py`) que baixa a última release do GitHub e reinstala o `.msi` sozinho. Isso é incompatível com o modelo de atualização da Microsoft Store — a Store tem o próprio mecanismo de update automático, e um `.exe` extra dentro do pacote que se auto-atualiza por fora é exatamente o tipo de coisa que revisão/certificação pode reprovar (mesmo raciocínio já aplicado ao Flatpak em 2026-07-24, que também tem seu próprio update via `flatpak update`).
+
+**Decisão:**
+1. `scripts/create-msi.py` (que já existia como "o build sem updater", mas estava desatualizado — sem `--win-upgrade-uuid`, sem limpar `temp_dir` no final) passa a ser o build oficial pra publicação na Store. Não criamos um terceiro script — reaproveitamos o que já era o caminho "sem updater" e o trouxemos pra paridade com `create-msi-with-updater.py`.
+2. `UPGRADE_UUID` (usado em `--win-upgrade-uuid`, garante que o Windows trate uma nova versão como upgrade da anterior em vez de instalar um produto "diferente") foi movido de `updater_config.py` pra `config.py` — não é um conceito do updater, é do MSI em geral, e `create-msi.py` não deveria precisar importar config do updater só pra pegar esse valor.
+3. `create-msi.py` passa `--java-options -Dplics.microsoftStore=true` pro `jpackage`. `Main.isMicrosoftStore` lê essa system property em runtime (mesmo padrão do `Main.isFlatpak`, que lê a env var `FLATPAK_ID` injetada pelo próprio sandbox — aqui não existe um sinal equivalente injetado automaticamente pelo Windows/Store pra apps Win32 "clássicos" publicados via MSI, então o sinal precisa ser gravado no próprio pacote no momento do build).
+4. `HomeScreen.menuBar()` não monta mais o item "Buscar atualização" quando `Main.isMicrosoftStore` é `true` (diferente do Flatpak, que mantém o botão visível e só intercepta o clique com uma mensagem — aqui a build nem tem updater no pacote pra chamar, então o item simplesmente não existe). `HomeScreenViewModel.update()` ganhou um early-return redundante como rede de segurança, caso o método seja chamado por outro caminho no futuro.
+
+**Consequência prática:** publicar na Microsoft Store = gerar com `python scripts/create-msi.py`. Publicar fora da Store (site, GitHub Releases) = continuar usando `python scripts/create-msi-with-updater.py`.
+
+**Arquivos alterados:** `scripts/config.py`, `scripts/updater_config.py`, `scripts/create-msi.py`, `src/main/java/my_app/Main.java`, `src/main/java/my_app/screens/homeScreen/HomeScreen.java`, `src/main/java/my_app/screens/homeScreen/HomeScreenViewModel.java`.
+
+---
+
 ## 2026-07-27: Contrato CRUD padronizado (populateFieldsFromModel/populateModelFromFields) e validações centralizadas nas Services
 
 **Problema:** `ViewModelScreenContract.populateFromModel()` tinha nome ambíguo (parecia "popular o model", mas na prática populava os campos da UI a partir de um model já selecionado). Além disso, não existia um método simétrico para o caminho inverso — cada uma das 12 ViewModels que implementam `ContratoTelaCrudV3` montava o Model a partir dos campos do formulário do seu próprio jeito: `ClienteViewModel.getModelFromFields(model)`, `ComprasAPagarScreenViewModel.fillModelFromForm(model, isNew)`, `OrdemServicoScreenViewModel.fillModelFromForm(model)` (sem `isNew`), ou código inline dentro de `handleAddOrUpdate()`/`asyncSalvar()`/`asyncAtualizar()` em `CategoriaScreenViewModel`, `FornecedorScreenViewModel`, `TecnicoScreenViewModel`. Isso dificultava reconhecer o padrão da tela e revisar o fluxo de criação/edição.

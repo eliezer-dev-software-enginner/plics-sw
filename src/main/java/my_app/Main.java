@@ -38,6 +38,12 @@ public class Main {
     // coisa que a revisão do Flathub reprova).
     public static final boolean isFlatpak = System.getenv("FLATPAK_ID") != null;
 
+    // Setado via --java-options -Dplics.microsoftStore=true em scripts/create-msi.py
+    // (build sem updater embutido, feito especificamente pra publicação na Microsoft
+    // Store). Mesmo raciocínio do isFlatpak: quem instala pela Store não tem o
+    // updater no pacote pra lançar, então "Buscar atualização" nem deveria aparecer.
+    public static final boolean isMicrosoftStore = "true".equals(System.getProperty("plics.microsoftStore"));
+
     public static final String APP_NAME = "Plics SW";
     public static final String APP_VERSION = "1.1.1.1_Patch_5";
     //public static final String APP_VERSION = "1.1.1";

@@ -18,6 +18,7 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
+import my_app.Main;
 import my_app.core.AppRoutes;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
@@ -111,6 +112,17 @@ public class HomeScreen implements ScreenComponent {
     }
 
     private Component menuBar(){
+        var suporteMenu = new Menu("Suporte")
+                .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
+                .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
+                .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}));
+
+        // Build da Microsoft Store não inclui o updater embutido (ver create-msi.py)
+        // — quem instala pela Store não tem como usar esse botão, então nem mostra.
+        if (!Main.isMicrosoftStore) {
+            suporteMenu.item("Buscar atualização", ()->buscarAtualizacao(true));
+        }
+
         return new MenuBar()
                 .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow(AppRoutes.Screens.PREFERENCIAS.name(),e->{})))
                 .menu(new Menu("Cadastros")
@@ -123,12 +135,7 @@ public class HomeScreen implements ScreenComponent {
                 .menu(new Menu("Gerencial")
                         .item("Empresa", ()-> ctx.router().spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
                 )
-                .menu(new Menu("Suporte")
-                        .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
-                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
-                        .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
-                        .item("Buscar atualização", ()->buscarAtualizacao(true))
-                );
+                .menu(suporteMenu);
     }
 
 

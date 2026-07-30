@@ -184,6 +184,10 @@ public class HomeScreenViewModel {
             return;
         }
 
+        // Build da Microsoft Store não inclui o updater — o item de menu já nem
+        // aparece (ver HomeScreen.menuBar()), isso aqui é só rede de segurança.
+        if (Main.isMicrosoftStore) return;
+
         new Thread(() -> {
             var updater = new UpdaterService();
             UI.runOnUi(()->Components.ShowPopup(screenContext,"Buscando por atualizações do repositório..."));
