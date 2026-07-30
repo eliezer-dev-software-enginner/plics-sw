@@ -127,7 +127,7 @@ funciona pra build local) e as ressalvas sobre licença/permissões.
 
 ## Versão
 
-**Versão:** 1.1.1.5  
+**Versão:** 1.1.2  
 **Status:** Estável para Produção
 
 ## Benefícios
