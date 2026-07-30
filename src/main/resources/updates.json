@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.1.2",
+    "notes": [
+      "Feat: Novo campo de desconto no PDV, aplicado ao total e às parcelas de venda fiada",
+      "Feat: Botão de impressão alternativa no PDV para impressoras não reconhecidas pelo sistema",
+      "Feat: Botão \"Buscar atualização\" não aparece na versão distribuída pela Microsoft Store",
+      "Fix: Aplicativo travava com erro ao abrir pela primeira vez em uma instalação nova",
+      "Fix: Nome do publicador aparecia como \"Unknown\" no instalador gerado",
+      "Fix: Tipo de pessoa (Física/Jurídica) do fornecedor não era lembrado ao editar o cadastro",
+      "Fix: Mensagem de erro confusa ao abrir o instalador do updater manualmente",
+      "Fix: Validações de cadastro (fornecedor, técnico, produto, categoria, etc.) centralizadas — mensagens de erro mais consistentes entre as telas"
+    ]
+  },
+  {
     "version": "v1.1.1.1_Patch_5",
     "notes": [
       "Fix: (corrigido) Botão de adicionar/atualizar não estava aparecendo na tela de Produtos"
