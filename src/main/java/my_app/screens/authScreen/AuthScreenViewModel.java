@@ -67,7 +67,11 @@ public class AuthScreenViewModel {
     }
 
     public static boolean isLicenseInvalid(String license) {
-        return !LICENCAS_PRODUCAO.contains(license);
+        // LICENCAS_PRODUCAO é uma lista imutável (List.of) — contains(null) lança NPE
+        // em vez de retornar false. licensa é null em toda instalação nova (o INSERT
+        // padrão em V16__dados_padrao.sql não preenche essa coluna), então isso
+        // quebrava a splash logo na primeira execução do app.
+        return license == null || !LICENCAS_PRODUCAO.contains(license);
     }
 
     void entrar(ScreenContext ctx) {
