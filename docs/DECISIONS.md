@@ -1,5 +1,21 @@
 # Decisões Arquiteturais
 
+## 2026-07-28: `Main.APP_VERSION` deixa de ser hardcoded — lido via system property, composto de `appVersion`+`appPatch`
+
+**Problema:** `Main.APP_VERSION` era uma constante de string (`"1.1.1.1_Patch_5"`) editada manualmente a cada release/patch, em paralelo a `gradle.properties.appVersion` (usado pelo empacotamento via `scripts/config.py`) — duas fontes pra escrever a mesma informação, e elas já tinham desincronizado silenciosamente (`"1.1.1.1_Patch_5"` no Main.java vs `"1.1.1.1"` no gradle.properties, números diferentes). O esquema de nomenclatura também misturava dígitos com texto (`_Patch_N`), sem relação clara com o 4º dígito que às vezes aparecia (`v1.1.1.0_Patch_4`, `v1.1.1.1_Patch_5` em `updates.json` — dois contadores redundantes andando juntos).
+
+**Decisão:**
+1. `gradle.properties` vira a única fonte: `appVersion` (base, 3 dígitos — só muda em release) + `appPatch` (contador inteiro, incrementado a cada patch da mesma base). A versão final composta é `appVersion` sozinho quando `appPatch=0`, ou `appVersion.appPatch` (4 dígitos, sem sufixo de texto) — ex.: base `1.1.1` + patch `5` = `1.1.1.5`. Isso também resolve a duplicidade de contador do esquema antigo.
+2. `Main.APP_VERSION` passa a ler `System.getProperty("plics.appVersion", "dev")` em vez de um literal — mesmo padrão já usado pra `Main.isMicrosoftStore` (decisão anterior nesta mesma data). "dev" é só fallback pra quando ninguém define a property (ex.: rodar `Main` direto pela IDE, fora de `gradlew`/`jpackage`).
+3. A property precisa ser setada em **dois** lugares pra cobrir todo caminho de execução, não só o empacotado (diferente do `isMicrosoftStore`, que só importa pro build de produção): `build.gradle.kts` (task `run`, usada por `./gradlew run` e por `dev.py`) e `scripts/config.py` (`run_jpackage()`, usado por todo script de empacotamento — msi/deb, com/sem updater — automaticamente, sem precisar repetir em cada script).
+4. `scripts/bump_version.py` criado como a única forma suportada de alterar `appVersion`/`appPatch` — `patch` incrementa o contador, `release X.Y.Z` define nova base e zera o patch. Edição manual do `gradle.properties` para versão não é mais o fluxo esperado (documentado em `docs/AI_RULES.md`).
+
+**Consequência prática:** ao lançar um patch, rodar `python scripts/bump_version.py patch` já é suficiente — `Main.APP_VERSION`, `scripts/config.py` (usado no `--app-version` e `--java-options` do jpackage) e `build.gradle.kts` (`project.version`, JAR manifest) todos refletem o novo valor automaticamente, sem editar `Main.java`.
+
+**Arquivos alterados:** `gradle.properties`, `build.gradle.kts`, `scripts/config.py`, `scripts/bump_version.py` (novo), `src/main/java/my_app/Main.java`, `docs/AI_RULES.md`.
+
+---
+
 ## 2026-07-28: `create-msi.py` (sem updater) como build oficial pra Microsoft Store, sinalizado via `Main.isMicrosoftStore`
 
 **Contexto:** o pacote MSI "normal" do Plics SW inclui um updater embutido (`--add-launcher` em `create-msi-with-updater.py`) que baixa a última release do GitHub e reinstala o `.msi` sozinho. Isso é incompatível com o modelo de atualização da Microsoft Store — a Store tem o próprio mecanismo de update automático, e um `.exe` extra dentro do pacote que se auto-atualiza por fora é exatamente o tipo de coisa que revisão/certificação pode reprovar (mesmo raciocínio já aplicado ao Flatpak em 2026-07-24, que também tem seu próprio update via `flatpak update`).

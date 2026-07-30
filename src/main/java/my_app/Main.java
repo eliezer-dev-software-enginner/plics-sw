@@ -45,8 +45,13 @@ public class Main {
     public static final boolean isMicrosoftStore = "true".equals(System.getProperty("plics.microsoftStore"));
 
     public static final String APP_NAME = "Plics SW";
-    public static final String APP_VERSION = "1.1.1.1_Patch_5";
-    //public static final String APP_VERSION = "1.1.1";
+
+    // Setado via --java-options -Dplics.appVersion=x.x.x[.patch] (scripts/config.py,
+    // build.gradle.kts na task "run") — composto a partir de appVersion/appPatch em
+    // gradle.properties, única fonte de verdade. "dev" é só fallback pra quando o
+    // Main roda fora de gradlew/jpackage (ex: direto pela IDE).
+    public static final String APP_VERSION = System.getProperty("plics.appVersion", "dev");
+
     public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
             APP_VERSION);
 

@@ -26,15 +26,18 @@
 - Analisar arquivos de testes *.md (testes.md, testes-gerais.md, testes-*.md) por erros relatados e resolvê-los na sessão atual.
 - Não substituir funcionalidades sem autorização.
 
+## Versão do app (fonte única: gradle.properties)
+- `Main.APP_VERSION` **não é mais hardcoded** — lê a system property `plics.appVersion` em runtime (`System.getProperty`), setada via `-Dplics.appVersion=...` tanto na task `run` do Gradle quanto em `scripts/config.py` (`run_jpackage()`, usado por todo build empacotado). Nunca edite `APP_VERSION` direto no `Main.java`.
+- `gradle.properties` tem dois campos: `appVersion` (base, x.x.x — só muda em release nova) e `appPatch` (contador, incrementado a cada patch da mesma base). Versão final = `appVersion` sozinho se `appPatch=0`, senão `appVersion.appPatch` (ex: base `1.1.1` + patch `5` = `1.1.1.5`).
+- Use `python scripts/bump_version.py patch` pra incrementar o patch, ou `python scripts/bump_version.py release X.Y.Z` pra definir uma versão base nova (zera o patch) — nunca edite `appVersion`/`appPatch` à mão.
+
 ## Ao alterar versão do app (etapas obrigatórias)
 1. Ler todos os commits desde a última versão: `git log --since="DATA_ULTIMA_RELEASE" --reverse --format="%h %s"`
 2. Ler `docs/DECISIONS.md` para contexto das decisões arquiteturais relevantes
 3. Interpretar e agrupar commits em Feat, Fix, Refactor e Chore (notas concisas em português)
 4. Adicionar nova entrada no topo de `src/main/resources/updates.json` com version e notes
-5. Atualizar versão em `src/main/java/my_app/Main.java`: campo `APP_VERSION`
-6. Atualizar versão em `gradle.properties`: campo `appVersion`
-7. Atualizar versão em `README.md`: campo `Versão`
-8. `scripts/config.py` lê `gradle.properties` automaticamente (não precisa alterar)
+5. Rodar `python scripts/bump_version.py patch` (correção) ou `python scripts/bump_version.py release X.Y.Z` (versão nova) — atualiza `gradle.properties`, e `Main.APP_VERSION`/`scripts/config.py` já leem o valor automaticamente, sem precisar editar mais nada
+6. Atualizar versão em `README.md`: campo `Versão`
 
 ## Ao executar testes (workaround para pipe closed / GradleWorkerMain)
 - O path `C:\Users\Usuário` contém `ç` (caractere não-ASCII). O Gradle gera arquivos `@` classpath que corrompem esse caractere, causando `ClassNotFoundException: GradleWorkerMain`.

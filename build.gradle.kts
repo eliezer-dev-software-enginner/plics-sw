@@ -17,8 +17,14 @@ plugins {
 val props = Properties()
 file("gradle.properties").inputStream().use { props.load(it) }
 
+// appVersion (base, x.x.x) + appPatch (contador, 0 = sem patch) compostos em uma
+// única string — mesma lógica de scripts/config.py, pra Gradle e jpackage nunca
+// divergirem. Ver gradle.properties para o porquê dos dois campos separados.
+val appPatchNumber = props.getProperty("appPatch", "0").toIntOrNull() ?: 0
+val fullVersion = if (appPatchNumber > 0) "${props.getProperty("appVersion")}.$appPatchNumber" else props.getProperty("appVersion")
+
 group = "plicssw"
-version = props.getProperty("appVersion")
+version = fullVersion
 
 repositories {
     mavenCentral()
@@ -140,7 +146,8 @@ tasks.named<JavaExec>("run") {
         "--module-path", fxPath,
         "--add-modules", "javafx.controls,javafx.graphics",
         "--enable-native-access=ALL-UNNAMED",
-        "-Dprism.verbose=true"
+        "-Dprism.verbose=true",
+        "-Dplics.appVersion=$fullVersion"
     )
 
     environment("DEV_MODE", "true")

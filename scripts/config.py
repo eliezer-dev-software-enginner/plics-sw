@@ -20,7 +20,12 @@ def _read_gradle_properties():
 _gradle_props = _read_gradle_properties()
 
 APP_NAME = "Plics SW"
-APP_VERSION = _gradle_props["appVersion"]
+
+# appVersion (base, x.x.x) + appPatch (contador, 0 = sem patch) compostos numa
+# única string — mesma lógica de build.gradle.kts. Ver gradle.properties.
+_patch_number = int(_gradle_props.get("appPatch", "0") or 0)
+APP_VERSION = _gradle_props["appVersion"] if _patch_number == 0 else f"{_gradle_props['appVersion']}.{_patch_number}"
+
 MAIN_CLASS = _gradle_props["appMainClass"]
 VENDOR = _gradle_props["appVendor"]
 ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
@@ -144,6 +149,9 @@ def run_jpackage(temp_dir: Path, pkg_type: str, extra_args: list = None):
         "--name", APP_NAME,
         "--app-version", APP_VERSION,
         "--vendor", VENDOR,
+        # Main.APP_VERSION lê essa property em runtime (mesmo padrão do
+        # isMicrosoftStore) — nada mais fica hardcoded no Main.java.
+        "--java-options", f"-Dplics.appVersion={APP_VERSION}",
         "--main-jar", "app.jar",
         "--main-class", MAIN_CLASS,
         "--dest", "dist",

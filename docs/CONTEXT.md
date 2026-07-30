@@ -53,6 +53,13 @@
 
 ## Últimas alterações
 
+### 2026-07-28: APP_VERSION lido em runtime (fim do hardcode duplicado em Main.java)
+- **Problema**: `Main.APP_VERSION` era uma string hardcoded (`"1.1.1.1_Patch_5"`) mantida manualmente em paralelo a `gradle.properties.appVersion` (`"1.1.1.1"`) — já tinham desincronizado (números diferentes) antes desta correção.
+- **`gradle.properties`**: campo único `appVersion` virou dois campos — `appVersion` (base, x.x.x) e `appPatch` (contador). Versão final = `appVersion` se `appPatch=0`, senão `appVersion.appPatch`.
+- **`Main.APP_VERSION`**: agora lê `System.getProperty("plics.appVersion", "dev")` — mesmo padrão do `isMicrosoftStore`. Setado via `-Dplics.appVersion=...` na task `run` do Gradle (`build.gradle.kts`) e em `scripts/config.py` (`run_jpackage()`, então todo build empacotado — msi/deb, com/sem updater — já embute automaticamente).
+- **`scripts/bump_version.py`** (novo): `patch` incrementa `appPatch`; `release X.Y.Z` define nova base e zera o patch. Substitui a edição manual de `gradle.properties`.
+- **`docs/AI_RULES.md`**: checklist de "alterar versão do app" atualizado — não há mais passo de editar `Main.java`.
+
 ### 2026-07-28: Desconto e impressão alternativa no PDVScreen
 - **Desconto**: PDVScreen não tinha input de desconto — `PedidoModel.desconto`/`pedido_itens.desconto` já existiam na model/migration, mas `PDVService.finalizarVenda()` sempre gravava `BigDecimal.ZERO`. Adicionado `PDVScreenViewModel.desconto` (currency input) + `totalAPagar` (subtotal - desconto, nunca negativo) recalculados a cada mudança em itens/desconto/recebido. `PDVService.finalizarVenda()` ganhou overload com parâmetro `desconto`, aplicado ao `totalLiquido` do pedido e às parcelas geradas (fiado usa o valor líquido, não o bruto)
 - **Impressão alternativa**: PDVScreen não tinha o botão "Imprimir (modo alternativo)" que já existe em VendaMercadoriaScreen (envia bytes ESC/POS crus via `WinRawPrinter`, fallback pra impressoras não reconhecidas pelo Java Print Service). `EscPosPrinter.gerarBytesEscPos(PedidoModel, ...)` criado (só existia a versão pra `VendaModel`); `PDVScreenViewModel.imprimirNotaAlternativa()` + `resolverNomeImpressoraTermica()` replicam o padrão da tela de vendas
