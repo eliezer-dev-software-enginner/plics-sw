@@ -66,6 +66,17 @@ O Plics SW possui um sistema de atualização embutido. No menu "Suporte" > "Bus
 2. Baixa o MSI da última release do GitHub
 3. Lança o updater que mata os processos Java, executa o MSI e notifica o usuário
 
+4. **Subir versão
+```bash
+python scripts/bump_version.py release 1.1.2
+```
+
+**Empacotamento sem updater** (não altera os scripts originais):
+```bash
+python scripts/create-msi.py   # Windows
+python scripts/create-deb.py   # Linux
+```
+
 **Empacotamento com updater** (não altera os scripts originais):
 ```bash
 python scripts/create-msi-with-updater.py   # Windows
