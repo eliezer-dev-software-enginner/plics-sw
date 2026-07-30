@@ -29,7 +29,12 @@ public class HomeScreenViewModel {
             String[] args = MegalodonteApp.getArgs();
             if (args.length < 3) {
                 log("ERRO: args insuficientes (" + args.length + ")");
-                UI.runOnUi(() -> updateStatus.set("Erro: args insuficientes"));
+                // Mensagem amigável: quem abre o updater manualmente (ex: revisor de
+                // loja de aplicativos testando cada .exe do pacote) não deve ver algo
+                // que pareça um erro/crash do app — o updater só funciona quando
+                // lançado programaticamente pelo próprio Plics SW, com PID/pacote/exe
+                // como argumentos.
+                UI.runOnUi(() -> updateStatus.set("Updater deve ser aberto programaticamente, você não precisa executá-lo"));
                 return;
             }
 
