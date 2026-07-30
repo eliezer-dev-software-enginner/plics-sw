@@ -88,4 +88,35 @@ class PDVServiceTest extends BaseServiceTest {
 
         assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
     }
+
+    @Test
+    void deveAplicarDescontoNoTotalLiquido() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1, BigDecimal.valueOf(3));
+
+        assertBigDecimalEquals(BigDecimal.valueOf(3), pedido.getDesconto());
+        assertBigDecimalEquals(BigDecimal.valueOf(7), pedido.getTotalLiquido());
+    }
+
+    @Test
+    void naoDevePermitirTotalLiquidoNegativoComDescontoMaiorQueOTotal() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1, BigDecimal.valueOf(999));
+
+        assertBigDecimalEquals(BigDecimal.ZERO, pedido.getTotalLiquido());
+    }
+
+    @Test
+    void deveGerarParcelasComValorLiquidoDescontado() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 2, BigDecimal.valueOf(2));
+
+        // total bruto 10, desconto 2 -> liquido 8, dividido em 2 parcelas de 4
+        assertEquals(2, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+        try (var stmt = rawConnection.prepareStatement(
+                "SELECT SUM(valor_original) FROM contas_a_receber WHERE venda_id = ?")) {
+            stmt.setLong(1, pedido.getId());
+            try (var rs = stmt.executeQuery()) {
+                rs.next();
+                assertBigDecimalEquals(BigDecimal.valueOf(8), BigDecimal.valueOf(rs.getDouble(1)));
+            }
+        }
+    }
 }

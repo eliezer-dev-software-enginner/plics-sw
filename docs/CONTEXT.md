@@ -53,6 +53,11 @@
 
 ## Últimas alterações
 
+### 2026-07-28: Desconto e impressão alternativa no PDVScreen
+- **Desconto**: PDVScreen não tinha input de desconto — `PedidoModel.desconto`/`pedido_itens.desconto` já existiam na model/migration, mas `PDVService.finalizarVenda()` sempre gravava `BigDecimal.ZERO`. Adicionado `PDVScreenViewModel.desconto` (currency input) + `totalAPagar` (subtotal - desconto, nunca negativo) recalculados a cada mudança em itens/desconto/recebido. `PDVService.finalizarVenda()` ganhou overload com parâmetro `desconto`, aplicado ao `totalLiquido` do pedido e às parcelas geradas (fiado usa o valor líquido, não o bruto)
+- **Impressão alternativa**: PDVScreen não tinha o botão "Imprimir (modo alternativo)" que já existe em VendaMercadoriaScreen (envia bytes ESC/POS crus via `WinRawPrinter`, fallback pra impressoras não reconhecidas pelo Java Print Service). `EscPosPrinter.gerarBytesEscPos(PedidoModel, ...)` criado (só existia a versão pra `VendaModel`); `PDVScreenViewModel.imprimirNotaAlternativa()` + `resolverNomeImpressoraTermica()` replicam o padrão da tela de vendas
+- **Testes**: +3 casos em `PDVServiceTest` (desconto aplicado ao total líquido, total não fica negativo se desconto > total, parcelas geradas com valor já descontado) — 256 testes, 0 falhas
+
 ### 2026-07-28: Correções de publicação (publisher, erro no Telegram, NPE na 1ª execução, build sem updater pra Store)
 - **Publisher "Unknown" no instalador**: `appVendor` existia no `gradle.properties` mas nenhum script chegava a lê-lo. `scripts/config.py` ganhou a constante `VENDOR` e `--vendor` no `run_jpackage()` (usado por todos os scripts de empacotamento). `appVendor` = "Coerente Inc."
 - **Notificação de erro no Telegram chegava como "null"**: `Main.handleAppError()` mandava só `t.getMessage()` (null em exceções comuns como `NullPointerException` sem mensagem). Agora inclui tipo da exceção + 3 primeiras linhas do stack trace. `TelegramNotifier` também perdeu o `parse_mode=Markdown` (nunca usado pra formatação e arriscava rejeitar a mensagem inteira por causa de `_` em nomes de pacote como `my_app`) e ganhou `URLEncoder` no texto

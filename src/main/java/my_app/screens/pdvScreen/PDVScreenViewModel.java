@@ -24,6 +24,7 @@ import my_app.domain.Data;
 import my_app.domain.components.Components;
 import my_app.services.EscPosPrinter;
 import my_app.services.PDVService;
+import my_app.services.WinRawPrinter;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,10 @@ public class PDVScreenViewModel {
 
     // Subtotal derivado — recalculado sempre que itensCarrinho mudar
     final State<String> subtotal = State.of("0");
+
+    final State<String> desconto = State.of("0");
+    // subtotal - desconto (nunca negativo) — recalculado junto com troco
+    final State<String> totalAPagar = State.of("0");
 
     final State<String> totalRecebido = State.of("0");
     final State<String> troco         = State.of("0");
@@ -125,18 +130,11 @@ public class PDVScreenViewModel {
                     .map(ItemVenda::totalItem)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             subtotal.set(Utils.deRealParaCentavos(total));
+            recalcularTotais();
         });
 
-        totalRecebido.subscribe(recebido -> {
-            try {
-                BigDecimal recebidoBD = Utils.deCentavosParaReal(recebido);
-                BigDecimal subtotalBD = Utils.deCentavosParaReal(subtotal.get());
-                BigDecimal t = recebidoBD.subtract(subtotalBD);
-                troco.set(t.compareTo(BigDecimal.ZERO) < 0 ? "0" : Utils.deRealParaCentavos(t));
-            } catch (NumberFormatException e) {
-                troco.set("0");
-            }
-        });
+        totalRecebido.subscribe(recebido -> recalcularTotais());
+        desconto.subscribe(d -> recalcularTotais());
 
         EventBus.getInstance().subscribe(event -> {
             if(event instanceof EntityEvent<?> ee && ee.is(EntityEvent.EventType.CRIADO) && ee.entity() instanceof ClienteModel cm){
@@ -147,6 +145,31 @@ public class PDVScreenViewModel {
         produtoEncontrado.subscribe(this::selecionarProduto);
         codigoBarrasInput.subscribe(this::filtrarProdutos);
 
+    }
+
+    private BigDecimal calcularTotalLiquido() {
+        BigDecimal subtotalBD = Utils.deCentavosParaReal(subtotal.get());
+        BigDecimal descontoBD;
+        try {
+            descontoBD = Utils.deCentavosParaReal(desconto.get());
+        } catch (NumberFormatException e) {
+            descontoBD = BigDecimal.ZERO;
+        }
+        BigDecimal liquido = subtotalBD.subtract(descontoBD);
+        return liquido.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : liquido;
+    }
+
+    private void recalcularTotais() {
+        BigDecimal liquido = calcularTotalLiquido();
+        totalAPagar.set(Utils.deRealParaCentavos(liquido));
+
+        try {
+            BigDecimal recebidoBD = Utils.deCentavosParaReal(totalRecebido.get());
+            BigDecimal t = recebidoBD.subtract(liquido);
+            troco.set(t.compareTo(BigDecimal.ZERO) < 0 ? "0" : Utils.deRealParaCentavos(t));
+        } catch (NumberFormatException e) {
+            troco.set("0");
+        }
     }
 
     void selecionarProduto(ProdutoModel produto) {
@@ -322,13 +345,14 @@ public class PDVScreenViewModel {
             clienteId = 1; // CLIENTE PADRÃO (inserido pela migration V16)
         }
 
+        BigDecimal totalLiquido = calcularTotalLiquido();
+
         // Vendas a prazo não recebem em dinheiro no ato — só validar recebido/troco
         // quando o pagamento é esperado na hora (a vista, crédito, débito, pix).
         if (!fiado) {
             try {
                 BigDecimal recebidoBD = Utils.deCentavosParaReal(totalRecebido.get());
-                BigDecimal subtotalBD = Utils.deCentavosParaReal(subtotal.get());
-                if (recebidoBD.compareTo(subtotalBD) < 0) {
+                if (recebidoBD.compareTo(totalLiquido) < 0) {
                     Components.ShowAlertError("Valor recebido insuficiente. Informe o total recebido do cliente.");
                     return;
                 }
@@ -341,6 +365,13 @@ public class PDVScreenViewModel {
         final Integer finalClienteId = clienteId;
         final int qtdParcelas = fiado ? Math.max(1, Integer.parseInt(numeroParcelas.get())) : 1;
         final String formaPagamento = formaPagamentoSelecionado.get();
+        final BigDecimal descontoValue;
+        try {
+            descontoValue = Utils.deCentavosParaReal(desconto.get());
+        } catch (NumberFormatException e) {
+            Components.ShowAlertError("Desconto inválido.");
+            return;
+        }
         Async.Run(() -> {
             try {
                 lastPedido = pdvService.finalizarVenda(
@@ -348,13 +379,16 @@ public class PDVScreenViewModel {
                         formaPagamento,
                         finalClienteId,
                         fiado,
-                        qtdParcelas
+                        qtdParcelas,
+                        descontoValue
                 );
                 UI.runOnUi(() -> {
                     itensCarrinho.clear();
                     codigoBarrasInput.set("");
                     quantidadeInput.set("1");
                     subtotal.set("0");
+                    desconto.set("0");
+                    totalAPagar.set("0");
                     totalRecebido.set("0");
                     troco.set("0");
                     clientes.get().stream().filter(c -> c.getId() == 1).findFirst().ifPresent(clienteSelected::set);
@@ -378,31 +412,11 @@ public class PDVScreenViewModel {
 
         Async.Run(() -> {
             try {
-                var itens = pedidoItemService.listarPorPedido(lastPedido.getId());
-                var empresa = empresaService.buscarUnico();
-                var clienteId = lastPedido.getClienteId();
-                final ClienteModel cliente;
-                if (clienteId != null) {
-                    cliente = clienteService.listar().stream()
-                            .filter(c -> c.getId().equals(clienteId))
-                            .findFirst()
-                            .orElse(null);
-                } else {
-                    cliente = null;
-                }
-
-                java.util.List<my_app.db.models.ContaAreceberModel> parcelas = null;
-                if (lastPedido.getFiado() != null && lastPedido.getFiado() == 1) {
-                    try (var contaService = new my_app.db.services.ContaAreceberService()) {
-                        parcelas = contaService.buscarPorVenda(lastPedido.getId());
-                    }
-                }
-
+                var dados = carregarDadosNotaPedido(lastPedido);
                 final var pedido = lastPedido;
-                final var finalParcelas = parcelas;
 
                 try {
-                    escPosPrinter.imprimirNotaVenda(pedido, itens, cliente, empresa, finalParcelas);
+                    escPosPrinter.imprimirNotaVenda(pedido, dados.itens(), dados.cliente(), dados.empresa(), dados.parcelas());
                     } catch (Exception e) {
                         UI.runOnUi(()->Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
                     }
@@ -411,6 +425,81 @@ public class PDVScreenViewModel {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar dados para impressao: " + e.getMessage()));
             }
         });
+    }
+
+    // Fallback pra impressoras térmicas que não são reconhecidas como impressora de
+    // texto comum pelo Java Print Service — envia os bytes ESC/POS crus via spooler
+    // do Windows (mesmo padrão de VendaMercadoriaScreenViewModel.imprimirNotaDeVendaAlternativo).
+    void imprimirNotaAlternativa() {
+        if (lastPedido == null) {
+            Components.ShowAlertError("Nenhuma venda para imprimir.");
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                String nomeImpressora = resolverNomeImpressoraTermica();
+                if (nomeImpressora == null) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Impressora térmica não encontrada"));
+                    return;
+                }
+                var dados = carregarDadosNotaPedido(lastPedido);
+                byte[] bytes = escPosPrinter.gerarBytesEscPos(lastPedido, dados.itens(), dados.cliente(), dados.empresa(), dados.parcelas());
+                boolean ok = WinRawPrinter.imprimirRaw(nomeImpressora, bytes);
+                if (!ok) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Falha na impressão alternativa (RAW)"));
+                }
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro: " + e.getMessage()));
+            }
+        });
+    }
+
+    private String resolverNomeImpressoraTermica() {
+        String configurada = carregarPortaImpressora();
+        if (configurada != null && !EscPosPrinter.isSerialPortName(configurada)) {
+            return configurada;
+        }
+        var services = javax.print.PrintServiceLookup.lookupPrintServices(null, null);
+        for (var ps : services) {
+            String nome = ps.getName();
+            if (nome != null && nome.toUpperCase().contains("TM-T20X")) {
+                return nome;
+            }
+        }
+        var def = javax.print.PrintServiceLookup.lookupDefaultPrintService();
+        return def != null ? def.getName() : null;
+    }
+
+    private record DadosNotaPedido(
+            java.util.List<my_app.db.models.PedidoItemModel> itens,
+            ClienteModel cliente,
+            my_app.db.models.EmpresaModel empresa,
+            java.util.List<my_app.db.models.ContaAreceberModel> parcelas
+    ) {}
+
+    private DadosNotaPedido carregarDadosNotaPedido(my_app.db.models.PedidoModel pedido) throws Exception {
+        var itens = pedidoItemService.listarPorPedido(pedido.getId());
+        var empresa = empresaService.buscarUnico();
+        var clienteId = pedido.getClienteId();
+        final ClienteModel cliente;
+        if (clienteId != null) {
+            cliente = clienteService.listar().stream()
+                    .filter(c -> c.getId().equals(clienteId))
+                    .findFirst()
+                    .orElse(null);
+        } else {
+            cliente = null;
+        }
+
+        java.util.List<my_app.db.models.ContaAreceberModel> parcelas = null;
+        if (pedido.getFiado() != null && pedido.getFiado() == 1) {
+            try (var contaService = new my_app.db.services.ContaAreceberService()) {
+                parcelas = contaService.buscarPorVenda(pedido.getId());
+            }
+        }
+
+        return new DadosNotaPedido(itens, cliente, empresa, parcelas);
     }
 
     void handleCriarCliente(){

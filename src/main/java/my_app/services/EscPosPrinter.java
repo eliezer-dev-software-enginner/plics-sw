@@ -246,6 +246,55 @@ public class EscPosPrinter implements ComprovanteBuilder {
         return baos.toByteArray();
     }
 
+    public byte[] gerarBytesEscPos(PedidoModel pedido, List<PedidoItemModel> itens, ClienteModel cliente, EmpresaModel empresa, List<ContaAreceberModel> parcelas) {
+        var baos = new ByteArrayOutputStream();
+        try (EscPos escpos = new EscPos(baos)) {
+            escpos.setCharacterCodeTable(EscPos.CharacterCodeTable.CP860_Portuguese);
+            escpos.initializePrinter();
+            if (empresa != null) cabecalho(escpos, empresa);
+            separador(escpos);
+            titulo(escpos, "NOTA DE VENDA");
+            linha(escpos, "N. " + pedido.getId());
+            linha(escpos, "Data: " + (pedido.getDataCriacao() != null
+                    ? pedido.getDataCriacao().format(DT_FMT)
+                    : LocalDateTime.now().format(DT_FMT)));
+            if (cliente != null) linha(escpos, "Cliente: " + cliente.getNome());
+            separador(escpos);
+            titulo(escpos, "ITENS");
+            for (var item : itens) {
+                linha(escpos, item.getProdutoCod() + "  x" + item.getQuantidade().stripTrailingZeros().toPlainString()
+                        + "  " + Utils.toBRLCurrency(item.getPrecoUnitario())
+                        + "  = " + Utils.toBRLCurrency(item.getTotalItem()));
+            }
+            separador(escpos);
+            linha(escpos, "Total: " + Utils.toBRLCurrency(pedido.getTotalLiquido()));
+            if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
+                linha(escpos, "Desconto: " + Utils.toBRLCurrency(pedido.getDesconto()));
+            }
+            linha(escpos, "Pagamento: " + (pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA"));
+            if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
+                separador(escpos);
+                titulo(escpos, "PARCELAS");
+                for (var parcela : parcelas) {
+                    linha(escpos, parcela.getNumeroDocumento() + " - " + Utils.toBRLCurrency(parcela.getValorOriginal())
+                            + " - Venc: " + DateUtils.millisToBrazilianDate(parcela.getDataVencimento()));
+                }
+            }
+            if (parcelas != null && !parcelas.isEmpty()) {
+                escpos.flush();
+                return baos.toByteArray();
+            }
+            if (pedido.getObservacao() != null && !pedido.getObservacao().isBlank()) {
+                linha(escpos, "Obs: " + pedido.getObservacao());
+            }
+            rodape(escpos);
+            escpos.flush();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar bytes ESC/POS: " + e.getMessage(), e);
+        }
+        return baos.toByteArray();
+    }
+
     @FunctionalInterface
     private interface EscPosConsumer {
         void accept(EscPos escpos) throws Exception;

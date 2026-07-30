@@ -41,6 +41,8 @@ public class PDVScreen implements ScreenComponent {
                                 table(),
                                 new Column().children(
                                         Components.InputColumnCurrency("SUBTOTAL", vm.subtotal,true),
+                                        Components.InputColumnCurrency("DESCONTO", vm.desconto),
+                                        Components.InputColumnCurrency("TOTAL A PAGAR", vm.totalAPagar,true),
                                         new Row().children(
                                                 Components.InputColumnCurrency("TOTAL RECEBIDO", vm.totalRecebido),
                                                 Components.InputColumnCurrency("TROCO", vm.troco,true)
@@ -50,7 +52,8 @@ public class PDVScreen implements ScreenComponent {
                                         new SpacerVertical(30),
                                         new Row(new RowProps().spacingOf(10)).children(
                                                 new Button("Finalizar Venda").onClick(vm::finalizarVenda),
-                                                new Button("Imprimir nota de venda").onClick(vm::imprimirNota)
+                                                new Button("Imprimir nota de venda").onClick(vm::imprimirNota),
+                                                new Button("Imprimir (modo alternativo)").onClick(vm::imprimirNotaAlternativa)
                                         )
 
                                 )

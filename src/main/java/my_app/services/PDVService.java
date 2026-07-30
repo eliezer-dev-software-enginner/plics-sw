@@ -36,6 +36,17 @@ public final class PDVService {
             boolean isFiado,
             int numeroParcelas
     ) throws SQLException {
+        return finalizarVenda(itens, formaPagamento, clienteId, isFiado, numeroParcelas, BigDecimal.ZERO);
+    }
+
+    public PedidoModel finalizarVenda(
+            List<ItemVenda> itens,
+            String formaPagamento,
+            Integer clienteId,
+            boolean isFiado,
+            int numeroParcelas,
+            BigDecimal desconto
+    ) throws SQLException {
 
         var sess = session != null ? session : DB.getPersismSession();
         var result = new PedidoModel[1];
@@ -43,16 +54,20 @@ public final class PDVService {
 
         sess.withTransaction(() -> {
             try {
-                BigDecimal total = itens.stream()
+                BigDecimal totalBruto = itens.stream()
                         .map(ItemVenda::totalItem)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal descontoValue = desconto != null ? desconto : BigDecimal.ZERO;
+                BigDecimal totalLiquido = totalBruto.subtract(descontoValue);
+                if (totalLiquido.compareTo(BigDecimal.ZERO) < 0) totalLiquido = BigDecimal.ZERO;
 
                 var pedidoService = new PedidoService(sess);
                 var pedidoModel = new PedidoModel();
                 pedidoModel.setClienteId(clienteId);
                 pedidoModel.setFormaPagamento(formaPagamento);
-                pedidoModel.setTotalLiquido(total);
-                pedidoModel.setDesconto(BigDecimal.ZERO);
+                pedidoModel.setTotalLiquido(totalLiquido);
+                pedidoModel.setDesconto(descontoValue);
                 pedidoModel.setFiado(isFiado ? 1 : 0);
                 var pedido = pedidoService.salvar(pedidoModel);
 
@@ -75,7 +90,7 @@ public final class PDVService {
 
                 if (isFiado && clienteId != null) {
                     var contaService = new ContaAreceberService(sess);
-                    var parcelas = Parcela.gerarParcelas(LocalDate.now(), Math.max(1, numeroParcelas), total.doubleValue());
+                    var parcelas = Parcela.gerarParcelas(LocalDate.now(), Math.max(1, numeroParcelas), totalLiquido.doubleValue());
                     contaService.gerarContasDeVenda(pedido.getId(), clienteId, parcelas);
                 }
 
