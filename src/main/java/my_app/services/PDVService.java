@@ -107,4 +107,42 @@ public final class PDVService {
 
         return result[0];
     }
+
+    // Reverso de finalizarVenda(): devolve o estoque de cada item, apaga os itens e
+    // as contas a receber vinculadas (se a venda era fiada) e por fim o pedido.
+    public void excluirVenda(int pedidoId) throws SQLException {
+        var sess = session != null ? session : DB.getPersismSession();
+        var thrown = new SQLException[1];
+
+        sess.withTransaction(() -> {
+            try {
+                var pedidoService = new PedidoService(sess);
+                var pedido = pedidoService.buscarById(pedidoId);
+                if (pedido == null) throw new IllegalArgumentException("Venda não encontrada");
+
+                var itemRepo = new PedidoItemRepository(sess);
+                var produtoService = new ProdutoService(sess);
+                var itens = itemRepo.listarPorPedido(pedidoId);
+
+                for (PedidoItemModel item : itens) {
+                    produtoService.incrementarEstoque(item.getProdutoCod(), item.getQuantidade());
+                }
+                itemRepo.excluirPorPedidoId(pedidoId);
+
+                if (Integer.valueOf(1).equals(pedido.getFiado())) {
+                    var contaService = new ContaAreceberService(sess);
+                    contaService.excluirPorVendaId(pedidoId);
+                }
+
+                pedidoService.excluirById(pedidoId);
+            } catch (SQLException e) {
+                thrown[0] = e;
+                throw new RuntimeException(e);
+            }
+        });
+
+        if (thrown[0] != null) {
+            throw thrown[0];
+        }
+    }
 }

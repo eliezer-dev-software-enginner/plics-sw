@@ -138,9 +138,13 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 | # | Cenário | Efeito Esperado | Erro | Resultado |
 |---|---------|-----------------|------|-----------|
-| 109 | Visualizar pedidos existentes | Lista exibe pedidos com ID, Cliente (ID numérico), Total, Pagamento, Fiado?, Data. | | |
-| 111 | Visualizar itens de um pedido | Duplo clique no pedido exibe itens com Produto, Qtd, Vl. Unit., Total. | | |
+| 109 | Visualizar pedidos existentes | Lista exibe pedidos com ID, Cliente (nome), Total, Pagamento, Fiado?, Data. | | |
+| 111 | Visualizar itens de um pedido | Clicar no pedido exibe os itens no painel ao lado, com Produto, Qtd, Vl. Unit., Total. | | |
 | 112 | Lista de pedidos vazia | Quando não há vendas PDV, tabela exibe "Nenhum pedido encontrado". | | |
+| 167 | Pesquisar pedido | Digitar nome de cliente ou forma de pagamento no campo de busca filtra a lista. | | |
+| 168 | Excluir venda à vista do histórico (ex: caso #84 do PDVScreen) | Alerta de confirmação. Ao confirmar: venda some da lista e dos itens exibidos; estoque do(s) produto(s) vendido(s) é devolvido (conferir em ProdutoScreen); os cards "Receitas", "Lucro líquido" e "Hoje você fez" na Home são recalculados refletindo a exclusão. | |           |
+| 169 | Excluir venda fiada do histórico (ex: caso #85 do PDVScreen, que gera parcelas em Contas a Receber) | Alerta de confirmação menciona que as contas a receber vinculadas também serão apagadas. Ao confirmar: venda, itens e as parcelas correspondentes em ContasAReceberScreen desaparecem; estoque devolvido; Home atualizada. | |           |
+| 170 | Tentar excluir sem selecionar pedido | Botão "Excluir venda selecionada" não aparece — só é exibido quando há um pedido selecionado na tabela. | |           |
 
 ---
 

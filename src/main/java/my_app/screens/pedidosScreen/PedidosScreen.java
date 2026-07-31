@@ -2,11 +2,16 @@ package my_app.screens.pedidosScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.components.Button;
+import megalodonte.components.Card;
 import megalodonte.components.SimpleTable;
+import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
+import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.Show;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.domain.components.Components;
@@ -28,14 +33,16 @@ public class PedidosScreen implements ScreenComponent {
 
     @Override
     public Component render() {
-        return new Container()
-                .children(
-                        Components.FormTitle("Vendas PDV"),
-                        new Row().children(
-                                pedidosTable(),
-                                itensDoPedidoSelecionado()
-                        )
-                );
+        return new Container(new ContainerProps().paddingAll(10)).children(
+                Components.FormTitle("Histórico do Caixa — Vendas PDV"),
+                new SpacerVertical(10),
+                Components.searchInput(vm.searchState, "Pesquisar por cliente ou forma de pagamento"),
+                new SpacerVertical(10),
+                new Row(new megalodonte.props.RowProps().spacingOf(10)).children(
+                        new Column(new megalodonte.props.ColumnProps().fillWidth()).children(pedidosTable()),
+                        new Column(new megalodonte.props.ColumnProps().fillWidth()).children(itensDoPedidoSelecionado())
+                )
+        );
     }
 
     Component pedidosTable() {
@@ -44,7 +51,7 @@ public class PedidosScreen implements ScreenComponent {
                 .header()
                 .columns()
                 .column("ID",           it -> "#" + it.getId())
-                .column("Cliente",      it -> it.getClienteId() != null ? it.getClienteId().toString() : "Consumidor")
+                .column("Cliente",      vm::nomeClienteDoPedido)
                 .column("Total",        it -> Utils.toBRLCurrency(it.getTotalLiquido()))
                 .column("Pagamento", PedidoModel::getFormaPagamento)
                 .column("Fiado?",       it -> it.getFiado() != null && it.getFiado() == 1 ? "Sim" : "Não")
@@ -54,8 +61,9 @@ public class PedidosScreen implements ScreenComponent {
     }
 
     Component itensDoPedidoSelecionado() {
-        return new Column().children(
-                Components.FormTitle("Itens do pedido"),
+        return new Card(new Column().children(
+                Components.FormTitle("Itens da venda selecionada"),
+                new SpacerVertical(10),
                 new SimpleTable<PedidoItemModel>()
                         .fromData(vm.itensDoPedidoSelecionado)
                         .header()
@@ -64,7 +72,11 @@ public class PedidosScreen implements ScreenComponent {
                         .column("Qtd.", PedidoItemModel::getQuantidade)
                         .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
                         .column("Total",     it -> Utils.toBRLCurrency(it.getTotalItem()))
-                        .build()
-        );
+                        .build(),
+                new SpacerVertical(15),
+                Show.when(vm.temPedidoSelecionado, () ->
+                        new Button("Excluir venda selecionada").onClick(vm::handleClickMenuDelete)
+                )
+        ));
     }
 }

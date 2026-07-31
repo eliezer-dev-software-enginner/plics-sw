@@ -31,4 +31,8 @@ public class PedidoItemService extends BaseService<PedidoItemModel> {
     public List<PedidoItemModel> listarPorPedido(Integer pedidoId) throws SQLException {
         return pedidoItemRepository.listarPorPedido(pedidoId);
     }
+
+    public void excluirPorPedidoId(Integer pedidoId) throws SQLException {
+        pedidoItemRepository.excluirPorPedidoId(pedidoId);
+    }
 }

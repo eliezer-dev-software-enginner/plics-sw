@@ -119,4 +119,60 @@ class PDVServiceTest extends BaseServiceTest {
             }
         }
     }
+
+    @Test
+    void deveExcluirVendaERestaurarEstoque() throws Exception {
+        var itens = itensValidos();
+        var codigoBarras = itens.getFirst().produto.getCodigoBarras();
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1, false, 1);
+
+        assertBigDecimalEquals(BigDecimal.valueOf(9), produtoService.buscarPorCodigoBarras(codigoBarras).getEstoque());
+
+        pdvService.excluirVenda(pedido.getId());
+
+        assertBigDecimalEquals(BigDecimal.TEN, produtoService.buscarPorCodigoBarras(codigoBarras).getEstoque());
+        assertEquals(0, contarLinhas("pedido_itens", "pedido_id = ?", pedido.getId()));
+        assertEquals(0, contarLinhas("pedidos", "id = ?", pedido.getId()));
+    }
+
+    @Test
+    void deveExcluirContasAReceberAoExcluirVendaFiada() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 3);
+        assertEquals(3, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+
+        pdvService.excluirVenda(pedido.getId());
+
+        assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+    }
+
+    @Test
+    void naoDeveMexerEmContasDeOutraVendaAoExcluir() throws Exception {
+        var pedidoParaExcluir = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 2);
+
+        var produto2 = new ProdutoModel();
+        produto2.setCodigoBarras("790");
+        produto2.setDescricao("Produto Teste 2");
+        produto2.setUnidade("UN");
+        produto2.setPrecoVenda(BigDecimal.TEN);
+        produto2.setTotalLiquido(BigDecimal.TEN);
+        produto2.setFornecedorId(1);
+        produto2.setEstoque(BigDecimal.TEN);
+        produtoService.salvar(produto2);
+        var item2 = new ItemVenda(produto2);
+        item2.quantidade = BigDecimal.ONE;
+        var pedidoParaManter = pdvService.finalizarVenda(List.of(item2), "CREDIARIO", 1, true, 2);
+
+        pdvService.excluirVenda(pedidoParaExcluir.getId());
+
+        assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedidoParaExcluir.getId()));
+        assertEquals(2, contarLinhas("contas_a_receber", "venda_id = ?", pedidoParaManter.getId()));
+    }
+
+    @Test
+    void deveLancarExcecaoAoExcluirVendaInexistente() {
+        // withTransaction() envolve a IllegalArgumentException original numa
+        // PersismException, mas preserva a mensagem — é isso que a ViewModel exibe.
+        var erro = assertThrows(Exception.class, () -> pdvService.excluirVenda(9999));
+        assertEquals("Venda não encontrada", erro.getMessage());
+    }
 }

@@ -27,4 +27,10 @@ public class PedidoItemRepository extends BaseRepository<PedidoItemModel> {
                 params(pedidoId)
         );
     }
+
+    public void excluirPorPedidoId(Integer pedidoId) throws SQLException {
+        for (var item : listarPorPedido(pedidoId)) {
+            session().delete(item);
+        }
+    }
 }

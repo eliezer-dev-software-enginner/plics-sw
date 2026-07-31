@@ -53,6 +53,14 @@
 
 ## Últimas alterações
 
+### 2026-07-31: Excluir venda do histórico do caixa (PedidosScreen)
+- **`PedidosScreenViewModel`/`PedidosScreen`**: tela era só leitura (`handleClickMenuDelete()` vazio). Agora tem botão "Excluir venda selecionada" (só aparece quando há um pedido selecionado, via `ComputedState temPedidoSelecionado`), com confirmação antes de excluir.
+- **`PDVService.excluirVenda(int pedidoId)`** (novo, transacional — reverso de `finalizarVenda()`): devolve o estoque de cada item vendido (`ProdutoService.incrementarEstoque`), apaga os `pedido_itens` (`PedidoItemRepository.excluirPorPedidoId`, novo), apaga as contas a receber vinculadas se a venda era fiada (`ContaAreceberService.excluirPorVendaId`, já existia) e por fim o `pedido`. Lança `IllegalArgumentException("Venda não encontrada")` se o id não existir — `Session.withTransaction()` do Persism envolve isso numa `PersismException`, mas preserva a mensagem original.
+- **Reflexo nos cards da Home**: `EventBus.publish(DadosFinanceirosAtualizadosEvent.getInstance())` após excluir — `HomeScreenViewModel` já escuta esse evento e recalcula Receitas/Despesas/Lucro/"Hoje você fez" (que somam `pedidos.totalLiquido`), sem precisar de nenhuma mudança na Home.
+- **Melhorias de UI aproveitadas na mesma tela**: campo de busca (`Components.searchInput` — a infraestrutura de `filteredList`/`matchesSearch` já existia mas não estava exposta na tela) e coluna "Cliente" agora mostra o nome (antes mostrava o `clienteId` numérico) — fecha a pendência registrada em 2026-07-27.
+- **Testes**: `PDVServiceTest` +4 casos (estoque restaurado, contas a receber apagadas só da venda excluída — não mexe em outra venda fiada —, exceção em venda inexistente). 260 testes, 0 falhas.
+- **Teste manual**: `testes-gerais.md` — seção PedidosScreen ganhou casos de busca (#167) e exclusão de venda à vista/fiada/sem seleção (#168-#170).
+
 ### 2026-07-28: APP_VERSION lido em runtime (fim do hardcode duplicado em Main.java)
 - **Problema**: `Main.APP_VERSION` era uma string hardcoded (`"1.1.1.1_Patch_5"`) mantida manualmente em paralelo a `gradle.properties.appVersion` (`"1.1.1.1"`) — já tinham desincronizado (números diferentes) antes desta correção.
 - **`gradle.properties`**: campo único `appVersion` virou dois campos — `appVersion` (base, x.x.x) e `appPatch` (contador). Versão final = `appVersion` se `appPatch=0`, senão `appVersion.appPatch`.
