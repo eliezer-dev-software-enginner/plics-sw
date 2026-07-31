@@ -148,6 +148,22 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 ---
 
+## RelatoriosScreen
+
+Acesso: Home > menu "Gerencial" > "Relatórios".
+
+| # | Cenário | Efeito Esperado | Erro | Resultado |
+|---|---------|-----------------|------|-----------|
+| 171 | Abrir a tela | Relatório do mês atual (dia 1 até hoje) já vem calculado automaticamente, com os cards de Receitas, Despesas, Lucro Líquido e os 3 gráficos preenchidos. | | |
+| 172 | Alterar Data Início/Fim e clicar "Gerar relatório" | Cards e gráficos (comparativo, composição de receitas, composição de despesas) atualizam com os novos totais do período escolhido. | | |
+| 173 | Selecionar Data Início posterior à Data Fim e clicar "Gerar relatório" | Alerta: "Data de início deve ser anterior ou igual à data de fim". Cards/gráficos não mudam. | | |
+| 174 | Gerar relatório de um período antigo sem vendas/compras/contas | Todos os valores exibidos ficam R$ 0,00, sem erro. | | |
+| 175 | Conferir consistência com a Home (período = mês atual) | Receitas/Despesas/Lucro do relatório devem bater com os cards da Home, já que usam os mesmos totais por período. | | |
+| 176 | Clicar em "Baixar PDF" após gerar um relatório, escolher local e salvar | Diálogo "Salvar como" abre; PDF é salvo com nome da empresa, período e os mesmos valores exibidos na tela (Receitas, Despesas, Lucro Líquido, situação de contas em aberto). | | |
+| 177 | Clicar em "Baixar PDF" e cancelar o diálogo (não escolher arquivo) | Nada é salvo, nenhum alerta de erro aparece. | | |
+
+---
+
 ## SugerirMelhoriaScreen
 
 | # | Cenário | Texto (max 300) | Efeito Esperado | Erro | Resultado |

@@ -39,10 +39,11 @@ Cada arquivo contém os testes específicos daquele perfil, incluindo dados de e
 15. [PedidosScreen](testes-gerais.md#pedidosscreen-histórico-de-vendas-pdv)
 16. [SugerirMelhoriaScreen](testes-gerais.md#sugerirmelhoriascreen)
 17. [RelatarErroScreen](testes-gerais.md#relatarerroscreen)
-18. [Fluxo Loja de Roupas](testes-loja-de-roupas.md#fluxo-1--loja-de-roupas-compra---venda---financeiro)
-19. [Fluxo Mercado](testes-mercado.md#fluxo-2--mercado-compra-a-prazo---pagamento)
-20. [Fluxo Açougue](testes-acougue.md#fluxo-3--açougue-os--venda)
-21. [Fluxo PetShop](testes-petshop.md#fluxo-4--petshop-compra---venda---os-banho)
+18. [RelatoriosScreen](testes-gerais.md#relatoriosscreen)
+19. [Fluxo Loja de Roupas](testes-loja-de-roupas.md#fluxo-1--loja-de-roupas-compra---venda---financeiro)
+20. [Fluxo Mercado](testes-mercado.md#fluxo-2--mercado-compra-a-prazo---pagamento)
+21. [Fluxo Açougue](testes-acougue.md#fluxo-3--açougue-os--venda)
+22. [Fluxo PetShop](testes-petshop.md#fluxo-4--petshop-compra---venda---os-banho)
 
 ---
 

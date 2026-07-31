@@ -23,6 +23,7 @@ import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
 import my_app.screens.pedidosScreen.PedidosScreen;
 import my_app.screens.produtoScreen.ProdutoScreen;
+import my_app.screens.relatoriosScreen.RelatoriosScreen;
 import my_app.screens.tecnicoScreen.TecnicoScreen;
 import my_app.screens.vendaScreen.VendaMercadoriaScreen;
 
@@ -51,7 +52,8 @@ public class AppRoutes {
         VENDAS,
         PEDIDOS,
         PREFERENCIAS,
-        INFO_UPDATE
+        INFO_UPDATE,
+        RELATORIOS
     }
 
     final int MIN_WIDTH = 600;
@@ -96,7 +98,8 @@ public class AppRoutes {
                 new Router.Route(Screens.VENDAS.name(), VendaMercadoriaScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerencie sua venda de mercadorias", true)),
                 new Router.Route(Screens.PEDIDOS.name(), PedidosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Analise suas vendas feitas no PDV", true)),
                 new Router.Route(Screens.PREFERENCIAS.name(), PreferenciasScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Alteração de preferências do comportamento do aplicativo", true)),
-                new Router.Route(Screens.INFO_UPDATE.name(), InfoUpdateScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Atualizações do aplicativo", false))
+                new Router.Route(Screens.INFO_UPDATE.name(), InfoUpdateScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Atualizações do aplicativo", false)),
+                new Router.Route(Screens.RELATORIOS.name(), RelatoriosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Relatórios financeiros", true))
         );
     }
 }

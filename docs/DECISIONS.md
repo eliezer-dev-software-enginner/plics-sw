@@ -1,5 +1,22 @@
 # Decisões Arquiteturais
 
+## 2026-07-31: RelatoriosScreen — Apache PDFBox pra exportação em PDF, `javafx.scene.chart` pros gráficos
+
+**Contexto:** pedido explícito de uma tela de relatórios financeiros com botão de exportar em PDF e gráficos, "usando biblioteca conhecida". O projeto não tinha nenhuma lib de geração de PDF ainda.
+
+**Decisão — PDF:**
+1. **Apache PDFBox 2.0.29** (`org.apache.pdfbox:pdfbox`) — Apache License 2.0 (permissiva, sem exigência de copyleft, segura pra distribuição de binário fechado — ao contrário de alternativas como iText 7/AGPL), da mesma família Apache já usada no projeto (Apache POI pra planilhas), API estável e bem documentada há mais de uma década. Alternativas descartadas: iText (licenciamento AGPL/comercial), OpenPDF (LGPL/MPL — viável, mas Apache 2.0 é mais simples pra esse caso).
+2. `RelatorioPdfExporter` (novo, `my_app.services`) escreve o PDF linha a linha via `PDPageContentStream` — não precisou de layout de tabela, o relatório é uma lista de valores (mesmo estilo textual já usado em `EscPosPrinter` pros recibos ESC/POS).
+3. `RelatorioService` (novo) só orquestra métodos "somarXPorPeriodo" que **já existiam** em `VendaService`, `PedidoService`, `ContaAreceberService`, `CompraService`, `ContasPagarService` (os mesmos usados pela Home, que só calculam pro mês atual) — o relatório é o mesmo cálculo da Home, mas com período escolhido pelo usuário. Nenhuma lógica de agregação nova foi criada.
+
+**Decisão — Gráficos:**
+1. **`javafx.scene.chart`** (`PieChart`, `BarChart`) — nativo do JavaFX, zero dependência nova, bem conhecido, suficiente pro caso (comparativo de barras + composição em pizza).
+2. **Problema de reatividade**: o framework de UI da aplicação (`megalodonte`) não tem um componente genérico de "reconstruir quando o State muda" — `Show.when` só alterna visibilidade de um filho já construído (`childFactory.get()` roda uma única vez). Solução: os objetos `PieChart.Data`/`XYChart.Data` são criados **uma única vez** no ViewModel e reaproveitados — atualizar o relatório muta os valores desses mesmos objetos (`setPieValue`/`setYValue`), que é o jeito nativo do JavaFX Chart já ser reativo (a `ObservableList` por trás do chart dispara redraw sozinha quando um `Data` muda). O gráfico em si (`new PieChart(lista)`) é construído uma vez em `RelatoriosScreen.render()`.
+
+**Arquivos criados:** `my_app/services/RelatorioService.java`, `RelatorioDados.java` (record), `RelatorioPdfExporter.java`, `my_app/screens/relatoriosScreen/RelatoriosScreen.java` + `RelatoriosScreenViewModel.java`. **Testes:** `RelatorioServiceTest` (soma valores reais + período vazio), `RelatorioPdfExporterTest` (gera PDF de verdade e extrai o texto via `PDFTextStripper` pra conferir o conteúdo).
+
+---
+
 ## 2026-07-28: `Main.APP_VERSION` deixa de ser hardcoded — lido via system property, composto de `appVersion`+`appPatch`
 
 **Problema:** `Main.APP_VERSION` era uma constante de string (`"1.1.1.1_Patch_5"`) editada manualmente a cada release/patch, em paralelo a `gradle.properties.appVersion` (usado pelo empacotamento via `scripts/config.py`) — duas fontes pra escrever a mesma informação, e elas já tinham desincronizado silenciosamente (`"1.1.1.1_Patch_5"` no Main.java vs `"1.1.1.1"` no gradle.properties, números diferentes). O esquema de nomenclatura também misturava dígitos com texto (`_Patch_N`), sem relação clara com o 4º dígito que às vezes aparecia (`v1.1.1.0_Patch_4`, `v1.1.1.1_Patch_5` em `updates.json` — dois contadores redundantes andando juntos).

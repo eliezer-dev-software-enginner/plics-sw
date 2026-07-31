@@ -134,6 +134,7 @@ public class HomeScreen implements ScreenComponent {
                 )
                 .menu(new Menu("Gerencial")
                         .item("Empresa", ()-> ctx.router().spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
+                        .item("Relatórios", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATORIOS.name(),e->{}))
                 )
                 .menu(suporteMenu);
     }

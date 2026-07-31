@@ -53,6 +53,14 @@
 
 ## Últimas alterações
 
+### 2026-07-31: RelatoriosScreen — relatório financeiro por período, com gráficos e exportação em PDF
+- **Nova tela** (`AppRoutes.Screens.RELATORIOS`, acessível via Home > menu "Gerencial" > "Relatórios"): seleciona Data Início/Fim (padrão: mês atual, igual à Home) e mostra Receitas/Despesas/Lucro Líquido do período + situação atual de contas em aberto — reaproveita os mesmos métodos `somarXPorPeriodo`/`getTotalEmAberto` já usados pela `HomeScreenViewModel`, só que com período livre em vez de fixo no mês atual
+- **`RelatorioService`** (novo, `my_app.services`): orquestra `VendaService`, `PedidoService`, `ContaAreceberService`, `CompraService`, `ContasPagarService` — nenhuma lógica de agregação nova, só soma o que cada Service já expõe
+- **Gráficos**: `javafx.scene.chart` nativo (`BarChart` Receitas x Despesas x Lucro; 2x `PieChart` de composição). O framework de UI do projeto não tem "reconstruir componente reativo" — os objetos `PieChart.Data`/`XYChart.Data` são criados uma vez e só têm o valor mutado a cada novo relatório, que é como o JavaFX Chart já atualiza sozinho
+- **PDF**: `Apache PDFBox 2.0.29` (nova dependência, Apache 2.0) — `RelatorioPdfExporter` escreve o relatório em texto simples num PDF (cabeçalho com dados da empresa, igual ao já usado no ESC/POS). Botão "Baixar PDF" abre `FileChooser` nativo
+- **Testes**: `RelatorioServiceTest` (soma real de vendas/pedidos/contas/compras num período + período vazio retorna zeros) e `RelatorioPdfExporterTest` (gera um PDF de verdade e confere o texto extraído via `PDFTextStripper`). 265 testes, 0 falhas
+- **Teste manual**: nova seção RelatoriosScreen em `testes-gerais.md` (#171-#177) + `testes.md` reindexado
+
 ### 2026-07-31: Excluir venda do histórico do caixa (PedidosScreen)
 - **`PedidosScreenViewModel`/`PedidosScreen`**: tela era só leitura (`handleClickMenuDelete()` vazio). Agora tem botão "Excluir venda selecionada" (só aparece quando há um pedido selecionado, via `ComputedState temPedidoSelecionado`), com confirmação antes de excluir.
 - **`PDVService.excluirVenda(int pedidoId)`** (novo, transacional — reverso de `finalizarVenda()`): devolve o estoque de cada item vendido (`ProdutoService.incrementarEstoque`), apaga os `pedido_itens` (`PedidoItemRepository.excluirPorPedidoId`, novo), apaga as contas a receber vinculadas se a venda era fiada (`ContaAreceberService.excluirPorVendaId`, já existia) e por fim o `pedido`. Lança `IllegalArgumentException("Venda não encontrada")` se o id não existir — `Session.withTransaction()` do Persism envolve isso numa `PersismException`, mas preserva a mensagem original.
@@ -234,6 +242,7 @@
 - preferenciasScreen, tecnicoScreen
 - RelatarErroScreen, SugerirMelhoriaScreen, InfoUpdateScreen (ViewModel adicionadas)
 - welcomeScreen (ViewModel criada)
+- relatoriosScreen (nova, 2026-07-31)
 
 ## Funcionalidades
 - **Excluir todos os dados**: botão destrutivo na PreferenciasScreen, apaga todas as 16 tabelas com confirmação e transação. Após exclusão, exibe popup modal sempre-no-topo com botão "Fechar aplicativo" que chama `Platform.exit()`.
