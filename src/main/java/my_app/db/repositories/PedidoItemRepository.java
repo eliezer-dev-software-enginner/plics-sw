@@ -28,6 +28,14 @@ public class PedidoItemRepository extends BaseRepository<PedidoItemModel> {
         );
     }
 
+    public List<PedidoItemModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT pi.* FROM pedido_itens pi INNER JOIN pedidos p ON p.id = pi.pedido_id WHERE p.dataCriacao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
+
     public void excluirPorPedidoId(Integer pedidoId) throws SQLException {
         for (var item : listarPorPedido(pedidoId)) {
             session().delete(item);

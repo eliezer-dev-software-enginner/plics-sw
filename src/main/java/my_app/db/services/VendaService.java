@@ -131,6 +131,10 @@ public class VendaService extends BaseService<VendaModel> {
         return vendaRepository.somarVendasPorPeriodo(dataInicio, dataFim);
     }
 
+    public java.util.List<VendaModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return vendaRepository.listarPorPeriodo(dataInicio, dataFim);
+    }
+
     public java.util.List<VendaModel> buscarPorCliente(Integer clienteId) throws SQLException {
         return vendaRepository.buscarPorCliente(clienteId);
     }

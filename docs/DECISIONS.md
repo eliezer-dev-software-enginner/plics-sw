@@ -1,5 +1,19 @@
 # Decisões Arquiteturais
 
+## 2026-08-01: Ranking de produtos mais vendidos no RelatoriosScreen — agregação em Java via `listarPorPeriodo`
+
+**Contexto:** pedido pra mostrar os 3 produtos mais vendidos na tela de Relatórios. As vendas existem em duas tabelas diferentes — `pedido_itens` (PDV, item a item) e `vendas` (VendaMercadoriaScreen, uma linha por produto vendido) — e o produto é referenciado por `produto_cod` (= `produtos.codigo_barras`).
+
+**Decisão:**
+1. **Agregação em Java, sem GROUP BY**: seguindo o padrão já estabelecido pelos "somarXPorPeriodo" (que também agregam em Java com `reduce`), cada repositório ganhou um `listarPorPeriodo` que só filtra pelo `dataCriacao` (`pedido_itens` faz JOIN com `pedidos` pra herdar o período), e a soma por `produto_cod` é feita num `Map<String, BigDecimal>` com `BigDecimal::add` em `RelatorioService`. Ordena por quantidade desc e limita a 3.
+2. **`ProdutoMaisVendido` (record novo)** carrega `codigoBarras`, `descricao`, `unidade` e `quantidade` — a descrição/unidade são resolvidas via `ProdutoService.buscarPorCodigoBarras` (produto vendido sem cadastro cai pro código como descrição, sem quebrar o relatório). O ranking entra como novo campo do record `RelatorioDados`, então ViewModel, tela e PDF consomem o mesmo dado.
+3. **PDF espelha a tela**: `RelatorioPdfExporter` ganhou a seção "PRODUTOS MAIS VENDIDOS DO PERÍODO" (mantém o princípio já documentado de que o PDF repete os valores exibidos na tela — teste manual #176).
+4. **Ambas as fontes contam** (PDV + vendas de mercadoria), inclusive vendas "A PRAZO" (diferente da receita, que as exclui pra não duplicar com contas a receber — aqui o objetivo é medir o que saiu, não o caixa).
+
+**Arquivos criados:** `my_app/services/ProdutoMaisVendido.java`. **Arquivos alterados:** `VendaRepository`, `PedidoItemRepository`, `VendaService`, `PedidoItemService`, `RelatorioService`, `RelatorioDados`, `RelatorioPdfExporter`, `RelatoriosScreenViewModel`, `RelatoriosScreen`. **Testes:** `VendaRepositoryTest`, `PedidoItemRepositoryTest`, `RelatorioServiceTest`, `RelatorioPdfExporterTest` (273 testes, 0 falhas).
+
+---
+
 ## 2026-07-31: RelatoriosScreen — Apache PDFBox pra exportação em PDF, `javafx.scene.chart` pros gráficos
 
 **Contexto:** pedido explícito de uma tela de relatórios financeiros com botão de exportar em PDF e gráficos, "usando biblioteca conhecida". O projeto não tinha nenhuma lib de geração de PDF ainda.

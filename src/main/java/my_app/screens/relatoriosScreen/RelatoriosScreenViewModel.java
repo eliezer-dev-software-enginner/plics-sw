@@ -11,6 +11,7 @@ import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.services.EmpresaService;
 import my_app.domain.components.Components;
+import my_app.services.ProdutoMaisVendido;
 import my_app.services.RelatorioDados;
 import my_app.services.RelatorioPdfExporter;
 import my_app.services.RelatorioService;
@@ -46,6 +47,10 @@ public class RelatoriosScreenViewModel {
     final State<String> lucroLiquido = State.of("R$ 0,00");
     final State<String> contasReceberEmAberto = State.of("R$ 0,00");
     final State<String> contasPagarEmAberto = State.of("R$ 0,00");
+
+    final State<String> produtoMaisVendido1 = State.of("");
+    final State<String> produtoMaisVendido2 = State.of("");
+    final State<String> produtoMaisVendido3 = State.of("");
 
     private RelatorioDados ultimoRelatorio;
 
@@ -125,6 +130,11 @@ public class RelatoriosScreenViewModel {
         contasReceberEmAberto.set(Utils.toBRLCurrency(dados.contasReceberEmAberto()));
         contasPagarEmAberto.set(Utils.toBRLCurrency(dados.contasPagarEmAberto()));
 
+        var produtos = dados.produtosMaisVendidos();
+        produtoMaisVendido1.set(formatarProduto(produtos, 0));
+        produtoMaisVendido2.set(formatarProduto(produtos, 1));
+        produtoMaisVendido3.set(formatarProduto(produtos, 2));
+
         receitaVendasSlice.setPieValue(dados.receitasVendas().doubleValue());
         receitaPdvSlice.setPieValue(dados.receitasPedidosPdv().doubleValue());
         receitaContasSlice.setPieValue(dados.receitasContasRecebidas().doubleValue());
@@ -135,6 +145,13 @@ public class RelatoriosScreenViewModel {
         receitasBarra.setYValue(dados.totalReceitas().doubleValue());
         despesasBarra.setYValue(dados.totalDespesas().doubleValue());
         lucroBarra.setYValue(dados.lucroLiquido().doubleValue());
+    }
+
+    private String formatarProduto(java.util.List<ProdutoMaisVendido> produtos, int indice) {
+        if (produtos == null || indice >= produtos.size()) return "";
+        var produto = produtos.get(indice);
+        String unidade = produto.unidade() != null && !produto.unidade().isBlank() ? produto.unidade() : "un";
+        return (indice + 1) + "º " + produto.descricao() + " — " + Utils.quantidadeTratada(produto.quantidade()) + " " + unidade;
     }
 
     void baixarPdf() {

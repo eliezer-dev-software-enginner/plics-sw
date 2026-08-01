@@ -1,5 +1,15 @@
 # TODO
 
+## Concluído (Top 3 produtos mais vendidos no RelatoriosScreen — 2026-08-01)
+- [x] **Card "Produtos mais vendidos do período"** na RelatoriosScreen (3 estados no ViewModel + Card na tela)
+- [x] **`RelatorioService.produtosMaisVendidos(long, long)`**: agrega quantidade por `produto_cod` (PDV `pedido_itens` + `vendas` de mercadoria, ambos `listarPorPeriodo`), ordena desc, limita a 3; descrição/unidade via `ProdutoService`
+- [x] **`ProdutoMaisVendido`** (record novo) e **`RelatorioDados.produtosMaisVendidos`** (novo campo)
+- [x] **`VendaRepository.listarPorPeriodo`** + **`PedidoItemRepository.listarPorPeriodo`** (JOIN `pedidos`) + delegates em `VendaService`/`PedidoItemService`
+- [x] **PDF** com seção "PRODUTOS MAIS VENDIDOS DO PERÍODO" (`RelatorioPdfExporter`)
+- [x] **Testes**: 265 → 273 (`VendaRepositoryTest` +2, `PedidoItemRepositoryTest` +2, `RelatorioServiceTest` +3, `RelatorioPdfExporterTest` +1), 0 falhas
+- [x] **Teste manual**: `testes-gerais.md` RelatoriosScreen +2 casos (#178-#179)
+- [x] **Docs**: CONTEXT.md, DECISIONS.md, TODO.md atualizados
+
 ## Concluído
 - PreferenciasScreen refatorada (ViewModel, Service, Repository, Test)
 - FornecedorScreen refatorada (Model, Repository, Service, ViewModel, Screen, Test, Migration V4)

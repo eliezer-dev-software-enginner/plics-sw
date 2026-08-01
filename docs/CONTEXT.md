@@ -53,6 +53,14 @@
 
 ## Últimas alterações
 
+### 2026-08-01: RelatoriosScreen — top 3 produtos mais vendidos do período
+- **Card "Produtos mais vendidos do período"** na RelatoriosScreen: mostra os 3 produtos com maior quantidade vendida no período escolhido, somando as duas fontes de venda — `pedido_itens` (PDV, filtrado pelo período via `pedidos.dataCriacao`) e `vendas` (VendaMercadoriaScreen) — com descrição/unidade resolvidas da tabela `produtos`. Produto vendido sem cadastro cai para o `codigo_barras` como descrição.
+- **`RelatorioService.produtosMaisVendidos(long, long)`** (novo): agrega em Java (`Map<codigo, quantidade>` com `BigDecimal::add`), ordena desc, limita a 3 — mesmo estilo dos "somarXPorPeriodo" (que já agregavam em Java, sem GROUP BY). `RelatorioDados` ganhou o campo `produtosMaisVendidos` (lista de `ProdutoMaisVendido` — record novo).
+- **`VendaRepository`/`PedidoItemRepository`**: novos `listarPorPeriodo` (mesmo padrão de `somarVendasPorPeriodo`); delegates em `VendaService`/`PedidoItemService`.
+- **PDF**: `RelatorioPdfExporter` ganhou a seção "PRODUTOS MAIS VENDIDOS DO PERÍODO" (espelha a tela; "Nenhum produto vendido no período" quando vazio).
+- **Testes**: 265 → 273 (`VendaRepositoryTest` +2, `PedidoItemRepositoryTest` +2, `RelatorioServiceTest` +3 ranking e soma PDV+vendas, `RelatorioPdfExporterTest` +1 seção no PDF), 0 falhas.
+- **Teste manual**: `testes-gerais.md` RelatoriosScreen +2 casos (#178 ranking, #179 período sem vendas).
+
 ### 2026-07-31: RelatoriosScreen — relatório financeiro por período, com gráficos e exportação em PDF
 - **Nova tela** (`AppRoutes.Screens.RELATORIOS`, acessível via Home > menu "Gerencial" > "Relatórios"): seleciona Data Início/Fim (padrão: mês atual, igual à Home) e mostra Receitas/Despesas/Lucro Líquido do período + situação atual de contas em aberto — reaproveita os mesmos métodos `somarXPorPeriodo`/`getTotalEmAberto` já usados pela `HomeScreenViewModel`, só que com período livre em vez de fixo no mês atual
 - **`RelatorioService`** (novo, `my_app.services`): orquestra `VendaService`, `PedidoService`, `ContaAreceberService`, `CompraService`, `ContasPagarService` — nenhuma lógica de agregação nova, só soma o que cada Service já expõe

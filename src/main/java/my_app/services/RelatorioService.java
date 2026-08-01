@@ -1,25 +1,36 @@
 package my_app.services;
 
 import my_app.db.DB;
+import my_app.db.models.PedidoItemModel;
+import my_app.db.models.VendaModel;
 import my_app.db.services.CompraService;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ContasPagarService;
+import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
+import my_app.db.services.ProdutoService;
 import my_app.db.services.VendaService;
 import net.sf.persism.Session;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 // Orquestra os totais do RelatoriosScreen reaproveitando os mesmos métodos "somarXPorPeriodo"
 // já usados pela Home (que só calculam pro mês atual) — aqui o período é escolhido pelo usuário.
 public class RelatorioService implements AutoCloseable {
 
+    private static final int TOP_PRODUTOS = 3;
+
     private final VendaService vendaService;
     private final PedidoService pedidoService;
+    private final PedidoItemService pedidoItemService;
     private final ContaAreceberService contaAreceberService;
     private final CompraService compraService;
     private final ContasPagarService contasPagarService;
+    private final ProdutoService produtoService;
 
     public RelatorioService() throws SQLException {
         this(DB.getPersismSession());
@@ -28,9 +39,11 @@ public class RelatorioService implements AutoCloseable {
     public RelatorioService(Session session) {
         this.vendaService = new VendaService(session);
         this.pedidoService = new PedidoService(session);
+        this.pedidoItemService = new PedidoItemService(session);
         this.contaAreceberService = new ContaAreceberService(session);
         this.compraService = new CompraService(session);
         this.contasPagarService = new ContasPagarService(session);
+        this.produtoService = new ProdutoService(session);
     }
 
     public RelatorioDados gerar(long dataInicio, long dataFim) throws SQLException {
@@ -51,8 +64,47 @@ public class RelatorioService implements AutoCloseable {
                 receitasVendas, receitasPedidosPdv, receitasContasRecebidas,
                 despesasCompras, despesasContasPagas,
                 totalReceitas, totalDespesas, lucroLiquido,
-                contasReceberEmAberto, contasPagarEmAberto
+                contasReceberEmAberto, contasPagarEmAberto,
+                produtosMaisVendidos(dataInicio, dataFim)
         );
+    }
+
+    public List<ProdutoMaisVendido> produtosMaisVendidos(long dataInicio, long dataFim) throws SQLException {
+        Map<String, BigDecimal> quantidades = new LinkedHashMap<>();
+        for (var item : pedidoItemService.listarPorPeriodo(dataInicio, dataFim)) {
+            acumular(quantidades, item);
+        }
+        for (var venda : vendaService.listarPorPeriodo(dataInicio, dataFim)) {
+            acumular(quantidades, venda);
+        }
+        var ordenados = quantidades.entrySet().stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .limit(TOP_PRODUTOS)
+                .toList();
+        List<ProdutoMaisVendido> resultado = new java.util.ArrayList<>();
+        for (var entry : ordenados) {
+            resultado.add(toProdutoMaisVendido(entry.getKey(), entry.getValue()));
+        }
+        return resultado;
+    }
+
+    private void acumular(Map<String, BigDecimal> quantidades, PedidoItemModel item) {
+        if (item.getQuantidade() != null) {
+            quantidades.merge(item.getProdutoCod(), item.getQuantidade(), BigDecimal::add);
+        }
+    }
+
+    private void acumular(Map<String, BigDecimal> quantidades, VendaModel venda) {
+        if (venda.getQuantidade() != null) {
+            quantidades.merge(venda.getProdutoCod(), venda.getQuantidade(), BigDecimal::add);
+        }
+    }
+
+    private ProdutoMaisVendido toProdutoMaisVendido(String codigoBarras, BigDecimal quantidade) throws SQLException {
+        var produto = produtoService.buscarPorCodigoBarras(codigoBarras);
+        String descricao = produto != null && produto.getDescricao() != null ? produto.getDescricao() : codigoBarras;
+        String unidade = produto != null ? produto.getUnidade() : null;
+        return new ProdutoMaisVendido(codigoBarras, descricao, unidade, quantidade);
     }
 
     private BigDecimal zeroSeNulo(BigDecimal valor) {
@@ -63,8 +115,10 @@ public class RelatorioService implements AutoCloseable {
     public void close() throws Exception {
         vendaService.close();
         pedidoService.close();
+        pedidoItemService.close();
         contaAreceberService.close();
         compraService.close();
         contasPagarService.close();
+        produtoService.close();
     }
 }

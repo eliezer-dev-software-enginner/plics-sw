@@ -29,7 +29,8 @@ class RelatorioPdfExporterTest {
                 BigDecimal.valueOf(100), BigDecimal.valueOf(10), BigDecimal.valueOf(30),
                 BigDecimal.valueOf(50), BigDecimal.valueOf(20),
                 BigDecimal.valueOf(140), BigDecimal.valueOf(70), BigDecimal.valueOf(70),
-                BigDecimal.valueOf(15), BigDecimal.valueOf(5)
+                BigDecimal.valueOf(15), BigDecimal.valueOf(5),
+                java.util.List.of()
         );
     }
 
@@ -67,5 +68,32 @@ class RelatorioPdfExporterTest {
             texto = new PDFTextStripper().getText(doc);
         }
         assertTrue(texto.contains("Plics SW"), "sem empresa cadastrada, usa 'Plics SW' como fallback");
+    }
+
+    @Test
+    void deveIncluirProdutosMaisVendidosNoPdf(@TempDir Path tempDir) throws Exception {
+        File destino = tempDir.resolve("relatorio-produtos.pdf").toFile();
+
+        var dados = new RelatorioDados(
+                BigDecimal.valueOf(100), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(100), BigDecimal.ZERO, BigDecimal.valueOf(100),
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                java.util.List.of(
+                        new ProdutoMaisVendido("111", "Camiseta", "UN", BigDecimal.valueOf(12)),
+                        new ProdutoMaisVendido("222", "Calça", "UN", BigDecimal.valueOf(8))
+                )
+        );
+
+        exporter.gerar(destino, null, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31), dados);
+
+        String texto;
+        try (PDDocument doc = PDDocument.load(destino)) {
+            texto = new PDFTextStripper().getText(doc);
+        }
+        assertTrue(texto.contains("PRODUTOS MAIS VENDIDOS DO PERÍODO"), "deveria conter a seção de mais vendidos");
+        assertTrue(texto.contains("1. Camiseta"), "deveria conter o 1º produto mais vendido");
+        assertTrue(texto.contains("12 UN"), "deveria conter a quantidade e unidade do 1º produto");
+        assertTrue(texto.contains("2. Calça"), "deveria conter o 2º produto mais vendido");
     }
 }

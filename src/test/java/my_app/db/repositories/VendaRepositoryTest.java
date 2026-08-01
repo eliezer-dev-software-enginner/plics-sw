@@ -125,6 +125,29 @@ class VendaRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    void listarPorPeriodo() throws SQLException {
+        repository.salvar(novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00")));
+        repository.salvar(novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00")));
+
+        var lista = repository.listarPorPeriodo(0L, System.currentTimeMillis() + 60_000L);
+
+        assertEquals(2, lista.size());
+    }
+
+    @Test
+    void listarPorPeriodoIgnoraVendasForaDoPeriodo() throws SQLException {
+        var venda = novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00"));
+        venda.setDataCriacao(LocalDateTime.now().minusDays(5));
+        repository.salvar(venda);
+
+        var lista = repository.listarPorPeriodo(
+                System.currentTimeMillis() - 86_400_000L,
+                System.currentTimeMillis() + 86_400_000L);
+
+        assertTrue(lista.isEmpty());
+    }
+
+    @Test
     void somarVendasPorPeriodo() throws SQLException {
         var agora = System.currentTimeMillis();
 

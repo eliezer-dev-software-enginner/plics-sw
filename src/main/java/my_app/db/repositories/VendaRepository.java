@@ -30,6 +30,14 @@ public class VendaRepository extends BaseRepository<VendaModel> {
         );
     }
 
+    public java.util.List<VendaModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM vendas WHERE dataCriacao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
+
     public BigDecimal somarVendasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
         var vendas = session().query(
                 modelClass(),

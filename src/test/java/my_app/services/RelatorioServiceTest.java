@@ -3,13 +3,17 @@ package my_app.services;
 import my_app.db.dto.CompraDto;
 import my_app.db.models.ContaAreceberModel;
 import my_app.db.models.ContasPagarModel;
+import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
+import my_app.db.models.ProdutoModel;
 import my_app.db.models.VendaModel;
 import my_app.db.services.BaseServiceTest;
 import my_app.db.services.CompraService;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ContasPagarService;
+import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
+import my_app.db.services.ProdutoService;
 import my_app.db.services.VendaService;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +47,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         assertBigDecimalEquals(BigDecimal.ZERO, dados.lucroLiquido());
         assertBigDecimalEquals(BigDecimal.ZERO, dados.contasReceberEmAberto());
         assertBigDecimalEquals(BigDecimal.ZERO, dados.contasPagarEmAberto());
+        assertTrue(dados.produtosMaisVendidos().isEmpty());
     }
 
     @Test
@@ -119,5 +124,108 @@ class RelatorioServiceTest extends BaseServiceTest {
     @Test
     void deveLancarExcecaoQuandoDataInicioMaiorQueFim() {
         assertThrows(IllegalArgumentException.class, () -> relatorioService.gerar(fim(), INICIO));
+    }
+
+    @Test
+    void deveRetornarTop3ProdutosMaisVendidosSomandoPdvEVendas() throws Exception {
+        var produtoService = new ProdutoService(session);
+        produtoService.salvar(produto("111", "Camiseta", "UN"));
+        produtoService.salvar(produto("222", "Calça", "UN"));
+        produtoService.salvar(produto("333", "Boné", "UN"));
+        produtoService.salvar(produto("444", "Meia", "UN"));
+
+        var vendaService = new VendaService(session);
+        vendaService.salvar(venda("111", 2), false);
+        vendaService.salvar(venda("222", 5), false);
+        vendaService.salvar(venda("333", 1), false);
+
+        var pedidoService = new PedidoService(session);
+        var pedido = new PedidoModel();
+        pedido.setClienteId(1);
+        pedido.setFormaPagamento("À VISTA");
+        pedido.setTotalLiquido(BigDecimal.valueOf(50));
+        pedido.setDesconto(BigDecimal.ZERO);
+        pedido.setFiado(0);
+        pedidoService.salvar(pedido);
+
+        var pedidoItemService = new PedidoItemService(session);
+        pedidoItemService.salvar(item(pedido.getId(), "222", 3));
+        pedidoItemService.salvar(item(pedido.getId(), "444", 4));
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        var top = dados.produtosMaisVendidos();
+        assertEquals(3, top.size());
+
+        assertEquals("222", top.get(0).codigoBarras());
+        assertEquals("Calça", top.get(0).descricao());
+        assertEquals("UN", top.get(0).unidade());
+        assertBigDecimalEquals(BigDecimal.valueOf(8), top.get(0).quantidade());
+
+        assertEquals("444", top.get(1).codigoBarras());
+        assertBigDecimalEquals(BigDecimal.valueOf(4), top.get(1).quantidade());
+
+        assertEquals("111", top.get(2).codigoBarras());
+        assertBigDecimalEquals(BigDecimal.valueOf(2), top.get(2).quantidade());
+    }
+
+    @Test
+    void deveRetornarMenosDeTresProdutosQuandoPoucosForamVendidos() throws Exception {
+        var produtoService = new ProdutoService(session);
+        produtoService.salvar(produto("111", "Camiseta", "UN"));
+
+        var vendaService = new VendaService(session);
+        vendaService.salvar(venda("111", 1), false);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        assertEquals(1, dados.produtosMaisVendidos().size());
+        assertEquals("Camiseta", dados.produtosMaisVendidos().getFirst().descricao());
+    }
+
+    @Test
+    void deveUsarCodigoDeBarrasQuandoProdutoNaoCadastrado() throws Exception {
+        var vendaService = new VendaService(session);
+        vendaService.salvar(venda("999", 2), false);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        assertEquals(1, dados.produtosMaisVendidos().size());
+        assertEquals("999", dados.produtosMaisVendidos().getFirst().descricao());
+    }
+
+    private ProdutoModel produto(String codigo, String descricao, String unidade) {
+        var produto = new ProdutoModel();
+        produto.setCodigoBarras(codigo);
+        produto.setDescricao(descricao);
+        produto.setUnidade(unidade);
+        produto.setFornecedorId(1);
+        produto.setPrecoVenda(BigDecimal.TEN);
+        produto.setTotalLiquido(BigDecimal.TEN);
+        produto.setEstoque(BigDecimal.ZERO);
+        return produto;
+    }
+
+    private VendaModel venda(String codigo, int quantidade) {
+        var venda = new VendaModel();
+        venda.setProdutoCod(codigo);
+        venda.setClienteId(1);
+        venda.setQuantidade(BigDecimal.valueOf(quantidade));
+        venda.setPrecoUnitario(BigDecimal.TEN);
+        venda.setTotalLiquido(BigDecimal.TEN.multiply(BigDecimal.valueOf(quantidade)));
+        venda.setDesconto(BigDecimal.ZERO);
+        venda.setTipoPagamento("DINHEIRO");
+        return venda;
+    }
+
+    private PedidoItemModel item(Integer pedidoId, String codigo, int quantidade) {
+        var item = new PedidoItemModel();
+        item.setPedidoId(pedidoId);
+        item.setProdutoCod(codigo);
+        item.setQuantidade(BigDecimal.valueOf(quantidade));
+        item.setPrecoUnitario(BigDecimal.TEN);
+        item.setDesconto(BigDecimal.ZERO);
+        item.setTotalItem(BigDecimal.TEN.multiply(BigDecimal.valueOf(quantidade)));
+        return item;
     }
 }

@@ -93,4 +93,30 @@ class PedidoItemRepositoryTest extends BaseRepositoryTest {
         assertNotNull(itens);
         assertTrue(itens.isEmpty());
     }
+
+    @Test
+    void listarPorPeriodo() throws SQLException {
+        var pedido = salvarPedido();
+        repository.salvar(novoItem(pedido.getId()));
+        repository.salvar(novoItem(pedido.getId()));
+
+        var itens = repository.listarPorPeriodo(0L, System.currentTimeMillis() + 60_000L);
+
+        assertNotNull(itens);
+        assertEquals(2, itens.size());
+    }
+
+    @Test
+    void listarPorPeriodoIgnoraItensDePedidosForaDoPeriodo() throws SQLException {
+        var pedido = salvarPedido();
+        pedido.setDataCriacao(LocalDateTime.now().minusDays(5));
+        pedidoRepository.atualizar(pedido);
+        repository.salvar(novoItem(pedido.getId()));
+
+        var itens = repository.listarPorPeriodo(
+                System.currentTimeMillis() - 86_400_000L,
+                System.currentTimeMillis() + 86_400_000L);
+
+        assertTrue(itens.isEmpty());
+    }
 }

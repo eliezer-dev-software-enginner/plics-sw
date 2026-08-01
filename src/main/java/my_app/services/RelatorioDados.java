@@ -1,6 +1,7 @@
 package my_app.services;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 // Snapshot dos totais exibidos no RelatoriosScreen — mesmos números das telas de
 // origem (Home, Vendas, PDV, Compras, Contas a Pagar/Receber), só que agrupados
@@ -15,6 +16,7 @@ public record RelatorioDados(
         BigDecimal totalDespesas,
         BigDecimal lucroLiquido,
         BigDecimal contasReceberEmAberto,
-        BigDecimal contasPagarEmAberto
+        BigDecimal contasPagarEmAberto,
+        List<ProdutoMaisVendido> produtosMaisVendidos
 ) {
 }

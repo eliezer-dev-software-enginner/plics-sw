@@ -66,6 +66,20 @@ public class RelatorioPdfExporter {
                 y = escreverLinha(cs, fonteTitulo, 13, MARGEM, y, "Lucro líquido do período: " + Utils.toBRLCurrency(dados.lucroLiquido()));
                 y -= LEADING;
 
+                y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "PRODUTOS MAIS VENDIDOS DO PERÍODO");
+                if (dados.produtosMaisVendidos() == null || dados.produtosMaisVendidos().isEmpty()) {
+                    y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Nenhum produto vendido no período");
+                } else {
+                    int posicao = 1;
+                    for (var produto : dados.produtosMaisVendidos()) {
+                        String unidade = produto.unidade() != null && !produto.unidade().isBlank() ? produto.unidade() : "un";
+                        y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, posicao + ". " + produto.descricao() + " — " +
+                                Utils.quantidadeTratada(produto.quantidade()) + " " + unidade);
+                        posicao++;
+                    }
+                }
+                y -= LEADING;
+
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "SITUAÇÃO ATUAL (não vinculada ao período)");
                 y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a receber em aberto: " + Utils.toBRLCurrency(dados.contasReceberEmAberto()));
                 y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a pagar em aberto: " + Utils.toBRLCurrency(dados.contasPagarEmAberto()));
