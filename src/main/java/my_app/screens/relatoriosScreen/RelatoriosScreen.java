@@ -51,6 +51,8 @@ public class RelatoriosScreen implements ScreenComponent {
                         new SpacerVertical(20),
                         cardMaisVendidos(),
                         new SpacerVertical(20),
+                        cardSemVenda(),
+                        new SpacerVertical(20),
                         new Row(new RowProps().spacingOf(15)).children(
                                 graficoComparativo(),
                                 graficoPizzaReceitas(),
@@ -137,6 +139,14 @@ public class RelatoriosScreen implements ScreenComponent {
                 new Text(vm.produtoMaisVendido1, new TextProps().variant(TextVariant.BODY)),
                 new Text(vm.produtoMaisVendido2, new TextProps().variant(TextVariant.BODY)),
                 new Text(vm.produtoMaisVendido3, new TextProps().variant(TextVariant.BODY))
+        ));
+    }
+
+    private Component cardSemVenda() {
+        return new Card(new Column(new ColumnProps().fillWidth()).children(
+                new Text("Produtos sem venda no período", new TextProps().variant(TextVariant.SUBTITLE).bold()),
+                new SpacerVertical(10),
+                new Text(vm.produtosSemVenda, new TextProps().variant(TextVariant.BODY))
         ));
     }
 

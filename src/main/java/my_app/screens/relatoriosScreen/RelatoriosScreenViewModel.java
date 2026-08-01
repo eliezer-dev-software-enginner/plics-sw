@@ -51,6 +51,7 @@ public class RelatoriosScreenViewModel {
     final State<String> produtoMaisVendido1 = State.of("");
     final State<String> produtoMaisVendido2 = State.of("");
     final State<String> produtoMaisVendido3 = State.of("");
+    final State<String> produtosSemVenda = State.of("");
 
     private RelatorioDados ultimoRelatorio;
 
@@ -134,6 +135,13 @@ public class RelatoriosScreenViewModel {
         produtoMaisVendido1.set(formatarProduto(produtos, 0));
         produtoMaisVendido2.set(formatarProduto(produtos, 1));
         produtoMaisVendido3.set(formatarProduto(produtos, 2));
+
+        var semVenda = dados.produtosSemVenda();
+        produtosSemVenda.set(semVenda == null || semVenda.isEmpty()
+                ? "Todos os produtos tiveram venda no período"
+                : semVenda.stream()
+                        .map(p -> "• " + p.descricao() + (p.unidade() != null && !p.unidade().isBlank() ? " (" + p.unidade() + ")" : ""))
+                        .collect(java.util.stream.Collectors.joining("\n")));
 
         receitaVendasSlice.setPieValue(dados.receitasVendas().doubleValue());
         receitaPdvSlice.setPieValue(dados.receitasPedidosPdv().doubleValue());

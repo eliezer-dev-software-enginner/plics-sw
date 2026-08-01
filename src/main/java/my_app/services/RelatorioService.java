@@ -2,6 +2,7 @@ package my_app.services;
 
 import my_app.db.DB;
 import my_app.db.models.PedidoItemModel;
+import my_app.db.models.ProdutoModel;
 import my_app.db.models.VendaModel;
 import my_app.db.services.CompraService;
 import my_app.db.services.ContaAreceberService;
@@ -14,9 +15,11 @@ import net.sf.persism.Session;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 // Orquestra os totais do RelatoriosScreen reaproveitando os mesmos métodos "somarXPorPeriodo"
 // já usados pela Home (que só calculam pro mês atual) — aqui o período é escolhido pelo usuário.
@@ -60,16 +63,27 @@ public class RelatorioService implements AutoCloseable {
         BigDecimal contasReceberEmAberto = zeroSeNulo(contaAreceberService.getTotalEmAberto());
         BigDecimal contasPagarEmAberto = zeroSeNulo(contasPagarService.getTotalEmAberto());
 
+        Map<String, BigDecimal> quantidades = quantidadesVendidas(dataInicio, dataFim);
+
         return new RelatorioDados(
                 receitasVendas, receitasPedidosPdv, receitasContasRecebidas,
                 despesasCompras, despesasContasPagas,
                 totalReceitas, totalDespesas, lucroLiquido,
                 contasReceberEmAberto, contasPagarEmAberto,
-                produtosMaisVendidos(dataInicio, dataFim)
+                topProdutosMaisVendidos(quantidades),
+                produtosSemVenda(quantidades)
         );
     }
 
     public List<ProdutoMaisVendido> produtosMaisVendidos(long dataInicio, long dataFim) throws SQLException {
+        return topProdutosMaisVendidos(quantidadesVendidas(dataInicio, dataFim));
+    }
+
+    public List<ProdutoMaisVendido> produtosSemVenda(long dataInicio, long dataFim) throws SQLException {
+        return produtosSemVenda(quantidadesVendidas(dataInicio, dataFim));
+    }
+
+    private Map<String, BigDecimal> quantidadesVendidas(long dataInicio, long dataFim) throws SQLException {
         Map<String, BigDecimal> quantidades = new LinkedHashMap<>();
         for (var item : pedidoItemService.listarPorPeriodo(dataInicio, dataFim)) {
             acumular(quantidades, item);
@@ -77,6 +91,10 @@ public class RelatorioService implements AutoCloseable {
         for (var venda : vendaService.listarPorPeriodo(dataInicio, dataFim)) {
             acumular(quantidades, venda);
         }
+        return quantidades;
+    }
+
+    private List<ProdutoMaisVendido> topProdutosMaisVendidos(Map<String, BigDecimal> quantidades) throws SQLException {
         var ordenados = quantidades.entrySet().stream()
                 .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
                 .limit(TOP_PRODUTOS)
@@ -86,6 +104,21 @@ public class RelatorioService implements AutoCloseable {
             resultado.add(toProdutoMaisVendido(entry.getKey(), entry.getValue()));
         }
         return resultado;
+    }
+
+    private List<ProdutoMaisVendido> produtosSemVenda(Map<String, BigDecimal> quantidades) throws SQLException {
+        Set<String> vendidos = quantidades.keySet();
+        return produtoService.listar().stream()
+                .filter(produto -> !vendidos.contains(produto.getCodigoBarras()))
+                .sorted(Comparator.comparing(
+                        ProdutoModel::getDescricao,
+                        Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
+                .map(produto -> new ProdutoMaisVendido(
+                        produto.getCodigoBarras(),
+                        produto.getDescricao() != null ? produto.getDescricao() : produto.getCodigoBarras(),
+                        produto.getUnidade(),
+                        BigDecimal.ZERO))
+                .toList();
     }
 
     private void acumular(Map<String, BigDecimal> quantidades, PedidoItemModel item) {

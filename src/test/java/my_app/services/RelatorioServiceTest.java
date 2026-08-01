@@ -18,6 +18,7 @@ import my_app.db.services.VendaService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,6 +49,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         assertBigDecimalEquals(BigDecimal.ZERO, dados.contasReceberEmAberto());
         assertBigDecimalEquals(BigDecimal.ZERO, dados.contasPagarEmAberto());
         assertTrue(dados.produtosMaisVendidos().isEmpty());
+        assertTrue(dados.produtosSemVenda().isEmpty());
     }
 
     @Test
@@ -167,6 +169,8 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         assertEquals("111", top.get(2).codigoBarras());
         assertBigDecimalEquals(BigDecimal.valueOf(2), top.get(2).quantidade());
+
+        assertTrue(dados.produtosSemVenda().isEmpty());
     }
 
     @Test
@@ -181,6 +185,7 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         assertEquals(1, dados.produtosMaisVendidos().size());
         assertEquals("Camiseta", dados.produtosMaisVendidos().getFirst().descricao());
+        assertTrue(dados.produtosSemVenda().isEmpty());
     }
 
     @Test
@@ -192,6 +197,49 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         assertEquals(1, dados.produtosMaisVendidos().size());
         assertEquals("999", dados.produtosMaisVendidos().getFirst().descricao());
+        assertTrue(dados.produtosSemVenda().isEmpty());
+    }
+
+    @Test
+    void deveRetornarProdutosSemVendaNoPeriodo() throws Exception {
+        var produtoService = new ProdutoService(session);
+        produtoService.salvar(produto("111", "Arroz", "KG"));
+        produtoService.salvar(produto("222", "Feijão", "KG"));
+        produtoService.salvar(produto("333", "Óleo", "UN"));
+
+        var vendaService = new VendaService(session);
+        vendaService.salvar(venda("111", 2), false);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        var semVenda = dados.produtosSemVenda();
+        assertEquals(2, semVenda.size());
+        assertEquals("Feijão", semVenda.get(0).descricao());
+        assertEquals("KG", semVenda.get(0).unidade());
+        assertBigDecimalEquals(BigDecimal.ZERO, semVenda.get(0).quantidade());
+        assertEquals("Óleo", semVenda.get(1).descricao());
+    }
+
+    @Test
+    void deveListarProdutoComoSemVendaQuandoVendaForaDoPeriodo() throws Exception {
+        var produtoService = new ProdutoService(session);
+        produtoService.salvar(produto("111", "Arroz", "KG"));
+
+        var vendaService = new VendaService(session);
+        vendaService.salvar(venda("111", 1), false);
+
+        var venda = vendaService.listar().stream()
+                .filter(v -> v.getProdutoCod().equals("111"))
+                .findFirst()
+                .orElseThrow();
+        venda.setDataCriacao(LocalDateTime.now().plusDays(5));
+        vendaService.atualizar(venda);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        assertEquals(1, dados.produtosSemVenda().size());
+        assertEquals("Arroz", dados.produtosSemVenda().getFirst().descricao());
+        assertTrue(dados.produtosMaisVendidos().isEmpty());
     }
 
     private ProdutoModel produto(String codigo, String descricao, String unidade) {

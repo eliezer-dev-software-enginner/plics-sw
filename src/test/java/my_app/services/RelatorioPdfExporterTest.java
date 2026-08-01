@@ -30,6 +30,7 @@ class RelatorioPdfExporterTest {
                 BigDecimal.valueOf(50), BigDecimal.valueOf(20),
                 BigDecimal.valueOf(140), BigDecimal.valueOf(70), BigDecimal.valueOf(70),
                 BigDecimal.valueOf(15), BigDecimal.valueOf(5),
+                java.util.List.of(),
                 java.util.List.of()
         );
     }
@@ -82,7 +83,8 @@ class RelatorioPdfExporterTest {
                 java.util.List.of(
                         new ProdutoMaisVendido("111", "Camiseta", "UN", BigDecimal.valueOf(12)),
                         new ProdutoMaisVendido("222", "Calça", "UN", BigDecimal.valueOf(8))
-                )
+                ),
+                java.util.List.of()
         );
 
         exporter.gerar(destino, null, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31), dados);

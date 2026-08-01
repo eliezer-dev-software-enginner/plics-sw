@@ -1,5 +1,19 @@
 # Decisões Arquiteturais
 
+## 2026-08-01: Produtos sem venda no período no RelatoriosScreen — complemento do ranking, fora do PDF
+
+**Contexto:** pedido pra exibir também os produtos que não tiveram nenhuma venda na tela de Relatórios, ao lado do top 3 mais vendidos do período.
+
+**Decisão:**
+1. **Mesma janela do ranking**: "sem venda" é relativo ao período selecionado (mesmos `listarPorPeriodo`/`quantidadesVendidas` do ranking). Um produto vendido em outra época, mas não no período, aparece como sem venda no relatório.
+2. **Complemento via diferença de conjuntos**: `RelatorioService.produtosSemVenda()` = todos os produtos de `ProdutoService.listar()` cujo `codigo_barras` não está no `Map` acumulado de quantidades vendidas do período. Usa o mesmo record `ProdutoMaisVendido` com `quantidade = ZERO` (a ViewModel não precisa de um tipo novo). A agregação foi extraída para `quantidadesVendidas(long, long)` privado, compartilhado com o ranking — evitando consultar os dois `listarPorPeriodo` duas vezes.
+3. **UI**: novo card abaixo do ranking, com um `Text(State<String>)` multi-linha — o `ReadableState` resolve a quebra de linha via `\n` e reage a cada relatório novo (mesmo mecanismo de reatividade da tela). Mensagem única "Todos os produtos tiveram venda no período" quando vazio.
+4. **PDF NÃO inclui a lista de sem venda**: o `RelatorioPdfExporter` é de página única, e o número de produtos sem venda pode crescer sem limite — o PDF repete os valores exibidos na tela (decisão já documentada), mas esse card é uma lista longa demais pra uma página. Fica só na tela.
+
+**Arquivos alterados:** `RelatorioService`, `RelatorioDados`, `RelatoriosScreenViewModel`, `RelatoriosScreen`. **Testes:** `RelatorioServiceTest` (275 testes, 0 falhas).
+
+---
+
 ## 2026-08-01: Ranking de produtos mais vendidos no RelatoriosScreen — agregação em Java via `listarPorPeriodo`
 
 **Contexto:** pedido pra mostrar os 3 produtos mais vendidos na tela de Relatórios. As vendas existem em duas tabelas diferentes — `pedido_itens` (PDV, item a item) e `vendas` (VendaMercadoriaScreen, uma linha por produto vendido) — e o produto é referenciado por `produto_cod` (= `produtos.codigo_barras`).

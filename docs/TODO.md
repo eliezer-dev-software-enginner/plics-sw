@@ -1,5 +1,15 @@
 # TODO
 
+## Concluído (Produtos sem venda no período no RelatoriosScreen — 2026-08-01)
+- [x] **Card "Produtos sem venda no período"** na RelatoriosScreen abaixo do ranking: lista produtos cadastrados sem venda no período, ordenados por descrição, com unidade; mensagem "Todos os produtos tiveram venda no período" quando vazio
+- [x] **`RelatorioService`**: agregação extraída para `quantidadesVendidas(long, long)` privado; `produtosSemVenda()` = produtos de `ProdutoService.listar()` fora do conjunto de vendidos do período (mesmo record `ProdutoMaisVendido`, quantidade ZERO)
+- [x] **`RelatorioDados.produtosSemVenda`** (novo campo)
+- [x] **ViewModel/Screen**: `State<String> produtosSemVenda` + `Text(State<String>)` multi-linha
+- [x] **PDF**: decidido NÃO incluir (página única, lista pode ser longa) — decisão registrada em DECISIONS.md
+- [x] **Testes**: 273 → 275 (`RelatorioServiceTest` +2 sem-venda/período e venda fora do período), 0 falhas
+- [x] **Teste manual**: `testes-gerais.md` RelatoriosScreen +1 caso (#180)
+- [x] **Docs**: CONTEXT.md, DECISIONS.md, TODO.md atualizados
+
 ## Concluído (Top 3 produtos mais vendidos no RelatoriosScreen — 2026-08-01)
 - [x] **Card "Produtos mais vendidos do período"** na RelatoriosScreen (3 estados no ViewModel + Card na tela)
 - [x] **`RelatorioService.produtosMaisVendidos(long, long)`**: agrega quantidade por `produto_cod` (PDV `pedido_itens` + `vendas` de mercadoria, ambos `listarPorPeriodo`), ordena desc, limita a 3; descrição/unidade via `ProdutoService`

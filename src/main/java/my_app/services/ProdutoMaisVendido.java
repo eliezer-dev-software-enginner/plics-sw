@@ -2,9 +2,10 @@ package my_app.services;
 
 import java.math.BigDecimal;
 
-// Produto do ranking "mais vendidos" do RelatoriosScreen — soma de quantidades
-// vendidas (PDV + vendas de mercadoria) agrupadas por código de barras, com a
-// descrição/unidade resolvidas da tabela produtos.
+// Item do card de produtos do RelatoriosScreen. No ranking "mais vendidos" a
+// quantidade é a soma de vendas (PDV + vendas de mercadoria) por código de barras;
+// no card "produtos sem venda no período" é BigDecimal.ZERO. Descrição/unidade
+// resolvidas da tabela produtos.
 public record ProdutoMaisVendido(
         String codigoBarras,
         String descricao,

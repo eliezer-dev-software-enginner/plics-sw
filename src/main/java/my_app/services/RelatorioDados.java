@@ -17,6 +17,7 @@ public record RelatorioDados(
         BigDecimal lucroLiquido,
         BigDecimal contasReceberEmAberto,
         BigDecimal contasPagarEmAberto,
-        List<ProdutoMaisVendido> produtosMaisVendidos
+        List<ProdutoMaisVendido> produtosMaisVendidos,
+        List<ProdutoMaisVendido> produtosSemVenda
 ) {
 }

@@ -53,6 +53,14 @@
 
 ## Últimas alterações
 
+### 2026-08-01: RelatoriosScreen — produtos sem venda no período
+- **Card "Produtos sem venda no período"** na RelatoriosScreen, logo abaixo do top 3 mais vendidos: lista todos os produtos cadastrados que **não tiveram nenhuma venda no período selecionado** (mesma janela do ranking), ordenados por descrição, com unidade entre parênteses. Quando todos os produtos venderam, mostra "Todos os produtos tiveram venda no período".
+- **`RelatorioService`**: agregação extraída para `quantidadesVendidas(long, long)` (privado, reutilizado por `produtosMaisVendidos` e `produtosSemVenda`); `produtosSemVenda` = todos os `produtos` (via `ProdutoService.listar()`) cujo `codigo_barras` não está no conjunto de vendidos do período, com `quantidade = ZERO` e descrição resolvida do cadastro. `RelatorioDados` ganhou o campo `produtosSemVenda`.
+- **ViewModel/Screen**: `State<String> produtosSemVenda` renderizado por um `Text(State<String>)` multi-linha (`\n` separa cada produto) — o `Text` do framework subscribe o `ReadableState`, então reage a cada relatório novo.
+- **PDF**: não incluído — o `RelatorioPdfExporter` é de página única e a lista pode ser longa (decisão em `docs/DECISIONS.md`).
+- **Testes**: 273 → 275 (`RelatorioServiceTest` +2 sem-venda no período e venda fora do período; asserts extras nos casos existentes), 0 falhas.
+- **Teste manual**: `testes-gerais.md` RelatoriosScreen +1 caso (#180 produtos sem venda no período).
+
 ### 2026-08-01: RelatoriosScreen — top 3 produtos mais vendidos do período
 - **Card "Produtos mais vendidos do período"** na RelatoriosScreen: mostra os 3 produtos com maior quantidade vendida no período escolhido, somando as duas fontes de venda — `pedido_itens` (PDV, filtrado pelo período via `pedidos.dataCriacao`) e `vendas` (VendaMercadoriaScreen) — com descrição/unidade resolvidas da tabela `produtos`. Produto vendido sem cadastro cai para o `codigo_barras` como descrição.
 - **`RelatorioService.produtosMaisVendidos(long, long)`** (novo): agrega em Java (`Map<codigo, quantidade>` com `BigDecimal::add`), ordena desc, limita a 3 — mesmo estilo dos "somarXPorPeriodo" (que já agregavam em Java, sem GROUP BY). `RelatorioDados` ganhou o campo `produtosMaisVendidos` (lista de `ProdutoMaisVendido` — record novo).
