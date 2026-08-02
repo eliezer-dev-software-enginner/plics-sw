@@ -34,7 +34,7 @@ updater_props.write_text(
 
 run_jpackage(temp_dir, "deb", [
     "--linux-shortcut",
-    "--linux-menu-group", "Office",
+    "--linux-menu-group", LINUX_MENU_GROUP,
     "--linux-package-name", APP_NAME.lower().replace(" ", "-"),
     "--add-launcher", f"{UPDATER_NAME}={updater_props}",
 ])

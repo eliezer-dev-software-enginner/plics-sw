@@ -26,7 +26,7 @@ smoke_test(temp_dir)
 print("[4/5] Gerando pacote .deb...")
 run_jpackage(temp_dir, "deb", [
     "--linux-shortcut",
-    "--linux-menu-group", "Office",
+    "--linux-menu-group", LINUX_MENU_GROUP,
     "--linux-package-name", APP_NAME.lower().replace(" ", "-"),
 ])
 

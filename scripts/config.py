@@ -28,6 +28,7 @@ APP_VERSION = _gradle_props["appVersion"] if _patch_number == 0 else f"{_gradle_
 
 MAIN_CLASS = _gradle_props["appMainClass"]
 VENDOR = _gradle_props["appVendor"]
+LINUX_MENU_GROUP = _gradle_props["appLinuxMenuGroup"]
 ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
 JAVAFX_VERSION = "25.0.1"
 
