@@ -11,7 +11,6 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ContasPagarModel;
 import my_app.domain.ContratoTelaCrudV3;
@@ -125,12 +124,12 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
         return Show.when(vm.modoPagamento, () ->
                 new Card(
                         new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                                .c_child(new Text("Registrar Pagamento", new TextProps().variant(TextVariant.SUBTITLE)))
+                                .c_child(new Text("Registrar Pagamento", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                                 .c_child(
                                         new Row(new RowProps().spacingOf(12).bottomVertically())
                                                 .r_child(
                                                         new Column(new ColumnProps())
-                                                                .c_child(new Text("Valor do Pagamento:", new TextProps().variant(TextVariant.BODY)))
+                                                                .c_child(new Text("Valor do Pagamento:", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                                 .c_child(Components.InputColumnCurrency("Valor", vm.valorPagamento))
                                                 )
                                                 .r_child(

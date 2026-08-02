@@ -10,7 +10,6 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import my_app.db.models.OrdemServicoModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.components.Components;
@@ -119,7 +118,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     private Component ItemDetails(OrdemServicoModel model) {
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes da ordem de serviço",
-                        new TextProps().variant(TextVariant.SUBTITLE)))
+                        new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                 .c_child(new SpacerVertical(20))
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Número da Ordem de serviço: ", model.getNumeroOs()))

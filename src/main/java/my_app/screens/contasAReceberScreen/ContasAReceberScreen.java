@@ -11,7 +11,6 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ContaAreceberModel;
 import my_app.domain.ContratoTelaCrudV3;
@@ -127,12 +126,12 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
         return Show.when(vm.modoRecebimento, () ->
                 new Card(
                         new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                                .c_child(new Text("Registrar Recebimento", new TextProps().variant(TextVariant.SUBTITLE)))
+                                .c_child(new Text("Registrar Recebimento", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                                 .c_child(
                                         new Row(new RowProps().spacingOf(12).bottomVertically())
                                                 .r_child(
                                                         new Column(new ColumnProps())
-                                                                .c_child(new Text("Valor do Recebimento:", new TextProps().variant(TextVariant.BODY)))
+                                                                .c_child(new Text("Valor do Recebimento:", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                                 .c_child(Components.InputColumnCurrency("Valor", vm.valorRecebimento))
                                                 )
                                                 .r_child(
@@ -167,23 +166,23 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
     private Component summarySection() {
         return new Card(
                 new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                        .c_child(new Text("Resumo Financeiro", new TextProps().variant(TextVariant.SUBTITLE)))
+                        .c_child(new Text("Resumo Financeiro", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                         .c_child(
                                 new Row(new RowProps().spacingOf(16))
                                         .r_child(
                                                 new Column(new ColumnProps())
-                                                        .c_child(new Text("Em Aberto", new TextProps().variant(TextVariant.BODY)))
+                                                        .c_child(new Text("Em Aberto", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                         .c_child(
                                                                 new Text(Utils.toBRLCurrency(vm.getTotalEmAberto()),
-                                                                        new TextProps().variant(TextVariant.BODY).color("#ff6b6b"))
+                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#ff6b6b"))
                                                         )
                                         )
                                         .r_child(
                                                 new Column(new ColumnProps())
-                                                        .c_child(new Text("Vencidas", new TextProps().variant(TextVariant.BODY)))
+                                                        .c_child(new Text("Vencidas", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                         .c_child(
                                                                 new Text(Utils.toBRLCurrency(vm.getTotalVencidas()),
-                                                                        new TextProps().variant(TextVariant.BODY).color("#dc3545"))
+                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#dc3545"))
                                                         )
                                         )
                         )

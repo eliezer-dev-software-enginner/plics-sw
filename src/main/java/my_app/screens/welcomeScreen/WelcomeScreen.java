@@ -14,7 +14,6 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import my_app.core.AppRoutes;
 
 public class WelcomeScreen implements ScreenComponent {
@@ -49,12 +48,12 @@ public class WelcomeScreen implements ScreenComponent {
                                 .children(
                                         new Image("assets/app_banner.png", new ImageProps().width(400).height(200).preserveRatio(true))
                                                 .ref(logoRef),
-                                        //new Text("Plics SW", new TextProps().variant(TextVariant.TITLE).bold().color(ThemeManager.theme().colors().secondary())),
+                                        //new Text("Plics SW", new TextProps().fontSize(ThemeManager.theme().typography().title()).bold().color(ThemeManager.theme().colors().secondary())),
                                         new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
-                                                new TextProps().variant(TextVariant.SUBTITLE).color("#fff")),
+                                                new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).color("#fff")),
                                         new LineHorizontal(),
                                         new Text("Acesso padrão configurado como",
-                                                new TextProps().variant(TextVariant.BODY).color("#fff")),
+                                                new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
                                         textRow(),
                                         new SpacerVertical(20),
                                         new Button("Entrar no sistema",
@@ -74,10 +73,10 @@ public class WelcomeScreen implements ScreenComponent {
     public Component textRow() {
         return new Row(new RowProps().width(200).maxWidth(300).centerHorizontally().bgColor(ThemeManager.theme().colors().border()))
                 .children(
-                        new Text("usuário", new TextProps().variant(TextVariant.BODY).color("#fff")),
-                        new Text(" admin", new TextProps().variant(TextVariant.BODY).bold().color("#fff")),
-                        new Text(" e senha", new TextProps().variant(TextVariant.BODY).color("#fff")),
-                        new Text(" 1234", new TextProps().variant(TextVariant.BODY).bold().color("#fff"))
+                        new Text("usuário", new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
+                        new Text(" admin", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().color("#fff")),
+                        new Text(" e senha", new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
+                        new Text(" 1234", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().color("#fff"))
                 );
     }
 }

@@ -8,6 +8,7 @@ import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -16,7 +17,6 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.ForEachState;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.Main;
 import my_app.core.AppRoutes;
@@ -95,7 +95,7 @@ public class HomeScreen implements ScreenComponent {
         return new Column().children(
                 Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(90)))
                         .withTransition(Animations::fadeSlide),
-                new Text(viewModel.vendasHoje, new TextProps().variant(TextVariant.BODY).bold().textColor("#fff"))
+                new Text(viewModel.vendasHoje, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().textColor("#fff"))
         );
     }
 
@@ -103,9 +103,9 @@ public class HomeScreen implements ScreenComponent {
         return new Card(new Column(new ColumnProps().centerHorizontally().paddingAll(20))
                         .children(
                                 Component.CreateFromJavaFxNode(FontIcon.of(ikon)),
-                                new Text(title, new TextProps().variant(TextVariant.BODY).bold()),
-                                new Text("do mês",  new TextProps().variant(TextVariant.SMALL)),
-                                new Text(valueState, new TextProps().variant(TextVariant.SUBTITLE).bold())
+                                new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()),
+                                new Text("do mês",  new TextProps().fontSize(ThemeManager.theme().typography().small())),
+                                new Text(valueState, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())
                         ),
                 new CardProps().padding(0).height(100).borderRadius(20).width(170)
         );
@@ -159,8 +159,8 @@ public class HomeScreen implements ScreenComponent {
                new Card(
                 new Column(new ColumnProps().centerHorizontally().paddingAll(20))
                         .c_child(new Image(cardItem.img, new ImageProps().size(60)))
-                        .c_child(new Text(cardItem.title, new TextProps().variant(TextVariant.BODY).bold()))
-                        .c_child(new Text(cardItem.desc,  new TextProps().variant(TextVariant.SMALL))),
+                        .c_child(new Text(cardItem.title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
+                        .c_child(new Text(cardItem.desc,  new TextProps().fontSize(ThemeManager.theme().typography().small()))),
                        new CardProps().padding(0).height(170).width(230).borderRadius(20)),
                ()-> ctx.router().spawnWindow(cardItem.destination,e->{})
        );

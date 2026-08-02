@@ -2,6 +2,7 @@ package my_app.screens.clienteScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Card;
 import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
@@ -13,7 +14,6 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.FlowRowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
 import my_app.domain.ContratoTelaCrudV3;
@@ -104,7 +104,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     Component ItemDetails(ClienteModel model) {
         return new Column(new ColumnProps().paddingAll(20))
-                .c_child(new Text("Detalhes do cliente", new TextProps().variant(TextVariant.SUBTITLE)))
+                .c_child(new Text("Detalhes do cliente", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                 .c_child(new SpacerVertical(20))
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Nome: ", model.getNome()))

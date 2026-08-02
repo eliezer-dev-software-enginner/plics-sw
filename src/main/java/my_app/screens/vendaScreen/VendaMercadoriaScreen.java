@@ -9,7 +9,6 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
 import my_app.domain.ContratoTelaCrudV3;
@@ -104,7 +103,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     Component ItemDetails(VendaModel model) {
         var validade = model.getDataValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getDataValidade()) : "Sem validade";
         return new Column(new ColumnProps().paddingAll(20))
-                .c_child(new Text("Detalhes da venda de mercadoria", new TextProps().variant(TextVariant.SUBTITLE)))
+                .c_child(new Text("Detalhes da venda de mercadoria", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                 .c_child(new SpacerVertical(20))
                 .c_child(Show.when(model.getProduto().getImagem()!=null,
                             ()->new Image(model.getProduto().getImagem(), new ImageProps().size(100)))

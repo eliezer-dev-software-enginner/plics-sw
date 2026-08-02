@@ -6,6 +6,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Button;
 import megalodonte.components.Card;
 import megalodonte.components.SpacerVertical;
@@ -18,7 +19,6 @@ import megalodonte.props.ContainerProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import my_app.domain.components.Components;
 
 public class RelatoriosScreen implements ScreenComponent {
@@ -100,7 +100,7 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardReceitas() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Receitas", new TextProps().variant(TextVariant.SUBTITLE).bold()),
+                new Text("Receitas", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
                 new SpacerVertical(10),
                 linha("Vendas de mercadoria", vm.receitasVendas),
                 linha("Vendas no PDV", vm.receitasPedidosPdv),
@@ -112,7 +112,7 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardDespesas() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Despesas", new TextProps().variant(TextVariant.SUBTITLE).bold()),
+                new Text("Despesas", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
                 new SpacerVertical(10),
                 linha("Compras de mercadoria", vm.despesasCompras),
                 linha("Contas a pagar pagas", vm.despesasContasPagas),
@@ -123,10 +123,10 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardResumo() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Lucro líquido do período", new TextProps().variant(TextVariant.SUBTITLE).bold()),
-                new Text(vm.lucroLiquido, new TextProps().variant(TextVariant.TITLE).bold()),
+                new Text("Lucro líquido do período", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
+                new Text(vm.lucroLiquido, new TextProps().fontSize(ThemeManager.theme().typography().title()).bold()),
                 new SpacerVertical(15),
-                new Text("Situação atual (não vinculada ao período)", new TextProps().variant(TextVariant.SMALL)),
+                new Text("Situação atual (não vinculada ao período)", new TextProps().fontSize(ThemeManager.theme().typography().small())),
                 linha("Contas a receber em aberto", vm.contasReceberEmAberto),
                 linha("Contas a pagar em aberto", vm.contasPagarEmAberto)
         ));
@@ -134,26 +134,26 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardMaisVendidos() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Produtos mais vendidos do período", new TextProps().variant(TextVariant.SUBTITLE).bold()),
+                new Text("Produtos mais vendidos do período", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
                 new SpacerVertical(10),
-                new Text(vm.produtoMaisVendido1, new TextProps().variant(TextVariant.BODY)),
-                new Text(vm.produtoMaisVendido2, new TextProps().variant(TextVariant.BODY)),
-                new Text(vm.produtoMaisVendido3, new TextProps().variant(TextVariant.BODY))
+                new Text(vm.produtoMaisVendido1, new TextProps().fontSize(ThemeManager.theme().typography().body())),
+                new Text(vm.produtoMaisVendido2, new TextProps().fontSize(ThemeManager.theme().typography().body())),
+                new Text(vm.produtoMaisVendido3, new TextProps().fontSize(ThemeManager.theme().typography().body()))
         ));
     }
 
     private Component cardSemVenda() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Produtos sem venda no período", new TextProps().variant(TextVariant.SUBTITLE).bold()),
+                new Text("Produtos sem venda no período", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
                 new SpacerVertical(10),
-                new Text(vm.produtosSemVenda, new TextProps().variant(TextVariant.BODY))
+                new Text(vm.produtosSemVenda, new TextProps().fontSize(ThemeManager.theme().typography().body()))
         ));
     }
 
     private Component linha(String label, megalodonte.base.state.State<String> valor) {
         return new Row(new RowProps().spacingOf(10)).children(
-                new Text(label + ":", new TextProps().variant(TextVariant.BODY)),
-                new Text(valor, new TextProps().variant(TextVariant.BODY).bold())
+                new Text(label + ":", new TextProps().fontSize(ThemeManager.theme().typography().body())),
+                new Text(valor, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold())
         );
     }
 }

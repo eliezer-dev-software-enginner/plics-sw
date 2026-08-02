@@ -2,13 +2,13 @@ package my_app.screens.fornecedorScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
@@ -45,7 +45,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20))
                         .c_child(new Row(new RowProps().centerHorizontally())
-                                .r_child(new Text("Cadastro de Fornecedor", new TextProps().variant(TextVariant.SUBTITLE).bold())))
+                                .r_child(new Text("Cadastro de Fornecedor", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())))
                         .c_child(new SpacerVertical(20))
                         .c_child(informacoesPessoais())
                         .c_child(new SpacerVertical(20))
@@ -97,7 +97,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
     Component ItemDetails(FornecedorModel model) {
         return new Column(new ColumnProps().paddingAll(20))
-                .c_child(new Text("Detalhes do fornecedor", new TextProps().variant(TextVariant.SUBTITLE)))
+                .c_child(new Text("Detalhes do fornecedor", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                 .c_child(new SpacerVertical(20))
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Nome: ", model.getNome()))

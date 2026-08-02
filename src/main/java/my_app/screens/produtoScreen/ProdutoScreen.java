@@ -12,7 +12,6 @@ import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.Show;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.FornecedorModel;
@@ -75,7 +74,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 new Container(new ContainerProps().paddingAll(5))
                         .children(
                                 new Text("Dados do Produto",
-                                        new TextProps().variant(TextVariant.BODY).bold()),
+                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()),
                                 new SpacerVertical(ThemeManager.theme().spacing().sm()),
                                 new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm()))
                                         .children(
@@ -193,7 +192,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
 
         return new Column(new ColumnProps().paddingAll(20))
                 .children(
-                        new Text("Detalhes do produto", new TextProps().variant(TextVariant.SUBTITLE)),
+                        new Text("Detalhes do produto", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())),
                         new SpacerVertical(20),
                         Show.when(model.getImagem()!=null, ()->new Image(model.getImagem(), new ImageProps().size(100))),
                         Components.TextWithDetails("ID: ", model.getId()),

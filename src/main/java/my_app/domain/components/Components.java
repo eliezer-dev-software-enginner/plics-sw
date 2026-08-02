@@ -34,7 +34,6 @@ import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import megalodonte.utils.related.TextVariant;
 import megalodonte.v2.ListState;
 import megalodonte.v2.Show;
 import my_app.db.models.ProdutoModel;
@@ -292,7 +291,7 @@ public class Components {
     public static Card CardImageSelector(State<String> imagemState, Runnable handleChangeImage) {
         return new Card(
                 new Column(new ColumnProps().centerHorizontally().spacingOf(15))
-                        .c_child(new Text("Foto do produto", new TextProps().variant(TextVariant.BODY).bold()))
+                        .c_child(new Text("Foto do produto", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
                         .c_child(new Image(imagemState, new ImageProps().size(120)))
                         .c_child(new SpacerVertical().fill())
                         .c_child(new Button("Inserir imagem",
@@ -347,11 +346,11 @@ public class Components {
     }
 
     public static Component FormTitle(String title, String textColor) {
-        return new Text(title, new TextProps().variant(TextVariant.BODY).bold().textColor(textColor));
+        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().textColor(textColor));
     }
 
     public static Component FormTitle(String title) {
-        return new Text(title, new TextProps().variant(TextVariant.BODY).bold());
+        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold());
     }
 
     static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
@@ -872,7 +871,7 @@ public class Components {
 
     public static Component errorText(String message) {
         return new Container(new ContainerProps().bgColor("white")).c_child(new SpacerVertical(5))
-                .c_child(new Text(message, new TextProps().variant(TextVariant.SUBTITLE).textColor("red")));
+                .c_child(new Text(message, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).textColor("red")));
     }
 
 //v3
@@ -926,7 +925,7 @@ public class Components {
                 new Column(new ColumnProps().centerHorizontally())
                         .c_child(icon)
                         .c_child(new SpacerVertical(6))
-                        .c_child(new Text(title, new TextProps().variant(TextVariant.SMALL)))
+                        .c_child(new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().small())))
         ), onClick);
     }
 
