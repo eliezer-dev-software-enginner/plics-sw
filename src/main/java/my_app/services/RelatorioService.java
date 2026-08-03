@@ -25,7 +25,7 @@ import java.util.Set;
 // já usados pela Home (que só calculam pro mês atual) — aqui o período é escolhido pelo usuário.
 public class RelatorioService implements AutoCloseable {
 
-    private static final int TOP_PRODUTOS = 3;
+    private static final int TOP_PRODUTOS = 10;
 
     private final VendaService vendaService;
     private final PedidoService pedidoService;

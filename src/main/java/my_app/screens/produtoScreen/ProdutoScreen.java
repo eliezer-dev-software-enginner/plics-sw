@@ -1,10 +1,11 @@
 package my_app.screens.produtoScreen;
 
-import javafx.scene.control.CheckBox;
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
+import megalodonte.ForEachState;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
+import megalodonte.base.state.State;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -14,6 +15,7 @@ import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.CategoriaModel;
+import my_app.db.models.CorModel;
 import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import megalodonte.base.theme.ThemeInterface;
@@ -119,40 +121,33 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     private Component coresCheckboxes() {
-        var outerColumn = new Column(new ColumnProps().spacingOf(3));
+        var checkboxesPorCor = ForEachState.of(vm.cores, this::corCheckbox);
 
-        outerColumn.c_child(new Text("Cores", new TextProps().fontSize(theme.typography().small())));
-        vm.cores.onChange(listaCores->{
-            var cbSize = 4;
-            var rows = (int) Math.ceil((double) listaCores.size() / cbSize);
+        return new Column(new ColumnProps().spacingOf(3))
+                .c_child(new Text("Cores", new TextProps().fontSize(theme.typography().small())))
+                .c_child(new FlowRow(new FlowRowProps().spacingOf(8).width(620)).items(checkboxesPorCor));
+    }
 
-            for (int r = 0; r < rows; r++) {
-                var row = new Row(new RowProps().spacingOf(8));
-                int start = r * cbSize;
-                int end = Math.min(start + cbSize, listaCores.size());
-                for (int i = start; i < end; i++) {
-                    var cor = listaCores.get(i);
-                    var cb = new CheckBox(cor.getNome());
+    private Checkbox corCheckbox(CorModel cor) {
+        var selecionado = new State<>(vm.coresSelecionadas.get().contains(cor.getNome()));
 
-                    cb.setSelected(vm.coresSelecionadas.get().contains(cor.getNome()));
-                    //checkbox -> coresSelecionadas
-                    cb.selectedProperty().addListener((obs, old, selected) -> {
-                        var current = new java.util.ArrayList<>(vm.coresSelecionadas.get());
-                        if (selected) { if (!current.contains(cor.getNome())) current.add(cor.getNome()); }
-                        else { current.remove(cor.getNome()); }
-                        vm.coresSelecionadas.set(current);
-                    });
-
-                    //checkbox <- coresSelecionadas
-                    vm.coresSelecionadas.subscribe(coresSelecionadas-> cb.setSelected(coresSelecionadas.contains(cor.getNome())));
-
-                    row.r_child(Component.CreateFromJavaFxNode(cb));
-                }
-                outerColumn.c_child(row);
+        // checkbox -> coresSelecionadas
+        selecionado.subscribe(isSelected -> {
+            var current = new java.util.ArrayList<>(vm.coresSelecionadas.get());
+            boolean jaSelecionado = current.contains(cor.getNome());
+            if (isSelected && !jaSelecionado) {
+                current.add(cor.getNome());
+                vm.coresSelecionadas.set(current);
+            } else if (!isSelected && jaSelecionado) {
+                current.remove(cor.getNome());
+                vm.coresSelecionadas.set(current);
             }
         });
 
-        return outerColumn;
+        // coresSelecionadas -> checkbox
+        vm.coresSelecionadas.subscribe(selecionadas -> selecionado.set(selecionadas.contains(cor.getNome())));
+
+        return new Checkbox(cor.getNome(), selecionado, new CheckboxProps().fontSize(theme.typography().small()));
     }
 
     public Component ContainerLeft(ProdutoScreenViewModel vm) {
@@ -167,19 +162,19 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
         return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()))
                 .children(
                         Components.InputWithButtonRow("SKU(Código de barras)", "Ex: 7891234567895", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
-                        Components.InputColumn("Nome", vm.descricao, "Ex: Camiseta Polo M"),
+                        Components.InputColumn("Nome", vm.descricao, "Ex: Camiseta Polo M",150),
                         Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
-                        Components.InputColumn("Marca", vm.marca, "Ex: Nike"),
+                        Components.InputColumn("Marca", vm.marca, "Ex: Nike",150),
                         coresCheckboxes(),
-                        Components.InputColumn("Tamanho", vm.tamanhoSelected, "Ex: M"),
-                        Components.InputColumn("Modelo", vm.modelo, "Ex: Slim Fit"),
+                        Components.InputColumn("Tamanho", vm.tamanhoSelected, "Ex: M",90),
+                        Components.InputColumn("Modelo", vm.modelo, "Ex: Slim Fit",150),
                         Components.InputColumnCurrency("Preço de compra", vm.precoCompra),
                         Components.InputColumnCurrency("Preço de venda", vm.precoVenda),
                         Components.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, CategoriaModel::getNome),
                         Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome),
                         Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it),
                         Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade")),
-                        Components.InputColumn("Garantia", vm.garantia, "Ex: 12 meses"),
+                        Components.InputColumn("Garantia", vm.garantia, "Ex: 12 meses",150),
                         Components.TextAreaColumn("Observações", vm.observacoes, "Ex: Produto frágil, manusear com cuidado"),
                         Components.InputColumnNumeric("Estoque", vm.estoque, "Ex: 100"),
                         Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, "Ex: 10")
@@ -189,7 +184,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     Component ItemDetails(ProdutoModel model) {
         var validade = model.getValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getValidade()) : "Sem validade";
 
-        return new Column(new ColumnProps().paddingAll(20))
+        return new Column(new ColumnProps().paddingAll(theme.spacing().md()))
                 .children(
                         new Text("Detalhes do produto", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())),
                         new SpacerVertical(20),

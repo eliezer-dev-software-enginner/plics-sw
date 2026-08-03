@@ -25,14 +25,15 @@ import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.Button;
 import megalodonte.components.DatePicker;
-import megalodonte.components.inputs.Input;
 import megalodonte.components.inputs.OnChangeResult;
 import megalodonte.components.inputs.TextAreaInput;
+import megalodonte.components.v2.Input;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
+import megalodonte.props.v2.InputProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
 import megalodonte.v2.Show;
@@ -481,7 +482,7 @@ public class Components {
     }
 
     public static Component InputColumnCep(String label, State<String> inputState) {
-        var inputProps = getInputProps("00000-000");
+        var inputProps = getInputPropsV2("00000-000").width(120);
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -506,7 +507,7 @@ public class Components {
     }
 
     public static Component InputColumnCpf(String label, State<String> inputState) {
-        var inputProps = getInputProps("000.000.000-00");
+        var inputProps = getInputPropsV2("000.000.000-00").width(160);
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -538,23 +539,12 @@ public class Components {
         }
 
         public void requestFocus() {
-            UI.runOnUi(() -> {
-                Node node = inputRef.getJavaFxNode();
-                if (node instanceof Parent parent) {
-                    for (Node child : parent.getChildrenUnmodifiable()) {
-                        if (child instanceof TextInputControl) {
-                            child.requestFocus();
-                            return;
-                        }
-                    }
-                }
-                node.requestFocus();
-            });
+            inputRef.requestFocus();
         }
     }
 
     public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder, InputRef inputRef) {
-        var inputProps = getInputProps(placeholder);
+        var inputProps = getInputPropsV2(placeholder).width(140);
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -616,7 +606,7 @@ public class Components {
     }
 
     public static Component InputColumnCnpjAlfanumerico(String label, State<String> inputState) {
-        var inputProps = getInputProps("AA.AAA.AAA/AAAA-DD");
+        var inputProps = getInputPropsV2("AA.AAA.AAA/AAAA-DD").width(190);
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -641,7 +631,7 @@ public class Components {
     }
 
     public static Component InputColumnPhone(String label, State<String> inputState) {
-        var inputProps = getInputProps("(00) 00000-0000");
+        var inputProps = getInputPropsV2("(00) 00000-0000").width(160);
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
@@ -667,7 +657,7 @@ public class Components {
     }
 
     public static Component InputColumnNumeric(String label, State<String> inputState, String placeholder) {
-        var inputProps = getInputProps(placeholder);
+        var inputProps = getInputPropsV2(placeholder).width(100);
 
         var input = new Input(inputState, inputProps)
                 .onChange(value -> {
@@ -691,7 +681,7 @@ public class Components {
         var icon = Entypo.CREDIT;
         var fonticon = FontIcon.of(icon, 15, Color.web("green"));
 
-        var inputProps = getInputProps("R$ 0,00").width(140);
+        var inputProps = getInputPropsV2("R$ 0,00").width(140);
 
         if (disableInput) inputProps.disable();
 
@@ -726,14 +716,23 @@ public class Components {
         return InputColumnCurrency(label, inputState, false);
     }
 
-    static InputProps getInputProps(String placeholder) {
+    static megalodonte.props.InputProps getInputProps(String placeholder) {
         return getInputProps(placeholder, 31);
     }
 
-    static InputProps getInputProps(String placeholder, int height) {
-        return new InputProps().height(height)
+    static megalodonte.props.InputProps getInputProps(String placeholder, int height) {
+        return new megalodonte.props.InputProps().height(height)
                 .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small())
                 .fontSize(ThemeManager.theme().typography().small());
+    }
+
+    static InputProps getInputPropsV2(String placeholder) {
+        return getInputPropsV2(placeholder, 31);
+    }
+
+    static InputProps getInputPropsV2(String placeholder, int height) {
+        return new InputProps().height(height)
+                .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small());
     }
 
     public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder, Runnable onEnter) {
@@ -743,7 +742,7 @@ public class Components {
     public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder,
                                                          Runnable onEnter, Ref<Input> ref) {
         var input = new Input((State<String>) inputState,
-                        getInputProps(placeholder).borderWidth(ThemeManager.theme().border().width())
+                        getInputPropsV2(placeholder).width(100).borderWidth(ThemeManager.theme().border().width())
                                 .borderColor(ThemeManager.theme().colors().border()).borderRadius(ThemeManager.theme().border().radiusMd())
                 ).onEnter(onEnter);
         if (ref != null) input.ref(ref);
@@ -772,7 +771,7 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
                 .c_child(new Input((State<String>) inputState,
-                                getInputProps(placeholder)
+                                getInputPropsV2(placeholder).width(220)
                         )
                 )
                 .c_child(Show.when(sugestoesProdutoVisible,
@@ -790,7 +789,7 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
                 .c_child(new Input((State<String>) inputState,
-                                getInputProps(placeholder)
+                                getInputPropsV2(placeholder).width(220)
                         )
                 )
                 .c_child(Show.when(sugestoesProdutoVisible,
@@ -799,10 +798,10 @@ public class Components {
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
-                                        int borderWidth, int borderRadius, String borderColor, String labelColor) {
-        var props = getInputProps(placeholder);
+                                        int borderWidth, int borderRadius, String borderColor, String labelColor, Integer width) {
+        var props = getInputPropsV2(placeholder);
         if (disableInput) props.disable();
-
+        props.width(width != null ? width : 220);
 
         TextProps labelProps = new TextProps().fontSize(ThemeManager.theme().typography().small());
         if (labelColor!=null) {
@@ -819,16 +818,31 @@ public class Components {
     }
 
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,String labelColor) {
-        return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(), ThemeManager.theme().border().radiusMd(), ThemeManager.theme().colors().border(),labelColor);
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
+                                        String labelColor, Integer width) {
+        return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(),
+                ThemeManager.theme().border().radiusMd(),
+                ThemeManager.theme().colors().border(),labelColor, width);
+    }
+
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,  String labelColor) {
+        return InputColumn(label, inputState, placeholder, disableInput,labelColor,null);
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-        return InputColumn(label, inputState, placeholder, disableInput,null);
+        return InputColumn(label, inputState, placeholder, disableInput,null,null);
+    }
+
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, Integer width) {
+        return InputColumn(label, inputState, placeholder, disableInput,null,width);
     }
 
     public static Component InputColumnAuth(String label, ReadableState<String> inputState, String placeholder) {
         return InputColumn(label, inputState, placeholder, false, "#fff");
+    }
+
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder,Integer width) {
+        return InputColumn(label, inputState, placeholder, false,width);
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {

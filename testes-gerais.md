@@ -162,7 +162,7 @@ Acesso: Home > menu "Gerencial" > "Relatórios".
 | 175 | Conferir consistência com a Home (período = mês atual) | Receitas/Despesas/Lucro do relatório devem bater com os cards da Home, já que usam os mesmos totais por período. | | |
 | 176 | Clicar em "Baixar PDF" após gerar um relatório, escolher local e salvar | Diálogo "Salvar como" abre; PDF é salvo com nome da empresa, período e os mesmos valores exibidos na tela (Receitas, Despesas, Lucro Líquido, situação de contas em aberto). | | |
 | 177 | Clicar em "Baixar PDF" e cancelar o diálogo (não escolher arquivo) | Nada é salvo, nenhum alerta de erro aparece. | | |
-| 178 | Gerar relatório de um período com vendas | Card "Produtos mais vendidos do período" mostra o ranking: produto mais vendido primeiro (quantidade = soma de PDV + vendas de mercadoria, na unidade do produto), limitado a 3. Conferir com os dados de VendaMercadoriaScreen/PDVScreen do período. | | |
+| 178 | Gerar relatório de um período com vendas | Card "Produtos mais vendidos do período" mostra o ranking: produto mais vendido primeiro (quantidade = soma de PDV + vendas de mercadoria, na unidade do produto), limitado a 10. Conferir com os dados de VendaMercadoriaScreen/PDVScreen do período. | | |
 | 179 | Gerar relatório de período sem vendas | Card "Produtos mais vendidos do período" aparece vazio, sem erro. | | |
 | 180 | Gerar relatório de um período com produtos cadastrados sem venda | Card "Produtos sem venda no período" lista, em ordem alfabética, todos os produtos cadastrados que não tiveram venda no período (com a unidade entre parênteses). Se todos os produtos venderam, mostra "Todos os produtos tiveram venda no período". | | |
 

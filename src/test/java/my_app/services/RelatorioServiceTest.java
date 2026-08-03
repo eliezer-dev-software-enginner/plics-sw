@@ -129,7 +129,7 @@ class RelatorioServiceTest extends BaseServiceTest {
     }
 
     @Test
-    void deveRetornarTop3ProdutosMaisVendidosSomandoPdvEVendas() throws Exception {
+    void deveRetornarProdutosMaisVendidosOrdenadosSomandoPdvEVendas() throws Exception {
         var produtoService = new ProdutoService(session);
         produtoService.salvar(produto("111", "Camiseta", "UN"));
         produtoService.salvar(produto("222", "Calça", "UN"));
@@ -156,8 +156,10 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         var dados = relatorioService.gerar(INICIO, fim());
 
+        // Só 4 produtos venderam nesse período — todos abaixo do limite de top 10,
+        // então devem aparecer todos, ordenados por quantidade decrescente.
         var top = dados.produtosMaisVendidos();
-        assertEquals(3, top.size());
+        assertEquals(4, top.size());
 
         assertEquals("222", top.get(0).codigoBarras());
         assertEquals("Calça", top.get(0).descricao());
@@ -170,11 +172,42 @@ class RelatorioServiceTest extends BaseServiceTest {
         assertEquals("111", top.get(2).codigoBarras());
         assertBigDecimalEquals(BigDecimal.valueOf(2), top.get(2).quantidade());
 
+        assertEquals("333", top.get(3).codigoBarras());
+        assertBigDecimalEquals(BigDecimal.valueOf(1), top.get(3).quantidade());
+
         assertTrue(dados.produtosSemVenda().isEmpty());
     }
 
     @Test
-    void deveRetornarMenosDeTresProdutosQuandoPoucosForamVendidos() throws Exception {
+    void deveLimitarATop10ProdutosMaisVendidosQuandoMaisDeDezForamVendidos() throws Exception {
+        var produtoService = new ProdutoService(session);
+        var vendaService = new VendaService(session);
+
+        // 12 produtos vendidos, quantidades decrescentes e distintas — só os
+        // 10 primeiros (quantidades 12 a 3) devem aparecer no top.
+        for (int i = 1; i <= 12; i++) {
+            String codigo = "p" + i;
+            int quantidade = 13 - i;
+            produtoService.salvar(produto(codigo, "Produto " + i, "UN"));
+            vendaService.salvar(venda(codigo, quantidade), false);
+        }
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        var top = dados.produtosMaisVendidos();
+        assertEquals(10, top.size());
+        assertEquals("p1", top.get(0).codigoBarras());
+        assertBigDecimalEquals(BigDecimal.valueOf(12), top.get(0).quantidade());
+        assertEquals("p10", top.get(9).codigoBarras());
+        assertBigDecimalEquals(BigDecimal.valueOf(3), top.get(9).quantidade());
+
+        // Todos os 12 produtos cadastrados nesse teste tiveram venda — produtosSemVenda
+        // só lista os que ficaram de fora do top, não os que nunca venderam.
+        assertTrue(dados.produtosSemVenda().isEmpty());
+    }
+
+    @Test
+    void deveRetornarMenosDeDezProdutosQuandoPoucosForamVendidos() throws Exception {
         var produtoService = new ProdutoService(session);
         produtoService.salvar(produto("111", "Camiseta", "UN"));
 

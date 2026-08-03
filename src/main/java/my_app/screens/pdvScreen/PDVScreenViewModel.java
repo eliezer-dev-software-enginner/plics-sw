@@ -3,7 +3,7 @@ package my_app.screens.pdvScreen;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Ref;
 import megalodonte.base.state.State;
-import megalodonte.components.inputs.Input;
+import megalodonte.components.v2.Input;
 import megalodonte.v2.ListState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;

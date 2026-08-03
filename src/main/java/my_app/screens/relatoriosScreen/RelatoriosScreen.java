@@ -4,6 +4,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
+import javafx.scene.paint.Color;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
@@ -20,6 +21,9 @@ import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.components.Components;
+import org.kordamp.ikonli.Ikon;
+import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 public class RelatoriosScreen implements ScreenComponent {
 
@@ -44,10 +48,9 @@ public class RelatoriosScreen implements ScreenComponent {
                         new SpacerVertical(20),
                         new Row(new RowProps().spacingOf(15)).children(
                                 cardReceitas(),
-                                cardDespesas()
+                                cardDespesas(),
+                                cardResumo()
                         ),
-                        new SpacerVertical(15),
-                        cardResumo(),
                         new SpacerVertical(20),
                         cardMaisVendidos(),
                         new SpacerVertical(20),
@@ -59,7 +62,9 @@ public class RelatoriosScreen implements ScreenComponent {
                                 graficoPizzaDespesas()
                         ),
                         new SpacerVertical(20),
-                        new Button("Baixar PDF").onClick(vm::baixarPdf),
+                        new Button("Baixar PDF")
+                                .icon(Components.ikon(AntDesignIconsOutlined.FILE_PDF, 16, "white"))
+                                .onClick(vm::baixarPdf),
                         new SpacerVertical(20)
                 )
         );
@@ -94,13 +99,22 @@ public class RelatoriosScreen implements ScreenComponent {
         return new Card(new Row(new RowProps().spacingOf(15).centerVertically()).children(
                 Components.DatePickerColumn(vm.dataInicio, "Data início"),
                 Components.DatePickerColumn(vm.dataFim, "Data fim"),
-                new Button("Gerar relatório").onClick(vm::gerarRelatorio)
+                new Button("Gerar relatório")
+                        .icon(Components.ikon(AntDesignIconsOutlined.BAR_CHART, 16, "white"))
+                        .onClick(vm::gerarRelatorio)
         ));
+    }
+
+    private Component cardTitulo(String titulo, Ikon icon, String color) {
+        return new Row(new RowProps().spacingOf(8).centerVertically()).children(
+                Component.CreateFromJavaFxNode(FontIcon.of(icon, 18, Color.web(color))),
+                new Text(titulo, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())
+        );
     }
 
     private Component cardReceitas() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Receitas", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
+                cardTitulo("Receitas", AntDesignIconsOutlined.RISE, "#10b981"),
                 new SpacerVertical(10),
                 linha("Vendas de mercadoria", vm.receitasVendas),
                 linha("Vendas no PDV", vm.receitasPedidosPdv),
@@ -112,7 +126,7 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardDespesas() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Despesas", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
+                cardTitulo("Despesas", AntDesignIconsOutlined.FALL, "#ef4444"),
                 new SpacerVertical(10),
                 linha("Compras de mercadoria", vm.despesasCompras),
                 linha("Contas a pagar pagas", vm.despesasContasPagas),
@@ -123,7 +137,7 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardResumo() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Lucro líquido do período", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
+                cardTitulo("Lucro líquido do período", AntDesignIconsOutlined.FUND, "#2563eb"),
                 new Text(vm.lucroLiquido, new TextProps().fontSize(ThemeManager.theme().typography().title()).bold()),
                 new SpacerVertical(15),
                 new Text("Situação atual (não vinculada ao período)", new TextProps().fontSize(ThemeManager.theme().typography().small())),
@@ -134,7 +148,7 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardMaisVendidos() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Produtos mais vendidos do período", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
+                cardTitulo("Produtos mais vendidos do período", AntDesignIconsOutlined.TROPHY, "#f59e0b"),
                 new SpacerVertical(10),
                 new Text(vm.produtoMaisVendido1, new TextProps().fontSize(ThemeManager.theme().typography().body())),
                 new Text(vm.produtoMaisVendido2, new TextProps().fontSize(ThemeManager.theme().typography().body())),
@@ -144,7 +158,7 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private Component cardSemVenda() {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
-                new Text("Produtos sem venda no período", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()),
+                cardTitulo("Produtos sem venda no período", AntDesignIconsOutlined.INBOX, "#6b7280"),
                 new SpacerVertical(10),
                 new Text(vm.produtosSemVenda, new TextProps().fontSize(ThemeManager.theme().typography().body()))
         ));
