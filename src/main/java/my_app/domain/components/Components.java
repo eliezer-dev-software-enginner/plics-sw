@@ -860,8 +860,12 @@ public class Components {
     }
 
     public static Component InputWithButtonRow(String label, String btnTitle, State<String> inputState, Runnable onClick) {
+        return InputWithButtonRow(label, "", btnTitle, inputState, onClick);
+    }
+
+    public static Component InputWithButtonRow(String label, String placeholder, String btnTitle, State<String> inputState, Runnable onClick) {
         return new Row(new RowProps().bottomVertically())
-                .r_child(Components.InputColumn(label, inputState, ""))
+                .r_child(Components.InputColumn(label, inputState, placeholder))
                 .r_child(new Button(btnTitle, new ButtonProps().height(32).textColor("#FFF")
                                 .borderRadius(ThemeManager.theme().border().radiusSm()).borderWidth(ThemeManager.theme().border().width()).borderColor(ThemeManager.theme().colors().primary())
                         )

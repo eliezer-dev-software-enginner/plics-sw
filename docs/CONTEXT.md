@@ -53,6 +53,12 @@
 
 ## Últimas alterações
 
+### 2026-08-03: Placeholders no ProdutoScreen, rename "Descrição curta"→"Nome" e remoção do campo Comissão
+- **Placeholders**: todos os inputs de texto/numérico/moeda do formulário de ProdutoScreen ganharam placeholder (`Components.InputColumn`/`InputColumnNumeric`/`InputWithButtonRow`), seguindo o padrão "Ex: ..." já usado nas demais telas. `Components.InputWithButtonRow` ganhou overload com parâmetro `placeholder` (usado no campo de SKU).
+- **Rename**: label "Descrição curta" → "Nome" (campo continua mapeado em `ProdutoModel.descricao`, sem mudança de model/coluna).
+- **Remoção do campo Comissão**: campo nunca era exibido em nenhuma tabela/relatório/cálculo — só existia no formulário e na tabela `produtos`, sem uso downstream. Removido de `ProdutoModel` (campo `comissao`), `ProdutoScreenViewModel` (state, `populateModelFromFields`, `populateFieldsFromModel`, `clearForm`, cópia em `asyncAtualizar`) e `ProdutoScreen` (input do formulário). Coluna do banco removida via `V32__remove_comissao_produtos.sql` (`ALTER TABLE produtos DROP COLUMN comissao` — suportado desde SQLite 3.35, projeto usa 3.45.1.0). `ProdutoRepositoryTest` ajustado para não setar mais o campo.
+- **Testes manuais**: coluna "Comissão" removida das tabelas de ProdutoScreen nos 5 arquivos de perfil (`testes-loja-de-roupas.md`, `testes-petshop.md`, `testes-lanchonete.md`, `testes-acougue.md`, `testes-mercado.md`).
+
 ### 2026-08-02: Botão "Imprimir venda" no Histórico do Caixa (PedidosScreen)
 - **`PedidosScreenViewModel`**: novo método `imprimirVendaSelecionada()`, espelhando `PDVScreenViewModel.imprimirNota()` — opera sobre `pedidoSelecionado.get()` (linha selecionada na tabela) em vez da última venda finalizada. Reaproveita `carregarPortaImpressora()` e o record `DadosNotaPedido`/`carregarDadosNotaPedido()` já existentes na classe (duplicado por VM, mesmo padrão já usado para `EscPosPrinter` em outras telas). Novos campos `EmpresaService empresaService` e `EscPosPrinter escPosPrinter` no construtor; `onDestroy()` passou a fechar também `empresaService`.
 - **`PedidosScreen`**: botão "Imprimir venda" adicionado na `Row` junto ao "Excluir venda selecionada", ambos atrás de `Show.when(vm.temPedidoSelecionado, ...)`.

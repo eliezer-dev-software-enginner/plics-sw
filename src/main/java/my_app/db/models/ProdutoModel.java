@@ -51,7 +51,6 @@ public class ProdutoModel {
     private String modelo;
 
     private Long validade;
-    private String comissao;
     private String garantia;
 
     @Column(name = "dataCriacao")

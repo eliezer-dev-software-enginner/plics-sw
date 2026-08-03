@@ -21,17 +21,17 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-------------|-----------|----------|----------|----------|-------------|--------|-----------------|------|---|
-| 113 | Ração cães 15kg | RAC-C-001 | Ração Cães 15kg | KG | Purina Pet | - | - | - | R$ 45,00 | R$ 79,90 | Cachorros | Purina Pet | 20 | 5 | Sim | 15/12/2026 | - | - | Ração premium cães adultos | - | Salvo com sucesso. | | |
-| 114 | Ração gatos 10kg | RAC-G-001 | Ração Gatos 10kg | KG | Royal Canin | - | - | - | R$ 55,00 | R$ 89,90 | Gatos | Royal Canin | 15 | 5 | Sim | 20/01/2027 | - | - | - | - | Salvo com sucesso. | | |
-| 115 | Areia sanitária 4kg | ARE-001 | Areia Sanitária 4kg | KG | PetBrasil | - | - | - | R$ 12,00 | R$ 24,90 | Gatos | PetBrasil | 30 | 10 | Nao | - | - | 5% | Areia aglomerante | - | Salvo com sucesso. | | |
-| 116 | Brinquedo (unidade) | BRI-001 | Brinquedo Osso Borracha | UN | PetBrasil | Marrom | - | - | R$ 3,50 | R$ 9,90 | Cachorros | PetBrasil | 50 | 10 | Nao | - | 1 mês | - | Brinquedo resistente para cães | - | Salvo com sucesso com unidade UN. | | |
-| 117 | Shampoo 500ml | SHA-001 | Shampoo Cães 500ml | ml | PetBrasil | - | - | - | R$ 8,00 | R$ 19,90 | Cachorros | PetBrasil | 40 | 10 | Nao | - | - | - | Shampoo hipoalergênico | - | Salvo com sucesso com unidade ml. | | |
-| 118 | Petisco 100g (gramas) | PET-001 | Petisco Cães 100g | g | Purina Pet | - | - | - | R$ 5,00 | R$ 12,90 | Cachorros | Purina Pet | 60 | 10 | Nao | - | - | - | Petisco natural sabor frango | - | Salvo com sucesso com unidade "g". | | |
-| 119 | Perecível sem validade | RAC-T-001 | Ração Teste | KG | Purina Pet | - | - | - | R$ 20,00 | R$ 39,90 | Cachorros | Purina Pet | 10 | 5 | Sim | (vazio) | - | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
-| 149 | Produto com imagem e garantia | MON-001 | Monitor Pet Câmera | UN | PetBrasil | - | - | - | R$ 150,00 | R$ 299,90 | Cachorros | PetBrasil | 10 | 2 | Nao | - | 12 meses | - | Monitoramento remoto para pets | (arquivo jpg) | Salvo com sucesso. Imagem e garantia registradas. | | |
-| 161 | Ração com múltiplas cores de embalagem | RAC-C-002 | Ração Cães 3kg Promo | KG | Purina Pet | Vermelho, Amarelo | - | - | R$ 15,00 | R$ 29,90 | Cachorros | Purina Pet | 25 | 5 | Nao | - | - | - | Embalagem promocional em 2 cores | - | Salvo com sucesso. As 2 cores selecionadas ficam registradas. | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-------------|-----------|----------|----------|-------------|--------|-----------------|------|---|
+| 113 | Ração cães 15kg | RAC-C-001 | Ração Cães 15kg | KG | Purina Pet | - | - | - | R$ 45,00 | R$ 79,90 | Cachorros | Purina Pet | 20 | 5 | Sim | 15/12/2026 | - | Ração premium cães adultos | - | Salvo com sucesso. | | |
+| 114 | Ração gatos 10kg | RAC-G-001 | Ração Gatos 10kg | KG | Royal Canin | - | - | - | R$ 55,00 | R$ 89,90 | Gatos | Royal Canin | 15 | 5 | Sim | 20/01/2027 | - | - | - | Salvo com sucesso. | | |
+| 115 | Areia sanitária 4kg | ARE-001 | Areia Sanitária 4kg | KG | PetBrasil | - | - | - | R$ 12,00 | R$ 24,90 | Gatos | PetBrasil | 30 | 10 | Nao | - | - | Areia aglomerante | - | Salvo com sucesso. | | |
+| 116 | Brinquedo (unidade) | BRI-001 | Brinquedo Osso Borracha | UN | PetBrasil | Marrom | - | - | R$ 3,50 | R$ 9,90 | Cachorros | PetBrasil | 50 | 10 | Nao | - | 1 mês | Brinquedo resistente para cães | - | Salvo com sucesso com unidade UN. | | |
+| 117 | Shampoo 500ml | SHA-001 | Shampoo Cães 500ml | ml | PetBrasil | - | - | - | R$ 8,00 | R$ 19,90 | Cachorros | PetBrasil | 40 | 10 | Nao | - | - | Shampoo hipoalergênico | - | Salvo com sucesso com unidade ml. | | |
+| 118 | Petisco 100g (gramas) | PET-001 | Petisco Cães 100g | g | Purina Pet | - | - | - | R$ 5,00 | R$ 12,90 | Cachorros | Purina Pet | 60 | 10 | Nao | - | - | Petisco natural sabor frango | - | Salvo com sucesso com unidade "g". | | |
+| 119 | Perecível sem validade | RAC-T-001 | Ração Teste | KG | Purina Pet | - | - | - | R$ 20,00 | R$ 39,90 | Cachorros | Purina Pet | 10 | 5 | Sim | (vazio) | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
+| 149 | Produto com imagem e garantia | MON-001 | Monitor Pet Câmera | UN | PetBrasil | - | - | - | R$ 150,00 | R$ 299,90 | Cachorros | PetBrasil | 10 | 2 | Nao | - | 12 meses | Monitoramento remoto para pets | (arquivo jpg) | Salvo com sucesso. Imagem e garantia registradas. | | |
+| 161 | Ração com múltiplas cores de embalagem | RAC-C-002 | Ração Cães 3kg Promo | KG | Purina Pet | Vermelho, Amarelo | - | - | R$ 15,00 | R$ 29,90 | Cachorros | Purina Pet | 25 | 5 | Nao | - | - | Embalagem promocional em 2 cores | - | Salvo com sucesso. As 2 cores selecionadas ficam registradas. | | |
 
 ---
 

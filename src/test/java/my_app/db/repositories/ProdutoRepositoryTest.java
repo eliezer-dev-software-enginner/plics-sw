@@ -47,7 +47,6 @@ class ProdutoRepositoryTest extends BaseRepositoryTest {
         model.setEstoque(BigDecimal.valueOf(100));
         model.setObservacoes("Observacao");
         model.setImagem("/assets/produto-generico.png");
-        model.setComissao("5");
         model.setGarantia("1 ano");
         model.setDataCriacao(LocalDateTime.now());
         return model;

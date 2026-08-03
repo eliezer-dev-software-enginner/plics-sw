@@ -43,7 +43,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     public final State<String> margem = new State<>("0");
     public final State<String> lucro = new State<>("0");
 
-    public final State<String> comissao = new State<>("");
     public final State<String> garantia = new State<>("");
     public final State<String> marca = new State<>("");
 
@@ -214,7 +213,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 atualizado.setModelo(model.getModelo());
                 atualizado.setValidade(model.getValidade());
                 atualizado.setGarantia(model.getGarantia());
-                atualizado.setComissao(model.getComissao());
                 atualizado.setTotalLiquido(model.getTotalLiquido());
                 atualizado.setDataCriacao(model.getDataCriacao());
                 atualizado.setCategoria(model.getCategoria());
@@ -274,7 +272,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         model.setModelo(modelo.get());
         model.setValidade("Sim".equals(perecivelSelected.get()) && !validade.isNull() ? DateUtils.localDateParaMillis(validade.get()) : null);
         model.setGarantia(garantia.get());
-        model.setComissao(comissao.get());
         model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
         var estoqueMinimoField = estoqueMinimo.get();
         model.setEstoqueMinimo(estoqueMinimoField == null || estoqueMinimoField.trim().isEmpty() ? BigDecimal.ZERO : new BigDecimal(estoqueMinimoField));
@@ -290,7 +287,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         precoVenda.set("0");
         margem.set("0");
         lucro.set("0");
-        comissao.set("");
         garantia.set("");
         marca.set("");
         coresSelecionadas.set(List.of());
@@ -313,7 +309,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         descricao.set(model.getDescricao());
         precoCompra.set(Utils.deRealParaCentavos(model.getPrecoCompra()));
         precoVenda.set(Utils.deRealParaCentavos(model.getPrecoVenda()));
-        comissao.set(model.getComissao());
         garantia.set(model.getGarantia());
         marca.set(model.getMarca());
         var corStr = model.getCor();

@@ -18,15 +18,15 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Fornecedor | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Comissão | Observações | Imagem | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-----------|-----|---------|--------|-------------|-------------|-----------|---------|-------------|-----------|----------|----------|----------|-------------|--------|-----------------|------|---|
-| 25 | Produto kg | CAR001 | Picanha | KG | Generica | Frigorífico Paraná | - | - | - | R$ 45,00 | R$ 79,90 | Bovinos | 50 | 10 | Sim | 05/08/2026 | - | 3% | Carne bovina premium | - | Salvo com sucesso. | | |
-| 26 | Produto kg aves | CAR002 | Coxa de Frango | KG | Generica | Frigorífico Paraná | - | - | - | R$ 8,00 | R$ 14,90 | Aves | 80 | 15 | Sim | 30/07/2026 | - | - | Frango resfriado | - | Salvo com sucesso. | | |
-| 27 | Produto em gramas | CAR003 | Bacon fatiado 500g | g | Generica | Frigorífico Paraná | - | - | - | R$ 18,00 | R$ 35,00 | Embutidos | 30 | 5 | Sim | 10/09/2026 | - | - | Bacon defumado fatiado | - | Salvo com sucesso com unidade "g". | | |
-| 28 | Unidade não selecionada | CAR004 | Linguiça | (vazio) | Generica | Frigorífico Paraná | - | - | - | R$ 10,00 | R$ 19,90 | Embutidos | 40 | 5 | Nao | - | - | - | - | - | Alerta: "Unidade é obrigatória". | | |
-| 29 | Preço venda zerado | CAR005 | Alcatra | KG | Generica | Frigorífico Paraná | - | - | - | R$ 35,00 | R$ 0,00 | Bovinos | 30 | 5 | Nao | - | - | - | - | - | Alerta: "Preço de venda deve ser maior que zero". | | |
-| 126 | Produto com garantia | CAR006 | Acém | KG | Generica | Frigorífico Paraná | - | - | - | R$ 28,00 | R$ 49,90 | Bovinos | 40 | 5 | Nao | - | 3 dias | - | Carne bovina para cozimento lento | - | Salvo com sucesso. Garantia de validade registrada. | | |
-| 163 | Produto perecível sem validade | CAR007 | Costela Bovina | KG | Generica | Frigorífico Paraná | - | - | - | R$ 22,00 | R$ 39,90 | Bovinos | 25 | 5 | Sim | (vazio) | - | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Fornecedor | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---------|-----|-----------|-------|-------|-----------|-----|---------|--------|-------------|-------------|-----------|---------|-------------|-----------|----------|----------|-------------|--------|-----------------|------|---|
+| 25 | Produto kg | CAR001 | Picanha | KG | Generica | Frigorífico Paraná | - | - | - | R$ 45,00 | R$ 79,90 | Bovinos | 50 | 10 | Sim | 05/08/2026 | - | Carne bovina premium | - | Salvo com sucesso. | | |
+| 26 | Produto kg aves | CAR002 | Coxa de Frango | KG | Generica | Frigorífico Paraná | - | - | - | R$ 8,00 | R$ 14,90 | Aves | 80 | 15 | Sim | 30/07/2026 | - | Frango resfriado | - | Salvo com sucesso. | | |
+| 27 | Produto em gramas | CAR003 | Bacon fatiado 500g | g | Generica | Frigorífico Paraná | - | - | - | R$ 18,00 | R$ 35,00 | Embutidos | 30 | 5 | Sim | 10/09/2026 | - | Bacon defumado fatiado | - | Salvo com sucesso com unidade "g". | | |
+| 28 | Unidade não selecionada | CAR004 | Linguiça | (vazio) | Generica | Frigorífico Paraná | - | - | - | R$ 10,00 | R$ 19,90 | Embutidos | 40 | 5 | Nao | - | - | - | - | Alerta: "Unidade é obrigatória". | | |
+| 29 | Preço venda zerado | CAR005 | Alcatra | KG | Generica | Frigorífico Paraná | - | - | - | R$ 35,00 | R$ 0,00 | Bovinos | 30 | 5 | Nao | - | - | - | - | Alerta: "Preço de venda deve ser maior que zero". | | |
+| 126 | Produto com garantia | CAR006 | Acém | KG | Generica | Frigorífico Paraná | - | - | - | R$ 28,00 | R$ 49,90 | Bovinos | 40 | 5 | Nao | - | 3 dias | Carne bovina para cozimento lento | - | Salvo com sucesso. Garantia de validade registrada. | | |
+| 163 | Produto perecível sem validade | CAR007 | Costela Bovina | KG | Generica | Frigorífico Paraná | - | - | - | R$ 22,00 | R$ 39,90 | Bovinos | 25 | 5 | Sim | (vazio) | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
 
 ---
 

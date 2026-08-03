@@ -166,24 +166,23 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
         //return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()).bgColor("yellow"))
         return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()))
                 .children(
-                        Components.InputWithButtonRow("SKU(Código de barras)", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
-                        Components.InputColumn("Descrição curta", vm.descricao, ""),
+                        Components.InputWithButtonRow("SKU(Código de barras)", "Ex: 7891234567895", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
+                        Components.InputColumn("Nome", vm.descricao, "Ex: Camiseta Polo M"),
                         Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
-                        Components.InputColumn("Marca", vm.marca, ""),
+                        Components.InputColumn("Marca", vm.marca, "Ex: Nike"),
                         coresCheckboxes(),
-                        Components.InputColumn("Tamanho", vm.tamanhoSelected, ""),
-                        Components.InputColumn("Modelo", vm.modelo, ""),
+                        Components.InputColumn("Tamanho", vm.tamanhoSelected, "Ex: M"),
+                        Components.InputColumn("Modelo", vm.modelo, "Ex: Slim Fit"),
                         Components.InputColumnCurrency("Preço de compra", vm.precoCompra),
                         Components.InputColumnCurrency("Preço de venda", vm.precoVenda),
                         Components.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, CategoriaModel::getNome),
                         Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome),
                         Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it),
                         Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade")),
-                        Components.InputColumn("Garantia", vm.garantia, ""),
-                        Components.InputColumn("Comissão", vm.comissao, ""),
-                        Components.TextAreaColumn("Observações", vm.observacoes, ""),
-                        Components.InputColumnNumeric("Estoque", vm.estoque, ""),
-                        Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, "")
+                        Components.InputColumn("Garantia", vm.garantia, "Ex: 12 meses"),
+                        Components.TextAreaColumn("Observações", vm.observacoes, "Ex: Produto frágil, manusear com cuidado"),
+                        Components.InputColumnNumeric("Estoque", vm.estoque, "Ex: 100"),
+                        Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, "Ex: 10")
                 );
     }
 
