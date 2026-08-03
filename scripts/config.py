@@ -19,7 +19,7 @@ def _read_gradle_properties():
 
 _gradle_props = _read_gradle_properties()
 
-APP_NAME = "Plics SW"
+APP_NAME = _gradle_props["appDisplayName"]
 
 # appVersion (base, x.x.x) + appPatch (contador, 0 = sem patch) compostos numa
 # única string — mesma lógica de build.gradle.kts. Ver gradle.properties.
