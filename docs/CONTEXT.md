@@ -53,6 +53,11 @@
 
 ## Últimas alterações
 
+### 2026-08-02: Botão "Imprimir venda" no Histórico do Caixa (PedidosScreen)
+- **`PedidosScreenViewModel`**: novo método `imprimirVendaSelecionada()`, espelhando `PDVScreenViewModel.imprimirNota()` — opera sobre `pedidoSelecionado.get()` (linha selecionada na tabela) em vez da última venda finalizada. Reaproveita `carregarPortaImpressora()` e o record `DadosNotaPedido`/`carregarDadosNotaPedido()` já existentes na classe (duplicado por VM, mesmo padrão já usado para `EscPosPrinter` em outras telas). Novos campos `EmpresaService empresaService` e `EscPosPrinter escPosPrinter` no construtor; `onDestroy()` passou a fechar também `empresaService`.
+- **`PedidosScreen`**: botão "Imprimir venda" adicionado na `Row` junto ao "Excluir venda selecionada", ambos atrás de `Show.when(vm.temPedidoSelecionado, ...)`.
+- **Teste manual**: `testes-gerais.md` caso #181 (seção PedidosScreen).
+
 ### 2026-08-01: RelatoriosScreen — produtos sem venda no período
 - **Card "Produtos sem venda no período"** na RelatoriosScreen, logo abaixo do top 3 mais vendidos: lista todos os produtos cadastrados que **não tiveram nenhuma venda no período selecionado** (mesma janela do ranking), ordenados por descrição, com unidade entre parênteses. Quando todos os produtos venderam, mostra "Todos os produtos tiveram venda no período".
 - **`RelatorioService`**: agregação extraída para `quantidadesVendidas(long, long)` (privado, reutilizado por `produtosMaisVendidos` e `produtosSemVenda`); `produtosSemVenda` = todos os `produtos` (via `ProdutoService.listar()`) cujo `codigo_barras` não está no conjunto de vendidos do período, com `quantidade = ZERO` e descrição resolvida do cadastro. `RelatorioDados` ganhou o campo `produtosSemVenda`.

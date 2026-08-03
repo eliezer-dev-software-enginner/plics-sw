@@ -75,7 +75,10 @@ public class PedidosScreen implements ScreenComponent {
                         .build(),
                 new SpacerVertical(15),
                 Show.when(vm.temPedidoSelecionado, () ->
-                        new Button("Excluir venda selecionada").onClick(vm::handleClickMenuDelete)
+                        new Row(new megalodonte.props.RowProps().spacingOf(10)).children(
+                                new Button("Imprimir venda").onClick(vm::imprimirVendaSelecionada),
+                                new Button("Excluir venda selecionada").onClick(vm::handleClickMenuDelete)
+                        )
                 )
         ));
     }

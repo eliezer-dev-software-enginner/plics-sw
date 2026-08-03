@@ -7,13 +7,17 @@ import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
+import my_app.db.models.ClienteModel;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.db.services.ClienteService;
+import my_app.db.services.EmpresaService;
 import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
+import my_app.db.services.PreferenciasService;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.services.EscPosPrinter;
 import my_app.services.PDVService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,8 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     private final PedidoItemService pedidoItemService;
     private final ClienteService clienteService;
     private final PDVService pdvService;
+    private final EmpresaService empresaService;
+    private final EscPosPrinter escPosPrinter;
 
     final megalodonte.v2.ListState<PedidoItemModel> itensDoPedidoSelecionado = megalodonte.v2.ListState.ofEmpty();
     final State<PedidoModel> pedidoSelecionado = State.of(null);
@@ -44,7 +50,23 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         this.pedidoItemService = createOrReport(PedidoItemService::new);
         this.clienteService = createOrReport(ClienteService::new);
         this.pdvService = createOrReport(PDVService::new);
+        this.empresaService = createOrReport(EmpresaService::new);
+        var porta = carregarPortaImpressora();
+        this.escPosPrinter = porta != null ? new EscPosPrinter(empresaService, porta) : new EscPosPrinter(empresaService);
         onInit();
+    }
+
+    private String carregarPortaImpressora() {
+        try (var prefsService = createOrReport(PreferenciasService::new)) {
+            var prefs = prefsService.listar();
+            if (!prefs.isEmpty()) {
+                var port = prefs.getFirst().getPortaImpressora();
+                if (port != null && !port.isBlank()) return port;
+            }
+        } catch (Exception e) {
+            log.warn("Não foi possível carregar porta da impressora", e);
+        }
+        return null;
     }
 
     @Override
@@ -117,6 +139,61 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         }));
     }
 
+    // Mesmo fluxo de impressão do PDVScreenViewModel.imprimirNota(), mas operando
+    // sobre a venda selecionada no histórico em vez da última venda finalizada.
+    void imprimirVendaSelecionada() {
+        var pedido = pedidoSelecionado.get();
+        if (pedido == null) {
+            Components.ShowAlertError("Selecione uma venda para imprimir.");
+            return;
+        }
+
+        Async.Run(() -> {
+            try {
+                var dados = carregarDadosNotaPedido(pedido);
+                try {
+                    escPosPrinter.imprimirNotaVenda(pedido, dados.itens(), dados.cliente(), dados.empresa(), dados.parcelas());
+                    UI.runOnUi(() -> Components.ShowPopup(ctx, "Nota enviada para impressão!"));
+                } catch (Exception e) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
+                }
+            } catch (Exception e) {
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar dados para impressão: " + e.getMessage()));
+            }
+        });
+    }
+
+    private record DadosNotaPedido(
+            java.util.List<PedidoItemModel> itens,
+            ClienteModel cliente,
+            my_app.db.models.EmpresaModel empresa,
+            java.util.List<my_app.db.models.ContaAreceberModel> parcelas
+    ) {}
+
+    private DadosNotaPedido carregarDadosNotaPedido(PedidoModel pedido) throws Exception {
+        var itens = pedidoItemService.listarPorPedido(pedido.getId());
+        var empresa = empresaService.buscarUnico();
+        var clienteId = pedido.getClienteId();
+        final ClienteModel cliente;
+        if (clienteId != null) {
+            cliente = clienteService.listar().stream()
+                    .filter(c -> c.getId().equals(clienteId))
+                    .findFirst()
+                    .orElse(null);
+        } else {
+            cliente = null;
+        }
+
+        java.util.List<my_app.db.models.ContaAreceberModel> parcelas = null;
+        if (pedido.getFiado() != null && pedido.getFiado() == 1) {
+            try (var contaService = new my_app.db.services.ContaAreceberService()) {
+                parcelas = contaService.buscarPorVenda(pedido.getId());
+            }
+        }
+
+        return new DadosNotaPedido(itens, cliente, empresa, parcelas);
+    }
+
     @Override
     public void fetchListData() {
         Async.Run(() -> {
@@ -151,5 +228,6 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         this.pedidoItemService.close();
         this.pedidoService.close();
         this.clienteService.close();
+        this.empresaService.close();
     }
 }

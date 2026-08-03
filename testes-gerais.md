@@ -145,6 +145,7 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 | 168 | Excluir venda à vista do histórico (ex: caso #84 do PDVScreen) | Alerta de confirmação. Ao confirmar: venda some da lista e dos itens exibidos; estoque do(s) produto(s) vendido(s) é devolvido (conferir em ProdutoScreen); os cards "Receitas", "Lucro líquido" e "Hoje você fez" na Home são recalculados refletindo a exclusão. | |           |
 | 169 | Excluir venda fiada do histórico (ex: caso #85 do PDVScreen, que gera parcelas em Contas a Receber) | Alerta de confirmação menciona que as contas a receber vinculadas também serão apagadas. Ao confirmar: venda, itens e as parcelas correspondentes em ContasAReceberScreen desaparecem; estoque devolvido; Home atualizada. | |           |
 | 170 | Tentar excluir sem selecionar pedido | Botão "Excluir venda selecionada" não aparece — só é exibido quando há um pedido selecionado na tabela. | |           |
+| 181 | Imprimir venda selecionada no Histórico do Caixa | Ao clicar em "Imprimir venda" com um pedido selecionado, a nota é enviada para a impressora térmica configurada (mesmo layout da nota impressa em PDVScreen), com popup "Nota enviada para impressão!". Botão só aparece quando há um pedido selecionado na tabela (mesma condição do "Excluir venda selecionada"). | | |
 
 ---
 
