@@ -82,6 +82,19 @@ public class RelatoriosScreenViewModel {
         this.empresaService = createOrReport(EmpresaService::new);
         comparativoSeries.setName("Valores (R$)");
         comparativoSeries.getData().addAll(receitasBarra, despesasBarra, lucroBarra);
+        // As 3 barras vêm da mesma Series (única forma de compartilhar o eixo Y
+        // sem 3 séries separadas), então o CSS padrão do BarChart pinta todas com
+        // a mesma cor (".default-color0"). Coloridas manualmente aqui, uma vez
+        // que cada Data ganha seu node, com as mesmas cores dos cards acima.
+        colorirBarraQuandoDisponivel(receitasBarra, "#10b981");
+        colorirBarraQuandoDisponivel(despesasBarra, "#ef4444");
+        colorirBarraQuandoDisponivel(lucroBarra, "#2563eb");
+    }
+
+    private void colorirBarraQuandoDisponivel(XYChart.Data<String, Number> data, String cor) {
+        data.nodeProperty().addListener((obs, old, node) -> {
+            if (node != null) node.setStyle("-fx-bar-fill: " + cor + ";");
+        });
     }
 
     private static <T> T createOrReport(megalodonte.utils.ThrowingSupplier<T> supplier) {
