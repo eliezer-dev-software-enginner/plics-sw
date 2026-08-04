@@ -47,8 +47,8 @@ public class PreferenciasScreen implements ScreenComponent {
                      Show.when(credentialsScreenIsVisible, () -> new Column().children(
                         new Text("Escolha seu login e senha de acesso", new TextProps().bold()),
                         new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                        Components.InputColumn("Login", vm.loginState, ""),
-                        Components.InputColumn("Senha", vm.passwordState, "")
+                        Components.InputColumn("Login", vm.loginState, "Ex: admin"),
+                        Components.InputColumn("Senha", vm.passwordState, "Digite uma senha")
                 )),
                 Components.ButtonCadastro("Salvar Preferências", vm::salvar),
                 new LineHorizontal(),

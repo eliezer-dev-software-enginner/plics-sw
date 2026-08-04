@@ -24,7 +24,7 @@ public class SugerirMelhoriaScreen implements ScreenComponent {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20))
                         .c_child(new Row(new RowProps().centerHorizontally()))
-                        .c_child(Components.TextAreaColumn("Diga abaixo sua sugestão de melhoria ou de funcionalidade", vm.content, "", 300))
+                        .c_child(Components.TextAreaColumn("Diga abaixo sua sugestão de melhoria ou de funcionalidade", vm.content, "Descreva sua ideia com o máximo de detalhes possível", 300))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.ButtonCadastro(vm.btnText, () -> vm.send(() ->
                                 Components.ShowPopup(ctx, "Enviado com sucesso")))));

@@ -76,7 +76,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
                 .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSelected, it -> it))
                 .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
-                .r_child(Components.TextAreaColumn("Observação", vm.observacao, ""));
+                .r_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta compra?"));
     }
 
     @Override

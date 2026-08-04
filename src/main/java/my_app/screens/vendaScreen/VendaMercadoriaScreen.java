@@ -70,7 +70,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                         Data.tiposPagamentoList, vm.tipoPagamentoSelecionado, it -> it),
                 Components.SelectColumn("Refletir no estoque?",
                         Data.simNaoList, vm.opcaoEstoqueSelected, it -> it),
-                Components.TextAreaColumn("Observação", vm.observacao, ""),
+                Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta venda?"),
                 new Row(
                     new RowProps().spacingOf(ThemeManager.theme().spacing().sm())
                 ).children(

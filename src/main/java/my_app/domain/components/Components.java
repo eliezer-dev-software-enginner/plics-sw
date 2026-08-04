@@ -83,10 +83,10 @@ public class Components {
                         .children(
                                 Components.InputColumnCep("Cep", enderecoState.cep),
                                 Components.SelectColumn("UF", Data.ufList, enderecoState.ufSelected, it -> it),
-                                Components.InputColumn("Cidade", enderecoState.cidade, ""),
-                                Components.InputColumn("Bairro", enderecoState.bairro, ""),
-                                Components.InputColumn("Rua", enderecoState.rua, ""),
-                                Components.InputColumnNumeric("Número", enderecoState.numero, "")
+                                Components.InputColumn("Cidade", enderecoState.cidade, "Ex: São Paulo"),
+                                Components.InputColumn("Bairro", enderecoState.bairro, "Ex: Centro"),
+                                Components.InputColumn("Rua", enderecoState.rua, "Ex: Av. Brasil"),
+                                Components.InputColumnNumeric("Número", enderecoState.numero, "Ex: 123")
                         )
         );
     }
@@ -798,10 +798,13 @@ public class Components {
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
-                                        int borderWidth, int borderRadius, String borderColor, String labelColor, Integer width) {
+                                        int borderWidth, int borderRadius, String borderColor, String labelColor,
+                                        Integer width,Integer height) {
         var props = getInputPropsV2(placeholder);
         if (disableInput) props.disable();
         props.width(width != null ? width : 220);
+
+        props.height(height != null ? height : 35);
 
         TextProps labelProps = new TextProps().fontSize(ThemeManager.theme().typography().small());
         if (labelColor!=null) {
@@ -817,13 +820,21 @@ public class Components {
                 );
     }
 
+    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
+                                        String labelColor, Integer width,Integer height) {
+        return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(),
+                ThemeManager.theme().border().radiusMd(),
+                ThemeManager.theme().colors().border(),labelColor, width,height);
+    }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
                                         String labelColor, Integer width) {
         return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(),
                 ThemeManager.theme().border().radiusMd(),
-                ThemeManager.theme().colors().border(),labelColor, width);
+                ThemeManager.theme().colors().border(),labelColor, width,null);
     }
+
+
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,  String labelColor) {
         return InputColumn(label, inputState, placeholder, disableInput,labelColor,null);
@@ -838,7 +849,7 @@ public class Components {
     }
 
     public static Component InputColumnAuth(String label, ReadableState<String> inputState, String placeholder) {
-        return InputColumn(label, inputState, placeholder, false, "#fff");
+        return InputColumn(label, inputState, placeholder, false, "#fff",null,35);
     }
 
     public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder,Integer width) {
@@ -871,10 +882,6 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
                 .c_child(textAreaInput);
-    }
-
-    public static Component InputWithButtonRow(String label, String btnTitle, State<String> inputState, Runnable onClick) {
-        return InputWithButtonRow(label, "", btnTitle, inputState, onClick);
     }
 
     public static Component InputWithButtonRow(String label, String placeholder, String btnTitle, State<String> inputState, Runnable onClick) {

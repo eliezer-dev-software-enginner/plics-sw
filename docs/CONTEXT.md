@@ -53,6 +53,11 @@
 
 ## Últimas alterações
 
+### 2026-08-04: Placeholders adicionados em todos os inputs sem placeholder do app
+- Varredura em todas as `*Screen.java` procurando `InputColumn`/`InputColumnAuth`/`TextAreaColumn` com placeholder vazio (`""`). Corrigidos: `enderecoComponent` (Cidade, Bairro, Rua, Número — usado por Cliente, Fornecedor, Empresa), `FornecedorScreen` (Inscrição estadual, Observação), `ClienteScreen` (Email), `PreferenciasScreen`/`AuthScreen` (Login, Senha, Licença), `ComprasAPagarScreen`/`ContasAReceberScreen`/`VendaMercadoriaScreen`/`ComprasScreen` (Observação), `RelatarErroScreen`/`SugerirMelhoriaScreen` (corpo do texto).
+- Campos com máscara (CPF, CNPJ, CEP, telefone, moeda) já tinham placeholder embutido no próprio helper (`getInputPropsV2`) e não precisaram de mudança.
+- `./gradlew test`: 278/278.
+
 ### 2026-08-04: Checagem provisória de acesso na inicialização (HtmlParser + VerificacaoAcessoService)
 - **O que é**: mecanismo temporário ("provisório", palavra do usuário) que compara um "dígito verificador" publicado no site oficial com um valor esperado embutido no app, na inicialização (`Main.initialize()`, dentro do mesmo `Async.Run` que já roda as migrations do Flyway, antes de resolver a rota normal). Se não bater — ou se o site estiver fora do ar/sem internet — mostra um alerta ("O acesso não pode ser realizado.") e navega pra rota `ACESSO_BLOQUEADO` em vez da rota normal.
 - **`my_app.services.HtmlParser`** (já existia, criado pelo usuário): usa Jsoup pra buscar `span.verificador` numa URL. Alterado só pra receber a URL como parâmetro em vez de hardcoded, e a extração do `Document` foi separada num método `extrairVerificador(Document)` testável sem rede (`HtmlParserTest`, com fixtures HTML locais via `Jsoup.parse(String)`).

@@ -25,7 +25,7 @@ public class RelatarErroScreen implements ScreenComponent {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20))
                         .c_child(new Row(new RowProps().centerHorizontally()))
-                        .c_child(Components.TextAreaColumn("Detalhes do erro", vm.content, "", 300))
+                        .c_child(Components.TextAreaColumn("Detalhes do erro", vm.content, "Descreva o que aconteceu e, se possível, como reproduzir o erro", 300))
                         .c_child(new SpacerVertical(ThemeManager.theme().spacing().md()))
                         .c_child(Components.ButtonCadastro(vm.btnText, () -> vm.send(() ->
                                 Components.ShowPopup(ctx, "Enviado com sucesso")))));

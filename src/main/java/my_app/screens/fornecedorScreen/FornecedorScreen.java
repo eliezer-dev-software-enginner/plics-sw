@@ -52,7 +52,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(Components.enderecoComponent(vm.enderecoState.get()))
                         .c_child(new SpacerVertical(20))
                         .c_child(new LineHorizontal())
-                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, ""))
+                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre o fornecedor?"))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate)));
     }
@@ -66,7 +66,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                 ))
                 .r_child(Components.InputColumnPhone("Celular", vm.celular))
-                .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, ""))
+                .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, "Ex: 123.456.789.123"))
                 .r_child(Components.InputColumn("Email", vm.email, "Ex: email@teste.com"));
     }
 

@@ -62,7 +62,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                                                 () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                                         ),
                                         Components.InputColumnPhone("Celular", vm.celular),
-                                        Components.InputColumn("Email", vm.email, ""),
+                                        Components.InputColumn("Email", vm.email, "Ex: email@teste.com"),
                                         Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"),
                                         Components.SelectColumn("É gestante?", Data.simNaoList, vm.isGestante, it -> it),
                                         Show.when(vm.isGestanteComputed,()->Components.DatePickerColumn(vm.dataNascimentoBebe,"Data de nascimento do bebê") )

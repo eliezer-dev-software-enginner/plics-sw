@@ -87,7 +87,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
                                         .r_child(Components.SelectColumn("Tipo Doc", vm.tipoDocumentoOptions, vm.tipoDocumento, t -> t))
                                         .r_child(Components.InputColumn("Número Doc", vm.numeroDocumento, "Número do documento"))
                         )
-                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, ""))
+                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta conta?"))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
                         .c_child(new Row(new RowProps().spacingOf(8))
