@@ -34,6 +34,7 @@ public class PDVScreen implements ScreenComponent {
     public Component render() {
         var theme = ThemeManager.theme();
         return new Container(new ContainerProps().bgColor(theme.colors().surface()))
+        //return new Container(new ContainerProps().bgImage("/assets/wallpapers/welcome.jpg"))
                 .children(new Container(new ContainerProps().fillHeight()).children(
                         topBanner(),
                         new Row(new RowProps().spacingOf(10).paddingAll(10)).children(
