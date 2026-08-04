@@ -9,7 +9,23 @@
       "Fix: Nome do publicador aparecia como \"Unknown\" no instalador gerado",
       "Fix: Tipo de pessoa (Física/Jurídica) do fornecedor não era lembrado ao editar o cadastro",
       "Fix: Mensagem de erro confusa ao abrir o instalador do updater manualmente",
-      "Fix: Validações de cadastro (fornecedor, técnico, produto, categoria, etc.) centralizadas — mensagens de erro mais consistentes entre as telas"
+      "Fix: Validações de cadastro (fornecedor, técnico, produto, categoria, etc.) centralizadas — mensagens de erro mais consistentes entre as telas",
+      "Feat: Nova tela de Relatórios Financeiros — receitas, despesas, lucro líquido, produtos mais vendidos e sem venda no período, novos clientes e fornecedores no período e formas de pagamento mais usadas nas vendas, com exportação em PDF",
+      "Feat: Botão para excluir uma venda direto do Histórico do Caixa",
+      "Feat: Botão para reimprimir a nota de uma venda do Histórico do Caixa",
+      "Feat: Novo campo Observação no cadastro de Clientes",
+      "Feat: Textos de exemplo (placeholder) adicionados em todos os campos que ainda não tinham",
+      "Feat: Campo \"Descrição curta\" de Produtos renomeado para \"Nome\"",
+      "Feat: Campo Comissão removido do cadastro de Produtos (não era usado em nenhuma tela ou relatório)",
+      "Fix: Borda dupla em campos de texto, moeda e seletores em várias telas",
+      "Fix: Texto ultrapassava a borda em campos com largura fixa",
+      "Fix: Cor de foco azulada ao clicar em um campo de data não seguia o tema do sistema",
+      "Fix: Calendário do seletor de data usava as cores padrão do sistema em vez das cores do tema",
+      "Fix: Clicar em Atualizar em Clientes, Compras, Ordens de Serviço, Contas a Pagar, Contas a Receber ou Produtos criava um cadastro novo em vez de atualizar o existente",
+      "Fix: Clicar em Novo no cadastro de Clientes não limpava todos os campos do formulário",
+      "Fix: Editar um cliente não atualizava Observação, Data de Nascimento, Gestante e Endereço na tabela até reabrir a tela",
+      "Fix: Editar uma compra ou venda com desconto zerava o desconto ao salvar",
+      "Fix: Editar uma compra podia trocar o fornecedor pelo que estivesse selecionado no formulário, em vez de manter o correto"
     ]
   },
   {

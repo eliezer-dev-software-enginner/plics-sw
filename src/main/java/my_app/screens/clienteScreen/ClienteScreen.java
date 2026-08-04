@@ -73,7 +73,7 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .c_child(Components.enderecoComponent(vm.enderecoState.get()))
                         .c_child(new SpacerVertical(20))
                         .c_child(new LineHorizontal())
-                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre o cliente?"))
+                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre o cliente?", 60, 160))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
         );

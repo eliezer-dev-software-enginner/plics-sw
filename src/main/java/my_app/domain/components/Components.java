@@ -884,6 +884,27 @@ public class Components {
                 .c_child(textAreaInput);
     }
 
+    // Variante que cresce com o conteúdo em vez de ficar travado numa altura fixa
+    // (a outra sobrecarga, com um único "height", trava prefHeight=minHeight=maxHeight).
+    // Não reaproveita getInputProps(placeholder) — aquele helper seta height=31 por
+    // baixo (feito pra Input de uma linha), e InputProps.applyTextAreaTheme prioriza
+    // "height" sobre "maxHeight" quando os dois estão setados, então o campo ficava
+    // travado em 31px em vez de crescer.
+    public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int minHeight, int maxHeight) {
+        TextAreaInput textAreaInput = new TextAreaInput(inputState,
+                new megalodonte.props.InputProps()
+                        .placeHolder(placeholder)
+                        .fontSize(ThemeManager.theme().typography().small())
+                        .minHeight(minHeight)
+                        .maxHeight(maxHeight)
+                        .width(400)
+        );
+
+        return new Column()
+                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
+                .c_child(textAreaInput);
+    }
+
     public static Component InputWithButtonRow(String label, String placeholder, String btnTitle, State<String> inputState, Runnable onClick) {
         return new Row(new RowProps().bottomVertically())
                 .r_child(Components.InputColumn(label, inputState, placeholder))

@@ -175,7 +175,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it),
                         Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade")),
                         Components.InputColumn("Garantia", vm.garantia, "Ex: 12 meses",150),
-                        Components.TextAreaColumn("Observações", vm.observacoes, "Ex: Produto frágil, manusear com cuidado"),
+                        Components.TextAreaColumn("Observações", vm.observacoes, "Ex: Produto frágil, manusear com cuidado", 60, 160),
                         Components.InputColumnNumeric("Estoque", vm.estoque, "Ex: 100"),
                         Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, "Ex: 10")
                 );

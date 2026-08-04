@@ -53,6 +53,31 @@
 
 ## Últimas alterações
 
+### 2026-08-04: Bug — campo Observação ficava travado em 31px em vez de crescer até o maxHeight
+- **Reportado pelo usuário** ao testar em ClienteScreen: campo "muito pequena".
+- **Causa**: a nova sobrecarga `Components.TextAreaColumn(label, state, placeholder, minHeight, maxHeight)` (feita mais cedo hoje) construía o `InputProps` via `getInputProps(placeholder)` — helper que por baixo chama `getInputProps(placeholder, 31)`, ou seja, sempre seta `height=31` (pensado pro `Input` de uma linha, nunca usado antes num `TextAreaColumn`). `InputProps.applyTextAreaTheme` prioriza `height` sobre `maxHeight` quando os dois estão setados (`if (height > 0) {...} else if (maxHeight > 0) {...}`) — então a lógica de crescimento nunca rodava, o campo ficava preso no branch de tamanho fixo com 31px.
+- **Fix**: a sobrecarga `minHeight`/`maxHeight` agora monta o `InputProps` diretamente (`new InputProps().placeHolder(...).fontSize(...).minHeight(...).maxHeight(...).width(400)`), sem passar por `getInputProps`, garantindo que `height` fique em 0 e o branch de crescimento seja o que roda.
+- `./gradlew test`: 281/281. **Ainda não verificado visualmente** por mim (sem automação de clique/teclado) — só a análise de código explica exatamente o sintoma reportado. Testar de novo em ClienteScreen antes de considerar resolvido.
+
+### 2026-08-04: Campo Observação (Cliente e Produto) agora cresce com o conteúdo, sem vazar o scroll pra tela toda
+- Substitui o fix anterior de hoje (altura fixa 120px) por uma solução de verdade, feita em `megalodonte-components` (publicada em Maven Local, `megalodonte-libs`/`megalodonte-ecossystem` com pointer do submódulo bumped):
+  - `InputProps.minHeight(int)`/`maxHeight(int)` (novo): `TextAreaInput` cresce com o texto digitado dentro desse intervalo (60–160px em Cliente/Produto), em vez de ficar travado num tamanho fixo — só rola por dentro depois de passar do máximo.
+  - `TextAreaInput`: rolar o mouse dentro do campo, ao chegar no limite do próprio conteúdo, vazava pro `ScrollPane` da tela inteira (reportado pelo usuário) — fix com `Scroll.confineScrollEvents(textArea)` no construtor (utilitário que já existia, usado em `FlowRow`).
+  - Novo `FocusableFieldInterface<T>` (`megalodonte.components`) — `TextAreaInput` e `v2.Input` (que não compartilham implementação nenhuma por baixo) agora implementam o mesmo contrato de foco (`requestFocus()`/`onChangeFocus(...)`), pedido explícito do usuário.
+- `Components.java`: nova sobrecarga `TextAreaColumn(label, state, placeholder, minHeight, maxHeight)`, sem mexer na sobrecarga antiga de `height` fixo (ainda usada por Fornecedor, Compras, Contas a Pagar/Receber, Venda, feedback).
+- `ClienteScreen`/`ProdutoScreen`: migrados pra nova sobrecarga (60–160px). `FornecedorScreen` não foi tocado (fora do pedido).
+- `./gradlew test` (plics-sw): 281/281. `megalodonte-components` não tem testes automatizados (`tasks.test { enabled = false }` no `build.gradle.kts` do módulo) — só compilação verificada lá.
+- **Não verificado visualmente** — precisa digitar texto suficiente pra crescer o campo e rolar o mouse dentro dele, e não há automação de teclado/mouse neste ambiente. Testar antes de confiar: (1) o campo cresce ao digitar várias linhas e para de crescer em ~160px; (2) rolar o mouse dentro do campo cheio não move a tela por trás.
+
+### 2026-08-04: Altura do campo Observação (Cliente e Produto) aumentada de 80 pra 120px
+- `Components.TextAreaColumn` (usa `TextArea` nativo via `InputProps.height`) seta `prefHeight`/`minHeight`/`maxHeight` todos pro mesmo valor — não existe um conceito separado de "cresce com o conteúdo até um teto" no componente atual, é sempre uma caixa de tamanho fixo com scroll interno pro texto que não cabe. Pedido do usuário ("pode chegar a uma altura máxima") tratado como "escolher um valor fixo mais confortável" — 120px (comportava ~5-6 linhas de texto) em vez dos 80px (default do `TextAreaColumn`) usados em `ClienteScreen`/`ProdutoScreen`.
+- `FornecedorScreen` não foi tocado (usuário só pediu Cliente e Produtos).
+
+### 2026-08-04: updates.json completado com tudo desde a última entrada (2026-07-30) até hoje
+- Revisado `git log` desde o commit "chore: bump para versão 1.1.1" (2026-07-26) — a entrada `v1.1.2` existente já cobria os commits até 2026-07-30 (foi quando ela foi criada, commit `f471ab6`). Adicionadas as notas do que faltava: tela de Relatórios Financeiros, botões de excluir/reimprimir venda no Histórico do Caixa, campo Observação em Clientes, placeholders em todo o app, rename/remoção de campos em Produtos, e os bugs de borda dupla/overflow de texto/foco do calendário/race condition de Atualizar/clearForm incompletos corrigidos nas últimas sessões.
+- **Deliberadamente fora do changelog**: a checagem de acesso provisória (`VerificacaoAcessoService`) — o próprio usuário chamou de "provisório", e é um mecanismo de proteção; anunciar publicamente como funciona reduziria sua utilidade. Também de fora: refatorações internas sem efeito visível (migração pro `v2.Input`, contrato CRUD, categoria do menu Linux/nome do app extraídos pro `gradle.properties`) e commits de teste/experimentação do próprio usuário (ajuste de coordenadas de janela, debounce do `dev.py`, toggle de papel de parede no PDV).
+- Versão do app **não foi alterada** (`gradle.properties` continua `appVersion=1.1.2`) — só as notas da entrada já existente foram completadas, como pedido.
+
 ### 2026-08-04: Auditoria de clearForm()/populateFieldsFromModel() nas 12 ViewModels de CRUD
 - **Motivo**: bug do "Novo em Clientes não limpa tudo" (entrada abaixo) era um caso específico de um padrão mais amplo — campo novo adicionado ao formulário, mas o ponto que "lista os campos à mão" (`clearForm()` ou `populateFieldsFromModel()`) não foi atualizado junto. Auditadas as 12 ViewModels do `ContratoTelaCrudV3`, comparando cada campo setado em `populateFieldsFromModel()` contra o que `clearForm()` reseta (e vice-versa).
 - **`FornecedorScreenViewModel.clearForm()`**: faltava `tipoPessoaSelected.set(Data.tiposPessoaList.getFirst())` — corrigido.
