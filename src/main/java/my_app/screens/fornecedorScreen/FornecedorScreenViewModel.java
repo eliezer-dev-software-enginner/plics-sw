@@ -199,6 +199,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
         email.set("");
         enderecoState.get().clear();
         observacao.set("");
+        tipoPessoaSelected.set(Data.tiposPessoaList.getFirst());
     }
 
     @Override

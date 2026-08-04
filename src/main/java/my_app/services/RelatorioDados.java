@@ -1,5 +1,8 @@
 package my_app.services;
 
+import my_app.db.models.ClienteModel;
+import my_app.db.models.FornecedorModel;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -18,6 +21,9 @@ public record RelatorioDados(
         BigDecimal contasReceberEmAberto,
         BigDecimal contasPagarEmAberto,
         List<ProdutoMaisVendido> produtosMaisVendidos,
-        List<ProdutoMaisVendido> produtosSemVenda
+        List<ProdutoMaisVendido> produtosSemVenda,
+        List<ClienteModel> novosClientes,
+        List<FornecedorModel> novosFornecedores,
+        List<FormaPagamentoValor> formasPagamento
 ) {
 }

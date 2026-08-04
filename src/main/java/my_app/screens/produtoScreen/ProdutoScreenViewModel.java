@@ -181,17 +181,26 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
             return;
         }
 
-        if (modoEdicao.get()) {
-            asyncAtualizar();
+        // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
+        // modoEdicao.get() internamente pra decidir se reaproveita produtoSelected ou
+        // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
+        // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
+        // ContratoTelaCrudV3.handleAddOrUpdate() (que reseta logo depois de disparar
+        // essa chamada), fazendo toda edição tentar dar update num model novo sem id
+        // (mesmo bug corrigido em outras telas).
+        boolean editando = modoEdicao.get();
+        var model = populateModelFromFields();
+
+        if (editando) {
+            asyncAtualizar(model);
         } else {
-            asyncSalvar();
+            asyncSalvar(model);
         }
     }
 
-    private void asyncAtualizar() {
+    private void asyncAtualizar(ProdutoModel model) {
         Async.Run(() -> {
             try {
-                var model = populateModelFromFields();
                 produtoService.atualizar(model);
 
                 var atualizado = new ProdutoModel();
@@ -229,10 +238,9 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         });
     }
 
-    private void asyncSalvar() {
+    private void asyncSalvar(ProdutoModel model) {
         Async.Run(() -> {
             try {
-                var model = populateModelFromFields();
                 var salvo = produtoService.salvar(model);
 
                 salvo.setCategoria(categoriaSelected.get());
@@ -298,6 +306,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         validade.set(null);
         observacoes.set("");
         imagem.set("/assets/produto-generico.png");
+        perecivelSelected.set("Não");
     }
 
     @Override

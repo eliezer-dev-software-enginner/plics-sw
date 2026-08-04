@@ -4,9 +4,11 @@ import my_app.db.DB;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.models.VendaModel;
+import my_app.db.services.ClienteService;
 import my_app.db.services.CompraService;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ContasPagarService;
+import my_app.db.services.FornecedorService;
 import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
 import my_app.db.services.ProdutoService;
@@ -34,6 +36,8 @@ public class RelatorioService implements AutoCloseable {
     private final CompraService compraService;
     private final ContasPagarService contasPagarService;
     private final ProdutoService produtoService;
+    private final ClienteService clienteService;
+    private final FornecedorService fornecedorService;
 
     public RelatorioService() throws SQLException {
         this(DB.getPersismSession());
@@ -47,6 +51,8 @@ public class RelatorioService implements AutoCloseable {
         this.compraService = new CompraService(session);
         this.contasPagarService = new ContasPagarService(session);
         this.produtoService = new ProdutoService(session);
+        this.clienteService = new ClienteService(session);
+        this.fornecedorService = new FornecedorService(session);
     }
 
     public RelatorioDados gerar(long dataInicio, long dataFim) throws SQLException {
@@ -71,7 +77,10 @@ public class RelatorioService implements AutoCloseable {
                 totalReceitas, totalDespesas, lucroLiquido,
                 contasReceberEmAberto, contasPagarEmAberto,
                 topProdutosMaisVendidos(quantidades),
-                produtosSemVenda(quantidades)
+                produtosSemVenda(quantidades),
+                clienteService.listarNovosPorPeriodo(dataInicio, dataFim),
+                fornecedorService.listarNovosPorPeriodo(dataInicio, dataFim),
+                formasPagamentoMaisUsadas(dataInicio, dataFim)
         );
     }
 
@@ -92,6 +101,30 @@ public class RelatorioService implements AutoCloseable {
             acumular(quantidades, venda);
         }
         return quantidades;
+    }
+
+    // Soma o valor vendido por forma de pagamento (vendas de mercadoria + PDV). Vendas
+    // "A PRAZO" ficam de fora, mesmo critério já usado em receitasVendas — o valor só
+    // vira receita reconhecida quando a respectiva conta a receber é de fato paga.
+    private List<FormaPagamentoValor> formasPagamentoMaisUsadas(long dataInicio, long dataFim) throws SQLException {
+        Map<String, BigDecimal> valores = new LinkedHashMap<>();
+        for (var venda : vendaService.listarPorPeriodo(dataInicio, dataFim)) {
+            if ("A PRAZO".equalsIgnoreCase(venda.getTipoPagamento())) continue;
+            acumularForma(valores, venda.getTipoPagamento(), venda.getTotalLiquido());
+        }
+        for (var pedido : pedidoService.listarPorPeriodo(dataInicio, dataFim)) {
+            acumularForma(valores, pedido.getFormaPagamento(), pedido.getTotalLiquido());
+        }
+        return valores.entrySet().stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .map(entry -> new FormaPagamentoValor(entry.getKey(), entry.getValue()))
+                .toList();
+    }
+
+    private void acumularForma(Map<String, BigDecimal> valores, String forma, BigDecimal valor) {
+        if (valor == null) return;
+        String chave = (forma == null || forma.isBlank()) ? "Não informado" : forma;
+        valores.merge(chave, valor, BigDecimal::add);
     }
 
     private List<ProdutoMaisVendido> topProdutosMaisVendidos(Map<String, BigDecimal> quantidades) throws SQLException {
@@ -153,5 +186,7 @@ public class RelatorioService implements AutoCloseable {
         compraService.close();
         contasPagarService.close();
         produtoService.close();
+        clienteService.close();
+        fornecedorService.close();
     }
 }

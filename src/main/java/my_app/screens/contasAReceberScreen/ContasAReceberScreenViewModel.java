@@ -193,10 +193,20 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     public void handleAddOrUpdate() {
         if (modoEdicao.get() && contaSelected.get() == null) return;
 
-        if (modoEdicao.get()) {
-            asyncAtualizar();
+        // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
+        // modoEdicao.get() internamente pra decidir se reaproveita contaSelected ou
+        // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
+        // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
+        // ContratoTelaCrudV3.handleAddOrUpdate() (que reseta logo depois de disparar
+        // essa chamada), fazendo toda edição tentar dar update num model novo sem id
+        // (mesmo bug corrigido em outras telas).
+        boolean editando = modoEdicao.get();
+        var model = populateModelFromFields();
+
+        if (editando) {
+            asyncAtualizar(model);
         } else {
-            asyncSalvar();
+            asyncSalvar(model);
         }
     }
 
@@ -284,10 +294,9 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         });
     }
 
-    private void asyncSalvar() {
+    private void asyncSalvar(ContaAreceberModel model) {
         Async.Run(() -> {
             try {
-                var model = populateModelFromFields();
                 var salvo = contaService.salvar(model);
                 salvo.setCliente(clienteSelected.get());
 
@@ -303,10 +312,9 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         });
     }
 
-    private void asyncAtualizar() {
+    private void asyncAtualizar(ContaAreceberModel model) {
         Async.Run(() -> {
             try {
-                var model = populateModelFromFields();
                 contaService.atualizar(model);
                 model.setCliente(clienteSelected.get());
 

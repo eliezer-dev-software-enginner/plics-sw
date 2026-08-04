@@ -203,6 +203,8 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
         observacao.set(data.getObservacao());
         tipoPagamentoSelected.set(data.getTipoPagamento());
         pcCompra.set(Utils.deRealParaCentavos(data.getPrecoDeCompra()));
+        descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDescontoEmReais()));
+        fornecedorSelected.set(data.getFornecedor());
         dataValidade.set(data.getDataValidade() != null
                 ? DateUtils.millisParaLocalDate(data.getDataValidade())
                 : null);
@@ -252,9 +254,15 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     @Override
     public void handleAddOrUpdate() {
         var model = populateModelFromFields();
+        // Capturado aqui, síncrono (thread da UI) — ContratoTelaCrudV3.handleAddOrUpdate()
+        // reseta modoEdicao logo depois de disparar essa chamada, então ler
+        // modoEdicao.get() só depois de já estar rodando na thread virtual do
+        // Async.Run abaixo quase sempre lia o valor já resetado, transformando
+        // toda edição em cadastro novo (mesmo bug corrigido em outras telas).
+        boolean editando = modoEdicao.get();
 
         Async.Run(() -> {
-            if (modoEdicao.get()) {
+            if (editando) {
                 final var selecionado = compraSelected.get();
                 if (selecionado == null) return;
 

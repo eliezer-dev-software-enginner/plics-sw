@@ -1,16 +1,20 @@
 package my_app.services;
 
 import my_app.db.dto.CompraDto;
+import my_app.db.models.ClienteModel;
 import my_app.db.models.ContaAreceberModel;
 import my_app.db.models.ContasPagarModel;
+import my_app.db.models.FornecedorModel;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.models.VendaModel;
 import my_app.db.services.BaseServiceTest;
+import my_app.db.services.ClienteService;
 import my_app.db.services.CompraService;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ContasPagarService;
+import my_app.db.services.FornecedorService;
 import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
 import my_app.db.services.ProdutoService;
@@ -50,6 +54,83 @@ class RelatorioServiceTest extends BaseServiceTest {
         assertBigDecimalEquals(BigDecimal.ZERO, dados.contasPagarEmAberto());
         assertTrue(dados.produtosMaisVendidos().isEmpty());
         assertTrue(dados.produtosSemVenda().isEmpty());
+        assertTrue(dados.novosClientes().isEmpty());
+        assertTrue(dados.novosFornecedores().isEmpty());
+        assertTrue(dados.formasPagamento().isEmpty());
+    }
+
+    @Test
+    void deveRetornarNovosClientesEFornecedoresDoPeriodo() throws Exception {
+        var clienteService = new ClienteService(session);
+        var cliente = new ClienteModel();
+        cliente.setNome("Maria Nova");
+        cliente.setEmail("");
+        cliente.setCelular("");
+        clienteService.salvar(cliente);
+
+        var fornecedorService = new FornecedorService(session);
+        var fornecedor = new FornecedorModel();
+        fornecedor.setNome("Distribuidora Nova");
+        fornecedorService.salvar(fornecedor);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        assertEquals(1, dados.novosClientes().size());
+        assertEquals("Maria Nova", dados.novosClientes().getFirst().getNome());
+
+        assertEquals(1, dados.novosFornecedores().size());
+        assertEquals("Distribuidora Nova", dados.novosFornecedores().getFirst().getNome());
+    }
+
+    @Test
+    void deveSomarFormasDePagamentoDeVendasEPedidosExcluindoAPrazo() throws Exception {
+        var vendaService = new VendaService(session);
+
+        var vendaPix = new VendaModel();
+        vendaPix.setProdutoCod("111");
+        vendaPix.setClienteId(1);
+        vendaPix.setQuantidade(BigDecimal.ONE);
+        vendaPix.setPrecoUnitario(BigDecimal.valueOf(70));
+        vendaPix.setTotalLiquido(BigDecimal.valueOf(70));
+        vendaPix.setTipoPagamento("PIX");
+        vendaService.salvar(vendaPix, false);
+
+        var vendaAPrazo = new VendaModel();
+        vendaAPrazo.setProdutoCod("222");
+        vendaAPrazo.setClienteId(1);
+        vendaAPrazo.setQuantidade(BigDecimal.ONE);
+        vendaAPrazo.setPrecoUnitario(BigDecimal.valueOf(999));
+        vendaAPrazo.setTotalLiquido(BigDecimal.valueOf(999));
+        vendaAPrazo.setTipoPagamento("A PRAZO");
+        vendaService.salvar(vendaAPrazo, false);
+
+        var pedidoService = new PedidoService(session);
+        var pedidoPix = new PedidoModel();
+        pedidoPix.setClienteId(1);
+        pedidoPix.setFormaPagamento("PIX");
+        pedidoPix.setTotalLiquido(BigDecimal.valueOf(30));
+        pedidoPix.setDesconto(BigDecimal.ZERO);
+        pedidoPix.setFiado(0);
+        pedidoService.salvar(pedidoPix);
+
+        var pedidoDebito = new PedidoModel();
+        pedidoDebito.setClienteId(1);
+        pedidoDebito.setFormaPagamento("DÉBITO");
+        pedidoDebito.setTotalLiquido(BigDecimal.valueOf(20));
+        pedidoDebito.setDesconto(BigDecimal.ZERO);
+        pedidoDebito.setFiado(0);
+        pedidoService.salvar(pedidoDebito);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        var formas = dados.formasPagamento();
+        assertEquals(2, formas.size(), "A PRAZO não deve virar uma forma de pagamento no relatório");
+
+        assertEquals("PIX", formas.get(0).forma());
+        assertBigDecimalEquals(BigDecimal.valueOf(100), formas.get(0).valor());
+
+        assertEquals("DÉBITO", formas.get(1).forma());
+        assertBigDecimalEquals(BigDecimal.valueOf(20), formas.get(1).valor());
     }
 
     @Test

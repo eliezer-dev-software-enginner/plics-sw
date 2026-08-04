@@ -48,10 +48,10 @@ public class RelatoriosScreenViewModel {
     final State<String> contasReceberEmAberto = State.of("R$ 0,00");
     final State<String> contasPagarEmAberto = State.of("R$ 0,00");
 
-    final State<String> produtoMaisVendido1 = State.of("");
-    final State<String> produtoMaisVendido2 = State.of("");
-    final State<String> produtoMaisVendido3 = State.of("");
+    final State<String> produtosMaisVendidos = State.of("");
     final State<String> produtosSemVenda = State.of("");
+    final State<String> novosClientes = State.of("");
+    final State<String> novosFornecedores = State.of("");
 
     private RelatorioDados ultimoRelatorio;
 
@@ -70,6 +70,11 @@ public class RelatoriosScreenViewModel {
     final PieChart.Data despesaContasSlice = new PieChart.Data("Contas a Pagar", 0);
     final ObservableList<PieChart.Data> despesasPieData =
             FXCollections.observableArrayList(despesaComprasSlice, despesaContasSlice);
+
+    // Quantidade de formas de pagamento varia (depende do que foi usado no período),
+    // então, diferente das 2 pizzas acima (fatias fixas), essa lista é reconstruída
+    // inteira a cada geração de relatório — o PieChart já reage a isso sozinho.
+    final ObservableList<PieChart.Data> formasPagamentoPieData = FXCollections.observableArrayList();
 
     final XYChart.Data<String, Number> receitasBarra = new XYChart.Data<>("Receitas", 0);
     final XYChart.Data<String, Number> despesasBarra = new XYChart.Data<>("Despesas", 0);
@@ -145,15 +150,31 @@ public class RelatoriosScreenViewModel {
         contasPagarEmAberto.set(Utils.toBRLCurrency(dados.contasPagarEmAberto()));
 
         var produtos = dados.produtosMaisVendidos();
-        produtoMaisVendido1.set(formatarProduto(produtos, 0));
-        produtoMaisVendido2.set(formatarProduto(produtos, 1));
-        produtoMaisVendido3.set(formatarProduto(produtos, 2));
+        produtosMaisVendidos.set(produtos == null || produtos.isEmpty()
+                ? "Nenhum produto vendido no período"
+                : java.util.stream.IntStream.range(0, produtos.size())
+                        .mapToObj(i -> formatarProduto(produtos, i))
+                        .collect(java.util.stream.Collectors.joining("\n")));
 
         var semVenda = dados.produtosSemVenda();
         produtosSemVenda.set(semVenda == null || semVenda.isEmpty()
                 ? "Todos os produtos tiveram venda no período"
                 : semVenda.stream()
                         .map(p -> "• " + p.descricao() + (p.unidade() != null && !p.unidade().isBlank() ? " (" + p.unidade() + ")" : ""))
+                        .collect(java.util.stream.Collectors.joining("\n")));
+
+        var clientesNovos = dados.novosClientes();
+        novosClientes.set(clientesNovos == null || clientesNovos.isEmpty()
+                ? "Nenhum cliente novo no período"
+                : clientesNovos.stream()
+                        .map(c -> "• " + c.getNome())
+                        .collect(java.util.stream.Collectors.joining("\n")));
+
+        var fornecedoresNovos = dados.novosFornecedores();
+        novosFornecedores.set(fornecedoresNovos == null || fornecedoresNovos.isEmpty()
+                ? "Nenhum fornecedor novo no período"
+                : fornecedoresNovos.stream()
+                        .map(f -> "• " + f.getNome())
                         .collect(java.util.stream.Collectors.joining("\n")));
 
         receitaVendasSlice.setPieValue(dados.receitasVendas().doubleValue());
@@ -166,6 +187,12 @@ public class RelatoriosScreenViewModel {
         receitasBarra.setYValue(dados.totalReceitas().doubleValue());
         despesasBarra.setYValue(dados.totalDespesas().doubleValue());
         lucroBarra.setYValue(dados.lucroLiquido().doubleValue());
+
+        var formasPagamento = dados.formasPagamento();
+        formasPagamentoPieData.setAll(formasPagamento == null ? java.util.List.of() :
+                formasPagamento.stream()
+                        .map(f -> new PieChart.Data(f.forma(), f.valor().doubleValue()))
+                        .toList());
     }
 
     private String formatarProduto(java.util.List<ProdutoMaisVendido> produtos, int indice) {

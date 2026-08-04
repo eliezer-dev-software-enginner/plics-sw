@@ -83,7 +83,37 @@ public class RelatorioPdfExporter {
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "SITUAÇÃO ATUAL (não vinculada ao período)");
                 y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a receber em aberto: " + Utils.toBRLCurrency(dados.contasReceberEmAberto()));
                 y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a pagar em aberto: " + Utils.toBRLCurrency(dados.contasPagarEmAberto()));
-                y -= LEADING * 2;
+                y -= LEADING;
+
+                y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "NOVOS CLIENTES NO PERÍODO");
+                if (dados.novosClientes() == null || dados.novosClientes().isEmpty()) {
+                    y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Nenhum cliente novo no período");
+                } else {
+                    for (var cliente : dados.novosClientes()) {
+                        y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "- " + cliente.getNome());
+                    }
+                }
+                y -= LEADING;
+
+                y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "NOVOS FORNECEDORES NO PERÍODO");
+                if (dados.novosFornecedores() == null || dados.novosFornecedores().isEmpty()) {
+                    y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Nenhum fornecedor novo no período");
+                } else {
+                    for (var fornecedor : dados.novosFornecedores()) {
+                        y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "- " + fornecedor.getNome());
+                    }
+                }
+                y -= LEADING;
+
+                y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "FORMAS DE PAGAMENTO MAIS USADAS (vendas)");
+                if (dados.formasPagamento() == null || dados.formasPagamento().isEmpty()) {
+                    y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Nenhuma venda no período");
+                } else {
+                    for (var forma : dados.formasPagamento()) {
+                        y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, forma.forma() + ": " + Utils.toBRLCurrency(forma.valor()));
+                    }
+                }
+                y -= LEADING;
 
                 escreverLinha(cs, fonteTexto, 8, MARGEM, y,
                         "Gerado em " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + " pelo Plics SW");

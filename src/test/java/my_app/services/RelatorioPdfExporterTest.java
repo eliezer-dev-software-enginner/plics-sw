@@ -31,6 +31,9 @@ class RelatorioPdfExporterTest {
                 BigDecimal.valueOf(140), BigDecimal.valueOf(70), BigDecimal.valueOf(70),
                 BigDecimal.valueOf(15), BigDecimal.valueOf(5),
                 java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(),
                 java.util.List.of()
         );
     }
@@ -84,6 +87,9 @@ class RelatorioPdfExporterTest {
                         new ProdutoMaisVendido("111", "Camiseta", "UN", BigDecimal.valueOf(12)),
                         new ProdutoMaisVendido("222", "Calça", "UN", BigDecimal.valueOf(8))
                 ),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(),
                 java.util.List.of()
         );
 
@@ -97,5 +103,35 @@ class RelatorioPdfExporterTest {
         assertTrue(texto.contains("1. Camiseta"), "deveria conter o 1º produto mais vendido");
         assertTrue(texto.contains("12 UN"), "deveria conter a quantidade e unidade do 1º produto");
         assertTrue(texto.contains("2. Calça"), "deveria conter o 2º produto mais vendido");
+    }
+
+    @Test
+    void deveIncluirFormasDePagamentoNoPdf(@TempDir Path tempDir) throws Exception {
+        File destino = tempDir.resolve("relatorio-formas-pagamento.pdf").toFile();
+
+        var dados = new RelatorioDados(
+                BigDecimal.valueOf(100), BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(100), BigDecimal.ZERO, BigDecimal.valueOf(100),
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of(
+                        new FormaPagamentoValor("PIX", BigDecimal.valueOf(70)),
+                        new FormaPagamentoValor("DÉBITO", BigDecimal.valueOf(30))
+                )
+        );
+
+        exporter.gerar(destino, null, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31), dados);
+
+        String texto;
+        try (PDDocument doc = PDDocument.load(destino)) {
+            texto = new PDFTextStripper().getText(doc);
+        }
+        assertTrue(texto.contains("FORMAS DE PAGAMENTO MAIS USADAS"), "deveria conter a seção de formas de pagamento");
+        assertTrue(texto.contains("PIX: R$ 70,00"), "deveria conter o valor em PIX");
+        assertTrue(texto.contains("DÉBITO: R$ 30,00"), "deveria conter o valor em DÉBITO");
     }
 }

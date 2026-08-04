@@ -7,6 +7,7 @@ import net.sf.persism.Session;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static my_app.utils.Utils.*;
 
@@ -69,5 +70,9 @@ public class FornecedorService extends BaseService<FornecedorModel> {
         String celular = model.getCelular();
         if (celular != null && !celular.isBlank() && !isValidPhone(celular))
             throw new IllegalArgumentException("Telefone inválido (informe DDD + Número)");
+    }
+
+    public List<FornecedorModel> listarNovosPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return fornecedorRepository.listarNovosPorPeriodo(dataInicio, dataFim);
     }
 }

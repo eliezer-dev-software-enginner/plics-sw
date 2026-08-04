@@ -37,4 +37,8 @@ public class PedidoService extends BaseService<PedidoModel> {
             throw new IllegalArgumentException("Data de início deve ser anterior à data de fim");
         return pedidoRepository.somarPedidosPorPeriodo(dataInicio, dataFim);
     }
+
+    public java.util.List<PedidoModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return pedidoRepository.listarPorPeriodo(dataInicio, dataFim);
+    }
 }

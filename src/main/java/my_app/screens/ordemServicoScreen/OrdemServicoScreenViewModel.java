@@ -155,10 +155,20 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
     public void handleAddOrUpdate() {
         if (modoEdicao.get() && osSelected.get() == null) return;
 
-        if (modoEdicao.get()) {
-            asyncAtualizar();
+        // model montado aqui, síncrono (thread da UI) — não dentro do Async.Run de
+        // asyncSalvar/asyncAtualizar. populateModelFromFields() lê modoEdicao.get()
+        // internamente pra decidir se reaproveita osSelected ou cria um OrdemServicoModel
+        // novo; chamado de dentro do Async.Run isso quase sempre lia modoEdicao já
+        // resetado por ContratoTelaCrudV3.handleAddOrUpdate() (que reseta logo depois
+        // de disparar essa chamada), fazendo toda edição tentar dar update num model
+        // novo sem id (mesmo bug corrigido em outras telas).
+        boolean editando = modoEdicao.get();
+        var model = populateModelFromFields();
+
+        if (editando) {
+            asyncAtualizar(model);
         } else {
-            asyncSalvar();
+            asyncSalvar(model);
         }
     }
 
@@ -185,10 +195,9 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
         ctx.router().spawnWindow("tecnicos", e -> {});
     }
 
-    private void asyncSalvar() {
+    private void asyncSalvar(OrdemServicoModel model) {
         Async.Run(() -> {
             try {
-                var model = populateModelFromFields();
                 var salvo = service.salvar(model);
                 salvo.setCliente(clienteSelected.get());
                 salvo.setTecnico(tecnicoSelected.get());
@@ -204,10 +213,9 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
         });
     }
 
-    private void asyncAtualizar() {
+    private void asyncAtualizar(OrdemServicoModel model) {
         Async.Run(() -> {
             try {
-                var model = populateModelFromFields();
                 service.atualizar(model);
                 model.setCliente(clienteSelected.get());
                 model.setTecnico(tecnicoSelected.get());

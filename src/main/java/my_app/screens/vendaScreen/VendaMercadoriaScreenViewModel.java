@@ -208,6 +208,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         observacao.set(data.getObservacao());
         tipoPagamentoSelecionado.set(data.getTipoPagamento());
         pcVenda.set(Utils.deRealParaCentavos(data.getPrecoUnitario()));
+        descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDesconto()));
         dataValidade.set(data.getDataValidade() != null
                 ? DateUtils.millisParaLocalDate(data.getDataValidade())
                 : null);
@@ -312,7 +313,13 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         // e essa chamada corre em paralelo com a task assíncrona abaixo. Sem essa captura,
         // o modoEdicao.get() lá dentro quase sempre já lê false, e a edição vira um cadastro novo
         // (mesmo bug documentado e corrigido em CategoriaScreenViewModel, ver docs/DECISIONS.md).
+        //
+        // populateModelFromFields() TAMBÉM lê modoEdicao.get() internamente (pra decidir se
+        // copia id/dataCriacao de vendaSelected) — chamá-la de dentro do Async.Run sofria do
+        // MESMO race mesmo com "editando" já capturado aqui, então o model também precisa ser
+        // montado aqui, síncrono, quando estamos editando.
         final boolean editando = modoEdicao.get();
+        final VendaModel modeloEditado = editando ? populateModelFromFields() : null;
 
         Async.Run(() -> {
             if (editando) {
@@ -325,7 +332,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
                 // o item por ele mesmo — ListState.set() vê as duas listas como iguais
                 // (mesmas referências, mesma posição) e não notifica ninguém, então a
                 // tabela nunca redesenha essa linha sozinha.
-                var atualizado = populateModelFromFields();
+                var atualizado = modeloEditado;
 
                 boolean atualizarEstoque = "Sim".equalsIgnoreCase(opcaoEstoqueSelected.get());
                 try {

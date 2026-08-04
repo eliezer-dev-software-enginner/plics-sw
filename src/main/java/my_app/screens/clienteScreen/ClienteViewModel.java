@@ -172,11 +172,21 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public void handleAddOrUpdate() {
+        if (modoEdicao.get() && clienteSelecionado.get() == null) return;
+
+        // editando/model capturados aqui, síncronos (thread da UI) — não dentro do
+        // Async.Run abaixo. ContratoTelaCrudV3.handleAddOrUpdate() chama
+        // modoEdicaoState().set(false) logo depois de disparar essa chamada, então
+        // ler modoEdicao.get() só depois de já estar rodando na thread virtual do
+        // Async.Run quase sempre lê o valor já resetado — toda edição virava
+        // cadastro novo. Mesmo bug já corrigido antes em CategoriaScreenViewModel/
+        // VendaMercadoriaScreenViewModel; aqui ainda não tinha sido.
+        boolean editando = modoEdicao.get();
+        var model = populateModelFromFields();
+
         Async.Run(() -> {
             try {
-                if (modoEdicao.get()) {
-                    if(clienteSelecionado.get() == null)return;
-                    var model = populateModelFromFields();
+                if (editando) {
                     clienteService.atualizar(model);
                     ClienteModel finalModel = new ClienteModel();
                     finalModel.setId(model.getId());
@@ -185,6 +195,16 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                     finalModel.setCelular(model.getCelular());
                     finalModel.setEmail(model.getEmail());
                     finalModel.setPessoaFisica(model.getPessoaFisica());
+                    finalModel.setObservacao(model.getObservacao());
+                    finalModel.setDataNascimento(model.getDataNascimento());
+                    finalModel.setGestante(model.getGestante());
+                    finalModel.setDataNascimentoBebe(model.getDataNascimentoBebe());
+                    finalModel.setCep(model.getCep());
+                    finalModel.setUf(model.getUf());
+                    finalModel.setCidade(model.getCidade());
+                    finalModel.setBairro(model.getBairro());
+                    finalModel.setRua(model.getRua());
+                    finalModel.setNumero(model.getNumero());
                     finalModel.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
                         allDataList.updateIf(it -> it.getId().equals(finalModel.getId()), it -> finalModel);
@@ -193,7 +213,6 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                         EventBus.getInstance().publish(EntityEvent.editado(finalModel));
                     });
                 } else {
-                    var model = populateModelFromFields();
                     clienteService.salvar(model);
                     UI.runOnUi(() -> {
                         allDataList.add(model);
@@ -216,6 +235,12 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         cnpjCpf.set("");
         celular.set("");
         email.set("");
+        observacao.set("");
+        tipoPessoaSelected.set(Data.tiposPessoaList.getFirst());
+        isGestante.set(Data.simNaoList.getLast());
+        dataNascimento.set(null);
+        dataNascimentoBebe.set(null);
+        enderecoState.get().clear();
     }
 
     @Override

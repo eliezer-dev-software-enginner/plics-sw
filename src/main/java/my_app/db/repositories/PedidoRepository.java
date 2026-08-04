@@ -6,6 +6,7 @@ import net.sf.persism.Session;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 import static my_app.utils.DateUtils.localDateParaMillis;
 import static net.sf.persism.Parameters.params;
@@ -29,14 +30,18 @@ public class PedidoRepository extends BaseRepository<PedidoModel> {
     }
 
     public BigDecimal somarPedidosPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
-        var pedidos = session().query(
-                modelClass(),
-                sql("SELECT * FROM pedidos WHERE dataCriacao BETWEEN ? AND ?"),
-                params(dataInicio, dataFim)
-        );
+        var pedidos = listarPorPeriodo(dataInicio, dataFim);
         return pedidos.stream()
                 .map(PedidoModel::getTotalLiquido)
                 .filter(java.util.Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public List<PedidoModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM pedidos WHERE dataCriacao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
     }
 }

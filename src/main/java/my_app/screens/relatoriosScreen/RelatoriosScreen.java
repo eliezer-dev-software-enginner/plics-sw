@@ -14,9 +14,11 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.ContainerProps;
+import megalodonte.props.FlowRowProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
@@ -57,9 +59,15 @@ public class RelatoriosScreen implements ScreenComponent {
                         cardSemVenda(),
                         new SpacerVertical(20),
                         new Row(new RowProps().spacingOf(15)).children(
+                                cardNovosClientes(),
+                                cardNovosFornecedores()
+                        ),
+                        new SpacerVertical(20),
+                        new FlowRow(new FlowRowProps().spacingOf(15)).children(
                                 graficoComparativo(),
                                 graficoPizzaReceitas(),
-                                graficoPizzaDespesas()
+                                graficoPizzaDespesas(),
+                                graficoPizzaFormasPagamento()
                         ),
                         new SpacerVertical(20),
                         new Button("Baixar PDF")
@@ -90,6 +98,14 @@ public class RelatoriosScreen implements ScreenComponent {
     private Component graficoPizzaDespesas() {
         var pieChart = new PieChart(vm.despesasPieData);
         pieChart.setTitle("Composição das Despesas");
+        pieChart.setPrefSize(320, 260);
+        pieChart.setLegendVisible(false);
+        return Component.CreateFromJavaFxNode(pieChart);
+    }
+
+    private Component graficoPizzaFormasPagamento() {
+        var pieChart = new PieChart(vm.formasPagamentoPieData);
+        pieChart.setTitle("Formas de pagamento mais usadas");
         pieChart.setPrefSize(320, 260);
         pieChart.setLegendVisible(false);
         return Component.CreateFromJavaFxNode(pieChart);
@@ -150,9 +166,7 @@ public class RelatoriosScreen implements ScreenComponent {
         return new Card(new Column(new ColumnProps().fillWidth()).children(
                 cardTitulo("Produtos mais vendidos do período", AntDesignIconsOutlined.TROPHY, "#f59e0b"),
                 new SpacerVertical(10),
-                new Text(vm.produtoMaisVendido1, new TextProps().fontSize(ThemeManager.theme().typography().body())),
-                new Text(vm.produtoMaisVendido2, new TextProps().fontSize(ThemeManager.theme().typography().body())),
-                new Text(vm.produtoMaisVendido3, new TextProps().fontSize(ThemeManager.theme().typography().body()))
+                new Text(vm.produtosMaisVendidos, new TextProps().fontSize(ThemeManager.theme().typography().body()))
         ));
     }
 
@@ -161,6 +175,22 @@ public class RelatoriosScreen implements ScreenComponent {
                 cardTitulo("Produtos sem venda no período", AntDesignIconsOutlined.INBOX, "#6b7280"),
                 new SpacerVertical(10),
                 new Text(vm.produtosSemVenda, new TextProps().fontSize(ThemeManager.theme().typography().body()))
+        ));
+    }
+
+    private Component cardNovosClientes() {
+        return new Card(new Column(new ColumnProps().fillWidth()).children(
+                cardTitulo("Novos clientes no período", AntDesignIconsOutlined.USER_ADD, "#8b5cf6"),
+                new SpacerVertical(10),
+                new Text(vm.novosClientes, new TextProps().fontSize(ThemeManager.theme().typography().body()))
+        ));
+    }
+
+    private Component cardNovosFornecedores() {
+        return new Card(new Column(new ColumnProps().fillWidth()).children(
+                cardTitulo("Novos fornecedores no período", AntDesignIconsOutlined.SHOP, "#0891b2"),
+                new SpacerVertical(10),
+                new Text(vm.novosFornecedores, new TextProps().fontSize(ThemeManager.theme().typography().body()))
         ));
     }
 

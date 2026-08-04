@@ -1,5 +1,16 @@
 # Decisões Arquiteturais
 
+## 2026-08-04: Race condition modoEdicao/Async.Run — corrigida em 6 telas, não propagada a tempo em 2026-06-22
+
+**Contexto:** usuário reportou "ao clicar em Atualizar está cadastrando o cliente". Investigação revelou que a race condition já documentada e corrigida em `CategoriaScreenViewModel` (ver entrada de 2026-06-22 abaixo) nunca foi propagada para as outras 11 ViewModels do mesmo contrato `ContratoTelaCrudV3` — só `FornecedorScreenViewModel`/`TecnicoScreenViewModel` (por acaso, sua estrutura já montava o model síncrono antes do `Async.Run`) e `VendaMercadoriaScreenViewModel` (fix parcial, aplicado depois) escapavam do bug.
+
+**Causa:** `ContratoTelaCrudV3.handleAddOrUpdate()` chama `viewModel().handleAddOrUpdate()` (dispara `Async.Run`, fire-and-forget) e, síncrono, logo em seguida, `modoEdicaoState().set(false)`. Qualquer leitura de `modoEdicao.get()` feita DENTRO do `Async.Run` — direta ou indiretamente via `populateModelFromFields()` — corre risco real de ler o valor já resetado, porque o `submit()` do `Executors.newVirtualThreadPerTaskExecutor()` não bloqueia: a próxima linha do código síncrono (o reset) executa antes da task assíncrona ser de fato agendada na prática.
+
+**Decisão:**
+1. `modoEdicao.get()` e `populateModelFromFields()` (que também lê `modoEdicao.get()` internamente) devem ser chamados SEMPRE síncronos, na thread da UI, antes de qualquer `Async.Run` — nunca de dentro dele. `asyncSalvar`/`asyncAtualizar` recebem o `model` já pronto como parâmetro.
+2. Corrigido em `ClienteViewModel`, `ComprasScreenViewModel`, `OrdemServicoScreenViewModel`, `ComprasAPagarScreenViewModel`, `ContasAReceberScreenViewModel`, `ProdutoScreenViewModel`, e completado em `VendaMercadoriaScreenViewModel` (tinha capturado `editando` mas não o `model`).
+3. **Lição:** quando uma correção arquitetural é aplicada numa ViewModel específica por causa de um bug reportado numa tela específica, precisa ser auditada em TODAS as ViewModels do mesmo contrato antes de considerar resolvida — não só documentada como "padrão a seguir". Não existe teste automatizado que pegue isso (não há `*ViewModelTest.java` no projeto), então essa auditoria tem que ser manual/deliberada.
+
 ## 2026-08-01: Produtos sem venda no período no RelatoriosScreen — complemento do ranking, fora do PDF
 
 **Contexto:** pedido pra exibir também os produtos que não tiveram nenhuma venda na tela de Relatórios, ao lado do top 3 mais vendidos do período.
