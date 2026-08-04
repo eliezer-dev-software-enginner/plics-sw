@@ -4,6 +4,7 @@ import megalodonte.base.route.RouteProps;
 import megalodonte.router.v4.Router;
 import my_app.Main;
 import my_app.SplashScreen;
+import my_app.screens.acessoBloqueadoScreen.AcessoBloqueadoScreen;
 import my_app.screens.ler_planilha_ia.LerPlanilhaScreen;
 import my_app.screens.welcomeScreen.WelcomeScreen;
 import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
@@ -53,7 +54,8 @@ public class AppRoutes {
         PEDIDOS,
         PREFERENCIAS,
         INFO_UPDATE,
-        RELATORIOS
+        RELATORIOS,
+        ACESSO_BLOQUEADO
     }
 
     final int MIN_WIDTH = 600;
@@ -99,7 +101,9 @@ public class AppRoutes {
                 new Router.Route(Screens.PEDIDOS.name(), PedidosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Analise suas vendas feitas no PDV", true)),
                 new Router.Route(Screens.PREFERENCIAS.name(), PreferenciasScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Alteração de preferências do comportamento do aplicativo", true)),
                 new Router.Route(Screens.INFO_UPDATE.name(), InfoUpdateScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Atualizações do aplicativo", false)),
-                new Router.Route(Screens.RELATORIOS.name(), RelatoriosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Relatórios financeiros", true))
+                new Router.Route(Screens.RELATORIOS.name(), RelatoriosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Relatórios financeiros", true)),
+                new Router.Route(Screens.ACESSO_BLOQUEADO.name(), ctx -> new AcessoBloqueadoScreen(),
+                        new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Acesso bloqueado", false))
         );
     }
 }

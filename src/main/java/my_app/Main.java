@@ -27,6 +27,7 @@ import my_app.domain.telegram.TelegramNotifierFactory;
 import my_app.infra.ProcessKiller;
 import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
+import my_app.services.VerificacaoAcessoService;
 import org.flywaydb.core.Flyway;
 
 public class Main {
@@ -169,6 +170,18 @@ public class Main {
             flyway.repair();
             flyway.migrate();
 
+            // Checagem provisória de acesso (ver VerificacaoAcessoService) — se o
+            // dígito verificador do site não bater (ou o site estiver fora do ar/sem
+            // internet), nem chega a resolver a rota normal: vai direto pro bloqueio.
+            if (!VerificacaoAcessoService.acessoLiberado()) {
+                UI.runOnUi(() -> {
+                    Components.ShowAlertError("O acesso não pode ser realizado.");
+                    var result = router.navigateOnStage(AppRoutes.Screens.ACESSO_BLOQUEADO.name(), context.javafxStage());
+                    context.useView(result);
+                });
+                return;
+            }
+
             boolean enterWithCredentials = false;
             boolean isFirstAccess = false;
 
@@ -177,9 +190,13 @@ public class Main {
                 if (!prefs.isEmpty()) {
                     var pref = prefs.getFirst();
                     isFirstAccess = pref.isFirstAccess();
-                    enterWithCredentials = pref.getCredenciaisHabilitadas() == 1|| AuthScreenViewModel.isLicenseInvalid(pref.getLicensa());
+                    enterWithCredentials =
+                            pref.getCredenciaisHabilitadas() == 1||
+                                    AuthScreenViewModel.isLicenseInvalid(pref.getLicensa());
                 }
             }
+
+
 
 
             String rotaInicial = InitialRouteResolver.resolve(isFirstAccess, enterWithCredentials);
