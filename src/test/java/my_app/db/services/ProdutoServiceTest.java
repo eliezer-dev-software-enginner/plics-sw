@@ -140,4 +140,22 @@ class ProdutoServiceTest extends BaseServiceTest {
         var atualizado = produtoService.buscarPorCodigoBarras(p.getCodigoBarras());
         assertBigDecimalEquals(BigDecimal.valueOf(20), atualizado.getEstoque());
     }
+
+    @Test
+    void deveSalvarProdutoComFreteEAceitaDevolucao() throws Exception {
+        var p = produtoValido();
+        // Valor exatamente representável em binário (4.5 = 100.1) — o mesmo cuidado que
+        // as demais fixtures deste arquivo já tomam (10.00, 25.50, 30.00...), porque o
+        // roundtrip REAL/Persism perde precisão pra frações não exatas (ex: 4.90 volta
+        // como 4.900000095367432, artefato clássico de float32) — não é um bug
+        // introduzido por frete/aceitaDevolucao, é assim pra qualquer BigDecimal aqui.
+        p.setFrete(BigDecimal.valueOf(4.5));
+        p.setAceitaDevolucao(true);
+
+        var salvo = produtoService.salvar(p);
+        var buscado = produtoService.buscarById(salvo.getId());
+
+        assertBigDecimalEquals(BigDecimal.valueOf(4.5), buscado.getFrete());
+        assertEquals(Boolean.TRUE, buscado.getAceitaDevolucao());
+    }
 }

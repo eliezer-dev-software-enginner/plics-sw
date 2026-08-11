@@ -135,4 +135,28 @@ class ProdutoRepositoryTest extends BaseRepositoryTest {
 
         assertNull(encontrado);
     }
+
+    @Test
+    void salvarComFreteEAceitaDevolucao() throws SQLException {
+        var model = novoProduto("1234567890123");
+        model.setFrete(BigDecimal.valueOf(3.75));
+        model.setAceitaDevolucao(true);
+
+        ProdutoModel salvo = repository.salvar(model);
+        ProdutoModel encontrado = repository.buscarById(salvo.getId());
+
+        assertNotNull(encontrado);
+        assertEquals(0, BigDecimal.valueOf(3.75).compareTo(encontrado.getFrete()));
+        assertEquals(Boolean.TRUE, encontrado.getAceitaDevolucao());
+    }
+
+    @Test
+    void produtoSemFreteNemAceitaDevolucaoDefinidosUsaDefaultDoBanco() throws SQLException {
+        ProdutoModel salvo = repository.salvar(novoProduto("1234567890123"));
+        ProdutoModel encontrado = repository.buscarById(salvo.getId());
+
+        assertNotNull(encontrado);
+        assertEquals(0, BigDecimal.ZERO.compareTo(encontrado.getFrete()));
+        assertEquals(Boolean.FALSE, encontrado.getAceitaDevolucao());
+    }
 }

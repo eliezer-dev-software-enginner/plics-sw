@@ -67,6 +67,9 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     public final State<ProdutoModel> produtoSelected = new State<>(null);
     public final State<String> perecivelSelected = new State<>("Não");
 
+    public final State<String> frete = new State<>("0");
+    public final State<String> aceitaDevolucao = new State<>("Não");
+
     public ProdutoScreenViewModel(ScreenContext ctx) {
         super(ctx);
         this.produtoService = createOrReport(ProdutoService::new);
@@ -222,6 +225,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 atualizado.setModelo(model.getModelo());
                 atualizado.setValidade(model.getValidade());
                 atualizado.setGarantia(model.getGarantia());
+                atualizado.setFrete(model.getFrete());
+                atualizado.setAceitaDevolucao(model.getAceitaDevolucao());
                 atualizado.setTotalLiquido(model.getTotalLiquido());
                 atualizado.setDataCriacao(model.getDataCriacao());
                 atualizado.setCategoria(model.getCategoria());
@@ -280,7 +285,11 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         model.setModelo(modelo.get());
         model.setValidade("Sim".equals(perecivelSelected.get()) && !validade.isNull() ? DateUtils.localDateParaMillis(validade.get()) : null);
         model.setGarantia(garantia.get());
-        model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra()));
+        model.setFrete(Utils.deCentavosParaReal(frete.get()));
+        model.setAceitaDevolucao("Sim".equals(aceitaDevolucao.get()));
+        // Frete entra no custo real do produto — a margem/lucro (totalLiquido) só faz
+        // sentido líquida do que foi de fato gasto pra ter o produto em mãos.
+        model.setTotalLiquido(model.getPrecoVenda().subtract(model.getPrecoCompra().add(model.getFrete())));
         var estoqueMinimoField = estoqueMinimo.get();
         model.setEstoqueMinimo(estoqueMinimoField == null || estoqueMinimoField.trim().isEmpty() ? BigDecimal.ZERO : new BigDecimal(estoqueMinimoField));
 
@@ -307,6 +316,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         observacoes.set("");
         imagem.set("/assets/produto-generico.png");
         perecivelSelected.set("Não");
+        frete.set("0");
+        aceitaDevolucao.set("Não");
     }
 
     @Override
@@ -335,6 +346,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         perecivelSelected.set(model.getValidade() != null && model.getValidade() > 0 ? "Sim" : "Não");
         observacoes.set(model.getObservacoes());
         imagem.set(model.getImagem());
+        frete.set(Utils.deRealParaCentavos(model.getFrete()));
+        aceitaDevolucao.set(Boolean.TRUE.equals(model.getAceitaDevolucao()) ? "Sim" : "Não");
     }
 
     public ScreenContext getCtx() {

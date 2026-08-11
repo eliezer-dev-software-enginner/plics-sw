@@ -18,14 +18,15 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Observações | Imagem | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-------------|-----------|----------|----------|-------------|--------|-----------------|------|---|
-| 21 | Produto unitário | BEB001 | Refrigerante Lata 350ml | UN | RefriMax | - | - | - | R$ 2,50 | R$ 5,00 | Bebidas | RefriMax | 200 | 30 | Nao | - | - | Refrigerante cola 350ml lata | - | Salvo com sucesso. | | |
-| 22 | Produto por kg | SAL001 | Coxinha (kg) | KG | Generica | - | - | - | R$ 12,00 | R$ 29,90 | Salgados | Distribuidora Horizonte | 10 | 3 | Sim | 20/08/2026 | - | Coxinha de frango caseira | - | Salvo com sucesso. | | |
-| 23 | Produto ml | BEB002 | Suco Natural 500ml | ml | Generica | - | - | - | R$ 3,00 | R$ 7,00 | Bebidas | Distribuidora Horizonte | 30 | 5 | Sim | 25/07/2026 | - | Suco natural sem conservantes | - | Salvo com sucesso. | | |
-| 24 | Fornecedor não selecionado | DOC001 | Pudim | UN | Generica | - | - | - | R$ 4,00 | R$ 9,00 | Doces | (nenhum) | 20 | 5 | Nao | - | - | - | - | Alerta: "Fornecedor é obrigatório". | | |
-| 125 | Produto com imagem | BEB003 | Café Especial 250g | g | RefriMax | - | - | - | R$ 8,00 | R$ 18,00 | Bebidas | RefriMax | 50 | 10 | Nao | - | - | Café torrado e moído | (arquivo jpg) | Salvo com sucesso. Imagem registrada. | | |
-| 162 | Produto perecível sem validade | SAL002 | Coxinha de Frango Fresca | UN | Generica | - | - | - | R$ 3,50 | R$ 8,00 | Salgados | Distribuidora Horizonte | 40 | 10 | Sim | (vazio) | - | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Frete | Categoria | Fornecedor | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Devolução | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 21 | Produto unitário | BEB001 | Refrigerante Lata 350ml | UN | RefriMax | - | - | - | R$ 2,50 | R$ 5,00 | R$ 0,00 | Bebidas | RefriMax | 200 | 30 | Nao | - | - | Não | Refrigerante cola 350ml lata | - | Salvo com sucesso. |  |  |
+| 22 | Produto por kg | SAL001 | Coxinha (kg) | KG | Generica | - | - | - | R$ 12,00 | R$ 29,90 | R$ 0,00 | Salgados | Distribuidora Horizonte | 10 | 3 | Sim | 20/08/2026 | - | Não | Coxinha de frango caseira | - | Salvo com sucesso. |  |  |
+| 23 | Produto ml | BEB002 | Suco Natural 500ml | ml | Generica | - | - | - | R$ 3,00 | R$ 7,00 | R$ 0,00 | Bebidas | Distribuidora Horizonte | 30 | 5 | Sim | 25/07/2026 | - | Não | Suco natural sem conservantes | - | Salvo com sucesso. |  |  |
+| 24 | Fornecedor não selecionado | DOC001 | Pudim | UN | Generica | - | - | - | R$ 4,00 | R$ 9,00 | R$ 0,00 | Doces | (nenhum) | 20 | 5 | Nao | - | - | Não | - | - | Alerta: "Fornecedor é obrigatório". |  |  |
+| 125 | Produto com imagem | BEB003 | Café Especial 250g | g | RefriMax | - | - | - | R$ 8,00 | R$ 18,00 | R$ 0,00 | Bebidas | RefriMax | 50 | 10 | Nao | - | - | Não | Café torrado e moído | (arquivo jpg) | Salvo com sucesso. Imagem registrada. |  |  |
+| 162 | Produto perecível sem validade | SAL002 | Coxinha de Frango Fresca | UN | Generica | - | - | - | R$ 3,50 | R$ 8,00 | R$ 0,00 | Salgados | Distribuidora Horizonte | 40 | 10 | Sim | (vazio) | - | Não | - | - | Alerta: "Data de validade é obrigatória para produtos perecíveis". |  |  |
+| 184 | Produto com frete e aceita troca | BEB004 | Kit Copo Térmico | UN | RefriMax | - | - | - | R$ 20,00 | R$ 49,90 | R$ 5,00 | Bebidas | RefriMax | 15 | 3 | Nao | - | 6 meses | Sim | Aceita troca em até 7 dias, produto lacrado | - | Salvo com sucesso. Ganho líquido estimado descontado o frete. |  |  |
 
 ---
 

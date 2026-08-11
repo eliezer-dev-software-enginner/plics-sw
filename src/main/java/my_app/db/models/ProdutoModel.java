@@ -53,6 +53,11 @@ public class ProdutoModel {
     private Long validade;
     private String garantia;
 
+    private BigDecimal frete;
+
+    @Column(name = "aceita_devolucao")
+    private Boolean aceitaDevolucao;
+
     @Column(name = "dataCriacao")
     private LocalDateTime dataCriacao;
 

@@ -24,12 +24,13 @@
 
 ## ProdutoScreen
 
-| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Categoria | Fornecedor | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Observações | Imagem | Efeito Esperado | Erro | Resultado |
-|---|---------|-----|-----------|-------|-------|-----|---------|--------|-------------|-------------|-----------|-----------|---------|-------------|-----------|----------|----------|-------------|--------|-----------------|------|---|
-| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | - | - | - | R$ 8,00 | R$ 12,00 | Alimentos | Alimentos Brasil | 200 | 20 | Nao | - | - | Arroz tipo 1, pacote 5kg | - | Salvo com sucesso. | | |
-| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | - | - | - | R$ 5,00 | R$ 8,00 | Alimentos | Alimentos Brasil | 150 | 15 | Nao | - | - | Feijão carioca 1kg | - | Salvo com sucesso. | | |
-| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | - | - | - | R$ 4,50 | R$ 7,50 | Alimentos | Alimentos Brasil | 100 | 10 | Nao | - | - | Óleo de soja refinado | - | Salvo com sucesso. | | |
-| 150 | Produto com imagem | SKU-CAFE | Café 500g | g | Alimentos Brasil | - | - | - | R$ 12,00 | R$ 22,00 | Alimentos | Alimentos Brasil | 80 | 10 | Nao | - | - | Café torrado e moído 500g | (arquivo jpg) | Salvo com sucesso. Imagem registrada. | | |
+| # | Cenário | SKU | Descrição | Unid. | Marca | Cor | Tamanho | Modelo | Preço Compra | Preço Venda | Frete | Categoria | Fornecedor | Estoque | Est. Mínimo | Perecível | Validade | Garantia | Devolução | Observações | Imagem | Efeito Esperado | Erro | Resultado |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 145 | Cadastro válido arroz | SKU-ARROZ | Arroz 5kg | UN | Alimentos Brasil | - | - | - | R$ 8,00 | R$ 12,00 | R$ 0,00 | Alimentos | Alimentos Brasil | 200 | 20 | Nao | - | - | Não | Arroz tipo 1, pacote 5kg | - | Salvo com sucesso. |  |  |
+| 146 | Cadastro válido feijão | SKU-FEIJAO | Feijão 1kg | UN | Alimentos Brasil | - | - | - | R$ 5,00 | R$ 8,00 | R$ 0,00 | Alimentos | Alimentos Brasil | 150 | 15 | Nao | - | - | Não | Feijão carioca 1kg | - | Salvo com sucesso. |  |  |
+| 147 | Cadastro válido óleo | SKU-OLEO | Óleo 900ml | ml | Alimentos Brasil | - | - | - | R$ 4,50 | R$ 7,50 | R$ 0,00 | Alimentos | Alimentos Brasil | 100 | 10 | Nao | - | - | Não | Óleo de soja refinado | - | Salvo com sucesso. |  |  |
+| 150 | Produto com imagem | SKU-CAFE | Café 500g | g | Alimentos Brasil | - | - | - | R$ 12,00 | R$ 22,00 | R$ 0,00 | Alimentos | Alimentos Brasil | 80 | 10 | Nao | - | - | Não | Café torrado e moído 500g | (arquivo jpg) | Salvo com sucesso. Imagem registrada. |  |  |
+| 186 | Produto com frete e aceita troca | SKU-PANELA | Jogo de Panelas | UN | Alimentos Brasil | - | - | - | R$ 60,00 | R$ 149,90 | R$ 10,00 | Alimentos | Alimentos Brasil | 10 | 2 | Nao | - | 1 ano | Sim | Aceita troca em até 30 dias com nota fiscal | - | Salvo com sucesso. Ganho líquido estimado descontado o frete. |  |  |
 
 ---
 

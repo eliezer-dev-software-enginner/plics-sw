@@ -1,0 +1,2 @@
+ALTER TABLE produtos ADD COLUMN frete REAL DEFAULT 0;
+ALTER TABLE produtos ADD COLUMN aceita_devolucao BIT DEFAULT 0;
