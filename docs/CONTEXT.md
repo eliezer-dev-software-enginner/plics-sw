@@ -53,6 +53,16 @@
 
 ## Últimas alterações
 
+### 2026-08-04: Modal reativo (megalodonte-components) + promoção de Instagram na HomeScreen
+- **Pedido do usuário**: exibir, alguns milissegundos depois de abrir a HomeScreen, um modal chamativo convidando a comprar inscritos para o Instagram. Pediu explicitamente um componente `Modal` reutilizável em `megalodonte-components`, "parecido com o Modal do React", controlado por um `State<Boolean>` de visibilidade.
+- **`megalodonte-components`** (publicado em Maven Local):
+  - `layout_components/Stack` (novo): empilha componentes por z-order — não existia nenhum componente de camadas na lib.
+  - `Modal` (novo): `new Modal(State<Boolean> visible, Component content)` — overlay embutido na mesma janela (fundo escurecido, clique fora fecha, "✕" fecha, `Animations.pop` na entrada/saída), reage a mudanças externas no `State` E escreve nele quando o usuário fecha (componente controlado, como um Modal de React). Diferente de `Components.ShowModal` (plics-sw), que abre uma `Stage`/janela nova do SO.
+- **`HomeScreenViewModel`**: `mostrarPromoInstagram` (`State<Boolean>`, começa `false`) setado pra `true` 2500ms depois de `onInit()`, via o `ScheduledExecutorService` que já existia pro timer do gif (`executor.schedule(...)`).
+- **`HomeScreen`**: `render()` agora devolve `new Stack().children(homeContent, new Modal(vm.mostrarPromoInstagram, promoInstagramContent()))`. Conteúdo do modal reaproveita a mesma imagem/URL do banner "comprar inscritos" que já existia inline em `centerContent()` (`assets/banners/instagram-comprar-inscritos.png`, `Data.linkWebsiteOfficial + "comprar-inscritos-instagram"`) — agora aparece nos dois lugares (banner fixo + modal).
+- **Verificado ao vivo** (`./gradlew run` + captura de tela): modal aparece corretamente por cima do resto da tela, com fundo escurecido, imagem, texto e botão "Comprar agora".
+- `./gradlew test`: 284/284 (sem teste novo — é comportamento 100% visual/temporizado, mesma limitação de sempre pra esse tipo de coisa).
+
 ### 2026-08-04: Campos Frete e Aceita devolução/troca em Produtos
 - **Decisão (perguntado ao usuário)**: Frete é valor em R$ (igual Preço de compra/venda, não texto livre) e **soma no custo** — `totalLiquido` (o "Ganho líquido estimado" da tela) passou de `precoVenda - precoCompra` pra `precoVenda - (precoCompra + frete)`. "Aceita devolução/troca?" é um Select Sim/Não (não texto livre como Garantia).
 - **Migration `V33__add_frete_aceita_devolucao_produtos.sql`**: `frete REAL DEFAULT 0`, `aceita_devolucao BIT DEFAULT 0` — produtos existentes ficam com frete=0 (não muda a margem já calculada) e aceita_devolucao=Não.

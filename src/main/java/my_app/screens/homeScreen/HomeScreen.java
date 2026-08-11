@@ -14,6 +14,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
+import megalodonte.components.layout_components.Stack;
 import megalodonte.ForEachState;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -60,7 +61,9 @@ public class HomeScreen implements ScreenComponent {
         //return new Container(new ContainerProps().bgImage("/assets/home-bg.jpg")).children(
         //return new Container(new ContainerProps().bgImage("/assets/wallpapers/alesia-kazantceva-VWcPlbHglYc-unsplash.jpg")).children(
         //return new Container(new ContainerProps().bgImage("/assets/wallpapers/lukas-blazek-EWDvHNNfUmQ-unsplash.jpg"))
-        return new Container(new ContainerProps().bgImage("/assets/wallpapers/shapelined-_JBKdviweXI-unsplash.jpg"))
+        var homeContent = new Container(new ContainerProps()
+                .fillHeight()
+                .bgImage("/assets/wallpapers/shapelined-_JBKdviweXI-unsplash.jpg"))
                 .children(
                 menuBar(),
                 new Container(new ContainerProps().paddingAll(10))
@@ -82,6 +85,26 @@ public class HomeScreen implements ScreenComponent {
                                 )
                         )
         );
+
+        // Modal chamativo, exibido alguns milissegundos depois da tela abrir (ver
+        // HomeScreenViewModel.onInit) — precisa ficar POR CIMA do resto da tela na
+        // mesma janela, por isso o Stack (Modal por si só não empilha nada sozinho).
+        return new Stack().children(
+                homeContent,
+                new Modal(viewModel.mostrarPromoInstagram, promoInstagramContent())
+        );
+    }
+
+    private Component promoInstagramContent() {
+        return new Column(new ColumnProps().centerHorizontally().paddingAll(20).spacingOf(12))
+                .c_child(new Image("assets/banners/instagram-comprar-inscritos.png", new ImageProps().width(260).height(210)))
+                .c_child(new Text("Impulsione seu Instagram!", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()))
+                .c_child(new Text("Ganhe mais seguidores e alcance com pacotes a partir de poucos reais.",
+                        new TextProps().fontSize(ThemeManager.theme().typography().small())))
+                .c_child(new SpacerVertical(6))
+                .c_child(new Button("Comprar agora",
+                                new ButtonProps().fillWidth().height(35).bgColor("#10b981").textColor("white"))
+                        .onClick(() -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram")));
     }
 
     private Column centerContent() {
@@ -105,7 +128,7 @@ public class HomeScreen implements ScreenComponent {
         return new Column().children(
                 Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(90)))
                         .withTransition(Animations::fadeSlide),
-                new Text(viewModel.vendasHoje, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().textColor("#fff"))
+                new Text(viewModel.vendasHoje, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold())
         );
     }
 

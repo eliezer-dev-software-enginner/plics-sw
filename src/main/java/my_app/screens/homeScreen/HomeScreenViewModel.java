@@ -51,6 +51,8 @@ public class HomeScreenViewModel {
     public final State<String> vendasHoje = new State<>("R$ 0,00");
 
     public final State<Boolean> gifVisible = State.of(true);
+    public final State<Boolean> mostrarPromoInstagram = State.of(false);
+    private static final long DELAY_PROMO_INSTAGRAM_MS = 2500;
     private final ScreenContext screenContext;
     public final State<String> currentGif = new State<>(null);
     private final Random random = new Random();
@@ -99,6 +101,11 @@ public class HomeScreenViewModel {
                 calcularFinanceiroMesAtual();
             }
         });
+
+        // Espera um pouco antes de exibir o modal — mostrar na hora, junto com o
+        // resto da tela ainda carregando, seria mais irritante que chamativo.
+        executor.schedule(() -> UI.runOnUi(() -> mostrarPromoInstagram.set(true)),
+                DELAY_PROMO_INSTAGRAM_MS, TimeUnit.MILLISECONDS);
     }
 
     public void calcularFinanceiroMesAtual() {
