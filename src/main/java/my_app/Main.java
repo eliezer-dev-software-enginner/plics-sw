@@ -53,7 +53,7 @@ public class Main {
     // Main roda fora de gradlew/jpackage (ex: direto pela IDE).
     public static final String APP_VERSION = System.getProperty("plics.appVersion", "dev");
 
-    public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para Pequenos Negócios",
+    public static final String BASE_TITLE = String.format("Plics SW %s - Sistema de Gestão para o seu negócio",
             APP_VERSION);
 
     public static final String ICON_PATH = "/assets/app_ico.png";

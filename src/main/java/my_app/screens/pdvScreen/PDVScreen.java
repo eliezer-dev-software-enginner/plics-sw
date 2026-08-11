@@ -33,22 +33,25 @@ public class PDVScreen implements ScreenComponent {
     @Override
     public Component render() {
         var theme = ThemeManager.theme();
-        return new Container(new ContainerProps().bgColor(theme.colors().surface()))
-        //return new Container(new ContainerProps().bgImage("/assets/wallpapers/welcome.jpg"))
+        //return new Container(new ContainerProps().bgColor(theme.colors().surface()))
+        //return new Container(new ContainerProps().bgImage("/assets/wallpapers/joe-woods-4Zaq5xY5M_c-unsplash.jpg"))
+        return new Container(new ContainerProps().bgImage("/assets/wallpapers/drew-beamer-kUHfMW8awpE-unsplash.jpg"))
                 .children(new Container(new ContainerProps().fillHeight()).children(
                         topBanner(),
                         new Row(new RowProps().spacingOf(10).paddingAll(10)).children(
                                 produtoForm(),
                                 table(),
                                 new Column().children(
-                                        Components.InputColumnCurrency("SUBTOTAL", vm.subtotal,true),
-                                        Components.InputColumnCurrency("DESCONTO", vm.desconto),
-                                        Components.InputColumnCurrency("TOTAL A PAGAR", vm.totalAPagar,true),
                                         new Row().children(
-                                                Components.InputColumnCurrency("TOTAL RECEBIDO", vm.totalRecebido),
+                                                Components.InputColumnCurrency("SUBTOTAL", vm.subtotal,true),
+                                                Components.InputColumnCurrency("TOTAL A PAGAR", vm.totalAPagar,true),
                                                 Components.InputColumnCurrency("TROCO", vm.troco,true)
                                         ),
-                                        new SpacerVertical(30),
+                                        new SpacerVertical(20),
+                                        new Row().children(
+                                                Components.InputColumnCurrency("TOTAL RECEBIDO", vm.totalRecebido),
+                                                Components.InputColumnCurrency("DESCONTO", vm.desconto)
+                                        ),
                                         vendaFiadaComponent(),
                                         new SpacerVertical(30),
                                         new Row(new RowProps().spacingOf(10)).children(

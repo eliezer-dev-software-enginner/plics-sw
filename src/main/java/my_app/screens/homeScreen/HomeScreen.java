@@ -20,6 +20,7 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.Main;
 import my_app.core.AppRoutes;
+import my_app.domain.Data;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -56,7 +57,11 @@ public class HomeScreen implements ScreenComponent {
 
     public Component render (){
         var rowProps = new RowProps().spacingOf(10);
-        return new Container(new ContainerProps().bgImage("/assets/home-bg.jpg")).children(
+        //return new Container(new ContainerProps().bgImage("/assets/home-bg.jpg")).children(
+        //return new Container(new ContainerProps().bgImage("/assets/wallpapers/alesia-kazantceva-VWcPlbHglYc-unsplash.jpg")).children(
+        //return new Container(new ContainerProps().bgImage("/assets/wallpapers/lukas-blazek-EWDvHNNfUmQ-unsplash.jpg"))
+        return new Container(new ContainerProps().bgImage("/assets/wallpapers/shapelined-_JBKdviweXI-unsplash.jpg"))
+                .children(
                 menuBar(),
                 new Container(new ContainerProps().paddingAll(10))
                         .children(
@@ -87,6 +92,11 @@ public class HomeScreen implements ScreenComponent {
                 new FlowRow(new FlowRowProps().fillWidth().spacingOf(10))
                         .withTransition(Animations::riseIn)
                         .items(cardsForEach)
+                        .children(new Clickable(
+                                new Image("assets/banners/instagram-comprar-inscritos.png",
+                                        new ImageProps().width(200).height(160))
+                                        .ref(bannerRef)
+                        ).onClick(()-> Redirect.to(Data.linkWebsiteOfficial+"comprar-inscritos-instagram")))
                         .children(saudacaoComponent())
         );
     }
