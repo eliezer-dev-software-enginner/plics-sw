@@ -1,5 +1,16 @@
 [
   {
+    "version": "v1.1.3",
+    "notes": [
+      "Feat: Novo campo de frete e de devolução/troca no cadastro de produtos",
+      "Feat: Abre tela de detalhes na tela de Compras e Contas a receber",
+      "Feat: Agora é possível comprar inscritos para o Instagram",
+      "Feat: Novo papel de parede na tela Home",
+      "Feat: Adicionado mais unidades de medida",
+      "Refactor: Leve melhoria na UI da tela de Contas a receber"
+    ]
+  },
+  {
     "version": "v1.1.2",
     "notes": [
       "Feat: Novo campo de desconto no PDV, aplicado ao total e às parcelas de venda fiada",
