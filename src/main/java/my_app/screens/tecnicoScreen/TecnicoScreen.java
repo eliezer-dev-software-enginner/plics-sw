@@ -17,7 +17,7 @@ import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 
-public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3<TecnicoModel> {
     private final TecnicoScreenViewModel vm;
 
     public TecnicoScreen(ScreenContext ctx) {
@@ -52,6 +52,11 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         .padding(10)
                         .borderRadius(12)
         );
+    }
+
+    @Override
+    public Component itemDetails(TecnicoModel model) {
+        return null;
     }
 
     @Override

@@ -23,7 +23,7 @@ import my_app.db.models.VendaModel;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3<VendaModel> {
     private final VendaMercadoriaScreenViewModel vm;
     private final ScreenContext screenContext;
 
@@ -97,10 +97,10 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(vm.vendaSelected::set)
-                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), this.screenContext, 550));
+                .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), this.screenContext, 550));
     }
 
-    Component ItemDetails(VendaModel model) {
+    public Component itemDetails(VendaModel model) {
         var validade = model.getDataValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getDataValidade()) : "Sem validade";
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes da venda de mercadoria", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))

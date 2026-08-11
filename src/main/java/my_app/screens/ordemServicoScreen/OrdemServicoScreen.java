@@ -17,7 +17,7 @@ import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<OrdemServicoModel> {
     private final OrdemServicoScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
@@ -110,12 +110,12 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .column("Data de criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onItemSelectChange(vm.osSelected::set)
-                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), ctx))
+                .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), ctx))
                 .onChangeFocus(vm::handleFocusChange)
                 .onClickOutside(() -> vm.osSelected.set(null));
     }
 
-    private Component ItemDetails(OrdemServicoModel model) {
+    public Component itemDetails(OrdemServicoModel model) {
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes da ordem de serviço",
                         new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))

@@ -19,7 +19,7 @@ import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3<ContasPagarModel> {
     private final ComprasAPagarScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
@@ -60,7 +60,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
     }
 
     @Override
-    public ViewModelScreenContract viewModel() {
+    public ViewModelScreenContract<ContasPagarModel> viewModel() {
         return vm;
     }
 
@@ -118,6 +118,11 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3 
                                 )
                         )
         );
+    }
+
+    @Override
+    public Component itemDetails(ContasPagarModel model) {
+        return null;
     }
 
     private Component paymentSection() {

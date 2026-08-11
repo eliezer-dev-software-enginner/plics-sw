@@ -29,7 +29,7 @@ import my_app.utils.Utils;
 
 import java.util.List;
 
-public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<ProdutoModel> {
     private final ProdutoScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
 
@@ -95,7 +95,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
     }
 
     @Override
-    public SimpleTable table() {
+    public SimpleTable<ProdutoModel> table() {
         var simpleTable = new SimpleTable<ProdutoModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()
@@ -115,7 +115,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), vm.getCtx(), 600));
+                .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), vm.getCtx(), 600));
 
         return simpleTable;
     }
@@ -181,7 +181,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 );
     }
 
-    Component ItemDetails(ProdutoModel model) {
+     public Component itemDetails(ProdutoModel model) {
         var validade = model.getValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getValidade()) : "Sem validade";
 
         return new Column(new ColumnProps().paddingAll(theme.spacing().md()))

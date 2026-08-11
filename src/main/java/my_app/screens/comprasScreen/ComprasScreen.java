@@ -18,7 +18,7 @@ import megalodonte.props.*;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3<CompraModel> {
     private final ComprasScreenViewModel vm;
 
     public ComprasScreen(ScreenContext ctx) {
@@ -54,6 +54,11 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoSelectedIsAPrazo, vm.totais.totalLiquido),
                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
         );
+    }
+
+    @Override
+    public Component itemDetails(CompraModel model) {
+        return null;
     }
 
     private Component formFirstRow() {

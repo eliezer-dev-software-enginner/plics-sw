@@ -19,7 +19,7 @@ import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3<ContaAreceberModel> {
     private final ContasAReceberScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
@@ -120,6 +120,11 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                 )
                         )
         );
+    }
+
+    @Override
+    public Component itemDetails(ContaAreceberModel model) {
+        return null;
     }
 
     private Component paymentSection() {

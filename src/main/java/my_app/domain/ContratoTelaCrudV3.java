@@ -6,25 +6,30 @@ import megalodonte.base.Animations;
 import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.base.state.State;
+import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Button;
 import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
+import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
+import megalodonte.props.ColumnProps;
 import megalodonte.props.ContainerProps;
 import megalodonte.props.RowProps;
 import megalodonte.v2.Show;
+import my_app.db.models.ProdutoModel;
 import my_app.domain.components.Components;
+import my_app.utils.DateUtils;
 import org.kordamp.ikonli.entypo.Entypo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface ContratoTelaCrudV3 {
+public interface ContratoTelaCrudV3<T> {
 
     Logger log = LoggerFactory.getLogger(ContratoTelaCrudV3.class);
 
-    ViewModelScreenContract viewModel();
+    ViewModelScreenContract<T> viewModel();
 
     default void handleClickNew() {
         viewModel().formIsVisible.set(true);
@@ -49,7 +54,7 @@ public interface ContratoTelaCrudV3 {
         viewModel().modoEdicaoState().set(true);
     }
 
-    default <T> Component commonCustomMenus(State<Boolean> focusState) {
+    default Component commonCustomMenus(State<Boolean> focusState) {
         return Components.commonCustomMenusv3(
                 focusState,
                 this::handleClickNew,
@@ -59,11 +64,11 @@ public interface ContratoTelaCrudV3 {
         );
     }
 
-    SimpleTable table();
-
+    SimpleTable<T> table();
     Component form();
+    Component itemDetails(T model);
 
-    default <T> Component mainView(State<Boolean> focusState) {
+    default Component mainView(State<Boolean> focusState) {
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))
                 .children(
                         commonCustomMenus(focusState),

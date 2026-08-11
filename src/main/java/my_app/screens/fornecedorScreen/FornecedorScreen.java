@@ -18,7 +18,7 @@ import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<FornecedorModel> {
     private final FornecedorScreenViewModel vm;
     private final ScreenContext ctx;
 
@@ -92,10 +92,10 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .build()
                 .onItemSelectChange(vm.fornecedorSelected::set)
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), this.ctx, 550));
+                .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), this.ctx, 550));
     }
 
-    Component ItemDetails(FornecedorModel model) {
+    public Component itemDetails(FornecedorModel model) {
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes do fornecedor", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                 .c_child(new SpacerVertical(20))

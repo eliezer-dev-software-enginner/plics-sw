@@ -79,7 +79,6 @@ app.properties
 Generate*.java
 EncryptTokens.java
 
-SECURITY.md
 criptografando-dados-sensiveis.png
 docs/PROMT.md
 temp

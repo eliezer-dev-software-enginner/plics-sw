@@ -13,7 +13,7 @@ import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 
-public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3<CategoriaModel> {
     private final CategoriaScreenViewModel vm;
 
     public CategoriaScreen(ScreenContext ctx) {this.vm = new CategoriaScreenViewModel(ctx);}
@@ -40,6 +40,11 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3 {
                         Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
                 )
         );
+    }
+
+    @Override
+    public Component itemDetails(CategoriaModel model) {
+        return null;
     }
 
     @Override

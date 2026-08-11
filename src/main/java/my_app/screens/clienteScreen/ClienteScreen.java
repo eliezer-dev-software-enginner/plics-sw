@@ -24,7 +24,7 @@ import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
+public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3<ClienteModel> {
     private final ClienteViewModel vm;
     private final ScreenContext screenContext;
 
@@ -101,12 +101,12 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3 {
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(vm.clienteSelecionado::set)
-                .onItemDoubleClick(it -> Components.ShowModal(ItemDetails(it), this.screenContext, 400));
+                .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), this.screenContext, 400));
 
         return simpleTable;
     }
 
-    Component ItemDetails(ClienteModel model) {
+    public Component itemDetails(ClienteModel model) {
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes do cliente", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                 .c_child(new SpacerVertical(20))
