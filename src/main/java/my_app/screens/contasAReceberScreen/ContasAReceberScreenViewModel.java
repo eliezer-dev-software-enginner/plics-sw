@@ -6,8 +6,11 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.ContaAreceberModel;
+import my_app.db.models.VendaModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.ContaAreceberService;
+import my_app.db.services.ProdutoService;
+import my_app.db.services.VendaService;
 import my_app.db.models.ClienteModel;
 import my_app.domain.components.Components;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
@@ -26,6 +29,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     private final ContaAreceberService contaService;
     private final ClienteService clienteService;
+    private final VendaService vendaService;
+    private final ProdutoService produtoService;
 
     public final State<String> descricao = State.of("");
     public final State<String> valorOriginal = State.of("0");
@@ -43,6 +48,10 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     public final State<ClienteModel> clienteSelected = State.of(null);
     public final State<ContaAreceberModel> contaSelected = State.of(null);
 
+    // Cache das vendas (com produto já resolvido) pra anexar em cada conta sem
+    // precisar consultar o banco de novo a cada filtro de status/vencidas.
+    private final State<List<VendaModel>> vendas = State.of(List.of());
+
     public final State<Boolean> modoRecebimento = State.of(false);
 
     public final List<String> statusOptions = List.of("TODOS", "PENDENTE", "PAGO", "PARCIAL", "ATRASADO", "CANCELADO");
@@ -56,6 +65,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         super(ctx);
         this.contaService = createOrReport(ContaAreceberService::new);
         this.clienteService = createOrReport(ClienteService::new);
+        this.vendaService = createOrReport(VendaService::new);
+        this.produtoService = createOrReport(ProdutoService::new);
         EventBus.getInstance().subscribe(event -> {
             if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
                 loadClientes();
@@ -88,60 +99,28 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
             try {
                 var contasList = contaService.listar();
                 var clientesList = clienteService.listar();
+                var vendasList = vendaService.listar();
+                var produtosList = produtoService.listar();
 
-                for (var conta : contasList) {
-                    if (conta.getClienteId() != null) {
-                        clientesList.stream()
-                                .filter(c -> c.getId().equals(conta.getClienteId()))
-                                .findFirst()
-                                .ifPresent(conta::setCliente);
-                    }
+                for (var venda : vendasList) {
+                    produtosList.stream()
+                            .filter(p -> p.getCodigoBarras().equals(venda.getProdutoCod()))
+                            .findFirst()
+                            .ifPresent(venda::setProduto);
                 }
 
+                attachClientesEVendas(contasList, clientesList, vendasList);
+
                 final var clientesCopy = List.copyOf(clientesList);
+                final var vendasCopy = List.copyOf(vendasList);
 
                 UI.runOnUi(() -> {
                     allDataList.set(contasList);
                     clientes.set(clientesCopy);
+                    vendas.set(vendasCopy);
                     if (!clientesCopy.isEmpty()) {
                         clienteSelected.set(clientesCopy.getFirst());
                     }
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            }
-        });
-    }
-
-    public void loadPorStatus(String statusFiltro) {
-        Async.Run(() -> {
-            try {
-                List<ContaAreceberModel> contasFiltradas;
-                if ("TODOS".equals(statusFiltro)) {
-                    contasFiltradas = contaService.listar();
-                } else {
-                    contasFiltradas = contaService.buscarPorStatus(statusFiltro);
-                }
-
-                attachClientes(contasFiltradas);
-
-                UI.runOnUi(() -> {
-                    allDataList.set(contasFiltradas);
-                });
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            }
-        });
-    }
-
-    public void loadVencidas() {
-        Async.Run(() -> {
-            try {
-                var contasVencidas = contaService.buscarVencidas();
-                attachClientes(contasVencidas);
-
-                UI.runOnUi(() -> {
-                    allDataList.set(contasVencidas);
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
@@ -376,13 +355,23 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         }
     }
 
-    private void attachClientes(List<ContaAreceberModel> contasList) {
+    // Sem isso, abrir os detalhes de uma conta gerada de uma venda fiada (double-click
+    // na tabela, ver ContasAReceberScreen.itemDetails) dava NullPointerException — o
+    // model.getVenda() é transient, só existe em memória se alguém anexar depois de
+    // carregar do banco, e nada fazia isso além do cliente.
+    private void attachClientesEVendas(List<ContaAreceberModel> contasList, List<ClienteModel> clientesList, List<VendaModel> vendasList) {
         for (var conta : contasList) {
             if (conta.getClienteId() != null) {
-                clientes.get().stream()
+                clientesList.stream()
                         .filter(c -> c.getId().equals(conta.getClienteId()))
                         .findFirst()
                         .ifPresent(conta::setCliente);
+            }
+            if (conta.getVendaId() != null) {
+                vendasList.stream()
+                        .filter(v -> v.getId().equals(conta.getVendaId()))
+                        .findFirst()
+                        .ifPresent(conta::setVenda);
             }
         }
     }
@@ -391,5 +380,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     public void onDestroy() throws Exception {
         this.clienteService.close();
         this.contaService.close();
+        this.vendaService.close();
+        this.produtoService.close();
     }
 }

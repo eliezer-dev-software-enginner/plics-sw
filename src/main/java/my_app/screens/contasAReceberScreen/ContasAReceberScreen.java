@@ -41,28 +41,11 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
 
     @Override
     public Component render() {
-        var mainContent = new Container(new ContainerProps().bgColor(theme.colors().background()))
-                .children(
-                        Components.searchInput(viewModel().searchState, ""),
-                        summarySection(),
-                        new SpacerVertical(30),
-                        form(),
-                        new SpacerVertical(30),
-                        paymentSection(),
-                        new SpacerVertical(30),
-                        table()
-                );
-
-        return new Container(new ContainerProps().paddingAll(10).bgColor(theme.colors().background()))
-                .children(
-                        commonCustomMenus(vm.focusState),
-                        new SpacerVertical(10),
-                        Components.ScrollPaneDefault(mainContent)
-                );
+        return mainView(vm.focusState);
     }
 
     @Override
-    public ViewModelScreenContract viewModel() {
+    public ViewModelScreenContract<ContaAreceberModel> viewModel() {
         return vm;
     }
 
@@ -70,6 +53,18 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
     public Component form() {
         ComputedState<Boolean> naoEhRecebimento = ComputedState.of(() -> !vm.modoRecebimento.get(), vm.modoRecebimento);
 
+        // mainView() (ContratoTelaCrudV3) só chama form()/table() — não tem mais slot
+        // próprio pra summarySection()/paymentSection() desde que render() passou a
+        // devolver mainView() direto, então as duas entram aqui, em volta do Card do
+        // formulário, pra continuar aparecendo na tela.
+        return new Column(new ColumnProps().spacingOf(20)).children(
+                summarySection(),
+                formCard(naoEhRecebimento),
+                paymentSection()
+        );
+    }
+
+    private Component formCard(ComputedState<Boolean> naoEhRecebimento) {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20).spacingOf(15))
                         .c_child(Components.FormTitle(vm.btnText.get()))
@@ -92,7 +87,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                         .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta conta?"))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
-                        .c_child(new Row(new RowProps().spacingOf(8))
+                        .c_child(Show.when(vm.modoEdicaoState(), () -> new Row(new RowProps().spacingOf(8))
                                 .r_child(
                                         Show.when(naoEhRecebimento, () -> new Button(
                                                         vm.btnRecebimentoText,
@@ -118,13 +113,31 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                         .textColor("white")
                                         ).onClick(() -> vm.quitarConta(ctx))
                                 )
-                        )
+                        ))
         );
     }
 
     @Override
     public Component itemDetails(ContaAreceberModel model) {
-        return null;
+          return new Column(new ColumnProps().paddingAll(20))
+                .c_child(new Text("Detalhes da conta a receber", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
+                .c_child(new SpacerVertical(20))
+                .c_child(Components.TextWithDetails("ID: ", model.getId()))
+                .c_child(Components.TextWithDetails("Descricao: ", model.getDescricao()))
+                .c_child(Components.TextWithDetails("Status: ", formatStatus(model.getStatus())))
+                .c_child(Components.TextWithDetails("Valor original: ", Utils.toBRLCurrency(model.getValorOriginal())))
+                .c_child(Components.TextWithDetails("Valor recebido: ", Utils.toBRLCurrency(model.getValorRecebido())))
+                .c_child(Components.TextWithDetails("Valor restante: ", Utils.toBRLCurrency(model.getValorRestante())))
+                .c_child(Show.when(model.getVenda() != null && model.getVenda().getProduto() != null, () -> new Column()
+                        .c_child(Components.TextWithDetails("Produto vendido: ", model.getVenda().getProduto().getDescricao()))
+                        .c_child(Components.TextWithDetails("- Id do produto: ", model.getVenda().getProduto().getId()))
+                ))
+                .c_child(Components.TextWithDetails("Nome do cliente: ", model.getCliente() != null ? model.getCliente().getNome() : "-"))
+                .c_child(Components.TextWithDetails("- Id do cliente: ", model.getCliente() != null ? model.getCliente().getId() : "-"))
+                .c_child(Components.TextWithDetails("- Id da venda: ", model.getVendaId()))
+                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
+                .c_child(Components.TextWithDetails("Data de vencimento: ", DateUtils.millisToBrazilianDate(model.getDataVencimento())))
+                .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }
 
     private Component paymentSection() {
@@ -195,7 +208,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
     }
 
     @Override
-    public SimpleTable table() {
+    public SimpleTable<ContaAreceberModel> table() {
         var simpleTable = new SimpleTable<ContaAreceberModel>();
         simpleTable.fromData(vm.filteredList)
                 .header()
@@ -210,7 +223,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                 .build()
                 .onItemSelectChange(vm.contaSelected::set)
                 .onChangeFocus(vm::handleFocusChange)
-                .onClickOutside(() -> vm.contaSelected.set(null));
+                .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), ctx, 600));
 
         return simpleTable;
     }

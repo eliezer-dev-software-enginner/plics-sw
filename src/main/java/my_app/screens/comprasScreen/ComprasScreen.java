@@ -6,6 +6,7 @@ import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.Show;
 import my_app.db.models.CompraModel;
 import my_app.db.models.FornecedorModel;
 import my_app.domain.ContratoTelaCrudV3;
@@ -20,8 +21,10 @@ import my_app.utils.Utils;
 
 public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3<CompraModel> {
     private final ComprasScreenViewModel vm;
+    private final ScreenContext ctx;
 
     public ComprasScreen(ScreenContext ctx) {
+        this.ctx = ctx;
         this.vm = new ComprasScreenViewModel(ctx);
     }
 
@@ -58,7 +61,24 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3<Compra
 
     @Override
     public Component itemDetails(CompraModel model) {
-        return null;
+        return new Column(new ColumnProps().paddingAll(20))
+                .c_child(new Text("Detalhes da compra", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
+                .c_child(new SpacerVertical(20))
+                .c_child(Components.TextWithDetails("ID: ", model.getId()))
+                .c_child(Components.TextWithDetails("Produto: ", model.getProdutoModel() != null ? model.getProdutoModel().getDescricao() : model.getProdutoCod()))
+                .c_child(Components.TextWithDetails("- Código de barras: ", model.getProdutoCod()))
+                .c_child(Components.TextWithDetails("Fornecedor: ", model.getFornecedor() != null ? model.getFornecedor().getNome() : "-"))
+                .c_child(Components.TextWithDetails("Quantidade: ", Utils.quantidadeTratada(model.getQuantidade())))
+                .c_child(Components.TextWithDetails("Preço de compra (unitário): ", Utils.toBRLCurrency(model.getPrecoDeCompra())))
+                .c_child(Components.TextWithDetails("Desconto: ", Utils.toBRLCurrency(model.getDescontoEmReais())))
+                .c_child(Components.TextWithDetails("Total líquido: ", Utils.toBRLCurrency(model.getTotalLiquido())))
+                .c_child(Components.TextWithDetails("Forma de pagamento: ", model.getTipoPagamento()))
+                .c_child(Components.TextWithDetails("Nº Nota: ", model.getNumeroNota()))
+                .c_child(Show.when(model.getDataValidade() != null && model.getDataValidade() > 0,
+                        () -> Components.TextWithDetails("Data de validade: ", DateUtils.millisToBrazilianDate(model.getDataValidade()))))
+                .c_child(Components.TextWithDetails("Data da compra: ", DateUtils.millisToBrazilianDate(model.getDataCompra())))
+                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.millisToBrazilianDateTime(model.getDataCriacaoMillis())))
+                .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }
 
     private Component formFirstRow() {
@@ -99,7 +119,8 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3<Compra
                 .column("Data de criação", it -> DateUtils.millisToBrazilianDateTime(it.getDataCriacaoMillis()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemSelectChange(vm.compraSelected::set);
+                .onItemSelectChange(vm.compraSelected::set)
+                .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), ctx, 600));
     }
 
     @Override
