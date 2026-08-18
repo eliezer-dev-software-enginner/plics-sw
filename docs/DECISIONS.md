@@ -1,5 +1,24 @@
 # Decisões Arquiteturais
 
+## 2026-08-18: `HomeScreenViewModel.executor` nunca era desligado — thread não-daemon vazava a cada navegação pra Home
+
+**Contexto:** auditoria (Fase 4 de um plano de cancelamento estruturado iniciado no `balanca-gobitech`/`megalodonte-libs` — ver `DECISIONS.md` de lá) procurando o mesmo padrão de bug em `plics-sw`: recurso de vida longa aberto em `onMount()`/construtor sem teardown correspondente em `onDestroy()`.
+
+**Achado:** `HomeScreenViewModel` cria `final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()` no construtor (usado só pra dois `schedule()` de curto prazo: mostrar popup de promoção do Instagram após 2.5s, esconder gif após 10s). `onDestroy()` fechava as 6 conexões de serviço (Persism) mas **nunca chamava `executor.shutdown()`**. `Executors.newSingleThreadScheduledExecutor()` cria uma thread não-daemon por padrão — ela não morre sozinha, fica esperando mais trabalho agendado indefinidamente. Toda navegação pra Home (tela de entrada do app, visitada com frequência) cria uma `HomeScreenViewModel` nova (mesma semântica de "screen nova por navegação" confirmada no `balanca-gobitech`) e vaza uma thread — sem depender de nenhuma corrida ou timing, sempre acontece.
+
+**Diferença em relação ao bug original (`balanca-gobitech`/`PesagemViewModel`):** aquele era uma corrida (recurso aberto *assincronamente*, `onDestroy` podendo rodar antes do recurso terminar de existir) — por isso a solução foi `Scope`. Este aqui é mais simples: o recurso é criado *sincronamente* no construtor, sem corrida nenhuma — só faltava chamar `shutdown()`. Não precisa de `Scope`, só da chamada que faltava.
+
+**Decisão:** `onDestroy()` agora chama `executor.shutdownNow()` (não só `shutdown()` — cancela também o `schedule()` pendente, evitando que o popup/gif dispare numa tela já destruída).
+
+**Também verificado e descartado nesse mesmo levantamento** (não são o mesmo padrão de bug):
+- `EscPosPrinter`: abre e fecha a porta serial/socket dentro do mesmo `try-with-resources`, por chamada de impressão — não é um recurso de vida longa atrelado à tela.
+- `UpdaterService`: `HttpClient` com `Executors.newCachedThreadPool` de threads **daemon**, instanciado só quando o usuário clica em "Buscar atualização" — não fica vivo entre navegações.
+- `my_app.updater.*` (mini-app separado, instalador): processo próprio, sem `ScreenComponent`/router, termina com `System.exit(0)`.
+- Todos os outros `onDestroy()` das 18 telas restantes só fecham `Service` do Persism (síncronos, sem recurso assíncrono).
+- Nenhum outro projeto em `megalodonte-world` (`ftp-file-pusher`, `ngrok-up`, `RL - whatsapp`) usa `onMount`/`onDestroy` com recurso de vida longa.
+
+**Testado:** `./gradlew compileJava test` — **294/294 testes, BUILD SUCCESSFUL**, sem regressão.
+
 ## 2026-08-04: Race condition modoEdicao/Async.Run — corrigida em 6 telas, não propagada a tempo em 2026-06-22
 
 **Contexto:** usuário reportou "ao clicar em Atualizar está cadastrando o cliente". Investigação revelou que a race condition já documentada e corrigida em `CategoriaScreenViewModel` (ver entrada de 2026-06-22 abaixo) nunca foi propagada para as outras 11 ViewModels do mesmo contrato `ContratoTelaCrudV3` — só `FornecedorScreenViewModel`/`TecnicoScreenViewModel` (por acaso, sua estrutura já montava o model síncrono antes do `Async.Run`) e `VendaMercadoriaScreenViewModel` (fix parcial, aplicado depois) escapavam do bug.

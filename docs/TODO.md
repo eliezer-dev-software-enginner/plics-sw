@@ -1,5 +1,16 @@
 # TODO
 
+## Concluído (auditoria de vazamento de recurso em onDestroy — 2026-08-18)
+- [x] Auditado o projeto inteiro (todas as ~19 telas + serviços com thread/executor/porta)
+      atrás do mesmo padrão do bug achado no `balanca-gobitech`: recurso de vida longa aberto
+      em `onMount`/construtor sem teardown em `onDestroy`
+- [x] Achado e corrigido: `HomeScreenViewModel.executor` (`ScheduledExecutorService`,
+      thread não-daemon) nunca era desligado — vazava uma thread a cada navegação pra Home.
+      `onDestroy()` agora chama `executor.shutdownNow()`. Ver `DECISIONS.md`.
+- [x] `EscPosPrinter`, `UpdaterService`, `my_app.updater.*` e as outras 18 telas verificados e
+      descartados (não têm o mesmo padrão de risco)
+- [x] `./gradlew test`: **294 testes, BUILD SUCCESSFUL** (sem regressão)
+
 ## Concluído (Produtos sem venda no período no RelatoriosScreen — 2026-08-01)
 - [x] **Card "Produtos sem venda no período"** na RelatoriosScreen abaixo do ranking: lista produtos cadastrados sem venda no período, ordenados por descrição, com unidade; mensagem "Todos os produtos tiveram venda no período" quando vazio
 - [x] **`RelatorioService`**: agregação extraída para `quantidadesVendidas(long, long)` privado; `produtosSemVenda()` = produtos de `ProdutoService.listar()` fora do conjunto de vendidos do período (mesmo record `ProdutoMaisVendido`, quantidade ZERO)

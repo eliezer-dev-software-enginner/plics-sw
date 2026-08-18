@@ -267,6 +267,11 @@ public class HomeScreenViewModel {
 
 
     public void onDestroy() throws Exception {
+        // executor nunca era desligado — cada navegação pra Home criava uma thread nova
+        // (Executors.newSingleThreadScheduledExecutor() não é daemon) que ficava viva pra
+        // sempre, mesmo depois da tela destruída. shutdownNow() também cancela o
+        // schedule() pendente (promo do Instagram / esconder gif) se ainda não tiver disparado.
+        executor.shutdownNow();
         this.compraService.close();
         this.despesasService.close();
         this.pedidoService.close();
