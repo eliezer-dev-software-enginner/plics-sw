@@ -13,6 +13,8 @@ import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<ContasPagarModel> {
+    private static final Logger log = LoggerFactory.getLogger(ComprasAPagarScreenViewModel.class);
 
     private final ContasPagarService contaService;
     private final FornecedorService fornecedorService;
@@ -94,6 +97,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     }
                 });
             } catch (Exception e) {
+                log.error("Erro ao buscar contas a pagar", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -115,6 +119,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     allDataList.set(contasFiltradas);
                 });
             } catch (Exception e) {
+                log.error("Erro ao buscar contas a pagar por status={}", statusFiltro, e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -130,6 +135,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     allDataList.set(contasVencidas);
                 });
             } catch (Exception e) {
+                log.error("Erro ao buscar contas a pagar vencidas", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -210,6 +216,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao excluir conta a pagar id={}", selected.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
         }));
@@ -243,6 +250,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     modoPagamento.set(false);
                 });
             } catch (Exception e) {
+                log.error("Erro ao registrar pagamento id={}", selected.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar pagamento: " + e.getMessage()));
             }
         });
@@ -272,6 +280,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     Components.ShowPopup(ctx, "Conta quitada com sucesso!");
                 });
             } catch (Exception e) {
+                log.error("Erro ao quitar conta a pagar id={}", selected.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
             }
         });
@@ -289,6 +298,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao salvar conta a pagar", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar: " + e.getMessage()));
             }
         });
@@ -306,6 +316,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar conta a pagar id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
             }
         });

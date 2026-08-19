@@ -1,9 +1,5 @@
 package my_app;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
 import javafx.application.Platform;
@@ -29,8 +25,12 @@ import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
 import my_app.services.VerificacaoAcessoService;
 import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
     // Presente sempre que a app roda dentro do sandbox do Flatpak. Nesse caso quem
@@ -72,6 +72,7 @@ public class Main {
     public static class AppHost extends MegalodonteApplication {}
 
     static void main(String[] args) {
+        log.info("Iniciando {} versão {}", APP_NAME, APP_VERSION);
         corrigirArquiteturaNativa();
         MegalodonteApp.appName(APP_NAME);
         // Em Linux, garante um .desktop local pra rodar direto de JVM (IDE, gradle
@@ -115,12 +116,13 @@ public class Main {
     }
 
     public static void handleClose(){
+            log.info("Encerrando {}", APP_NAME);
             ListenerManager.disposeAll();
             DB.closeAllSessions();
 
         Thread.getAllStackTraces().keySet().stream()
                 .filter(t -> !t.isDaemon())
-                .forEach(t -> log("Thread non-daemon viva: " + t.getName() + " (" + t.getState() + ")"));
+                .forEach(t -> log.warn("Thread non-daemon viva: {} ({})", t.getName(), t.getState()));
 
         // ProcessKiller continua como rede de segurança externa (Agendador de Tarefas
         // do Windows), pro caso de algo travar a própria JVM na saída (ex: código
@@ -131,18 +133,6 @@ public class Main {
         ProcessKiller.killCurrentProcessAsync();
         Platform.exit();
         System.exit(0);
-    }
-
-    private static final Path LOG_FILE = Path.of(
-            System.getProperty("java.io.tmpdir"), "plics-close.log"
-    );
-
-    private static void log(String msg) {
-        try {
-            Files.writeString(LOG_FILE,
-                    java.time.Instant.now() + " " + msg + "\n",
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (IOException ignored) {}
     }
 
     public static void initialize(Context context) {
@@ -169,6 +159,7 @@ public class Main {
                     .load();
             flyway.repair();
             flyway.migrate();
+            log.info("Migrations do banco aplicadas com sucesso");
 
             // Checagem provisória de acesso (ver VerificacaoAcessoService) — se o
             // dígito verificador do site não bater (ou o site estiver fora do ar/sem
@@ -210,6 +201,7 @@ public class Main {
     }
 
     private static void handleAppError(Throwable t) {
+        log.error("Erro não tratado na aplicação", t);
         TelegramNotifierFactory.create().enviarMensagem("ERRO NA APLICAÇÃO: " + descreverErro(t));
 
         Platform.runLater(() -> {

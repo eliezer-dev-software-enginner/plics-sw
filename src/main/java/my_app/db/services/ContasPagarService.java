@@ -4,6 +4,8 @@ import my_app.db.DB;
 import my_app.db.models.ContasPagarModel;
 import my_app.db.repositories.ContasPagarRepository;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ContasPagarService extends BaseService<ContasPagarModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(ContasPagarService.class);
 
     private final ContasPagarRepository contasPagarRepository;
 
@@ -27,13 +31,16 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
     public ContasPagarModel salvar(ContasPagarModel model) throws SQLException {
         validar(model, true);
         model.setDataCriacao(LocalDateTime.now());
-        return repository.salvar(model);
+        var salvo = repository.salvar(model);
+        log.info("Conta a pagar salva: id={} valorOriginal={} fornecedorId={}", salvo.getId(), salvo.getValorOriginal(), salvo.getFornecedorId());
+        return salvo;
     }
 
     @Override
     public void atualizar(ContasPagarModel model) throws SQLException {
         validar(model, false);
         repository.atualizar(model);
+        log.info("Conta a pagar atualizada: id={} status={}", model.getId(), model.getStatus());
     }
 
     public BigDecimal somarDespesasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
@@ -48,6 +55,7 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
         if ("PAGO".equals(conta.getStatus()))
             throw new IllegalArgumentException("Não é possível excluir contas já pagas");
         repository.excluirById(id);
+        log.info("Conta a pagar excluída: id={}", id);
     }
 
     public void registrarPagamento(long id, BigDecimal valorPago) throws SQLException {
@@ -78,6 +86,7 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
         conta.setDataPagamento(System.currentTimeMillis());
 
         repository.atualizar(conta);
+        log.info("Pagamento registrado: id={} valorPago={} novoStatus={}", id, valorPago, novoStatus);
     }
 
     public void cancelarPagamento(long id) throws SQLException {
@@ -94,6 +103,7 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
         conta.setDataPagamento(null);
 
         repository.atualizar(conta);
+        log.info("Pagamento cancelado (revertido pra PENDENTE): id={}", id);
     }
 
     public List<ContasPagarModel> buscarPorFornecedor(Integer fornecedorId) throws SQLException {

@@ -5,11 +5,15 @@ import my_app.db.dto.CompraDto;
 import my_app.db.models.CompraModel;
 import my_app.db.repositories.ComprasRepository;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class CompraService extends BaseService<CompraModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(CompraService.class);
 
     private final ComprasRepository comprasRepository;
 
@@ -29,12 +33,17 @@ public class CompraService extends BaseService<CompraModel> {
     @Override
     public CompraModel salvar(CompraModel model) throws SQLException {
         model.setDataCriacaoMillis(System.currentTimeMillis());
-        return repository.salvar(model);
+        var salvo = repository.salvar(model);
+        log.info("Compra salva: id={} produtoCod={} fornecedorId={}", salvo.getId(), salvo.getProdutoCod(), salvo.getFornecedorId());
+        return salvo;
     }
 
     @Override
     public void atualizar(CompraModel model) throws SQLException {
-        super.atualizar(model);
+        // repository.atualizar() direto (não super.atualizar()) pra não duplicar o log
+        // genérico de BaseService com este, mais detalhado.
+        repository.atualizar(model);
+        log.info("Compra atualizada: id={} produtoCod={} fornecedorId={}", model.getId(), model.getProdutoCod(), model.getFornecedorId());
     }
 
     public CompraModel toModel(CompraDto dto) {

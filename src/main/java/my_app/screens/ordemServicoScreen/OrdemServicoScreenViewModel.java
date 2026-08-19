@@ -18,6 +18,8 @@ import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemServicoModel> {
+    private static final Logger log = LoggerFactory.getLogger(OrdemServicoScreenViewModel.class);
 
     private final OrdemServicoService service;
     private final ClienteService clienteService;
@@ -102,6 +105,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
                     tecnicos.addAll(tecnicosList);
                 });
             } catch (Exception e) {
+                log.error("Erro ao buscar ordens de serviço", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -116,6 +120,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
                     tecnicos.addAll(tecnicosList);
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar lista de técnicos", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -186,6 +191,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao excluir ordem de serviço id={}", selected.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
         }));
@@ -208,6 +214,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao salvar ordem de serviço", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar: " + e.getMessage()));
             }
         });
@@ -226,6 +233,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar ordem de serviço id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
             }
         });

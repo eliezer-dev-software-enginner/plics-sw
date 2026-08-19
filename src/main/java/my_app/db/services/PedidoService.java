@@ -4,12 +4,16 @@ import my_app.db.DB;
 import my_app.db.models.PedidoModel;
 import my_app.db.repositories.PedidoRepository;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class PedidoService extends BaseService<PedidoModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(PedidoService.class);
 
     private final PedidoRepository pedidoRepository;
 
@@ -25,7 +29,9 @@ public class PedidoService extends BaseService<PedidoModel> {
     @Override
     public PedidoModel salvar(PedidoModel model) throws SQLException {
         model.setDataCriacao(LocalDateTime.now());
-        return repository.salvar(model);
+        var salvo = repository.salvar(model);
+        log.info("Pedido (PDV) salvo: id={} clienteId={} totalLiquido={}", salvo.getId(), salvo.getClienteId(), salvo.getTotalLiquido());
+        return salvo;
     }
 
     public BigDecimal somarPedidosHoje() throws SQLException {

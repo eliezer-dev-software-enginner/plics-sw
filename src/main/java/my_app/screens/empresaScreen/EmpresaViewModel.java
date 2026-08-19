@@ -8,11 +8,15 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.EmpresaModel;
 import my_app.db.services.EmpresaService;
 import my_app.domain.components.Components;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.SQLException;
 
 public class EmpresaViewModel {
+    private static final Logger log = LoggerFactory.getLogger(EmpresaViewModel.class);
+
     private final ScreenContext ctx;
     private final EmpresaService empresaService;
 
@@ -62,7 +66,8 @@ public class EmpresaViewModel {
                 }
 
             } catch (Exception e) {
-                throw new RuntimeException("Erro ao carregar categorias", e);
+                log.error("Erro ao carregar dados da empresa", e);
+                throw new RuntimeException("Erro ao carregar dados da empresa", e);
             }
         });
     }
@@ -103,6 +108,7 @@ public class EmpresaViewModel {
                 UI.runOnUi(()->  Components.ShowPopup(ctx, "Fornecedor atualizado com sucesso"));
 
             } catch (Exception e) {
+                log.error("Erro ao salvar dados da empresa", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });

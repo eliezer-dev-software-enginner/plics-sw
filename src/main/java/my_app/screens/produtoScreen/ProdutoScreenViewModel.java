@@ -20,6 +20,8 @@ import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -27,6 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel> {
+    private static final Logger log = LoggerFactory.getLogger(ProdutoScreenViewModel.class);
 
     private final ProdutoService produtoService;
     private final FornecedorService fornecedorService;
@@ -102,6 +105,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                     this.fornecedorSelected.set(fornecedorModelList.isEmpty() ? null : fornecedorModelList.getFirst());
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar lista de fornecedores", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -139,6 +143,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                     }
                 });
             } catch (Exception e) {
+                log.error("Erro ao buscar produtos", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -162,6 +167,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                     Components.ShowPopup(ctx, "Produto excluído com sucesso");
                 });
             } catch (Exception e) {
+                log.error("Erro ao excluir produto id={}", produtoModel.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
             }
         }));
@@ -238,6 +244,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar produto id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -257,6 +264,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao salvar produto", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });

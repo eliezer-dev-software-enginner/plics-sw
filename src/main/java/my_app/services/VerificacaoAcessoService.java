@@ -1,6 +1,8 @@
 package my_app.services;
 
 import my_app.security.CryptoManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Checagem provisória de acesso: compara um "dígito verificador" publicado
@@ -10,6 +12,8 @@ import my_app.security.CryptoManager;
  * puro no repositório.
  */
 public class VerificacaoAcessoService {
+
+    private static final Logger log = LoggerFactory.getLogger(VerificacaoAcessoService.class);
 
     private static final String ENCRYPTED_URL =
             "928sspEfInz6JyYMPCLJl1FQ2e+96BTI/sqhApDD/PE1MivvBQuCvt5sbwCPxbIU";
@@ -27,8 +31,14 @@ public class VerificacaoAcessoService {
             String url = crypto.decrypt(ENCRYPTED_URL);
             String esperado = crypto.decrypt(ENCRYPTED_VERIFICADOR_ESPERADO);
             String obtido = HtmlParser.getVerificador(url);
-            return esperado.equals(obtido);
+            boolean liberado = esperado.equals(obtido);
+            if (!liberado) log.warn("Verificador de acesso não bateu com o esperado");
+            return liberado;
         } catch (Exception e) {
+            // Falha esperada quando o site está fora do ar ou sem internet (ver javadoc
+            // da classe) — WARN, não ERROR, mas precisa ficar no log pra diagnosticar
+            // relatos de "acesso bloqueado" sem culpa nenhuma do usuário.
+            log.warn("Erro ao verificar acesso (site indisponível ou sem internet?)", e);
             return false;
         }
     }

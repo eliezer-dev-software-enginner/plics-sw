@@ -10,10 +10,13 @@ import my_app.domain.components.Components;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel> {
+    private static final Logger log = LoggerFactory.getLogger(TecnicoScreenViewModel.class);
 
     private final TecnicoService tecnicoService;
 
@@ -41,6 +44,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel
                 var list = tecnicoService.listar();
                 UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
+                log.error("Erro ao carregar técnicos", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar técnicos: " + e.getMessage()));
             }
         });
@@ -64,6 +68,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao excluir técnico id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir técnico: " + e.getMessage()));
             }
         }));
@@ -95,6 +100,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao cadastrar técnico", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao cadastrar técnico: " + e.getMessage()));
             }
         });
@@ -118,6 +124,7 @@ public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar técnico id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar técnico: " + e.getMessage()));
             }
         });

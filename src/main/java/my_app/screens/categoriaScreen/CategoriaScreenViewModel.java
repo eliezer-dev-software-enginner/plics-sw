@@ -8,10 +8,13 @@ import my_app.db.models.CategoriaModel;
 import my_app.db.services.CategoriaService;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaModel> {
+    private static final Logger log = LoggerFactory.getLogger(CategoriaScreenViewModel.class);
 
     private final CategoriaService categoriaService;
 
@@ -40,6 +43,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                 var list = categoriaService.listar();
                 UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
+                log.error("Erro ao buscar categorias", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar categorias"));
             }
         });
@@ -74,6 +78,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                             Components.ShowPopup(ctx, "Categoria excluída com sucesso");
                         });
                     } catch (Exception e) {
+                        log.error("Erro ao excluir categoria id={}", model.getId(), e);
                         UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
                     }
                 })
@@ -109,6 +114,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
             } catch (IllegalArgumentException e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             } catch (Exception e) {
+                log.error("Erro inesperado ao salvar categoria", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro inesperado: " + e.getMessage()));
             }
         });

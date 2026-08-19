@@ -5,13 +5,16 @@ import my_app.db.models.EmpresaModel;
 import my_app.db.repositories.EmpresaRepository;
 import my_app.utils.Utils;
 import net.sf.persism.Session;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class EmpresaService extends BaseService<EmpresaModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(EmpresaService.class);
 
     public EmpresaService() throws SQLException {
         this(DB.getPersismSession());
@@ -26,6 +29,7 @@ public class EmpresaService extends BaseService<EmpresaModel> {
         validarCampos(model);
         model.setDataCriacao(LocalDateTime.now());
         repository.atualizar(model);
+        log.info("Empresa atualizada: id={} nome={}", model.getId(), model.getNome());
     }
 
     public EmpresaModel buscarUnico() throws SQLException {
@@ -38,10 +42,13 @@ public class EmpresaService extends BaseService<EmpresaModel> {
         model.setDataCriacao(LocalDateTime.now());
         var existente = buscarUnico();
         if (existente == null) {
-            return repository.salvar(model);
+            var salvo = repository.salvar(model);
+            log.info("Empresa salva: id={} nome={}", salvo.getId(), salvo.getNome());
+            return salvo;
         }
         model.setId(existente.getId());
         repository.atualizar(model);
+        log.info("Empresa atualizada: id={} nome={}", model.getId(), model.getNome());
         return model;
     }
 

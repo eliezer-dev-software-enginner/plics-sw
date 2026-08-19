@@ -19,6 +19,8 @@ import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ContasAReceberScreenViewModel extends ViewModelScreenContract<ContaAreceberModel> {
+    private static final Logger log = LoggerFactory.getLogger(ContasAReceberScreenViewModel.class);
 
     private final ContaAreceberService contaService;
     private final ClienteService clienteService;
@@ -89,6 +92,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
             var clientesList = clienteService.listar();
             UI.runOnUi(() -> clientes.set(clientesList));
         } catch (Exception e) {
+            log.error("Erro ao buscar clientes", e);
             UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
         }
     }
@@ -123,6 +127,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                     }
                 });
             } catch (Exception e) {
+                log.error("Erro ao buscar contas a receber", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -204,6 +209,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
+                log.error("Erro ao excluir conta a receber id={}", selected.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
         }));
@@ -238,6 +244,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
+                log.error("Erro ao registrar recebimento id={}", selected.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar recebimento: " + e.getMessage()));
             }
         });
@@ -268,6 +275,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
+                log.error("Erro ao quitar conta a receber id={}", selected.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
             }
         });
@@ -286,6 +294,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
+                log.error("Erro ao salvar conta a receber", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao salvar: " + e.getMessage()));
             }
         });
@@ -303,6 +312,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                     clearForm();
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar conta a receber id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao atualizar: " + e.getMessage()));
             }
         });
@@ -343,6 +353,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         try {
             return contaService.getTotalEmAberto();
         } catch (Exception e) {
+            log.warn("Erro ao calcular total em aberto (retornando zero)", e);
             return BigDecimal.ZERO;
         }
     }
@@ -351,6 +362,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         try {
             return contaService.getTotalVencidas();
         } catch (Exception e) {
+            log.warn("Erro ao calcular total vencidas (retornando zero)", e);
             return BigDecimal.ZERO;
         }
     }

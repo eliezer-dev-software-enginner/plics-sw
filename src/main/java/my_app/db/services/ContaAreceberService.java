@@ -4,6 +4,8 @@ import my_app.db.DB;
 import my_app.db.models.ContaAreceberModel;
 import my_app.db.repositories.ContasAReceberRepository;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ContaAreceberService extends BaseService<ContaAreceberModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(ContaAreceberService.class);
 
     private final ContasAReceberRepository contasAReceberRepository;
 
@@ -27,13 +31,16 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
     public ContaAreceberModel salvar(ContaAreceberModel model) throws SQLException {
         validar(model, true);
         model.setDataCriacao(LocalDateTime.now());
-        return repository.salvar(model);
+        var salvo = repository.salvar(model);
+        log.info("Conta a receber salva: id={} valorOriginal={} clienteId={}", salvo.getId(), salvo.getValorOriginal(), salvo.getClienteId());
+        return salvo;
     }
 
     @Override
     public void atualizar(ContaAreceberModel model) throws SQLException {
         validar(model, false);
         repository.atualizar(model);
+        log.info("Conta a receber atualizada: id={} status={}", model.getId(), model.getStatus());
     }
 
     public void excluir(long id) throws SQLException {
@@ -42,6 +49,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
         if ("PAGO".equals(conta.getStatus()))
             throw new IllegalArgumentException("Não é possível excluir contas já recebidas");
         repository.excluirById(id);
+        log.info("Conta a receber excluída: id={}", id);
     }
 
     public void registrarRecebimento(long id, BigDecimal valorRecebido) throws SQLException {
@@ -72,6 +80,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
         conta.setDataRecebimento(System.currentTimeMillis());
 
         repository.atualizar(conta);
+        log.info("Recebimento registrado: id={} valorRecebido={} novoStatus={}", id, valorRecebido, novoStatus);
     }
 
     public void cancelarRecebimento(long id) throws SQLException {
@@ -88,6 +97,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
         conta.setDataRecebimento(null);
 
         repository.atualizar(conta);
+        log.info("Recebimento cancelado (revertido pra PENDENTE): id={}", id);
     }
 
     public List<ContaAreceberModel> buscarPorCliente(Integer clienteId) throws SQLException {

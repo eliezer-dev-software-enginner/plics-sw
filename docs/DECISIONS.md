@@ -1,5 +1,78 @@
 # Decisões Arquiteturais
 
+## 2026-08-19: Logging em toda a codebase — mesmo rollout já feito no balanca-gobitech
+
+**Contexto:** pedido do usuário — replicar aqui o mesmo trabalho de logging já feito no
+`balanca-gobitech` (commit `feat: tela de logs em Suporte + logging em todos os pontos
+principais`). A infra (`logback.xml`/`logback-test.xml`, dependências SLF4J/Logback) e uma
+cobertura parcial (12 arquivos) já existiam de trabalho anterior nesta mesma sessão; faltava
+completar.
+
+**Decisão:**
+- `LogsScreen`/`LogsScreenViewModel` (novo, `my_app.screens.logsScreen`) — item "Ver logs da
+  aplicação" no menu Suporte (`HomeScreen.menuBar()`), lê `~/.plics-sw/logs/plics-sw.log`
+  (caminho já definido em `logback.xml`) num viewer só-leitura, com botão de atualizar e de
+  abrir a pasta de logs no gerenciador de arquivos padrão (`java.awt.Desktop`, rodando fora da
+  FX thread — mesmo cuidado documentado no `balanca-gobitech` pra não travar a janela). Mostra
+  só as últimas 500 linhas (arquivo pode rodar até 5MB/dezenas de milhares de linhas — um
+  `TextArea` não virtualizado ficaria pesado com o arquivo inteiro).
+- `Main.java`: `handleClose()`/erro não tratado (`handleAppError`, que antes só disparava
+  Telegram sem registrar nada localmente) e migrations do Flyway ganharam log de verdade.
+  Removido o hack de escrever direto em `%TEMP%/plics-close.log` via `Files.writeString` — as
+  threads non-daemon vivas detectadas no fechamento agora vão pra `log.warn` de verdade, no
+  mesmo arquivo que o resto do app usa (o Logback já resolve concorrência/rotação sozinho, o
+  hack ad-hoc não).
+- `ProcessKiller` tinha o mesmíssimo hack (`%TEMP%/plics-killer.log`) — trocado por Logger.
+- `BaseService` (classe-base de todo Service de entidade) ganhou logging de `salvar`/
+  `atualizar`/`excluirById` por padrão — sem logar o model inteiro via `toString()` (sem
+  garantia, numa classe genérica, de que um Model futuro não ganhe campo sensível exposto via
+  `@ToString`). Como a maioria dos Services concretos sobrescreve esses métodos, cada um ganhou
+  log próprio com campos escolhidos a dedo — `PreferenciasService` em particular **nunca** loga
+  login/senha (credenciais de acesso ao app inteiro), só `credenciaisHabilitadas`; `Cliente`/
+  `FornecedorService` não logam CPF/CNPJ, e-mail ou celular, só id/nome.
+- `ProdutoService` ganhou log nos 4 métodos de ajuste de estoque (`atualizarEstoque`/
+  `definirEstoque`/`incrementarEstoque`/`decrementarEstoque`) — movimento de estoque é o tipo
+  de evento de negócio que vale a pena auditar pelo log, mesmo espírito do que o
+  `balanca-gobitech` fez pros leitores de balança (conectando/conectado/erro/encerrando).
+  `PDVService` (orquestra `finalizarVenda`/`excluirVenda`/`devolverVenda` em transação) ganhou
+  log no nível da operação completa, não só nos Services internos que ela chama.
+- `PedidoItemService.salvar()` (item de pedido do PDV, pode ter dezenas por venda) loga em
+  `DEBUG`, não `INFO` — evita inundar o log sem perder o dado pra quem precisar de mais detalhe
+  (bumpar o nível é só trocar `logback.xml`).
+- `VerificacaoAcessoService.acessoLiberado()` engolia qualquer exceção retornando `false` sem
+  registrar nada — agora loga em `WARN` (não `ERROR`: site fora do ar/sem internet é uma falha
+  esperada segundo o próprio javadoc da classe, mas precisa aparecer no log pra não confundir
+  relatos de "acesso bloqueado" com bug).
+- `WinRawPrinter` (impressão via WinSpool nativo no Windows, só retornava `boolean`) ganhou log
+  em cada etapa que pode falhar silenciosamente (abrir impressora, iniciar documento, escrever).
+- `UpdaterService` (checagem/download de atualização via GitHub API) ganhou log de versão
+  encontrada, início/fim de download e limpeza de diretórios temporários — antes só propagava
+  `IOException` sem registrar nada no caminho.
+- Todo `catch` que só engolia a exceção ou fazia `e.printStackTrace()` (4 arquivos:
+  `ClienteViewModel`, `VendaMercadoriaScreenViewModel`, `HomeScreenViewModel`,
+  `LerPlanilhaScreen`) virou `log.error` de verdade. Auditoria completa nas ~19 ViewModels que
+  ainda não tinham Logger nenhum (Categoria, ComprasAPagar, ContasAReceber, Empresa, Feedback,
+  Fornecedor, InfoUpdate, OrdemServico, Produto, Técnico) — todo `catch` que só mostrava alerta
+  na UI sem registrar nada ganhou `log.error`/`log.warn` com contexto (id do registro quando
+  disponível).
+- **Fora do escopo, deliberadamente**: `WelcomeScreenViewModel` (vazio, sem lógica),
+  `services.ContasPagarService`/`services.RelatorioService` (o primeiro só delega pro
+  `db.services.ContasPagarService` que já loga; o segundo é 100% leitura/agregação, sem
+  mutação nem catch pra logar). Repositories (`db.repositories.*`) também ficaram de fora — mesmo
+  corte de camada usado no `balanca-gobitech` (logging fica no nível de Service, não de acesso a
+  dado cru).
+- Descoberto durante a auditoria (não corrigido aqui, sinalizado separadamente): pacote inteiro
+  `my_app.updater` (`HomeScreen`/`HomeScreenViewModel`/`Main.java` próprios) é código morto —
+  nenhuma classe é referenciada de lugar nenhum do app real (`AppRoutes` roteia pra
+  `my_app.screens.homeScreen.HomeScreen`, não essa). Tinha o mesmo hack de log ad-hoc em
+  `%TEMP%/plics-updater.log`; não fazia sentido investir logging nele.
+
+**Verificação:** `./gradlew compileJava test` — suíte completa passa, e `~/.plics-sw/logs/
+plics-sw.log` continua em 0 linhas depois da rodada (confirma que o isolamento teste/produção
+documentado na decisão abaixo continua funcionando mesmo com a cobertura de log bem maior agora).
+
+---
+
 ## 2026-08-19: Log de produção crescendo sem parar — causa raiz era teste (mesmo bug do balanca-gobitech)
 
 **Contexto:** o mesmo bug encontrado e corrigido primeiro no `balanca-gobitech` (ver `DECISIONS.md`

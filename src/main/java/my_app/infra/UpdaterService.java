@@ -2,6 +2,8 @@ package my_app.infra;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,6 +17,8 @@ import java.util.Comparator;
 import java.util.concurrent.Executors;
 
 public class UpdaterService {
+
+    private static final Logger log = LoggerFactory.getLogger(UpdaterService.class);
 
     private static final String LATEST_RELEASE_URL =
         "https://api.github.com/repos/eliezer-dev-software-enginner/plics-sw/releases/latest";
@@ -52,9 +56,13 @@ public class UpdaterService {
         var downloadUrl = findPackageAsset(releaseJson);
         if (downloadUrl == null) {
             var ext = isWindows() ? ".msi" : ".deb";
+            log.error("Nenhum asset {} encontrado na última release", ext);
             throw new IOException("Nenhum asset " + ext + " encontrado na última release");
         }
-        return downloadToTemp(downloadUrl);
+        log.info("Baixando atualização: {}", downloadUrl);
+        var caminho = downloadToTemp(downloadUrl);
+        log.info("Atualização baixada em: {}", caminho);
+        return caminho;
     }
     private String fetchLatestRelease() throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
@@ -66,6 +74,7 @@ public class UpdaterService {
         var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
+            log.error("GitHub API retornou {} ao buscar última release", response.statusCode());
             throw new IOException("GitHub API retornou " + response.statusCode());
         }
 
@@ -105,6 +114,7 @@ public class UpdaterService {
         var response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
         if (response.statusCode() != 200) {
+            log.error("Download do pacote de atualização falhou com código {}: {}", response.statusCode(), fileUrl);
             throw new IOException("Download falhou com código " + response.statusCode());
         }
 
@@ -140,14 +150,21 @@ public class UpdaterService {
             try (var dirs = Files.list(temp)) {
                 dirs.filter(p -> p.getFileName().toString().startsWith(prefix))
                     .forEach(p -> {
+                        log.info("Limpando diretório temporário de sessão anterior: {}", p);
                         try (var files = Files.walk(p)) {
                             files.sorted(Comparator.reverseOrder())
                                 .forEach(f -> {
-                                    try { Files.deleteIfExists(f); } catch (IOException ignored) {}
+                                    try { Files.deleteIfExists(f); } catch (IOException e) {
+                                        log.warn("Erro ao remover {}", f, e);
+                                    }
                                 });
-                        } catch (IOException ignored) {}
+                        } catch (IOException e) {
+                            log.warn("Erro ao percorrer {}", p, e);
+                        }
                     });
             }
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            log.warn("Erro ao listar diretórios temporários com prefixo {}", prefix, e);
+        }
     }
 }

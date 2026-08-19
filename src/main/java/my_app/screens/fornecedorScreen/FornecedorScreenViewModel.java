@@ -13,10 +13,14 @@ import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.domain.states.EnderecoState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
 public class FornecedorScreenViewModel extends ViewModelScreenContract<FornecedorModel> {
+    private static final Logger log = LoggerFactory.getLogger(FornecedorScreenViewModel.class);
+
     private final FornecedorService fornecedorService;
 
     public final State<FornecedorModel> fornecedorSelected = new State<>(null);
@@ -61,6 +65,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
                 final var list = fornecedorService.listar();
                 UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
+                log.error("Erro ao carregar fornecedores", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar fornecedores: " + e.getMessage()));
             }
         });
@@ -150,6 +155,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
                     EventBus.getInstance().publish(EntityEvent.editado(atualizado));
                 });
             } catch (Exception e) {
+                log.error("Erro ao atualizar fornecedor id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -167,6 +173,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
                     EventBus.getInstance().publish(EntityEvent.criado(salvo));
                 });
             } catch (Exception e) {
+                log.error("Erro ao salvar fornecedor", e);
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             }
         });
@@ -185,6 +192,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
                     EventBus.getInstance().publish(EntityEvent.excluido(fornecedorModel.getId()));
                 });
             } catch (Exception e) {
+                log.error("Erro ao excluir fornecedor id={}", fornecedorModel.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
             }
         }));

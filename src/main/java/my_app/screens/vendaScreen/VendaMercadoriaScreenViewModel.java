@@ -591,7 +591,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
                 final var finalParcelas = parcelas;
                 escPosPrinter.imprimir(vendaModel, finalParcelas);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Erro ao imprimir nota de venda id={}", vendaModel.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao imprimir: " + e.getMessage()));
             }
         });

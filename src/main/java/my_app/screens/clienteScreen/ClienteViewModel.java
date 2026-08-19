@@ -16,11 +16,15 @@ import my_app.domain.components.Components;
 import my_app.domain.states.EnderecoState;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
+    private static final Logger log = LoggerFactory.getLogger(ClienteViewModel.class);
+
     private final ClienteService clienteService;
 
     final State<ClienteModel> clienteSelecionado = State.of(null);
@@ -145,7 +149,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                 var list = clienteService.listar();
                 UI.runOnUi(() -> allDataList.set(list));
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Erro ao buscar clientes", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao buscar clientes: " + e.getMessage()));
             }
         });
@@ -165,6 +169,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                     EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
                 });
             } catch (Exception e) {
+                log.error("Erro ao excluir cliente id={}", model.getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
             }
         }));
@@ -224,6 +229,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
             } catch (IllegalArgumentException e) {
                 UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
             } catch (Exception e) {
+                log.error("Erro inesperado ao salvar cliente", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro inesperado: " + e.getMessage()));
             }
         });

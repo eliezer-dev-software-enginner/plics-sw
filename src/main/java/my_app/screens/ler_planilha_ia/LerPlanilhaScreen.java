@@ -21,12 +21,16 @@ import my_app.domain.Data;
 import my_app.domain.components.Components;
 import my_app.services.PlanilhaFornecedorReader;
 import my_app.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class LerPlanilhaScreen implements ScreenComponent {
+    private static final Logger log = LoggerFactory.getLogger(LerPlanilhaScreen.class);
+
     private final ScreenContext screenContext;
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
@@ -47,7 +51,7 @@ public class LerPlanilhaScreen implements ScreenComponent {
             var categoriasList = categoriaService.listar();
             UI.runOnUi(()->   categoria.set(categoriasList.getFirst()) );
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("Erro ao carregar categoria GERAL", e);
             UI.runOnUi(()-> Components.ShowAlertError("Erro ao carregar categoria GERAL"+e.getMessage()));
         }
     }
@@ -107,7 +111,7 @@ public class LerPlanilhaScreen implements ScreenComponent {
                     UI.runOnUi(()->Components.ShowPopupWithButton(screenContext,"Dados copiados com sucesso","Fechar tela", stage::close));
 
                 }catch (Exception e){
-                    e.printStackTrace();
+                    log.error("Erro ao importar planilha de fornecedor", e);
                     UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
                 }
             }

@@ -148,7 +148,7 @@ public class HomeScreenViewModel {
                     exibirGifNaUI(totalHoje);
                 });
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Erro ao carregar totais financeiros da Home", e);
 
                 UI.runOnUi(() -> {
                     Components.ShowAlertError(e.getMessage());

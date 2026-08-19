@@ -1,23 +1,15 @@
 package my_app.infra;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class ProcessKiller {
 
-    private static final Path LOG_FILE = Path.of(System.getProperty("java.io.tmpdir"), "plics-killer.log");
-
-    private static void log(String msg) {
-        try {
-            Files.writeString(LOG_FILE,
-                    java.time.Instant.now() + " " + msg + "\n",
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        } catch (IOException ignored) {}
-    }
+    private static final Logger log = LoggerFactory.getLogger(ProcessKiller.class);
 
     /**
      * Mata o processo do PID informado (e sua árvore de filhos), de forma
@@ -39,14 +31,14 @@ public class ProcessKiller {
                     "/st", startTime)
                     .redirectErrorStream(true).start();
             logProcessOutput(create, "schtasks /create");
-            log("Task agendada criada (auto-delete): " + taskName);
+            log.info("Task agendada criada (auto-delete): {}", taskName);
 
             var run = new ProcessBuilder("schtasks", "/run", "/tn", taskName)
                     .redirectErrorStream(true).start();
             logProcessOutput(run, "schtasks /run");
-            log("Task executada via schtasks /run para PID " + pid);
+            log.info("Task executada via schtasks /run para PID {}", pid);
         } catch (IOException e) {
-            log("ERRO ao agendar kill do PID " + pid + ": " + e.getMessage());
+            log.error("Erro ao agendar kill do PID {}", pid, e);
         }
     }
 
@@ -58,9 +50,9 @@ public class ProcessKiller {
         try {
             String output = new String(p.getInputStream().readAllBytes());
             p.waitFor();
-            log(label + " exitCode=" + p.exitValue() + " output=" + output.trim());
+            log.info("{} exitCode={} output={}", label, p.exitValue(), output.trim());
         } catch (Exception e) {
-            log(label + " erro ao ler output: " + e.getMessage());
+            log.warn("{} erro ao ler output", label, e);
         }
     }
 }

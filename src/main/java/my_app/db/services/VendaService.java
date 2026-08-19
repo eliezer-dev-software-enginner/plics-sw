@@ -4,12 +4,16 @@ import my_app.db.DB;
 import my_app.db.models.VendaModel;
 import my_app.db.repositories.VendaRepository;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class VendaService extends BaseService<VendaModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(VendaService.class);
 
     private final VendaRepository vendaRepository;
     private final ProdutoService produtoService;
@@ -47,6 +51,7 @@ public class VendaService extends BaseService<VendaModel> {
             produtoService.decrementarEstoque(model.getProdutoCod(), model.getQuantidade());
         }
 
+        log.info("Venda salva: id={} produtoCod={} clienteId={} totalLiquido={}", salvo.getId(), salvo.getProdutoCod(), salvo.getClienteId(), salvo.getTotalLiquido());
         return salvo;
     }
 
@@ -110,6 +115,7 @@ public class VendaService extends BaseService<VendaModel> {
                 produtoService.decrementarEstoque(model.getProdutoCod(), model.getQuantidade());
             }
         }
+        log.info("Venda atualizada: id={} produtoCod={}", model.getId(), model.getProdutoCod());
     }
 
     public void excluir(long id) throws SQLException {
@@ -121,6 +127,7 @@ public class VendaService extends BaseService<VendaModel> {
         }
 
         repository.excluirById(id);
+        log.info("Venda excluída: id={}", id);
     }
 
     // Diferente de excluir(): devolve o estoque e estorna a cobrança, mas mantém o
@@ -148,6 +155,7 @@ public class VendaService extends BaseService<VendaModel> {
         venda.setDevolvida(true);
         venda.setDataDevolucao(System.currentTimeMillis());
         repository.atualizar(venda);
+        log.info("Venda devolvida: id={}", id);
     }
 
     public BigDecimal somarVendasHoje() throws SQLException {

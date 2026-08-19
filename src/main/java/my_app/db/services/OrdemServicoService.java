@@ -4,6 +4,8 @@ import my_app.db.DB;
 import my_app.db.models.OrdemServicoModel;
 import my_app.db.repositories.OrdemServicoRepository;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrdemServicoService extends BaseService<OrdemServicoModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(OrdemServicoService.class);
 
     private final OrdemServicoRepository ordemServicoRepository;
 
@@ -30,19 +34,23 @@ public class OrdemServicoService extends BaseService<OrdemServicoModel> {
         if (model.getNumeroOs() == null) {
             model.setNumeroOs(ordemServicoRepository.gerarProximoNumeroOS());
         }
-        return repository.salvar(model);
+        var salvo = repository.salvar(model);
+        log.info("Ordem de serviço salva: id={} numeroOs={} clienteId={}", salvo.getId(), salvo.getNumeroOs(), salvo.getClienteId());
+        return salvo;
     }
 
     @Override
     public void atualizar(OrdemServicoModel model) throws SQLException {
         validar(model);
         repository.atualizar(model);
+        log.info("Ordem de serviço atualizada: id={} status={}", model.getId(), model.getStatus());
     }
 
     public void excluir(long id) throws SQLException {
         var os = repository.buscarById(id);
         if (os == null) throw new IllegalArgumentException("Ordem de serviço não encontrada");
         repository.excluirById(id);
+        log.info("Ordem de serviço excluída: id={}", id);
     }
 
     public List<OrdemServicoModel> buscarPorCliente(Integer clienteId) throws SQLException {

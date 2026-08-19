@@ -148,7 +148,8 @@ public class HomeScreen implements ScreenComponent {
         var suporteMenu = new Menu("Suporte")
                 .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
                 .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
-                .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}));
+                .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
+                .item("Ver logs da aplicação", ()-> ctx.router().spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}));
 
         // Build da Microsoft Store não inclui o updater embutido (ver create-msi.py)
         // — quem instala pela Store não tem como usar esse botão, então nem mostra.

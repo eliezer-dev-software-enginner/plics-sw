@@ -5,11 +5,15 @@ import my_app.db.models.TecnicoModel;
 import my_app.db.repositories.TecnicoRepository;
 import net.sf.persism.PersismException;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class TecnicoService extends BaseService<TecnicoModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(TecnicoService.class);
 
     public TecnicoService() throws SQLException {
         this(DB.getPersismSession());
@@ -25,7 +29,9 @@ public class TecnicoService extends BaseService<TecnicoModel> {
         validar(model);
         model.setDataCriacao(LocalDateTime.now());
         try {
-            return repository.salvar(model);
+            var salvo = repository.salvar(model);
+            log.info("Técnico salvo: id={} nome={}", salvo.getId(), salvo.getNome());
+            return salvo;
         } catch (PersismException e) {
             throw tratarDuplicado(e);
         }
@@ -36,6 +42,7 @@ public class TecnicoService extends BaseService<TecnicoModel> {
         validar(model);
         try {
             repository.atualizar(model);
+            log.info("Técnico atualizado: id={} nome={}", model.getId(), model.getNome());
         } catch (PersismException e) {
             throw tratarDuplicado(e);
         }

@@ -4,6 +4,8 @@ import my_app.db.DB;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -12,6 +14,8 @@ import java.util.List;
 import static my_app.utils.Utils.*;
 
 public class ClienteService extends BaseService<ClienteModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
     private final ClienteRepository clienteRepository;
 
@@ -30,13 +34,18 @@ public class ClienteService extends BaseService<ClienteModel> {
     public ClienteModel salvar(ClienteModel model) throws SQLException {
         validarCampos(model);
         model.setDataCriacao(LocalDateTime.now());
-        return repository.salvar(model);
+        // Nunca loga CPF/CNPJ, e-mail ou celular — só o suficiente pra identificar o
+        // registro no log (id/nome), dado pessoal do cliente não precisa estar em disco.
+        var salvo = repository.salvar(model);
+        log.info("Cliente salvo: id={} nome={}", salvo.getId(), salvo.getNome());
+        return salvo;
     }
 
     @Override
     public void atualizar(ClienteModel model) throws SQLException {
         validarCampos(model);
         repository.atualizar(model);
+        log.info("Cliente atualizado: id={} nome={}", model.getId(), model.getNome());
     }
 
     private void validarCampos(ClienteModel model) throws SQLException {

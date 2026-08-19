@@ -10,6 +10,8 @@ import my_app.db.services.ProdutoService;
 import my_app.domain.Parcela;
 import my_app.screens.pdvScreen.ItemVenda;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public final class PDVService {
+
+    private static final Logger log = LoggerFactory.getLogger(PDVService.class);
 
     private final Session session;
 
@@ -119,6 +123,8 @@ public final class PDVService {
             throw thrown[0];
         }
 
+        log.info("Venda PDV finalizada: pedidoId={} itens={} totalLiquido={}",
+                result[0].getId(), itens.size(), result[0].getTotalLiquido());
         return result[0];
     }
 
@@ -158,6 +164,7 @@ public final class PDVService {
         if (thrown[0] != null) {
             throw thrown[0];
         }
+        log.info("Venda PDV excluída: pedidoId={}", pedidoId);
     }
 
     // Igual a excluirVenda() na devolução de estoque e contas, mas preserva o pedido
@@ -204,5 +211,6 @@ public final class PDVService {
         if (thrown[0] != null) {
             throw thrown[0];
         }
+        log.info("Venda PDV devolvida: pedidoId={}", pedidoId);
     }
 }

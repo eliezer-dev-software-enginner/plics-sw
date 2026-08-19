@@ -19,6 +19,7 @@ import my_app.screens.comprasScreen.ComprasScreen;
 import my_app.screens.empresaScreen.CadastroEmpresaScreen;
 import my_app.screens.fornecedorScreen.FornecedorScreen;
 import my_app.screens.homeScreen.HomeScreen;
+import my_app.screens.logsScreen.LogsScreen;
 import my_app.screens.pdvScreen.PDVScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
@@ -55,6 +56,7 @@ public class AppRoutes {
         PREFERENCIAS,
         INFO_UPDATE,
         RELATORIOS,
+        LOGS,
         ACESSO_BLOQUEADO
     }
 
@@ -102,6 +104,7 @@ public class AppRoutes {
                 new Router.Route(Screens.PREFERENCIAS.name(), PreferenciasScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Alteração de preferências do comportamento do aplicativo", true)),
                 new Router.Route(Screens.INFO_UPDATE.name(), InfoUpdateScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Atualizações do aplicativo", false)),
                 new Router.Route(Screens.RELATORIOS.name(), RelatoriosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Relatórios financeiros", true)),
+                new Router.Route(Screens.LOGS.name(), LogsScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Logs da aplicação", true)),
                 new Router.Route(Screens.ACESSO_BLOQUEADO.name(), ctx -> new AcessoBloqueadoScreen(),
                         new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Acesso bloqueado", false))
         );

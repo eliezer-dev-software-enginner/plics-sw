@@ -5,12 +5,16 @@ import my_app.db.models.ProdutoModel;
 import my_app.db.repositories.ProdutoRepository;
 import my_app.utils.DateUtils;
 import net.sf.persism.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ProdutoService extends BaseService<ProdutoModel> {
+
+    private static final Logger log = LoggerFactory.getLogger(ProdutoService.class);
 
     private final ProdutoRepository produtoRepository;
 
@@ -30,13 +34,16 @@ public class ProdutoService extends BaseService<ProdutoModel> {
         var produtoModel = produtoRepository.buscarPorCodigoBarras(model.getCodigoBarras().trim());
         if(produtoModel != null)throw new IllegalArgumentException("Código de barras já cadastrado");
         model.setDataCriacao(LocalDateTime.now());
-        return repository.salvar(model);
+        var salvo = repository.salvar(model);
+        log.info("Produto salvo: codigoBarras={} descricao={}", salvo.getCodigoBarras(), salvo.getDescricao());
+        return salvo;
     }
 
     @Override
     public void atualizar(ProdutoModel model) throws SQLException {
         validar(model);
         repository.atualizar(model);
+        log.info("Produto atualizado: codigoBarras={} descricao={}", model.getCodigoBarras(), model.getDescricao());
     }
 
     private void validar(ProdutoModel model) {
@@ -58,17 +65,21 @@ public class ProdutoService extends BaseService<ProdutoModel> {
 
     public void atualizarEstoque(String codigoBarras, java.math.BigDecimal quantidade) throws SQLException {
         produtoRepository.atualizarEstoque(codigoBarras, quantidade);
+        log.info("Estoque ajustado: codigoBarras={} delta={}", codigoBarras, quantidade);
     }
 
     public void definirEstoque(String codigoBarras, java.math.BigDecimal novoEstoque) throws SQLException {
         produtoRepository.definirEstoque(codigoBarras, novoEstoque);
+        log.info("Estoque definido: codigoBarras={} novoEstoque={}", codigoBarras, novoEstoque);
     }
 
     public void incrementarEstoque(String codigoBarras, java.math.BigDecimal quantidade) throws SQLException {
         produtoRepository.incrementarEstoque(codigoBarras, quantidade);
+        log.info("Estoque incrementado: codigoBarras={} quantidade={}", codigoBarras, quantidade);
     }
 
     public void decrementarEstoque(String codigoBarras, java.math.BigDecimal quantidade) throws SQLException {
         produtoRepository.decrementarEstoque(codigoBarras, quantidade);
+        log.info("Estoque decrementado: codigoBarras={} quantidade={}", codigoBarras, quantidade);
     }
 }
