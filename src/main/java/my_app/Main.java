@@ -1,5 +1,6 @@
 package my_app;
 
+import java.nio.file.Path;
 import java.util.Objects;
 
 import javafx.application.Platform;
@@ -144,6 +145,14 @@ public class Main {
         // em %TEMP%) — nenhum dos dois se autolimpa. Se estamos iniciando agora, tudo
         // que já existia lá é de uma sessão passada, então é sempre seguro remover.
         Async.Run(UpdaterService::cleanTempDirs);
+
+        // Manda o log acumulado até agora pro Telegram a cada abertura do app — dá
+        // visibilidade de suporte sem depender do cliente mandar o arquivo manualmente.
+        // Caminho igual ao configurado em logback.xml. Propositalmente sem nenhum log
+        // sobre esse envio (ver comentário em TelegramNotifier.enviarArquivo).
+        Async.Run(() -> TelegramNotifierFactory.create().enviarArquivo(
+                Path.of(System.getProperty("user.home"), ".plics-sw", "logs", "plics-sw.log"),
+                "Log automático — " + APP_NAME + " " + APP_VERSION));
 
         var routes = new AppRoutes().routes();
         Router router = new Router(routes, AppRoutes.Screens.SPLASH.name());

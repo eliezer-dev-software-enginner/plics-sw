@@ -4,12 +4,15 @@ import my_app.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class TelegramNotifier {
     private final String botToken;
@@ -75,6 +78,55 @@ public class TelegramNotifier {
                         log.warn("Erro HTTP {} ao enviar notificação Telegram: {}", response.statusCode(), response.body());
                     }
                 });
+    }
+
+    // Envia um arquivo (usado pra mandar o log da aplicação pro Telegram a cada abertura).
+    // Propositalmente SEM NENHUMA chamada de log aqui, nem em caso de erro — o pedido foi
+    // explícito: nenhuma menção a esse envio pode aparecer no arquivo de log (evita ruído
+    // recursivo: o próprio log sendo enviado registrando que foi enviado).
+    public void enviarArquivo(Path arquivo, String legenda) {
+        if (Main.devMode) return;
+        if (botToken == null || chatId == null) return;
+        if (arquivo == null || !Files.exists(arquivo)) return;
+
+        try {
+            byte[] fileBytes = Files.readAllBytes(arquivo);
+            String fileName = arquivo.getFileName().toString();
+            String boundary = "----PlicsBoundary" + System.currentTimeMillis();
+
+            StringBuilder header = new StringBuilder();
+            header.append("--").append(boundary).append("\r\n");
+            header.append("Content-Disposition: form-data; name=\"chat_id\"\r\n\r\n")
+                    .append(chatId).append("\r\n");
+            if (legenda != null && !legenda.isBlank()) {
+                header.append("--").append(boundary).append("\r\n");
+                header.append("Content-Disposition: form-data; name=\"caption\"\r\n\r\n")
+                        .append(legenda).append("\r\n");
+            }
+            header.append("--").append(boundary).append("\r\n");
+            header.append("Content-Disposition: form-data; name=\"document\"; filename=\"")
+                    .append(fileName).append("\"\r\n");
+            header.append("Content-Type: application/octet-stream\r\n\r\n");
+
+            String footer = "\r\n--" + boundary + "--\r\n";
+
+            var out = new ByteArrayOutputStream();
+            out.write(header.toString().getBytes(StandardCharsets.UTF_8));
+            out.write(fileBytes);
+            out.write(footer.getBytes(StandardCharsets.UTF_8));
+
+            String telegramUrl = String.format("https://api.telegram.org/bot%s/sendDocument", botToken);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(telegramUrl))
+                    .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(out.toByteArray()))
+                    .timeout(java.time.Duration.ofSeconds(30))
+                    .build();
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.discarding());
+        } catch (Exception ignored) {
+            // Sem log de propósito — ver comentário do método.
+        }
     }
 
 static void main() {
