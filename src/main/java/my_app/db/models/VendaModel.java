@@ -52,6 +52,13 @@ public class VendaModel {
     @Column(name = "afeta_estoque")
     private Boolean afetaEstoque;
 
+    private BigDecimal frete;
+
+    private Boolean devolvida;
+
+    @Column(name = "data_devolucao")
+    private Long dataDevolucao;
+
     private transient ProdutoModel produto;
     private transient ClienteModel cliente;
 }

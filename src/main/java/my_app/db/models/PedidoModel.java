@@ -33,4 +33,11 @@ public class PedidoModel {
 
     @Column(name = "dataCriacao")
     private LocalDateTime dataCriacao;
+
+    private BigDecimal frete;
+
+    private Boolean devolvida;
+
+    @Column(name = "data_devolucao")
+    private Long dataDevolucao;
 }

@@ -56,6 +56,7 @@ public class PedidosScreen implements ScreenComponent {
                 .column("Pagamento", PedidoModel::getFormaPagamento)
                 .column("Fiado?",       it -> it.getFiado() != null && it.getFiado() == 1 ? "Sim" : "Não")
                 .column("Data",         it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Status",       it -> Boolean.TRUE.equals(it.getDevolvida()) ? "Devolvida" : "-")
                 .build()
                 .onItemSelectChange(vm.pedidoSelecionado::set);
     }
@@ -79,6 +80,9 @@ public class PedidosScreen implements ScreenComponent {
                                 new Button("Imprimir venda").onClick(vm::imprimirVendaSelecionada),
                                 new Button("Excluir venda selecionada").onClick(vm::handleClickMenuDelete)
                         )
+                ),
+                Show.when(vm.podeDevolver, () ->
+                        new Button("Devolver venda selecionada").onClick(vm::handleClickMenuDevolucaoVenda)
                 )
         ));
     }

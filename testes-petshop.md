@@ -49,6 +49,8 @@
 | 123 | Venda shampoo ml | 15/06/2026 | Ana Beatriz | NF-PET-004 | Shampoo Cães 500ml (SHA-001) | 1 | R$ 19,90 | PIX | Sim | Venda registrada R$ 19,90. Estoque 40 -> 39. | | |
 | 124 | Venda petisco gramas | 15/06/2026 | Carlos Mendes | NF-PET-005 | Petisco Cães 100g (PET-001) | 200 | g | A VISTA | Sim | Venda registrada. Estoque 60 -> 58 unidades (cada unidade = 100g). | | |
 | 125 | Venda com desconto | 15/06/2026 | Sofia Rocha | NF-PET-006 | Ração Gatos 10kg (RAC-G-001) | 1 | R$ 89,90 | CREDITO | Sim | Venda registrada com desconto de R$ 10,00. Total R$ 79,90. | | |
+| 191 | Venda com frete cobrado do cliente | 20/06/2026 | Ana Beatriz | NF-PET-007 | Ração Cães 15kg (RAC-C-001) | 1 | R$ 79,90 | A VISTA | Sim | Campo "Frete" preenchido com R$ 10,00. Linha "Total com frete" exibe R$ 89,90. Estoque 19 -> 18 (frete não afeta estoque). | | |
+| 192 | Devolver venda de mercadoria (ex: venda #120) | 21/06/2026 | Ana Beatriz | - | Ração Cães 15kg (RAC-C-001) | - | - | - | - | Botão "Devolver venda" no detalhe da venda. Estoque devolvido (19 -> 20); coluna "Status" muda para "Devolvida"; venda permanece na lista. | | |
 
 ---
 
@@ -95,6 +97,8 @@ Nota: não há controle de Status no formulário — toda OS nova é salva com s
 | 139 | Venda fiada para cliente fiel | Ração Gatos 10kg | 1 | R$ 89,90 | - | Sim | Sofia Rocha | 2 | Pedido fiado registrado. Gera 2 parcelas na conta a receber. | | |
 | 140 | Carrinho vazio | (nenhum) | 0 | R$ 0 | - | - | - | - | Alerta: "Adicione produtos ao carrinho". | | |
 | 164 | Venda fiada 1 parcela | Brinquedo Osso | 3 | R$ 29,70 | - | Sim | Carlos Mendes | 1 | Pedido fiado com 1 parcela (valor total). | | |
+| 193 | Venda no PDV com frete (entrega de ração) | Ração Cães 15kg | 1 | R$ 89,90 | R$ 90,00 | Não | - | - | Campo FRETE = R$ 10,00. Total a pagar = R$ 79,90 - R$ 0 + R$ 10,00 = R$ 89,90. Troco: R$ 0,10. | | |
+| 194 | Devolver venda do PDV (ex: venda #137, Histórico do Caixa) | Ração Cães 15kg | 1 | R$ 79,90 | - | - | - | - | Botão "Devolver venda selecionada". Estoque devolvido; coluna "Status" = "Devolvida"; pedido permanece na lista. | | |
 
 ---
 

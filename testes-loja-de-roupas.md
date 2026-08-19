@@ -54,6 +54,8 @@
 | 53 | Venda sem refletir estoque | 15/06/2026 | Maria Souza | NF003 | Jaqueta (SKU003) | 1 | R$ 199,90 | R$ 0 | DEBITO | Nao | - | Venda registrada. Estoque permanece 30. | | ok                                                                  |
 | 54 | Venda com observação | 15/06/2026 | João Pedro | NF004 | Camiseta M | 3 | R$ 39,90 | R$ 5,00 | PIX | Sim | "Presente" | Venda registrada com observação. | | ok                                                                  |
 | 154 | Venda deixa estoque abaixo do mínimo | 15/06/2026 | Maria Souza | NF005 | Blazer Feminino (SKU007) | 13 | R$ 299,90 | R$ 0 | A VISTA | Sim | - | Alerta de confirmação: estoque ficará em 2 (abaixo do mínimo 3). Ao confirmar, venda é registrada. | |                                                                       |
+| 187 | Venda com frete cobrado do cliente | 20/06/2026 | Maria Souza | NF010 | Camiseta M (SKU001) | 1 | R$ 39,90 | R$ 0 | A VISTA | Sim | Entrega a domicílio, frete R$ 15,00 | Campo "Frete" preenchido com R$ 15,00. Linha "Total com frete" exibe R$ 54,90 (R$ 39,90 + R$ 15,00). Frete soma no total pago pelo cliente, sem afetar estoque nem o campo Frete de Produtos (conceitos diferentes). | | |
+| 188 | Devolver venda de mercadoria (ex: venda #47) | 21/06/2026 | Maria Souza | - | Camiseta M (SKU001) | - | - | - | - | - | - | Botão "Devolver venda" no detalhe da venda (itemDetails). Ao confirmar: estoque da Camiseta M devolvido (98 -> 100); coluna "Status" na tabela passa a exibir "Devolvida"; venda permanece na lista (não é excluída). Se a venda fosse a prazo, as contas a receber vinculadas seriam canceladas e removidas. | | |
 
 ---
 
@@ -120,6 +122,8 @@ Nota: o formulário de cadastro/edição de OS não tem um controle de Status �
 | 119 | Venda fiada 1 parcela | Vestido | 1 | R$ 89,90 | - | Sim | Carla Lima | 1 | Pedido fiado com 1 parcela (valor total). | |           |
 | 159 | Criar cliente direto do PDV | Camiseta M | 1 | R$ 39,90 | R$ 40,00 | Não | (novo, via "+ Criar cliente") | - | Modal de cadastro de cliente abre inline; cliente criado fica selecionado na venda sem sair do PDV. | |           |
 | 160 | Venda no crédito/débito/PIX (à vista) | Calça Jeans | 1 | R$ 80,00 | R$ 80,00 | Não | - | - | Pedido registrado com forma de pagamento CREDITO/DEBITO/PIX (testar as 3), sem gerar parcela. | |           |
+| 189 | Venda no PDV com frete | Camiseta M | 1 | R$ 54,90 | R$ 60,00 | Não | - | - | Campo FRETE preenchido com R$ 15,00. Total a pagar = R$ 39,90 (subtotal) - R$ 0 (desconto) + R$ 15,00 (frete) = R$ 54,90. Troco: R$ 5,10. | | |
+| 190 | Devolver venda do PDV (ex: venda #84, Histórico do Caixa) | Camiseta M | 2 | R$ 79,80 | - | - | - | - | Botão "Devolver venda selecionada" em PedidosScreen (só aparece quando a venda selecionada ainda não foi devolvida). Ao confirmar: estoque devolvido (mesmo efeito de "Excluir", mas sem apagar); coluna "Status" passa a exibir "Devolvida"; pedido continua na lista do histórico. | | |
 
 ---
 

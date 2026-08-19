@@ -50,7 +50,8 @@ public class PDVScreen implements ScreenComponent {
                                         new SpacerVertical(20),
                                         new Row().children(
                                                 Components.InputColumnCurrency("TOTAL RECEBIDO", vm.totalRecebido),
-                                                Components.InputColumnCurrency("DESCONTO", vm.desconto)
+                                                Components.InputColumnCurrency("DESCONTO", vm.desconto),
+                                                Components.InputColumnCurrency("FRETE", vm.frete)
                                         ),
                                         vendaFiadaComponent(),
                                         new SpacerVertical(30),

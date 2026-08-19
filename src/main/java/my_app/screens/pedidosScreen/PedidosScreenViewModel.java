@@ -40,6 +40,9 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     final State<PedidoModel> pedidoSelecionado = State.of(null);
     final ComputedState<Boolean> temPedidoSelecionado = ComputedState.of(
             () -> pedidoSelecionado.get() != null, pedidoSelecionado);
+    final ComputedState<Boolean> podeDevolver = ComputedState.of(
+            () -> pedidoSelecionado.get() != null && !Boolean.TRUE.equals(pedidoSelecionado.get().getDevolvida()),
+            pedidoSelecionado);
 
     // Cache id -> nome, só pra exibir na tabela (evita N chamadas ao clicar em cada linha)
     private final Map<Integer, String> nomesClientes = new HashMap<>();
@@ -135,6 +138,31 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
             } catch (Exception e) {
                 log.error("Erro ao excluir venda", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir venda: " + e.getMessage()));
+            }
+        }));
+    }
+
+    public void handleClickMenuDevolucaoVenda() {
+        var pedido = pedidoSelecionado.get();
+        if (pedido == null || Boolean.TRUE.equals(pedido.getDevolvida())) return;
+
+        var mensagem = "Confirma a devolução da venda #" + pedido.getId() + " (" + nomeClienteDoPedido(pedido) + ")? "
+                + "O estoque dos produtos será restituído"
+                + (pedido.getFiado() != null && pedido.getFiado() == 1 ? " e o pagamento vinculado será estornado." : ".");
+
+        Components.ShowAlertAdvice(mensagem, () -> Async.Run(() -> {
+            try {
+                pdvService.devolverVenda(pedido.getId());
+                var atualizado = pedidoService.buscarById(pedido.getId());
+                UI.runOnUi(() -> {
+                    allDataList.updateIf(it -> it.getId().equals(pedido.getId()), it -> atualizado);
+                    pedidoSelecionado.set(atualizado);
+                    Components.ShowPopup(ctx, "Venda devolvida com sucesso!");
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                });
+            } catch (Exception e) {
+                log.error("Erro ao devolver venda", e);
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao devolver venda: " + e.getMessage()));
             }
         }));
     }

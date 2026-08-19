@@ -50,6 +50,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     final State<List<Parcela>> parcelas = State.of(List.of());
     final State<String> descontoEmDinheiro = State.of("0");
     final State<String> pcVenda = State.of("0");
+    final State<String> frete = State.of("0");
 
     final State<LocalDate> dataValidade = State.of(null);
 
@@ -82,6 +83,16 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     );
 
     final TotaisState totais = new TotaisState(pcVenda, qtd, descontoEmDinheiro);
+
+    // Frete é cobrado do cliente (soma no total que ele paga), diferente do frete de
+    // Produtos (custo de adquirir do fornecedor) — conceitos distintos, não relacionados.
+    // Fica fora de TotaisState (compartilhada com ComprasScreen, que não tem esse conceito)
+    // pra não vazar um campo "Frete" indevido lá.
+    final ComputedState<String> totalComFrete = ComputedState.of(() -> {
+        var liquido = new BigDecimal(totais.totalLiquido.get());
+        var freteValue = Utils.deCentavosParaReal(frete.get());
+        return liquido.add(freteValue).toString();
+    }, totais.totalLiquido, frete);
 
     public final Components.InputRef quantidadeRef = new Components.InputRef();
 
@@ -209,6 +220,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         tipoPagamentoSelecionado.set(data.getTipoPagamento());
         pcVenda.set(Utils.deRealParaCentavos(data.getPrecoUnitario()));
         descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDesconto()));
+        frete.set(Utils.deRealParaCentavos(data.getFrete()));
         dataValidade.set(data.getDataValidade() != null
                 ? DateUtils.millisParaLocalDate(data.getDataValidade())
                 : null);
@@ -445,6 +457,36 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         });
     }
 
+    public void handleClickMenuDevolucao(VendaModel data) {
+        if (data == null || Boolean.TRUE.equals(data.getDevolvida())) return;
+
+        Components.ShowAlertAdvice(
+                "Confirma a devolução desta venda? O estoque será restituído e o pagamento vinculado será estornado.",
+                () -> Async.Run(() -> {
+                    try {
+                        Integer vendaId = data.getId();
+                        vendaService.devolver(vendaId);
+                        reloadProdutos();
+
+                        // Busca de novo em vez de mutar "data": allDataList.updateIf() precisa de
+                        // uma referência DIFERENTE da que já está na lista pra ListState notificar
+                        // a tabela (mesmo motivo documentado em handleAddOrUpdate, acima).
+                        var atualizado = vendaService.buscarById(vendaId);
+                        atualizado.setProduto(data.getProduto());
+                        atualizado.setCliente(data.getCliente());
+
+                        UI.runOnUi(() -> {
+                            allDataList.updateIf(it -> it.getId().equals(vendaId), it -> atualizado);
+                            Components.ShowPopup(ctx, "Venda devolvida! Estoque e pagamento foram estornados.");
+                            EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                        });
+                    } catch (Exception e) {
+                        UI.runOnUi(() -> Components.ShowAlertError("Erro ao devolver venda: " + e.getMessage()));
+                    }
+                })
+        );
+    }
+
     @Override
     public void clearForm() {
         dataVenda.set(LocalDate.now());
@@ -458,6 +500,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         pcVenda.set("0");
         dataValidade.set(null);
         descontoEmDinheiro.set("0");
+        frete.set("0");
         if (!clientes.get().isEmpty()) {
             clienteSelected.set(clientes.get().getFirst());
         }
@@ -491,9 +534,10 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         model.setQuantidade(new BigDecimal(qtd.get()));
         model.setPrecoUnitario(Utils.deCentavosParaReal(pcVenda.get()));
         model.setDesconto(Utils.deCentavosParaReal(descontoEmDinheiro.get()));
+        model.setFrete(Utils.deCentavosParaReal(frete.get()));
         model.setTipoPagamento(tipoPagamentoSelecionado.get());
         model.setObservacao(observacao.get());
-        model.setTotalLiquido(new BigDecimal(totais.totalLiquido.get()));
+        model.setTotalLiquido(new BigDecimal(totalComFrete.get()));
         model.setDataValidade(dataValidade.get() != null ? DateUtils.localDateParaMillis(dataValidade.get()) : null);
         model.setDataVenda(DateUtils.localDateParaMillis(dataVenda.get()));
         model.setNumeroNota(numeroNota.get());

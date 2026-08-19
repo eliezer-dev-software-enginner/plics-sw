@@ -76,7 +76,10 @@ public class PDVScreenViewModel {
     final State<String> subtotal = State.of("0");
 
     final State<String> desconto = State.of("0");
-    // subtotal - desconto (nunca negativo) — recalculado junto com troco
+    // Cobrado do cliente (soma no total a pagar) — frete da entrega desta venda, não
+    // o de aquisição do produto (esse é um conceito separado, em ProdutoModel.frete).
+    final State<String> frete = State.of("0");
+    // subtotal - desconto + frete (nunca negativo) — recalculado junto com troco
     final State<String> totalAPagar = State.of("0");
 
     final State<String> totalRecebido = State.of("0");
@@ -135,6 +138,7 @@ public class PDVScreenViewModel {
 
         totalRecebido.subscribe(recebido -> recalcularTotais());
         desconto.subscribe(d -> recalcularTotais());
+        frete.subscribe(f -> recalcularTotais());
 
         EventBus.getInstance().subscribe(event -> {
             if(event instanceof EntityEvent<?> ee && ee.is(EntityEvent.EventType.CRIADO) && ee.entity() instanceof ClienteModel cm){
@@ -155,7 +159,13 @@ public class PDVScreenViewModel {
         } catch (NumberFormatException e) {
             descontoBD = BigDecimal.ZERO;
         }
-        BigDecimal liquido = subtotalBD.subtract(descontoBD);
+        BigDecimal freteBD;
+        try {
+            freteBD = Utils.deCentavosParaReal(frete.get());
+        } catch (NumberFormatException e) {
+            freteBD = BigDecimal.ZERO;
+        }
+        BigDecimal liquido = subtotalBD.subtract(descontoBD).add(freteBD);
         return liquido.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : liquido;
     }
 
@@ -372,6 +382,13 @@ public class PDVScreenViewModel {
             Components.ShowAlertError("Desconto inválido.");
             return;
         }
+        final BigDecimal freteValue;
+        try {
+            freteValue = Utils.deCentavosParaReal(frete.get());
+        } catch (NumberFormatException e) {
+            Components.ShowAlertError("Frete inválido.");
+            return;
+        }
         Async.Run(() -> {
             try {
                 lastPedido = pdvService.finalizarVenda(
@@ -380,7 +397,8 @@ public class PDVScreenViewModel {
                         finalClienteId,
                         fiado,
                         qtdParcelas,
-                        descontoValue
+                        descontoValue,
+                        freteValue
                 );
                 UI.runOnUi(() -> {
                     itensCarrinho.clear();
@@ -388,6 +406,7 @@ public class PDVScreenViewModel {
                     quantidadeInput.set("1");
                     subtotal.set("0");
                     desconto.set("0");
+                    frete.set("0");
                     totalAPagar.set("0");
                     totalRecebido.set("0");
                     troco.set("0");

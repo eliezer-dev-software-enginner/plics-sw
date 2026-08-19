@@ -13,6 +13,7 @@ public class VendaService extends BaseService<VendaModel> {
 
     private final VendaRepository vendaRepository;
     private final ProdutoService produtoService;
+    private final Session session;
 
     public VendaService() throws SQLException {
         this(DB.getPersismSession());
@@ -22,6 +23,7 @@ public class VendaService extends BaseService<VendaModel> {
         super(new VendaRepository(session));
         this.vendaRepository = (VendaRepository) repository;
         this.produtoService = new ProdutoService(session);
+        this.session = session;
     }
 
     public VendaModel salvar(VendaModel model, boolean atualizarEstoque) throws SQLException {
@@ -119,6 +121,33 @@ public class VendaService extends BaseService<VendaModel> {
         }
 
         repository.excluirById(id);
+    }
+
+    // Diferente de excluir(): devolve o estoque e estorna a cobrança, mas mantém o
+    // registro da venda (devolvida=true) em vez de apagá-la, preservando o histórico.
+    public void devolver(long id) throws SQLException {
+        var venda = repository.buscarById(id);
+        if (venda == null) throw new IllegalArgumentException("Venda não encontrada");
+        if (Boolean.TRUE.equals(venda.getDevolvida()))
+            throw new IllegalArgumentException("Esta venda já foi devolvida");
+
+        if (Boolean.TRUE.equals(venda.getAfetaEstoque())) {
+            produtoService.incrementarEstoque(venda.getProdutoCod(), venda.getQuantidade());
+        }
+
+        if ("A PRAZO".equals(venda.getTipoPagamento())) {
+            var contaService = new ContaAreceberService(session);
+            for (var conta : contaService.buscarPorVenda(venda.getId())) {
+                if ("PAGO".equals(conta.getStatus()) || "PARCIAL".equals(conta.getStatus())) {
+                    contaService.cancelarRecebimento(conta.getId());
+                }
+            }
+            contaService.excluirPorVendaId(venda.getId());
+        }
+
+        venda.setDevolvida(true);
+        venda.setDataDevolucao(System.currentTimeMillis());
+        repository.atualizar(venda);
     }
 
     public BigDecimal somarVendasHoje() throws SQLException {

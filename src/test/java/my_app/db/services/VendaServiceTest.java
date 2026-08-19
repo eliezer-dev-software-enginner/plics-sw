@@ -13,11 +13,13 @@ class VendaServiceTest extends BaseServiceTest {
 
     private VendaService vendaService;
     private ProdutoService produtoService;
+    private ContaAreceberService contaService;
 
     @Override
     protected void initService() {
         vendaService = new VendaService(session);
         produtoService = new ProdutoService(session);
+        contaService = new ContaAreceberService(session);
     }
 
     private ProdutoModel criarProduto() throws Exception {
@@ -121,5 +123,66 @@ class VendaServiceTest extends BaseServiceTest {
         vendaService.salvar(v, false);
         List<VendaModel> vendas = vendaService.buscarPorCliente(1);
         assertEquals(1, vendas.size());
+    }
+
+    @Test
+    void devePersistirFrete() throws Exception {
+        var p = criarProduto();
+        var v = criarVendaValida(p.getCodigoBarras());
+        v.setFrete(BigDecimal.valueOf(5.5));
+        var salvo = vendaService.salvar(v, false);
+        var buscado = vendaService.buscarById(salvo.getId());
+        assertBigDecimalEquals(BigDecimal.valueOf(5.5), buscado.getFrete());
+    }
+
+    @Test
+    void deveDevolverVendaERestaurarEstoqueSemApagarRegistro() throws Exception {
+        var p = criarProduto();
+        produtoService.definirEstoque(p.getCodigoBarras(), BigDecimal.TEN);
+        var v = criarVendaValida(p.getCodigoBarras());
+        v.setQuantidade(BigDecimal.valueOf(3));
+        var salvo = vendaService.salvar(v, true);
+
+        vendaService.devolver(salvo.getId());
+
+        var atualizado = produtoService.buscarPorCodigoBarras(p.getCodigoBarras());
+        assertBigDecimalEquals(BigDecimal.TEN, atualizado.getEstoque());
+
+        var vendaDevolvida = vendaService.buscarById(salvo.getId());
+        assertNotNull(vendaDevolvida, "A venda devolvida deve continuar existindo (histórico)");
+        assertTrue(vendaDevolvida.getDevolvida());
+        assertNotNull(vendaDevolvida.getDataDevolucao());
+    }
+
+    @Test
+    void deveCancelarEExcluirContasAoDevolverVendaAPrazo() throws Exception {
+        var p = criarProduto();
+        var v = criarVendaValida(p.getCodigoBarras());
+        v.setTipoPagamento("A PRAZO");
+        var salvo = vendaService.salvar(v, false);
+
+        var parcelas = my_app.domain.Parcela.gerarParcelas(java.time.LocalDate.now(), 1, 10.0);
+        contaService.gerarContasDeVenda(salvo.getId(), 1, parcelas);
+        var contas = contaService.buscarPorVenda(salvo.getId());
+        contaService.registrarRecebimento(contas.getFirst().getId(), BigDecimal.TEN);
+
+        vendaService.devolver(salvo.getId());
+
+        assertEquals(0, contaService.buscarPorVenda(salvo.getId()).size());
+    }
+
+    @Test
+    void naoDevePermitirDevolverVendaJaDevolvida() throws Exception {
+        var p = criarProduto();
+        var v = criarVendaValida(p.getCodigoBarras());
+        var salvo = vendaService.salvar(v, false);
+        vendaService.devolver(salvo.getId());
+
+        assertThrows(IllegalArgumentException.class, () -> vendaService.devolver(salvo.getId()));
+    }
+
+    @Test
+    void deveLancarExcecaoAoDevolverVendaInexistente() {
+        assertThrows(IllegalArgumentException.class, () -> vendaService.devolver(9999));
     }
 }

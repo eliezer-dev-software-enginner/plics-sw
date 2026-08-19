@@ -47,6 +47,18 @@ public final class PDVService {
             int numeroParcelas,
             BigDecimal desconto
     ) throws SQLException {
+        return finalizarVenda(itens, formaPagamento, clienteId, isFiado, numeroParcelas, desconto, BigDecimal.ZERO);
+    }
+
+    public PedidoModel finalizarVenda(
+            List<ItemVenda> itens,
+            String formaPagamento,
+            Integer clienteId,
+            boolean isFiado,
+            int numeroParcelas,
+            BigDecimal desconto,
+            BigDecimal frete
+    ) throws SQLException {
 
         var sess = session != null ? session : DB.getPersismSession();
         var result = new PedidoModel[1];
@@ -59,7 +71,8 @@ public final class PDVService {
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 BigDecimal descontoValue = desconto != null ? desconto : BigDecimal.ZERO;
-                BigDecimal totalLiquido = totalBruto.subtract(descontoValue);
+                BigDecimal freteValue = frete != null ? frete : BigDecimal.ZERO;
+                BigDecimal totalLiquido = totalBruto.subtract(descontoValue).add(freteValue);
                 if (totalLiquido.compareTo(BigDecimal.ZERO) < 0) totalLiquido = BigDecimal.ZERO;
 
                 var pedidoService = new PedidoService(sess);
@@ -68,6 +81,7 @@ public final class PDVService {
                 pedidoModel.setFormaPagamento(formaPagamento);
                 pedidoModel.setTotalLiquido(totalLiquido);
                 pedidoModel.setDesconto(descontoValue);
+                pedidoModel.setFrete(freteValue);
                 pedidoModel.setFiado(isFiado ? 1 : 0);
                 var pedido = pedidoService.salvar(pedidoModel);
 
@@ -135,6 +149,52 @@ public final class PDVService {
                 }
 
                 pedidoService.excluirById(pedidoId);
+            } catch (SQLException e) {
+                thrown[0] = e;
+                throw new RuntimeException(e);
+            }
+        });
+
+        if (thrown[0] != null) {
+            throw thrown[0];
+        }
+    }
+
+    // Igual a excluirVenda() na devolução de estoque e contas, mas preserva o pedido
+    // (marca devolvida=true em vez de apagar), mantendo o histórico do caixa.
+    public void devolverVenda(int pedidoId) throws SQLException {
+        var sess = session != null ? session : DB.getPersismSession();
+        var thrown = new SQLException[1];
+
+        sess.withTransaction(() -> {
+            try {
+                var pedidoService = new PedidoService(sess);
+                var pedido = pedidoService.buscarById(pedidoId);
+                if (pedido == null) throw new IllegalArgumentException("Venda não encontrada");
+                if (Boolean.TRUE.equals(pedido.getDevolvida()))
+                    throw new IllegalArgumentException("Esta venda já foi devolvida");
+
+                var itemRepo = new PedidoItemRepository(sess);
+                var produtoService = new ProdutoService(sess);
+                var itens = itemRepo.listarPorPedido(pedidoId);
+
+                for (PedidoItemModel item : itens) {
+                    produtoService.incrementarEstoque(item.getProdutoCod(), item.getQuantidade());
+                }
+
+                if (Integer.valueOf(1).equals(pedido.getFiado())) {
+                    var contaService = new ContaAreceberService(sess);
+                    for (var conta : contaService.buscarPorVenda(pedidoId)) {
+                        if ("PAGO".equals(conta.getStatus()) || "PARCIAL".equals(conta.getStatus())) {
+                            contaService.cancelarRecebimento(conta.getId());
+                        }
+                    }
+                    contaService.excluirPorVendaId(pedidoId);
+                }
+
+                pedido.setDevolvida(true);
+                pedido.setDataDevolucao(System.currentTimeMillis());
+                pedidoService.atualizar(pedido);
             } catch (SQLException e) {
                 thrown[0] = e;
                 throw new RuntimeException(e);

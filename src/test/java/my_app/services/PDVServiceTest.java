@@ -175,4 +175,53 @@ class PDVServiceTest extends BaseServiceTest {
         var erro = assertThrows(Exception.class, () -> pdvService.excluirVenda(9999));
         assertEquals("Venda não encontrada", erro.getMessage());
     }
+
+    @Test
+    void deveSomarFreteNoTotalLiquido() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1,
+                BigDecimal.valueOf(2), BigDecimal.valueOf(5));
+
+        assertBigDecimalEquals(BigDecimal.valueOf(5), pedido.getFrete());
+        // total bruto 10 - desconto 2 + frete 5 = 13
+        assertBigDecimalEquals(BigDecimal.valueOf(13), pedido.getTotalLiquido());
+    }
+
+    @Test
+    void deveDevolverVendaERestaurarEstoqueSemApagarRegistro() throws Exception {
+        var itens = itensValidos();
+        var codigoBarras = itens.getFirst().produto.getCodigoBarras();
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1, false, 1);
+
+        assertBigDecimalEquals(BigDecimal.valueOf(9), produtoService.buscarPorCodigoBarras(codigoBarras).getEstoque());
+
+        pdvService.devolverVenda(pedido.getId());
+
+        assertBigDecimalEquals(BigDecimal.TEN, produtoService.buscarPorCodigoBarras(codigoBarras).getEstoque());
+        assertEquals(1, contarLinhas("pedidos", "id = ?", pedido.getId()));
+    }
+
+    @Test
+    void deveCancelarEExcluirContasAoDevolverVendaFiada() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 1);
+        assertEquals(1, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+
+        pdvService.devolverVenda(pedido.getId());
+
+        assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+    }
+
+    @Test
+    void naoDevePermitirDevolverVendaJaDevolvida() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
+        pdvService.devolverVenda(pedido.getId());
+
+        var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(pedido.getId()));
+        assertEquals("Esta venda já foi devolvida", erro.getMessage());
+    }
+
+    @Test
+    void deveLancarExcecaoAoDevolverVendaInexistente() {
+        var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(9999));
+        assertEquals("Venda não encontrada", erro.getMessage());
+    }
 }

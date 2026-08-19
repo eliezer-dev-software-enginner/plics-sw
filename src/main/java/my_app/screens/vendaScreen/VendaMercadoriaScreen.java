@@ -50,7 +50,8 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 new SpacerVertical(20),
                 formFirstRow(),
                 Components.displayOperationsRow(vm.totais),
-                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totais.totalLiquido),
+                Components.TextWithValue("Total com frete:", vm.totalComFrete.map(Utils::toBRLCurrency)),
+                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalComFrete),
                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
         );
     }
@@ -66,6 +67,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2",vm.quantidadeRef),
                 Components.InputColumnCurrency("Pc. de venda", vm.pcVenda),
                 Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro),
+                Components.InputColumnCurrency("Frete", vm.frete),
                 Components.SelectColumn("Tipo de pagamento",
                         Data.tiposPagamentoList, vm.tipoPagamentoSelecionado, it -> it),
                 Components.SelectColumn("Refletir no estoque?",
@@ -94,6 +96,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .column("Quantidade", VendaModel::getQuantidade)
                 .column("Total líquido", it -> Utils.toBRLCurrency(it.getTotalLiquido()))
                 .column("Data", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Status", it -> Boolean.TRUE.equals(it.getDevolvida()) ? "Devolvida" : "-")
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(vm.vendaSelected::set)
@@ -118,13 +121,21 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .c_child(Components.TextWithDetails("Quantidade: ", model.getQuantidade()))
                 .c_child(Components.TextWithDetails("Preço de venda: ", Utils.toBRLCurrency(model.getPrecoUnitario())))
                 .c_child(Components.TextWithDetails("Desconto: ", Utils.toBRLCurrency(model.getDesconto())))
-                .c_child(Components.TextWithDetails("Ganho líquido: ", Utils.toBRLCurrency(model.getTotalLiquido())))
+                .c_child(Components.TextWithDetails("Frete: ", Utils.toBRLCurrency(model.getFrete())))
+                .c_child(Components.TextWithDetails("Total da venda: ", Utils.toBRLCurrency(model.getTotalLiquido())))
                 .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
                 .c_child(Components.TextWithDetails("Validade: ", validade))
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true))
+                .c_child(Show.when(Boolean.TRUE.equals(model.getDevolvida()),
+                        () -> Components.TextWithDetails("Devolvida em: ",
+                                DateUtils.millisToBrazilianDateTime(model.getDataDevolucao()))
+                ))
                 .c_child(new Row(new RowProps().spacingOf(10)).children(
                         new Button("Imprimir nota de venda").onClick(() -> vm.imprimirNotaDeVenda(model)),
                         new Button("Imprimir (modo alternativo)").onClick(() -> vm.imprimirNotaDeVendaAlternativo(model))
+                ))
+                .c_child(Show.when(!Boolean.TRUE.equals(model.getDevolvida()),
+                        () -> new Button("Devolver venda").onClick(() -> vm.handleClickMenuDevolucao(model))
                 ));
     }
 

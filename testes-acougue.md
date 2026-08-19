@@ -40,6 +40,8 @@
 |---|---------|------|---------|----|---------|-----|------------|-----------|---------|-----------------|------|-----------|
 | 57 | Venda de produto em gramas | 15/06/2026 | José Moura | NF-AC-001 | Bacon fatiado (CAR003) | 500 | R$ 0,07/g | A VISTA | Sim | Venda registrada R$ 35,00 (500g x R$ 0,07/g). Estoque 5030 -> 4530 g. | | |
 | 107 | Venda de kg em gramas (conversão automática) | 15/06/2026 | José Moura | NF-AC-003 | Picanha (CAR001) | 0,300 | R$ 79,90/kg | A VISTA | Sim | Venda registrada com 0,300 kg de Picanha (R$ 79,90/kg = R$ 23,97). Deve converter 300g para 0,300 kg. Estoque 80 -> 79,7 kg. | | |
+| 197 | Venda com frete cobrado do cliente | 20/06/2026 | José Moura | NF-AC-004 | Picanha (CAR001) | 1 | R$ 79,90/kg | A VISTA | Sim | Campo "Frete" preenchido com R$ 12,00. Linha "Total com frete" exibe R$ 91,90 (R$ 79,90 + R$ 12,00). Frete não desconta do estoque. | | |
+| 198 | Devolver venda de mercadoria (ex: venda #57) | 21/06/2026 | José Moura | - | Bacon fatiado (CAR003) | - | - | - | - | Botão "Devolver venda". Estoque devolvido (4530 -> 5030 g); coluna "Status" = "Devolvida"; venda permanece na lista. | | |
 
 ---
 
@@ -59,6 +61,8 @@
 |---|---------|---------|-----|-------|-------|----------|-------|-----------------|------|---|
 | 89 | Venda produto em gramas | Bacon fatiado | 300 | g | R$ 21,00 | R$ 25,00 | R$ 4,00 | Venda registrada em gramas. Estoque 4530 -> 4230 g. | | |
 | 108 | Venda kg em gramas | Picanha | 0,300 | KG | R$ 23,97 | R$ 25,00 | R$ 1,03 | Venda registrada (0,300 kg x R$ 79,90/kg = R$ 23,97). Estoque 80 -> 79,7 kg. | | |
+| 199 | Venda no PDV com frete (entrega) | Bacon fatiado | 300 | g | R$ 33,00 | R$ 35,00 | R$ 2,00 | Campo FRETE = R$ 12,00. Total = R$ 21,00 (300g) + R$ 12,00 de frete = R$ 33,00. | | |
+| 200 | Devolver venda do PDV (ex: venda #89, Histórico do Caixa) | Bacon fatiado | 300 | g | R$ 21,00 | - | - | Botão "Devolver venda selecionada". Estoque devolvido (4230 -> 4530 g); coluna "Status" = "Devolvida"; pedido permanece na lista. | | |
 
 ---
 

@@ -39,6 +39,8 @@
 |---|---------|---------|-----|-------|-----------|---------|-----------------|------|---|
 | 55 | Venda balcão (padrão) | Coxinha KG | 0,5 | R$ 29,90/kg | A VISTA | Sim | Venda registrada R$ 14,95. Estoque 9,5 kg. | | |
 | 56 | Venda múltiplos itens | Refri Lata + Coxinha | 2 + 1 | R$ 5,00 + R$ 29,90 | DEBITO | Sim | Venda registrada total R$ 39,90. | | |
+| 195 | Venda com frete (entrega via app) | Coxinha KG | 0,5 | R$ 29,90/kg | A VISTA | Sim | Campo "Frete" preenchido com R$ 6,00. Linha "Total com frete" exibe R$ 20,95 (R$ 14,95 + R$ 6,00). Estoque desconta só os 0,5 kg vendidos, frete não afeta estoque. | | |
+| 196 | Devolver venda (ex: venda #55) | Coxinha KG | - | - | - | - | Botão "Devolver venda" no detalhe. Estoque devolvido (9,5 -> 10 kg); coluna "Status" = "Devolvida"; venda permanece na lista. | | |
 
 ---
 

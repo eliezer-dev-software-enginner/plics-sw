@@ -40,6 +40,8 @@
 |---|---------|---------|-----|-------|-----------------|------|---|
 | 90 | Venda mercado | Arroz 5kg | 2 | R$ 20,00 | Venda registrada. Estoque atualizado. | | |
 | 91 | Venda múltiplos itens | Arroz + Feijão + Óleo | 1+2+1 | Total calculado | Venda registrada. | | |
+| 201 | Venda no PDV com frete (entrega em domicílio) | Arroz 5kg | 2 | R$ 30,00 | Campo FRETE = R$ 10,00. Total a pagar = R$ 20,00 (subtotal) + R$ 10,00 de frete = R$ 30,00. | | |
+| 202 | Devolver venda do PDV (ex: venda #90, Histórico do Caixa) | Arroz 5kg | 2 | R$ 20,00 | Botão "Devolver venda selecionada" em PedidosScreen. Estoque devolvido; coluna "Status" = "Devolvida"; pedido permanece na lista. | | |
 
 ---
 
