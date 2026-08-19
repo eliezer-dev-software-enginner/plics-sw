@@ -1,0 +1,148 @@
+name: Package installers
+
+# Disparo manual (aba Actions -> "Package installers" -> "Run workflow") pra um build
+# avulso, mais automático em qualquer tag "v*" pra releases de verdade — mesmo padrão
+# usado em balanca-gobitech e nos projetos de scene2d-suite.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+env:
+  JAVAFX_MODULES_ZIP_URL: "https://github.com/eliezer-dev-software-enginner/megalodonte-base/releases/download/utilities/java_fx_modules.zip"
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # plics-sw depende de "megalodonte:*:1.0.0-beta" — só existe via mavenLocal, nenhum
+      # artefato publicado num repositório remoto (Maven Central etc.). Clona o workspace
+      # megalodonte-libs (5 submódulos, cada um seu próprio repo público) e publica cada um
+      # em mavenLocal antes de compilar o app — mesma coisa que install-all.sh/.ps1 já fazem
+      # pra desenvolvimento local, só que numa cópia fresca clonada no runner.
+      - name: Clonar megalodonte-libs
+        shell: bash
+        run: |
+          git clone --recurse-submodules --depth 1 https://github.com/eliezer-dev-software-enginner/megalodonte-libs.git "${{ runner.temp }}/megalodonte-libs"
+
+      - name: Publicar megalodonte-libs em mavenLocal (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: ${{ runner.temp }}/megalodonte-libs
+        run: bash install-all.sh
+
+      - name: Publicar megalodonte-libs em mavenLocal (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}/megalodonte-libs
+        run: .\install-all.ps1
+
+      # jpackage --type msi shella pro WiX pra montar o instalador — não precisa disso
+      # pro --type deb do Linux.
+      - name: Instalar WiX Toolset (só Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install wixtoolset -y
+
+      - name: Adicionar WiX ao PATH (só Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $wix = Get-ChildItem "C:\Program Files (x86)\WiX Toolset v*\bin" -Directory | Select-Object -First 1
+          echo "$($wix.FullName)" >> $env:GITHUB_PATH
+
+      # scripts/config.py::smoke_test abre uma janela JavaFX de verdade por alguns segundos
+      # pra confirmar que o runtime empacotado sobe sem exceção — runner Linux não tem
+      # display nenhum por padrão, então cria um virtual.
+      - name: Instalar Xvfb (só Linux, pro smoke test do pacote)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      # scripts/config.py::javafx_dir() espera JAVAFX_MODULES_HOME apontando pra uma pasta
+      # que contém "{linux|windows}-{versão}/lib" (e opcionalmente "/bin") — exatamente a
+      # estrutura já empacotada neste zip (o mesmo usado localmente, publicado como asset de
+      # release em megalodonte-base). Baixa os dois SOs de qualquer forma (é um zip só,
+      # ~115MB) mas só o da plataforma atual do runner acaba sendo usado.
+      - name: Baixar JavaFX modules
+        shell: bash
+        run: |
+          mkdir -p java_fx_modules
+          curl -sL -o jfx.zip "$JAVAFX_MODULES_ZIP_URL"
+          unzip -q jfx.zip -d java_fx_modules
+          rm jfx.zip
+          echo "JAVAFX_MODULES_HOME=$PWD/java_fx_modules" >> "$GITHUB_ENV"
+
+      # Diferente de balanca-gobitech (updater removido nessa reescrita), plics-sw ainda tem
+      # my_app.updater — usa os scripts "-with-updater", que empacotam um segundo launcher
+      # (--add-launcher) no mesmo instalador em vez de um build separado.
+      - name: Gerar .deb com updater (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: xvfb-run -a python3 scripts/create-deb-with-updater.py
+
+      - name: Gerar .msi com updater (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: python3 scripts/create-msi-with-updater.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plics-sw-${{ matrix.platform }}
+          path: |
+            dist/*.deb
+            dist/*.msi
+          if-no-files-found: error
+
+  # Roda depois das duas plataformas terminarem, seja disparo manual ("Run workflow") ou
+  # push de tag "v*" — cria a release (e a tag, se ainda não existir) em cima do commit
+  # atual e anexa os dois instaladores. Rodar de novo em cima da mesma versão atualiza os
+  # assets da mesma release em vez de falhar.
+  release:
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # Versão composta igual scripts/config.py::APP_VERSION — appVersion sozinho quando
+      # não há patch, "appVersion.appPatch" quando há.
+      - name: Resolver versão do gradle.properties
+        id: meta
+        shell: bash
+        run: |
+          BASE=$(grep '^appVersion=' gradle.properties | cut -d= -f2)
+          PATCH=$(grep '^appPatch=' gradle.properties | cut -d= -f2)
+          if [ "$PATCH" != "0" ]; then VERSION="${BASE}.${PATCH}"; else VERSION="$BASE"; fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "name=$(grep '^appDisplayName=' gradle.properties | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.meta.outputs.version }}
+          name: ${{ steps.meta.outputs.name }} v${{ steps.meta.outputs.version }}
+          files: artifacts/**/*

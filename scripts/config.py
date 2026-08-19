@@ -181,6 +181,12 @@ def smoke_test(temp_dir):
         proc.wait()
 
 def open_dist_folder():
+    # CI runners (GitHub Actions sets CI=true on all of them) não têm sessão de desktop —
+    # xdg-open pode nem existir no runner Linux (FileNotFoundError, não só falhar em
+    # silêncio), e os.startfile no Windows não tem Explorer pra abrir. Sem essa guarda, o
+    # workflow de release quebraria bem no fim, depois de já ter gerado o pacote.
+    if os.environ.get("CI"):
+        return
     dist_dir = ROOT / "dist"
     if os.name == "nt":
         os.startfile(dist_dir)
