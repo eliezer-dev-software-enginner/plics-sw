@@ -1,5 +1,25 @@
 # Decisões Arquiteturais
 
+## 2026-08-19: Log de produção crescendo sem parar — causa raiz era teste (mesmo bug do balanca-gobitech)
+
+**Contexto:** o mesmo bug encontrado e corrigido primeiro no `balanca-gobitech` (ver `DECISIONS.md`
+de lá) também existia aqui — `src/main/resources/logback.xml` sem contraparte em
+`src/test/resources/`, então os testes herdavam a config de produção e escreviam direto em
+`~/.plics-sw/logs/plics-sw.log`, o mesmo arquivo do app real.
+
+**Achado:** pasta de logs somava **19MB** (arquivo ativo `plics-sw.log` com 11.443 linhas/1,5MB,
+mais 4 arquivos `plics-sw.*.log` já rolados pelo `RollingFileAppender` de rodadas anteriores de
+`./gradlew test`, alguns batendo o teto de 5MB cada). Mesma causa: cada teste recria o schema via
+Flyway, cada migration loga ~17 linhas em `INFO`, então uma suíte inteira gera milhares de linhas
+de log só de setup — não é uso real do app.
+
+**Decisão:** `src/test/resources/logback-test.xml` (Logback prioriza sobre `logback.xml` quando
+os dois estão no classpath) — só `ConsoleAppender`, sem `FileAppender`, nível `WARN`. Verificado
+rodando a suíte completa duas vezes: `plics-sw.log` não ganhou nenhuma linha nova. Arquivos
+antigos (~19MB) apagados/esvaziados — eram majoritariamente ruído de teste.
+
+---
+
 ## 2026-08-18: `HomeScreenViewModel.executor` nunca era desligado — thread não-daemon vazava a cada navegação pra Home
 
 **Contexto:** auditoria (Fase 4 de um plano de cancelamento estruturado iniciado no `balanca-gobitech`/`megalodonte-libs` — ver `DECISIONS.md` de lá) procurando o mesmo padrão de bug em `plics-sw`: recurso de vida longa aberto em `onMount()`/construtor sem teardown correspondente em `onDestroy()`.

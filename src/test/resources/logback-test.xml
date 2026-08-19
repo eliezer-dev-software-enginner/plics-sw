@@ -1,0 +1,25 @@
+<configuration>
+    <!--
+    Logback prioriza "logback-test.xml" sobre "logback.xml" quando os dois estão no
+    classpath — é exatamente pra separar log de teste do log de produção. Sem este arquivo,
+    os testes herdavam src/main/resources/logback.xml e escreviam no MESMO arquivo que o
+    app real usa (~/.plics-sw/logs/plics-sw.log). Cada teste recria o schema do zero via
+    Flyway, então uma rodada normal de "./gradlew test" já gera milhares de linhas de log só
+    de migration — foi isso, não uso real do app, que inflou o log de produção (mesmo problema
+    encontrado e corrigido primeiro no balanca-gobitech, ver docs/DECISIONS.md).
+
+    Só console aqui, sem FileAppender nenhum: teste não precisa persistir log em disco, e
+    assim fica estruturalmente impossível repetir esse vazamento pro arquivo de produção.
+    -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- WARN, não INFO: silencia o ruído repetitivo do Flyway/Persism em cada teste sem
+         esconder erros/avisos reais que apareceriam na saída do gradle. -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

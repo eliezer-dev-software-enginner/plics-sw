@@ -1,5 +1,16 @@
 # TODO
 
+## Concluído (log de produção crescendo por causa dos testes — 2026-08-19)
+- [x] **Bug real encontrado e corrigido** (mesmo problema achado primeiro no
+      `balanca-gobitech`): testes sem `logback.xml` próprio escreviam direto em
+      `~/.plics-sw/logs/plics-sw.log` — cada rodada de `./gradlew test` recria o schema via
+      Flyway do zero, gerando milhares de linhas de log só de migration. Pasta de logs tinha
+      chegado a 19MB por causa disso, não de uso real do app
+- [x] `src/test/resources/logback-test.xml` (console apenas, nível WARN) — verificado rodando a
+      suíte completa duas vezes: arquivo de produção não ganha nenhuma linha nova
+- [x] Logs antigos (~19MB) limpos
+- [x] `./gradlew test`: BUILD SUCCESSFUL, sem regressão
+
 ## Concluído (auditoria de vazamento de recurso em onDestroy — 2026-08-18)
 - [x] Auditado o projeto inteiro (todas as ~19 telas + serviços com thread/executor/porta)
       atrás do mesmo padrão do bug achado no `balanca-gobitech`: recurso de vida longa aberto
