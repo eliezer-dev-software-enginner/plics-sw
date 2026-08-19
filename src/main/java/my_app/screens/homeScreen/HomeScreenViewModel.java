@@ -13,16 +13,15 @@ import my_app.db.services.PedidoService;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
 import my_app.Main;
+import my_app.domain.Data;
 import my_app.domain.components.Components;
 import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import megalodonte.base.Redirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -53,6 +52,15 @@ public class HomeScreenViewModel {
     public final State<Boolean> gifVisible = State.of(true);
     public final State<Boolean> mostrarPromoInstagram = State.of(false);
     private static final long DELAY_PROMO_INSTAGRAM_MS = 2500;
+
+    public final State<Boolean> mostrarNovaVersaoDisponivel = State.of(false);
+    public final State<String> versaoDisponivel = State.of("");
+    // Depois do delay do promo do Instagram — os dois usam o mesmo mecanismo de Modal
+    // (ver HomeScreen.render()), que não tem exclusão mútua embutida; checar bem depois
+    // reduz bastante a chance de colisão visual dos dois popups. Se ainda colidir (usuário
+    // não fechou o promo a tempo), o popup de atualização simplesmente não aparece agora —
+    // sem problema, "Buscar atualização" no menu Suporte continua disponível a qualquer hora.
+    private static final long DELAY_VERIFICAR_ATUALIZACAO_MS = 6000;
     private final ScreenContext screenContext;
     public final State<String> currentGif = new State<>(null);
     private final Random random = new Random();
@@ -106,6 +114,12 @@ public class HomeScreenViewModel {
         // resto da tela ainda carregando, seria mais irritante que chamativo.
         executor.schedule(() -> UI.runOnUi(() -> mostrarPromoInstagram.set(true)),
                 DELAY_PROMO_INSTAGRAM_MS, TimeUnit.MILLISECONDS);
+
+        // Checagem silenciosa de atualização ao abrir a Home — mesma verificação do
+        // "Buscar atualização" do menu Suporte, só que sem alertar quando já está
+        // atualizado (fromClicked=false).
+        executor.schedule(() -> verificarAtualizacao(false),
+                DELAY_VERIFICAR_ATUALIZACAO_MS, TimeUnit.MILLISECONDS);
     }
 
     public void calcularFinanceiroMesAtual() {
@@ -176,10 +190,13 @@ public class HomeScreenViewModel {
         executor.schedule(()-> UI.runOnUi(()-> gifVisible.set(false)),10, TimeUnit.SECONDS);
     }
 
-    //código que busca atualização
-    // UI.runOnUi(()->Components.ShowPopup(screenContext,"Baixando última versão do repositório..."));
-    public void update(boolean fromClicked) {
-        if(Main.devMode)return;
+    // Não baixa/instala mais nada sozinho (ver docs/DECISIONS.md) — só verifica se há
+    // versão nova no GitHub e, se houver, mostra o popup com o botão que leva pro site
+    // (baixarNovaVersao()). fromClicked distingue o clique manual em "Buscar
+    // atualização" (sempre dá algum feedback, mesmo se já estiver atualizado) da
+    // checagem silenciosa da Home (não incomoda quem já está atualizado).
+    public void verificarAtualizacao(boolean fromClicked) {
+        if (Main.devMode) return;
 
         if (Main.isFlatpak) {
             if (fromClicked) {
@@ -191,80 +208,51 @@ public class HomeScreenViewModel {
             return;
         }
 
-        // Build da Microsoft Store não inclui o updater — o item de menu já nem
-        // aparece (ver HomeScreen.menuBar()), isso aqui é só rede de segurança.
+        // Build da Microsoft Store não inclui o item de menu (ver HomeScreen.menuBar()),
+        // isso aqui é só rede de segurança pra checagem automática da Home.
         if (Main.isMicrosoftStore) return;
 
-        new Thread(() -> {
+        Async.Run(() -> {
+            if (fromClicked) {
+                UI.runOnUi(() -> Components.ShowPopup(screenContext, "Verificando novas versões..."));
+            }
+
             var updater = new UpdaterService();
-            UI.runOnUi(()->Components.ShowPopup(screenContext,"Buscando por atualizações do repositório..."));
+            String latest;
             try {
-                if (!updater.hasUpdate(Main.APP_VERSION)) {
-                        UI.runOnUi(() -> Components.ShowAlertAdvice(
-                                "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
-                                () -> {}
-                        ));
-                    return;
+                latest = updater.getLatestVersion();
+            } catch (Exception e) {
+                if (fromClicked) {
+                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao verificar versão: " + e.getMessage()));
                 }
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao verificar versão: " + e.getMessage()));
                 return;
             }
 
-            String updaterPath = discoverUpdaterPath();
-            if (updaterPath == null) {
-                UI.runOnUi(() -> Components.ShowAlertError("Updater não encontrado"));
+            if (latest.equals(Main.APP_VERSION)) {
+                if (fromClicked) {
+                    UI.runOnUi(() -> Components.ShowAlertAdvice(
+                            "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
+                            () -> {}
+                    ));
+                }
                 return;
             }
 
-            String msiPath;
-            try {
-                msiPath = updater.downloadLatestPkg();
-            } catch (Exception e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao baixar nova versão: " + e.getMessage()));
-                return;
-            }
-
-            long pid = ProcessHandle.current().pid();
-            String exePath = ProcessHandle.current().info().command().orElse("");
-
-            try {
-                ProcessBuilder pb = new ProcessBuilder(
-                        updaterPath,
-                        String.valueOf(pid), msiPath, exePath
-                );
-                pb.start();
-                System.exit(0);
-            } catch (IOException e) {
-                UI.runOnUi(() -> Components.ShowAlertError("Erro ao lançar updater: " + e.getMessage()));
-            }
-        }).start();
+            String finalLatest = latest;
+            UI.runOnUi(() -> {
+                versaoDisponivel.set(finalLatest);
+                mostrarNovaVersaoDisponivel.set(true);
+            });
+        });
     }
 
-    private String discoverUpdaterPath() {
-        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-        String updaterName = isWindows ? "Plics SW Updater.exe" : "Plics SW Updater";
-
-        var appPath = System.getProperty("jpackage.app-path");
-        if (appPath != null) {
-            var updater = new File(new File(appPath).getParentFile(), updaterName);
-            if (updater.exists()) return updater.getAbsolutePath();
-        }
-        if (isWindows) {
-            var local = System.getenv("LOCALAPPDATA");
-            if (local != null) {
-                var updater = new File(local + "\\Plics SW\\Plics SW Updater.exe");
-                if (updater.exists()) return updater.getAbsolutePath();
-            }
-        } else {
-            for (var dir : new String[]{"/opt/", "/usr/lib/", "/usr/local/lib/"}) {
-                var updater = new File(dir + "plics-sw/" + updaterName);
-                if (updater.exists()) return updater.getAbsolutePath();
-            }
-        }
-        return null;
+    // Leva pro site com a versão atual na URL — a própria página compara com a versão
+    // mais recente e oferece o download (Windows/Linux) de lá, sem o app baixar/instalar
+    // nada sozinho.
+    public void baixarNovaVersao() {
+        mostrarNovaVersaoDisponivel.set(false);
+        Redirect.to(Data.linkWebsiteOfficial + "atualizacao?versao=" + Main.APP_VERSION);
     }
-
 
     public void onDestroy() throws Exception {
         // executor nunca era desligado — cada navegação pra Home criava uma thread nova

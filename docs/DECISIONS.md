@@ -1,5 +1,41 @@
 # Decisões Arquiteturais
 
+## 2026-08-19: Removida a auto-atualização — agora só direciona pro site
+
+**Contexto:** pedido do usuário — o fluxo antigo (`HomeScreenViewModel.update()`) baixava o
+`.msi`/`.deb` da última release, procurava um executável "Plics SW Updater" instalado ao lado
+do app e o lançava via `ProcessBuilder` (que então mata o app atual e reinstala por cima). Fluxo
+frágil (dependia de descobrir o caminho do updater em 3 lugares diferentes por SO) e sem
+supervisão nenhuma do usuário sobre o que estava sendo baixado/executado.
+
+**Decisão:**
+- `UpdaterService` perdeu `downloadLatestPkg()`/`findPackageAsset()`/`downloadToTemp()`/
+  `extractFileName()`/`isWindows()` — só sobrou a checagem de versão (`getLatestVersion()`/
+  `hasUpdate()`), usada pra decidir se mostra o popup. `cleanTempDirs()` continua (limpa
+  diretórios `plics-update-*`/`plics-kill-*` deixados por instalações antigas que ainda usavam
+  o fluxo removido).
+- `HomeScreenViewModel.update()` virou `verificarAtualizacao(boolean fromClicked)`: só checa a
+  versão e, se houver uma mais nova, mostra um `Modal` (mesmo padrão do promo do Instagram, ver
+  decisão de app feel) com botão "Baixar nova versão" → `Redirect.to(site + "atualizacao?versao=" + APP_VERSION)`.
+  Chamado tanto pelo clique manual em "Buscar atualização" (Suporte) quanto automaticamente ao
+  abrir a Home (6s de delay — depois do promo do Instagram, que usa o mesmo mecanismo de Modal
+  sem exclusão mútua embutida; checagem silenciosa, não perturba quem já está atualizado).
+- `plics-sw-website` ganhou a rota `/atualizacao` (novo `app/atualizacao/page.tsx`): lê
+  `?versao=` da URL, busca a última release via `getLatestRelease()` (já usado na home) e mostra
+  "sua versão" vs "nova versão" lado a lado, com os mesmos botões de download (extraídos pra
+  `DownloadButtons`, reaproveitado também pela seção de download da home).
+- **Fora do escopo, sinalizado mas não removido**: `scripts/create-msi-with-updater.py`,
+  `scripts/create-deb-with-updater.py` e `scripts/updater_config.py` empacotam o executável
+  "Plics SW Updater" nativo que não é mais lançado por lugar nenhum do app — candidatos a
+  remoção numa limpeza de build/packaging separada, fora do escopo desta mudança (código Java).
+
+**Verificação:** `./gradlew compileJava test` (suíte completa, incluindo `UpdaterServiceTest`,
+que só testa `hasUpdate`/`getLatestVersion` — inalterados). No site, `npm run build` +
+verificação ao vivo de `/atualizacao?versao=1.1.2` (mostra 1.1.2 → 1.1.3 com os botões de
+download) e `/atualizacao?versao=1.1.3` (mensagem "já está atualizado").
+
+---
+
 ## 2026-08-19: Logging em toda a codebase — mesmo rollout já feito no balanca-gobitech
 
 **Contexto:** pedido do usuário — replicar aqui o mesmo trabalho de logging já feito no

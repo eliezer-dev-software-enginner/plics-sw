@@ -1,6 +1,5 @@
 package my_app.infra;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
 
@@ -51,19 +49,6 @@ public class UpdaterService {
         return !latest.equals(currentVersion);
     }
 
-    public String downloadLatestPkg() throws IOException, InterruptedException {
-        var releaseJson = fetchLatestRelease();
-        var downloadUrl = findPackageAsset(releaseJson);
-        if (downloadUrl == null) {
-            var ext = isWindows() ? ".msi" : ".deb";
-            log.error("Nenhum asset {} encontrado na última release", ext);
-            throw new IOException("Nenhum asset " + ext + " encontrado na última release");
-        }
-        log.info("Baixando atualização: {}", downloadUrl);
-        var caminho = downloadToTemp(downloadUrl);
-        log.info("Atualização baixada em: {}", caminho);
-        return caminho;
-    }
     private String fetchLatestRelease() throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder()
             .uri(URI.create(LATEST_RELEASE_URL))
@@ -81,63 +66,15 @@ public class UpdaterService {
         return response.body();
     }
 
-    private String findPackageAsset(String json) throws IOException {
-        var root = mapper.readTree(json);
-        var assets = root.get("assets");
-        if (assets == null || !assets.isArray()) return null;
-
-        String targetExt = isWindows() ? ".msi" : ".deb";
-
-        for (JsonNode asset : assets) {
-            var name = asset.get("name").asText("");
-            if (name.endsWith(targetExt)) {
-                return asset.get("browser_download_url").asText();
-            }
-        }
-        return null;
-    }
-
-    private static boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().contains("win");
-    }
-
-    private String downloadToTemp(String fileUrl) throws IOException, InterruptedException {
-        var tempDir = Files.createTempDirectory("plics-update-");
-        var fileName = extractFileName(fileUrl);
-        var target = tempDir.resolve(fileName);
-
-        var request = HttpRequest.newBuilder()
-            .uri(URI.create(fileUrl))
-            .GET()
-            .build();
-
-        var response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-
-        if (response.statusCode() != 200) {
-            log.error("Download do pacote de atualização falhou com código {}: {}", response.statusCode(), fileUrl);
-            throw new IOException("Download falhou com código " + response.statusCode());
-        }
-
-        try (var stream = response.body()) {
-            Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        return target.toAbsolutePath().toString();
-    }
-
-    private String extractFileName(String url) {
-        int slash = url.lastIndexOf('/');
-        return slash >= 0 ? url.substring(slash + 1) : "update.msi";
-    }
-
     /**
-     * Remove diretórios temporários deixados por atualizações/kills anteriores:
-     * "plics-update-*" (pacote baixado + scripts de instalação, criados tanto aqui
-     * quanto pelo updater em HomeScreenViewModel.runWindowsUpdate/runLinuxUpdate) e
-     * "plics-kill-*" (scripts do ProcessKiller). Nenhum dos dois se autolimpa depois
-     * de terminar — só remove a tarefa agendada, não os arquivos. Chamado no startup
-     * da aplicação principal: nesse momento, qualquer diretório desses já é de uma
-     * sessão anterior (a atual ainda não criou nenhum), então é sempre seguro apagar.
+     * Remove diretórios temporários deixados pelo fluxo antigo de auto-atualização
+     * (baixava o pacote em "plics-update-*" e lançava um updater externo) e por
+     * "plics-kill-*" (scripts do ProcessKiller). O download automático foi removido
+     * (ver HomeScreenViewModel.verificarAtualizacao — agora só redireciona pro site),
+     * mas instalações antigas do app podem ter deixado esses diretórios pra trás, e
+     * nenhum dos dois se autolimpava. Chamado no startup da aplicação principal:
+     * nesse momento, qualquer diretório desses já é de uma sessão anterior, então é
+     * sempre seguro apagar.
      */
     public static void cleanTempDirs() {
         cleanTempDirsWithPrefix("plics-update-");

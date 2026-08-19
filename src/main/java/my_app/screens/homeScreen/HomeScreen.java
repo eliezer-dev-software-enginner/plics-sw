@@ -42,7 +42,7 @@ public class HomeScreen implements ScreenComponent {
     }
 
     private void buscarAtualizacao(boolean fromClicked) {
-        viewModel.update(fromClicked);
+        viewModel.verificarAtualizacao(fromClicked);
     }
 
     @Override
@@ -86,13 +86,25 @@ public class HomeScreen implements ScreenComponent {
                         )
         );
 
-        // Modal chamativo, exibido alguns milissegundos depois da tela abrir (ver
-        // HomeScreenViewModel.onInit) — precisa ficar POR CIMA do resto da tela na
+        // Modais chamativos, exibidos alguns milissegundos depois da tela abrir (ver
+        // HomeScreenViewModel.onInit) — precisam ficar POR CIMA do resto da tela na
         // mesma janela, por isso o Stack (Modal por si só não empilha nada sozinho).
         return new Stack().children(
                 homeContent,
-                new Modal(viewModel.mostrarPromoInstagram, promoInstagramContent())
+                new Modal(viewModel.mostrarPromoInstagram, promoInstagramContent()),
+                new Modal(viewModel.mostrarNovaVersaoDisponivel, novaVersaoDisponivelContent())
         );
+    }
+
+    private Component novaVersaoDisponivelContent() {
+        return new Column(new ColumnProps().centerHorizontally().paddingAll(20).spacingOf(12))
+                .c_child(new Text("Nova versão disponível!", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()))
+                .c_child(new Text(viewModel.versaoDisponivel.map(v -> "Você está usando a versão " + Main.APP_VERSION + ". A versão " + v + " já está disponível."),
+                        new TextProps().fontSize(ThemeManager.theme().typography().small())))
+                .c_child(new SpacerVertical(6))
+                .c_child(new Button("Baixar nova versão",
+                                new ButtonProps().fillWidth().height(35).bgColor(ThemeManager.theme().colors().primary()).textColor("black"))
+                        .onClick(viewModel::baixarNovaVersao));
     }
 
     private Component promoInstagramContent() {
