@@ -28,8 +28,8 @@ público e verificável (URL + checksum, ou um repositório git).
 
 ### Opção A — publicar um artefato pré-buildado (mais simples, combina com o fluxo que vocês já têm)
 
-Já existe um pipeline de releases no GitHub (`UpdaterService` baixa `.msi`/`.deb` de
-lá). É só estender: publicar também um `.tar.gz` do app-image do Linux
+Já existe um pipeline de releases no GitHub (publica `.msi`/`.deb` como assets a cada
+tag, ver `.github/workflows/package.yml`). É só estender: publicar também um `.tar.gz` do app-image do Linux
 (`create-flatpak.py` já gera isso em `dist/Plics SW/` antes do passo do
 flatpak-builder) como asset da release, e trocar a fonte do manifest pra:
 

@@ -92,18 +92,18 @@ jobs:
           rm jfx.zip
           echo "JAVAFX_MODULES_HOME=$PWD/java_fx_modules" >> "$GITHUB_ENV"
 
-      # Diferente de balanca-gobitech (updater removido nessa reescrita), plics-sw ainda tem
-      # my_app.updater — usa os scripts "-with-updater", que empacotam um segundo launcher
-      # (--add-launcher) no mesmo instalador em vez de um build separado.
-      - name: Gerar .deb com updater (Linux)
+      # Build normal (site, GitHub Releases) — sem updater embutido (removido, ver
+      # docs/DECISIONS.md); scripts/create-msi-store.py é o único que difere, usado só
+      # pra publicação na Microsoft Store, fora deste workflow.
+      - name: Gerar .deb (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: xvfb-run -a python3 scripts/create-deb-with-updater.py
+        run: xvfb-run -a python3 scripts/create-deb.py
 
-      - name: Gerar .msi com updater (Windows)
+      - name: Gerar .msi (Windows)
         if: runner.os == 'Windows'
         shell: bash
-        run: python3 scripts/create-msi-with-updater.py
+        run: python3 scripts/create-msi.py
 
       - uses: actions/upload-artifact@v4
         with:

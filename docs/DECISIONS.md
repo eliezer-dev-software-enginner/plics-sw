@@ -1,5 +1,47 @@
 # Decisões Arquiteturais
 
+## 2026-08-19: Limpeza dos scripts/código do updater removido (complementa a decisão anterior)
+
+**Contexto:** pedido do usuário logo após a remoção da auto-atualização (decisão abaixo) —
+"limpa os scripts do updater que não são mais usados". Na hora, só o código Java tinha sido
+trocado; os scripts de empacotamento (que geravam um segundo launcher `--add-launcher` com o
+JAR do updater embutido) e o pacote `my_app.updater` (só existiam pra alimentar esses scripts)
+continuavam no repo.
+
+**Achado ao investigar**: `.github/workflows/package.yml` (o pipeline de release de verdade,
+disparado em toda tag `v*`) rodava `create-msi-with-updater.py`/`create-deb-with-updater.py` —
+ou seja, os scripts "com updater" não eram sobra de um caminho alternativo, eram o build
+OFICIAL. Trocar direto pra `create-msi.py` existente quebraria: esse script já tinha sido
+reaproveitado (decisão de 2026-07-28, ver abaixo) como o build específico da Microsoft Store,
+com `-Dplics.microsoftStore=true` — usar ele pro release público esconderia "Buscar
+atualização" indevidamente pra quem instalou fora da Store.
+
+**Decisão:**
+1. `src/main/java/my_app/updater/` (Main/HomeScreen/HomeScreenViewModel próprios, entry point
+   separado do app principal) — deletado. Só era referenciado por
+   `scripts/updater_config.py::UPDATER_MAIN_CLASS`, nunca pelo app em si.
+2. Renomeado `create-msi.py` (build Store) → `create-msi-store.py`, sem mudar comportamento.
+3. `create-msi-with-updater.py` perdeu o `--add-launcher`/`updater_config` e foi renomeado pra
+   `create-msi.py` — agora É o build normal (site, GitHub Releases), com nome curto e simétrico
+   ao `create-deb.py` (que já era "sem updater" e não precisou mudar).
+4. `create-deb-with-updater.py` e `updater_config.py` — deletados (redundantes/sem uso).
+5. `.github/workflows/package.yml` trocado pra chamar `create-deb.py`/`create-msi.py` (os
+   renomeados/normais) — o build da Store continua existindo via `create-msi-store.py`, só que
+   fora deste workflow automático (publicação na Store é manual, como já era).
+6. Referências atualizadas: `README.md` (seção "Atualização automática" reescrita pra refletir
+   o novo fluxo — ver decisão anterior), `docs/CONTEXT.md` (diagrama do fluxo antigo e lista de
+   scripts), `scripts/bump_version.py` (docstring), `flatpak/README.md` e o manifest do Flatpak
+   (comentários que atribuíam o download de `.msi`/`.deb` ao `UpdaterService`, que não baixa
+   mais nada). `docs/TODO.md`/entradas antigas de `docs/DECISIONS.md`/`docs/CONTEXT.md` foram
+   deixadas como estão — são registro histórico do que existia em cada data, não documentação
+   do estado atual.
+
+**Verificação:** `./gradlew compileJava test` (suíte completa); `python3 -m py_compile` nos
+scripts alterados; `.github/workflows/package.yml` validado como YAML válido. Não foi possível
+rodar o workflow de verdade (precisa de runner/jpackage/WiX) — só validação estática.
+
+---
+
 ## 2026-08-19: Removida a auto-atualização — agora só direciona pro site
 
 **Contexto:** pedido do usuário — o fluxo antigo (`HomeScreenViewModel.update()`) baixava o

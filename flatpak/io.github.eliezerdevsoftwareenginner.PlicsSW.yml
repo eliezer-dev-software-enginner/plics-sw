@@ -8,9 +8,9 @@ command: plics-sw
 #   Pra tirar essa permissão (o Flathub cobra isso na revisão), precisaria migrar o
 #   caminho pra ~/.local/share/plics-sw — o Flatpak já redireciona isso sozinho pra
 #   ~/.var/app/<id>/data/ sem precisar de nenhuma permissão especial.
-# --share=network: usado pelo TelegramNotifier (api.telegram.org). O updater
-#   automático (GitHub releases) fica desativado dentro do Flatpak (ver Main.isFlatpak),
-#   quem atualiza aqui é o flatpak update.
+# --share=network: usado pelo TelegramNotifier (api.telegram.org) e pela checagem de
+#   versão (GitHub releases). O item "Buscar atualização" fica desativado dentro do
+#   Flatpak (ver Main.isFlatpak) — quem atualiza aqui é o flatpak update.
 # --device=all: assumindo que features de impressão térmica (ESC/POS, ver os codepages
 #   Cp860/Cp437 no build) precisam de acesso a porta serial/USB. Vale conferir/reduzir
 #   isso quando for testar de verdade com uma impressora.

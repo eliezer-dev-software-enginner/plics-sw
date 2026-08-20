@@ -6,50 +6,23 @@
 - Flyway (migrations)
 - Padrão: Screen + ViewModel + Service + Repository
 - Events movidos para core/events com EntityEvent<T> genérico
-- **Updater embutido no mesmo JAR** via `--add-launcher`: `my_app.updater.Main` (não é projeto separado)
 
 ## Fluxo de atualização
-```
- Plics SW instalado (MSI ou DEB)
-       │
-       └─ Menu "Suporte" > "Buscar atualização"
-              │
-              ├─ [args.length >= 2] ── Usa updaterPath + pkgPath fornecidos via CLI
-              │
-              └─ [args.length < 2] ── Produção:
-                     ├─ Descobre "Plics SW Updater" (.exe no Windows, sem ext. no Linux)
-                     └─ GitHub API → baixa .msi (Windows) ou .deb (Linux)
-              │
-              ▼
-       Lança updater <PID> <pkgPath>  →  System.exit(0)
-              │
-              ▼
-       Aguarda PID morrer (onExit().join())
-              │
-              ▼
-       ┌── Windows ── run-update.bat + cmd /c:
-       │    taskkill (mata java.exe, javaw.exe, Plics SW.exe)
-       │    timeout 10s
-       │    msiexec /i <msi> /quiet (retry 3x)
-       │    msg.exe notifica
-       │
-       └── Linux ── run-update.sh + bash:
-            pkill -f "Plics SW"
-            sleep 10
-            pkexec dpkg -i <deb> (retry 3x)
-            notify-send notifica
-              │
-              ▼
-       System.exit(0) — saída graciosa
-```
+
+Sem updater embutido — o app nunca baixa/instala nada sozinho. `UpdaterService` só
+verifica a versão mais recente (GitHub API). Menu "Suporte" > "Buscar atualização" (e
+automaticamente, sem alertar, ao abrir a Home): se houver versão nova, mostra um popup
+(`Modal`) com botão que abre `plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X` no
+navegador — a página mostra a versão atual vs a mais recente e os instaladores pra
+baixar manualmente. Ver `HomeScreenViewModel.verificarAtualizacao()`.
 
 ## Scripts de empacotamento
 - `scripts/config.py`: funções compartilhadas (`run_gradle()`, `run_jlink()`, `run_jpackage()`, etc.)
-- `scripts/create-msi.py`: gera instalador Windows (.msi) sem updater (original)
-- `scripts/create-deb.py`: gera instalador Linux (.deb) sem updater (original)
-- `scripts/updater_config.py`: constantes do updater (nome, main class, UUID)
-- `scripts/create-msi-with-updater.py`: gera MSI com updater via `--add-launcher`
-- `scripts/create-deb-with-updater.py`: gera DEB com updater via `--add-launcher`
+- `scripts/create-msi.py`: gera instalador Windows (.msi) — build normal (site, GitHub Releases)
+- `scripts/create-deb.py`: gera instalador Linux (.deb)
+- `scripts/create-msi-store.py`: gera MSI com `-Dplics.microsoftStore=true`, pra publicação na Microsoft Store
+
+(Não existe mais updater embutido nem scripts "-with-updater" — ver docs/DECISIONS.md.)
 
 ## Últimas alterações
 

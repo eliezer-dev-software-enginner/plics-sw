@@ -7,8 +7,8 @@ Uso:
   python scripts/bump_version.py patch            # 1.1.1 (patch 5) -> patch 6
   python scripts/bump_version.py release 1.1.2    # define versão base nova, zera o patch
 
-Depois de rodar, gere o pacote normalmente (create-msi.py, create-msi-with-updater.py
-etc.) — eles leem gradle.properties e já embutem a versão composta no runtime.
+Depois de rodar, gere o pacote normalmente (create-msi.py, create-deb.py, etc.) —
+eles leem gradle.properties e já embutem a versão composta no runtime.
 """
 import re
 import sys

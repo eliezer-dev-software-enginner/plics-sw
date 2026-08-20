@@ -32,10 +32,9 @@ LINUX_MENU_GROUP = _gradle_props["appLinuxMenuGroup"]
 ICON_PATH = "src/main/resources/assets/app_ico.ico" if os.name == "nt" else "src/main/resources/assets/app_ico.png"
 JAVAFX_VERSION = "25.0.1"
 
-# Upgrade code fixo do MSI (Windows) — não é específico do updater, por isso mora
-# aqui e não em updater_config.py. Precisa ser o mesmo em toda geração de MSI
-# (com ou sem updater) pra o Windows tratar uma nova versão como upgrade da
-# anterior em vez de instalar um produto "diferente" ao lado.
+# Upgrade code fixo do MSI (Windows). Precisa ser o mesmo em toda geração de MSI
+# (normal ou Store) pra o Windows tratar uma nova versão como upgrade da anterior
+# em vez de instalar um produto "diferente" ao lado.
 UPGRADE_UUID = "e3a2b1c4-7d5f-4a8e-9c6b-2f1d0a3e7b8c"
 
 

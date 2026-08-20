@@ -58,29 +58,24 @@ Moderna, intuitiva e responsiva com navegação estruturada e componentes otimiz
 ./gradlew run
 ```
 
-### Atualização automática
+### Verificação de atualização
 
-O Plics SW possui um sistema de atualização embutido. No menu "Suporte" > "Buscar atualização", o aplicativo:
+O Plics SW não baixa/instala nada sozinho. No menu "Suporte" > "Buscar atualização" (e
+automaticamente, sem incomodar, ao abrir a Home), o aplicativo só verifica a versão mais
+recente no GitHub e, se houver uma nova, mostra um popup com um botão que leva pro site
+(`plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X`) — a página mostra a versão atual
+e a mais recente lado a lado, com os instaladores pra baixar.
 
-1. Descobre o executável do updater (`Plics SW Updater.exe`) no mesmo diretório
-2. Baixa o MSI da última release do GitHub
-3. Lança o updater que mata os processos Java, executa o MSI e notifica o usuário
-
-4. **Subir versão
+**Subir versão**
 ```bash
 python scripts/bump_version.py release 1.1.2
 ```
 
-**Empacotamento sem updater** (não altera os scripts originais):
+**Empacotamento:**
 ```bash
-python scripts/create-msi.py   # Windows
-python scripts/create-deb.py   # Linux
-```
-
-**Empacotamento com updater** (não altera os scripts originais):
-```bash
-python scripts/create-msi-with-updater.py   # Windows
-python scripts/create-deb-with-updater.py   # Linux
+python scripts/create-msi.py         # Windows
+python scripts/create-deb.py         # Linux
+python scripts/create-msi-store.py   # Windows, build específico pra Microsoft Store
 ```
 
 **Rodar em modo watch dog:
