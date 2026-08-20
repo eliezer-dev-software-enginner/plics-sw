@@ -1,5 +1,42 @@
 # Decisões Arquiteturais
 
+## 2026-08-19: `verificarAtualizacao()` simplificado pra sempre redirecionar; `UpdaterService` removido
+
+**Contexto:** o usuário editou `HomeScreenViewModel.verificarAtualizacao()`/`HomeScreen.java`
+diretamente, simplificando o design das duas decisões anteriores: em vez do app checar a
+versão via `UpdaterService` e só mostrar um popup quando houvesse uma nova (design original),
+"Buscar atualização" agora sempre abre `plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X`
+— a própria página (já construída pra isso) decide se mostra "já está atualizado" ou os links
+de download. Pediu explicitamente pra eu revisar a edição e remover o `UpdaterService` que
+ficou sobrando.
+
+**Achado ao revisar:** a edição quebrava a compilação — `HomeScreen.buscarAtualizacao(boolean
+fromClicked)` ainda chamava `viewModel.verificarAtualizacao(fromClicked)`, mas o método novo
+não recebe argumento nenhum. Além disso, como nada mais chama `mostrarNovaVersaoDisponivel.
+set(true)`, o `Modal`/conteúdo de "nova versão disponível" (da decisão anterior) tinham virado
+código morto — nunca mais apareciam na tela.
+
+**Decisão:**
+1. `HomeScreen.buscarAtualizacao()`/`HomeScreenViewModel.verificarAtualizacao()` — assinaturas
+   alinhadas (sem parâmetro, já que não há mais ramo condicional nenhum baseado em "clicou ou
+   não"). Chamada automática ao abrir a Home (que já estava comentada/desligada pelo usuário)
+   não foi reativada — ficou só o clique manual no menu Suporte.
+2. Removido o código morto resultante: `mostrarNovaVersaoDisponivel`, `versaoDisponivel`,
+   `DELAY_VERIFICAR_ATUALIZACAO_MS`, `baixarNovaVersao()`, o segundo `Modal` no `Stack` e
+   `novaVersaoDisponivelContent()`.
+3. `UpdaterService` deletado (junto com `UpdaterServiceTest`) — `getLatestVersion()`/
+   `hasUpdate()` não tinham mais nenhum consumidor. `cleanTempDirs()`/
+   `cleanTempDirsWithPrefix()` (limpeza de diretórios temporários de instalações antigas, ver
+   decisão de 2026-08-19 anterior) movidos pra `ProcessKiller` — único pedaço da classe que
+   ainda tinha utilidade real, sem nenhuma relação com o resto que foi removido.
+4. Comentários desatualizados em `Main.java` (`isFlatpak`/`isMicrosoftStore`) e nos docs
+   (`README.md`, `docs/CONTEXT.md`) que ainda descreviam o updater embutido ou o popup de
+   "nova versão" corrigidos pra refletir o fluxo atual (só redireciona pro site).
+
+**Verificação:** `./gradlew compileJava test` (suíte completa, sem `UpdaterServiceTest`).
+
+---
+
 ## 2026-08-19: Limpeza dos scripts/código do updater removido (complementa a decisão anterior)
 
 **Contexto:** pedido do usuário logo após a remoção da auto-atualização (decisão abaixo) —

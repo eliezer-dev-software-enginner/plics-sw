@@ -41,14 +41,13 @@ public class HomeScreen implements ScreenComponent {
         this.viewModel = new HomeScreenViewModel(ctx);
     }
 
-    private void buscarAtualizacao(boolean fromClicked) {
-        viewModel.verificarAtualizacao(fromClicked);
+    private void buscarAtualizacao() {
+        viewModel.verificarAtualizacao();
     }
 
     @Override
     public void onMount() {
         viewModel.calcularFinanceiroMesAtual();
-        //buscarAtualizacao(false);
 
         UI.runOnUi(() -> {
             var anim = Animations.pulse(bannerRef.current(), 4,Duration.millis(600) ,Duration.seconds(1));
@@ -86,25 +85,13 @@ public class HomeScreen implements ScreenComponent {
                         )
         );
 
-        // Modais chamativos, exibidos alguns milissegundos depois da tela abrir (ver
-        // HomeScreenViewModel.onInit) — precisam ficar POR CIMA do resto da tela na
+        // Modal chamativo, exibido alguns milissegundos depois da tela abrir (ver
+        // HomeScreenViewModel.onInit) — precisa ficar POR CIMA do resto da tela na
         // mesma janela, por isso o Stack (Modal por si só não empilha nada sozinho).
         return new Stack().children(
                 homeContent,
-                new Modal(viewModel.mostrarPromoInstagram, promoInstagramContent()),
-                new Modal(viewModel.mostrarNovaVersaoDisponivel, novaVersaoDisponivelContent())
+                new Modal(viewModel.mostrarPromoInstagram, promoInstagramContent())
         );
-    }
-
-    private Component novaVersaoDisponivelContent() {
-        return new Column(new ColumnProps().centerHorizontally().paddingAll(20).spacingOf(12))
-                .c_child(new Text("Nova versão disponível!", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()))
-                .c_child(new Text(viewModel.versaoDisponivel.map(v -> "Você está usando a versão " + Main.APP_VERSION + ". A versão " + v + " já está disponível."),
-                        new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(new SpacerVertical(6))
-                .c_child(new Button("Baixar nova versão",
-                                new ButtonProps().fillWidth().height(35).bgColor(ThemeManager.theme().colors().primary()).textColor("black"))
-                        .onClick(viewModel::baixarNovaVersao));
     }
 
     private Component promoInstagramContent() {
@@ -163,10 +150,10 @@ public class HomeScreen implements ScreenComponent {
                 .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
                 .item("Ver logs da aplicação", ()-> ctx.router().spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}));
 
-        // Build da Microsoft Store não inclui o updater embutido (ver create-msi.py)
-        // — quem instala pela Store não tem como usar esse botão, então nem mostra.
+        // Quem instala pela Store recebe atualizações pelo próprio mecanismo da Store
+        // (ver Main.isMicrosoftStore), então nem mostra esse item.
         if (!Main.isMicrosoftStore) {
-            suporteMenu.item("Buscar atualização", ()->buscarAtualizacao(true));
+            suporteMenu.item("Buscar atualização", this::buscarAtualizacao);
         }
 
         return new MenuBar()

@@ -60,11 +60,10 @@ Moderna, intuitiva e responsiva com navegação estruturada e componentes otimiz
 
 ### Verificação de atualização
 
-O Plics SW não baixa/instala nada sozinho. No menu "Suporte" > "Buscar atualização" (e
-automaticamente, sem incomodar, ao abrir a Home), o aplicativo só verifica a versão mais
-recente no GitHub e, se houver uma nova, mostra um popup com um botão que leva pro site
-(`plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X`) — a página mostra a versão atual
-e a mais recente lado a lado, com os instaladores pra baixar.
+O Plics SW não baixa/instala nem verifica versão sozinho. O menu "Suporte" > "Buscar
+atualização" só abre `plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X` no
+navegador — a própria página busca a versão mais recente no GitHub e mostra a versão
+atual vs a mais recente lado a lado, com os instaladores pra baixar.
 
 **Subir versão**
 ```bash

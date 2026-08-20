@@ -22,7 +22,6 @@ import my_app.domain.components.Components;
 import my_app.core.AppRoutes;
 import my_app.domain.telegram.TelegramNotifierFactory;
 import my_app.infra.ProcessKiller;
-import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
 import my_app.services.VerificacaoAcessoService;
 import org.flywaydb.core.Flyway;
@@ -35,15 +34,13 @@ public class Main {
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
 
     // Presente sempre que a app roda dentro do sandbox do Flatpak. Nesse caso quem
-    // atualiza é o próprio `flatpak update`, não o updater customizado (baixar
-    // .msi/.deb e reinstalar não roda dentro do sandbox, e é justamente o tipo de
-    // coisa que a revisão do Flathub reprova).
+    // atualiza é o próprio `flatpak update`, não o usuário manualmente — "Buscar
+    // atualização" não faria sentido aqui.
     public static final boolean isFlatpak = System.getenv("FLATPAK_ID") != null;
 
-    // Setado via --java-options -Dplics.microsoftStore=true em scripts/create-msi.py
-    // (build sem updater embutido, feito especificamente pra publicação na Microsoft
-    // Store). Mesmo raciocínio do isFlatpak: quem instala pela Store não tem o
-    // updater no pacote pra lançar, então "Buscar atualização" nem deveria aparecer.
+    // Setado via --java-options -Dplics.microsoftStore=true em scripts/create-msi-store.py.
+    // Mesmo raciocínio do isFlatpak: quem instala pela Store recebe atualizações pelo
+    // próprio mecanismo da Store, então "Buscar atualização" nem deveria aparecer.
     public static final boolean isMicrosoftStore = "true".equals(System.getProperty("plics.microsoftStore"));
 
     public static final String APP_NAME = "Plics SW";
@@ -144,7 +141,7 @@ public class Main {
         // Limpa restos de atualizações/kills anteriores (plics-update-*, plics-kill-*
         // em %TEMP%) — nenhum dos dois se autolimpa. Se estamos iniciando agora, tudo
         // que já existia lá é de uma sessão passada, então é sempre seguro remover.
-        Async.Run(UpdaterService::cleanTempDirs);
+        Async.Run(ProcessKiller::cleanTempDirs);
 
         // Manda o log acumulado até agora pro Telegram a cada abertura do app — dá
         // visibilidade de suporte sem depender do cliente mandar o arquivo manualmente.

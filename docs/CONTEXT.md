@@ -9,12 +9,12 @@
 
 ## Fluxo de atualização
 
-Sem updater embutido — o app nunca baixa/instala nada sozinho. `UpdaterService` só
-verifica a versão mais recente (GitHub API). Menu "Suporte" > "Buscar atualização" (e
-automaticamente, sem alertar, ao abrir a Home): se houver versão nova, mostra um popup
-(`Modal`) com botão que abre `plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X` no
-navegador — a página mostra a versão atual vs a mais recente e os instaladores pra
-baixar manualmente. Ver `HomeScreenViewModel.verificarAtualizacao()`.
+Sem updater embutido — o app nunca baixa/instala, nem verifica versão sozinho.
+`HomeScreenViewModel.verificarAtualizacao()` (menu "Suporte" > "Buscar atualização")
+só abre `plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X` no navegador — a
+própria página busca a versão mais recente (GitHub API) e mostra "já está atualizado"
+ou os instaladores pra baixar. `UpdaterService` (que fazia essa checagem em Java) foi
+removido — ver docs/DECISIONS.md.
 
 ## Scripts de empacotamento
 - `scripts/config.py`: funções compartilhadas (`run_gradle()`, `run_jlink()`, `run_jpackage()`, etc.)

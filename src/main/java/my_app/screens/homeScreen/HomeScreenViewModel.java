@@ -15,7 +15,6 @@ import my_app.core.events.EventBus;
 import my_app.Main;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
-import my_app.infra.UpdaterService;
 import my_app.screens.authScreen.AuthScreenViewModel;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
@@ -53,14 +52,6 @@ public class HomeScreenViewModel {
     public final State<Boolean> mostrarPromoInstagram = State.of(false);
     private static final long DELAY_PROMO_INSTAGRAM_MS = 2500;
 
-    public final State<Boolean> mostrarNovaVersaoDisponivel = State.of(false);
-    public final State<String> versaoDisponivel = State.of("");
-    // Depois do delay do promo do Instagram — os dois usam o mesmo mecanismo de Modal
-    // (ver HomeScreen.render()), que não tem exclusão mútua embutida; checar bem depois
-    // reduz bastante a chance de colisão visual dos dois popups. Se ainda colidir (usuário
-    // não fechou o promo a tempo), o popup de atualização simplesmente não aparece agora —
-    // sem problema, "Buscar atualização" no menu Suporte continua disponível a qualquer hora.
-    private static final long DELAY_VERIFICAR_ATUALIZACAO_MS = 6000;
     private final ScreenContext screenContext;
     public final State<String> currentGif = new State<>(null);
     private final Random random = new Random();
@@ -115,11 +106,6 @@ public class HomeScreenViewModel {
         executor.schedule(() -> UI.runOnUi(() -> mostrarPromoInstagram.set(true)),
                 DELAY_PROMO_INSTAGRAM_MS, TimeUnit.MILLISECONDS);
 
-        // Checagem silenciosa de atualização ao abrir a Home — mesma verificação do
-        // "Buscar atualização" do menu Suporte, só que sem alertar quando já está
-        // atualizado (fromClicked=false).
-        executor.schedule(() -> verificarAtualizacao(false),
-                DELAY_VERIFICAR_ATUALIZACAO_MS, TimeUnit.MILLISECONDS);
     }
 
     public void calcularFinanceiroMesAtual() {
@@ -190,67 +176,10 @@ public class HomeScreenViewModel {
         executor.schedule(()-> UI.runOnUi(()-> gifVisible.set(false)),10, TimeUnit.SECONDS);
     }
 
-    // Não baixa/instala mais nada sozinho (ver docs/DECISIONS.md) — só verifica se há
-    // versão nova no GitHub e, se houver, mostra o popup com o botão que leva pro site
-    // (baixarNovaVersao()). fromClicked distingue o clique manual em "Buscar
-    // atualização" (sempre dá algum feedback, mesmo se já estiver atualizado) da
-    // checagem silenciosa da Home (não incomoda quem já está atualizado).
-    public void verificarAtualizacao(boolean fromClicked) {
-        if (Main.devMode) return;
-
-        if (Main.isFlatpak) {
-            if (fromClicked) {
-                UI.runOnUi(() -> Components.ShowAlertAdvice(
-                        "Instalado via Flatpak — as atualizações são feitas pelo próprio sistema (flatpak update), não por aqui.",
-                        () -> {}
-                ));
-            }
-            return;
-        }
-
-        // Build da Microsoft Store não inclui o item de menu (ver HomeScreen.menuBar()),
-        // isso aqui é só rede de segurança pra checagem automática da Home.
-        if (Main.isMicrosoftStore) return;
-
-        Async.Run(() -> {
-            if (fromClicked) {
-                UI.runOnUi(() -> Components.ShowPopup(screenContext, "Verificando novas versões..."));
-            }
-
-            var updater = new UpdaterService();
-            String latest;
-            try {
-                latest = updater.getLatestVersion();
-            } catch (Exception e) {
-                if (fromClicked) {
-                    UI.runOnUi(() -> Components.ShowAlertError("Erro ao verificar versão: " + e.getMessage()));
-                }
-                return;
-            }
-
-            if (latest.equals(Main.APP_VERSION)) {
-                if (fromClicked) {
-                    UI.runOnUi(() -> Components.ShowAlertAdvice(
-                            "Você já está com a versão mais recente (" + Main.APP_VERSION + ").",
-                            () -> {}
-                    ));
-                }
-                return;
-            }
-
-            String finalLatest = latest;
-            UI.runOnUi(() -> {
-                versaoDisponivel.set(finalLatest);
-                mostrarNovaVersaoDisponivel.set(true);
-            });
-        });
-    }
-
     // Leva pro site com a versão atual na URL — a própria página compara com a versão
-    // mais recente e oferece o download (Windows/Linux) de lá, sem o app baixar/instalar
-    // nada sozinho.
-    public void baixarNovaVersao() {
-        mostrarNovaVersaoDisponivel.set(false);
+    // mais recente e mostra "já está atualizado" ou os links de download (Windows/
+    // Linux), sem o app baixar/instalar nada sozinho.
+    public void verificarAtualizacao() {
         Redirect.to(Data.linkWebsiteOfficial + "atualizacao?versao=" + Main.APP_VERSION);
     }
 

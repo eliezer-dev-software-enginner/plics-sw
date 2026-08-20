@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 
 public class ProcessKiller {
 
@@ -53,6 +56,44 @@ public class ProcessKiller {
             log.info("{} exitCode={} output={}", label, p.exitValue(), output.trim());
         } catch (Exception e) {
             log.warn("{} erro ao ler output", label, e);
+        }
+    }
+
+    /**
+     * Remove diretórios temporários deixados pelo fluxo antigo de auto-atualização
+     * (baixava o pacote em "plics-update-*" e lançava um updater externo, removido —
+     * ver docs/DECISIONS.md) e por "plics-kill-*" (scripts de {@link #killPidAsync}).
+     * Instalações antigas do app podem ter deixado esses diretórios pra trás, e nenhum
+     * dos dois se autolimpava. Chamado no startup da aplicação principal: nesse
+     * momento, qualquer diretório desses já é de uma sessão anterior, então é sempre
+     * seguro apagar.
+     */
+    public static void cleanTempDirs() {
+        cleanTempDirsWithPrefix("plics-update-");
+        cleanTempDirsWithPrefix("plics-kill-");
+    }
+
+    private static void cleanTempDirsWithPrefix(String prefix) {
+        try {
+            var temp = Path.of(System.getProperty("java.io.tmpdir"));
+            try (var dirs = Files.list(temp)) {
+                dirs.filter(p -> p.getFileName().toString().startsWith(prefix))
+                    .forEach(p -> {
+                        log.info("Limpando diretório temporário de sessão anterior: {}", p);
+                        try (var files = Files.walk(p)) {
+                            files.sorted(Comparator.reverseOrder())
+                                .forEach(f -> {
+                                    try { Files.deleteIfExists(f); } catch (IOException e) {
+                                        log.warn("Erro ao remover {}", f, e);
+                                    }
+                                });
+                        } catch (IOException e) {
+                            log.warn("Erro ao percorrer {}", p, e);
+                        }
+                    });
+            }
+        } catch (IOException e) {
+            log.warn("Erro ao listar diretórios temporários com prefixo {}", prefix, e);
         }
     }
 }
