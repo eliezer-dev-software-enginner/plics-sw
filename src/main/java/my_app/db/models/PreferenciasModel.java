@@ -23,6 +23,9 @@ public class PreferenciasModel {
     @Column(name = "credenciais_habilitadas")
     private Integer credenciaisHabilitadas;
 
+    @Column(name = "popup_instagram_habilitado")
+    private Integer popupInstagramHabilitado;
+
     @Column(name = "primeiro_acesso")
     private Integer primeiroAcesso;
 
@@ -34,4 +37,5 @@ public class PreferenciasModel {
     public boolean isFirstAccess() {
         return primeiroAcesso != null && primeiroAcesso == 1;
     }
+
 }

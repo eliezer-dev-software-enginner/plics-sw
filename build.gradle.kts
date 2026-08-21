@@ -135,6 +135,7 @@ tasks.test {
 
 tasks.named<JavaExec>("run") {
     val os = System.getProperty("os.name").lowercase()
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 
     val javafxModulesHome = System.getenv("JAVAFX_MODULES_HOME")
         ?: throw GradleException(

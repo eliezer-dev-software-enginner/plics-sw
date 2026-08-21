@@ -32,12 +32,12 @@ public class TelegramNotifier {
 
     public void enviarMensagem(String mensagem) {
         if(Main.devMode){
-            log.info("Em dev mode. Mensagem não será enviada para o Telegram.");
+            //log.info("Em dev mode. Mensagem não será enviada para o Telegram.");
             return;
         };
 
         if (botToken == null || chatId == null) {
-            log.warn("Configuração do Telegram ausente, notificação ignorada: {}", mensagem);
+           // log.warn("Configuração do Telegram ausente, notificação ignorada: {}", mensagem);
             return;
         }
 
@@ -71,11 +71,11 @@ public class TelegramNotifier {
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .whenComplete((response, error) -> {
                     if (error != null) {
-                        log.warn("Erro ao enviar notificação Telegram: {}", error.getMessage());
+                        //log.warn("Erro ao enviar notificação Telegram: {}", error.getMessage());
                         return;
                     }
                     if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                        log.warn("Erro HTTP {} ao enviar notificação Telegram: {}", response.statusCode(), response.body());
+                        //log.warn("Erro HTTP {} ao enviar notificação Telegram: {}", response.statusCode(), response.body());
                     }
                 });
     }
@@ -85,7 +85,7 @@ public class TelegramNotifier {
     // explícito: nenhuma menção a esse envio pode aparecer no arquivo de log (evita ruído
     // recursivo: o próprio log sendo enviado registrando que foi enviado).
     public void enviarArquivo(Path arquivo, String legenda) {
-        if (Main.devMode) return;
+        //if (Main.devMode) return;
         if (botToken == null || chatId == null) return;
         if (arquivo == null || !Files.exists(arquivo)) return;
 

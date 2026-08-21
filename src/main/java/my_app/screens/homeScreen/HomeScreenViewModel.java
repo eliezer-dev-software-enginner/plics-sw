@@ -101,11 +101,21 @@ public class HomeScreenViewModel {
             }
         });
 
-        // Espera um pouco antes de exibir o modal — mostrar na hora, junto com o
-        // resto da tela ainda carregando, seria mais irritante que chamativo.
-        executor.schedule(() -> UI.runOnUi(() -> mostrarPromoInstagram.set(true)),
-                DELAY_PROMO_INSTAGRAM_MS, TimeUnit.MILLISECONDS);
-
+        Async.Run(()->{
+            try{
+                var prefs = preferenciasService.listar();
+                if (!prefs.isEmpty()) {
+                    var pref = prefs.getFirst();
+                    boolean showPopup = pref.getPopupInstagramHabilitado() == 1;
+                        // Espera um pouco antes de exibir o modal — mostrar na hora, junto com o
+                        // resto da tela ainda carregando, seria mais irritante que chamativo.
+                        executor.schedule(() -> UI.runOnUi(() -> mostrarPromoInstagram.set(showPopup)),
+                                DELAY_PROMO_INSTAGRAM_MS, TimeUnit.MILLISECONDS);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void calcularFinanceiroMesAtual() {

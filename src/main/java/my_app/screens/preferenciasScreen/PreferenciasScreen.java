@@ -42,6 +42,7 @@ public class PreferenciasScreen implements ScreenComponent {
                 new Text("Minhas preferências", new TextProps().bold().fontSize(ThemeManager.theme().typography().subtitle())),
                 new Row(new RowProps().spacingOf(20)).children(
                         Components.SelectColumn("Habilitar credenciais", Data.simNaoList, vm.habilitarCredenciaisSelected, it -> it),
+                        Components.SelectColumn("Exibir popup Instagram na abertura", Data.simNaoList, vm.habilitarPopupInstagramSelected, it -> it),
                         Components.SelectColumn("Selecionar impressora", vm.comportsState, vm.comportsStateSelected, it -> it,false)
                         ),
                      Show.when(credentialsScreenIsVisible, () -> new Column().children(
