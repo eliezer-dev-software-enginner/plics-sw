@@ -10,6 +10,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ContainerProps;
+import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.PedidoItemModel;
@@ -76,11 +77,12 @@ public class PedidosScreen implements ScreenComponent {
                         .build(),
                 new SpacerVertical(15),
                 Show.when(vm.temPedidoSelecionado, () ->
-                        new Row(new megalodonte.props.RowProps().spacingOf(10)).children(
+                        new Row(new RowProps().spacingOf(10)).children(
                                 new Button("Imprimir venda").onClick(vm::imprimirVendaSelecionada),
                                 new Button("Excluir venda selecionada").onClick(vm::handleClickMenuDelete)
                         )
                 ),
+                new SpacerVertical(15),
                 Show.when(vm.podeDevolver, () ->
                         new Button("Devolver venda selecionada").onClick(vm::handleClickMenuDevolucaoVenda)
                 )
