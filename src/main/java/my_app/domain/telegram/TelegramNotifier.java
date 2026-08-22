@@ -28,11 +28,9 @@ public class TelegramNotifier {
         this.chatId = chatId;
     }
 
-
-
     public void enviarMensagem(String mensagem) {
         if(Main.devMode){
-            //log.info("Em dev mode. Mensagem não será enviada para o Telegram.");
+            log.info("Em dev mode. Mensagem não será enviada para o Telegram.");
             return;
         };
 
@@ -85,7 +83,7 @@ public class TelegramNotifier {
     // explícito: nenhuma menção a esse envio pode aparecer no arquivo de log (evita ruído
     // recursivo: o próprio log sendo enviado registrando que foi enviado).
     public void enviarArquivo(Path arquivo, String legenda) {
-        //if (Main.devMode) return;
+        if (Main.devMode) return;
         if (botToken == null || chatId == null) return;
         if (arquivo == null || !Files.exists(arquivo)) return;
 
