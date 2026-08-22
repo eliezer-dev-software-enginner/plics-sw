@@ -29,7 +29,7 @@ public class WelcomeScreen implements ScreenComponent {
     @Override
     public void onMount() {
         UI.runOnUi(() -> {
-            ScaleTransition zoom = new ScaleTransition(Duration.millis(850), logoRef.current().getNode());
+            ScaleTransition zoom = new ScaleTransition(Duration.millis(850), logoRef.current().getJavaFxNode());
             zoom.setFromX(1.0);
             zoom.setFromY(1.0);
             zoom.setToX(1.5);

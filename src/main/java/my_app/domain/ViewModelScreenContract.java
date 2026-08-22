@@ -55,9 +55,9 @@ public abstract class ViewModelScreenContract<Model> {
             if (toggleIconAnim != null && toggleIconAnim.getStatus() == Animation.Status.RUNNING) {
                 toggleIconAnim.stop();
             }
-            double currentAngle = icon.getNode().getRotate(); // parte de onde o ícone está de verdade
+            double currentAngle = icon.getJavaFxNode().getRotate(); // parte de onde o ícone está de verdade
             double targetAngle = visible ? 0 : 180;
-            toggleIconAnim = Animations.rotate(icon.getNode(), currentAngle, targetAngle, Duration.millis(200));
+            toggleIconAnim = Animations.rotate(icon.getJavaFxNode(), currentAngle, targetAngle, Duration.millis(200));
             toggleIconAnim.play();
         });
     }

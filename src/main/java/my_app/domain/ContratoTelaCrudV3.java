@@ -83,7 +83,7 @@ public interface ContratoTelaCrudV3<T> {
                                                     if (entering) {
                                                         var anim = Animations.pop(c, true, Duration.millis(100));
                                                         anim.setOnFinished(e -> {
-                                                            var n = c.getNode().getParent();
+                                                            var n = c.getJavaFxNode().getParent();
                                                             while (n != null) {
                                                                 if (n instanceof ScrollPane sp) {
                                                                     sp.setVvalue(0);
