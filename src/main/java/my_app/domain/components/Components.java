@@ -2,7 +2,6 @@ package my_app.domain.components;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,7 +13,6 @@ import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.application.ErrorReporter;
 import megalodonte.base.Animations;
-import megalodonte.base.UI;
 import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.IconInterface;
@@ -531,6 +529,10 @@ public class Components {
                 .c_child(input);
     }
 
+    /**
+     * Trocar por Ref do pacote megalodonte.base
+     */
+    @Deprecated(forRemoval = true)
     public static class InputRef {
         private Input inputRef;
 
@@ -581,10 +583,6 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
                 .c_child(input);
-    }
-
-    public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder) {
-        return InputColumnDecimal(label, inputState, placeholder, null);
     }
 
     private static String formatarDecimal(String value) {
@@ -714,10 +712,6 @@ public class Components {
 
     public static Component InputColumnCurrency(String label, State<String> inputState) {
         return InputColumnCurrency(label, inputState, false);
-    }
-
-    static megalodonte.props.InputProps getInputProps(String placeholder) {
-        return getInputProps(placeholder, 31);
     }
 
     static megalodonte.props.InputProps getInputProps(String placeholder, int height) {
@@ -915,12 +909,7 @@ public class Components {
                 );
     }
 
-    public static Component errorText(String message) {
-        return new Container(new ContainerProps().bgColor("white")).c_child(new SpacerVertical(5))
-                .c_child(new Text(message, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).textColor("red")));
-    }
-
-//v3
+    //v3
     public static <T> Component commonCustomMenusv3(
             State<Boolean> focusState, Runnable onClickNew,
             Runnable onEdit, Runnable onDelete, Runnable onClone) {
@@ -935,22 +924,6 @@ public class Components {
                         )).withTransition(Animations::fadeSlide)
                 );
     }
-
-    public static <T> Component commonCustomMenus(
-            State<T> itemSelectedInTable, Runnable onClickNew,
-            Runnable onEdit, Runnable onDelete, Runnable onClone) {
-
-        ComputedState<Boolean> thereIsItemSelectedInTable = ComputedState.of(() -> !itemSelectedInTable.isNull(), itemSelectedInTable);
-
-        return Show.when(thereIsItemSelectedInTable, () -> new Row(new RowProps().spacingOf(20))
-                .children(
-                        MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", () -> executar(onClickNew::run)),
-                        MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)),
-                        MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)),
-                        MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run))
-                )).withTransition(Animations::fadeSlide);
-    }
-
 
     @Deprecated
     public static Row commonCustomMenus(Runnable onClickNew, Runnable onEdit, Runnable onDelete, Runnable onClone) {
