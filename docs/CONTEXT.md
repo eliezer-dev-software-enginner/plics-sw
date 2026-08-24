@@ -26,6 +26,12 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-24: "Aceita devolução/troca?" agora bloqueia devolução de vendas
+- O campo do cadastro de produtos era puramente informativo — nenhum fluxo o consultava.
+- **Regra acordada com o usuário**: bloquear (não só avisar) a DEVOLUÇÃO quando algum item tem o campo "Não"; **Excluir** continua livre (correção administrativa ≠ evento comercial); produtos antigos continuam "Não" e são editados à mão. Detalhes em DECISIONS.md.
+- Validação nas Services (`PDVService.devolverVenda` + `VendaService.devolver`), antes do ajuste de estoque, dentro da transação; produto apagado não bloqueia.
+- Testes: 294 → 297 (+2 PDVServiceTest: bloqueio e exclusão-livre; +1 VendaServiceTest).
+
 ### 2026-08-24: Vendas devolvidas deixam de contar como receita
 - **Reportado pelo usuário**: ao clicar em "Devolver venda selecionada" no PedidosScreen, o estoque voltava, mas "Receitas do mês" na Home continuava mostrando o valor cheio.
 - **Causa**: `PedidoRepository.somarPedidosPorPeriodo()` (e `VendaRepository.somarVendasPorPeriodo()`) somavam o `totalLiquido` de TODAS as vendas do período, incluindo as com `devolvida=true`. A Home até recalculava (evento `DadosFinanceirosAtualizadosEvent` é publicado após a devolução), mas a soma em si estava errada.

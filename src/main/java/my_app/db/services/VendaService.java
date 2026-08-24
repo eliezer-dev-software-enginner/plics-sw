@@ -138,6 +138,13 @@ public class VendaService extends BaseService<VendaModel> {
         if (Boolean.TRUE.equals(venda.getDevolvida()))
             throw new IllegalArgumentException("Esta venda já foi devolvida");
 
+        // Política comercial do cadastro ("Aceita devolução/troca?" = Não). Só a devolução
+        // respeita — excluir() é correção administrativa. Produto sem cadastro não bloqueia.
+        var produto = produtoService.buscarPorCodigoBarras(venda.getProdutoCod());
+        if (produto != null && !Boolean.TRUE.equals(produto.getAceitaDevolucao()))
+            throw new IllegalArgumentException("Devolução bloqueada — \"" + produto.getDescricao()
+                    + "\" está marcado como não aceitar devolução/troca.");
+
         if (Boolean.TRUE.equals(venda.getAfetaEstoque())) {
             produtoService.incrementarEstoque(venda.getProdutoCod(), venda.getQuantidade());
         }

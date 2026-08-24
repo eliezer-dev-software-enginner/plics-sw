@@ -23,14 +23,20 @@ class VendaServiceTest extends BaseServiceTest {
     }
 
     private ProdutoModel criarProduto() throws Exception {
+        var p = novoProduto("789", "Produto Teste");
+        p.setAceitaDevolucao(true);
+        return produtoService.salvar(p);
+    }
+
+    private ProdutoModel novoProduto(String codigoBarras, String descricao) {
         var p = new ProdutoModel();
-        p.setCodigoBarras("789");
-        p.setDescricao("Produto Teste");
+        p.setCodigoBarras(codigoBarras);
+        p.setDescricao(descricao);
         p.setUnidade("UN");
         p.setPrecoVenda(BigDecimal.TEN);
         p.setTotalLiquido(BigDecimal.TEN);
         p.setFornecedorId(1);
-        return produtoService.salvar(p);
+        return p;
     }
 
     private VendaModel criarVendaValida(String produtoCod) {
@@ -169,6 +175,23 @@ class VendaServiceTest extends BaseServiceTest {
         vendaService.devolver(salvo.getId());
 
         assertEquals(0, contaService.buscarPorVenda(salvo.getId()).size());
+    }
+
+    @Test
+    void naoDevePermitirDevolverVendaDeProdutoQueNaoAceitaDevolucao() throws Exception {
+        var p = novoProduto("791", "Produto Sem Devolução");
+        p.setAceitaDevolucao(false);
+        produtoService.salvar(p);
+        var v = criarVendaValida(p.getCodigoBarras());
+        var salvo = vendaService.salvar(v, false);
+
+        var erro = assertThrows(IllegalArgumentException.class, () -> vendaService.devolver(salvo.getId()));
+        assertTrue(erro.getMessage().contains("Devolução bloqueada"));
+        assertTrue(erro.getMessage().contains("Produto Sem Devolução"));
+
+        var depois = vendaService.buscarById(salvo.getId());
+        assertNotNull(depois);
+        assertFalse(depois.getDevolvida());
     }
 
     @Test

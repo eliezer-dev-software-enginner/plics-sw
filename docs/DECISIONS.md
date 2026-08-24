@@ -1,5 +1,41 @@
 # Decisões Arquiteturais
 
+## 2026-08-24: "Aceita devolução/troca?" do produto passa a bloquear a DEVOLUÇÃO de vendas
+
+**Contexto:** o usuário notou que devolveu uma venda cujo produto estava marcado como
+"Aceita devolução/troca? Não" no cadastro — e o sistema deixou. O campo (V33) era puramente
+informativo: nenhum fluxo o consultava.
+
+**Decisões tomadas com o usuário** (perguntado antes de implementar):
+1. **Bloquear**, não só avisar: tentativa de devolução falha com alerta listando os produtos.
+2. A política vale **só para DEVOLVER**. "Excluir venda" (que também devolve estoque) continua
+   livre — semântica acordada: exclusão = correção administrativa ("a venda não deveria ter
+   acontecido"); devolução = evento comercial ("o cliente trouxe o produto de volta"), que é
+   exatamente o caso que a política de produto regula. É também por isso que os dois botões
+   continuam existindo separados: a devolução preserva o registro (`devolvida=true` +
+   `dataDevolucao`) pra auditar o motivo do cancelamento; a exclusão apaga.
+3. Produtos antigos **continuam "Não"** (default da V33) e devem ser editados à mão pra "Sim"
+   pelos que aceitam — sem migration de update em massa (escolha explícita do usuário).
+
+**Implementação:** validação na camada de Service (padrão desde 2026-07-27), ANTES de tocar no
+estoque, dentro da mesma transação:
+- `PDVService.devolverVenda()` — novo `validarPoliticaDeDevolucao(itens, produtoService)`:
+  resolve cada item por `buscarPorCodigoBarras`, coleta os que têm `aceitaDevolucao != true` e,
+  se houver algum, lança `IllegalArgumentException("Devolução bloqueada — não aceita(m)
+  devolução/troca: X, Y")`. A ViewModel já exibe essa mensagem no alerta de erro.
+- `VendaService.devolver()` — mesmo critério pro produto único da venda.
+- Produto apagado depois da venda (`produto == null`) **não** bloqueia: política desconhecida.
+- Critério `!Boolean.TRUE.equals(...)` → NULL conta como "Não", consistente com o default do
+  banco e com a escolha (2).
+
+**Testes:** 294 → 297 (+`naoDevePermitirDevolverVendaComProdutoQueNaoAceitaDevolucao`,
+`deveExcluirVendaMesmoComProdutoQueNaoAceitaDevolucao` em PDVServiceTest;
+`naoDevePermitirDevolverVendaDeProdutoQueNaoAceitaDevolucao` em VendaServiceTest).
+Fixtures `criarProduto()` dos dois arquivos passam a setar `aceitaDevolucao=true` (sem isso,
+os testes existentes de devolução seriam bloqueados pela regra nova).
+
+---
+
 ## 2026-08-24: Venda devolvida não conta como receita (filtro na agregação, não na listagem)
 
 **Contexto:** o usuário devolveu uma venda PDV pelo PedidosScreen e o estoque voltou, mas o

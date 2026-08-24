@@ -6,6 +6,18 @@
       `quantidadesVendidas()` e `formasPagamentoMaisUsadas()` usam `listarPorPeriodo`, que não
       filtra `devolvida=true` (de propósito — ver DECISIONS.md). Decidir se devolução deve
       tirar o produto do ranking e do gráfico de formas de pagamento também.
+- [ ] **Revisar cadastros antigos de produtos**: com a nova regra de bloqueio de devolução
+      (2026-08-24), todo produto ficou "Não" por default da V33 — quem aceita devolução/troca
+      precisa ser editado pra "Sim" na ProdutoScreen, senão a devolução será bloqueada.
+
+## Concluído ("Aceita devolução/troca?" não era respeitado — 2026-08-24)
+- [x] **Reportado**: venda devolvida cujo produto estava marcado "Não" no campo
+      Aceita devolução/troca — o sistema deixou; o campo era só informativo
+- [x] **Decisões** (perguntado ao usuário): bloquear devolução; exclusão livre; produtos
+      antigos continuam "Não" (sem migration) — detalhes em DECISIONS.md
+- [x] **Fix**: validação em `PDVService.devolverVenda()` e `VendaService.devolver()`, antes do
+      estoque, listando os produtos que impedem no alerta
+- [x] **Testes**: 294 → 297 (+3), fixtures ajustados (`aceitaDevolucao=true`)
 
 ## Concluído (vendas devolvidas contavam como receita na Home — 2026-08-24)
 - [x] **Reportado**: "Devolver venda selecionada" no PedidosScreen devolvia o estoque, mas

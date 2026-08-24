@@ -185,6 +185,8 @@ public final class PDVService {
                 var produtoService = new ProdutoService(sess);
                 var itens = itemRepo.listarPorPedido(pedidoId);
 
+                validarPoliticaDeDevolucao(itens, produtoService);
+
                 for (PedidoItemModel item : itens) {
                     produtoService.incrementarEstoque(item.getProdutoCod(), item.getQuantidade());
                 }
@@ -212,5 +214,22 @@ public final class PDVService {
             throw thrown[0];
         }
         log.info("Venda PDV devolvida: pedidoId={}", pedidoId);
+    }
+
+    // Política comercial do cadastro ("Aceita devolução/troca?" = Não) vale só para a
+    // devolução — excluirVenda() é correção administrativa e ignora isso de propósito.
+    // Produto sem cadastro (apagado depois da venda) não bloqueia: política desconhecida.
+    private void validarPoliticaDeDevolucao(List<PedidoItemModel> itens, ProdutoService produtoService)
+            throws SQLException {
+        var bloqueados = new java.util.ArrayList<String>();
+        for (PedidoItemModel item : itens) {
+            var produto = produtoService.buscarPorCodigoBarras(item.getProdutoCod());
+            if (produto != null && !Boolean.TRUE.equals(produto.getAceitaDevolucao()))
+                bloqueados.add(produto.getDescricao() != null && !produto.getDescricao().isBlank()
+                        ? produto.getDescricao() : produto.getCodigoBarras());
+        }
+        if (!bloqueados.isEmpty())
+            throw new IllegalArgumentException(
+                    "Devolução bloqueada — não aceita(m) devolução/troca: " + String.join(", ", bloqueados));
     }
 }

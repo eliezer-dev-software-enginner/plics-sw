@@ -23,15 +23,21 @@ class PDVServiceTest extends BaseServiceTest {
     }
 
     private ProdutoModel criarProduto() throws Exception {
+        var p = novoProduto("789", "Produto Teste");
+        p.setAceitaDevolucao(true);
+        return produtoService.salvar(p);
+    }
+
+    private ProdutoModel novoProduto(String codigoBarras, String descricao) {
         var p = new ProdutoModel();
-        p.setCodigoBarras("789");
-        p.setDescricao("Produto Teste");
+        p.setCodigoBarras(codigoBarras);
+        p.setDescricao(descricao);
         p.setUnidade("UN");
         p.setPrecoVenda(BigDecimal.TEN);
         p.setTotalLiquido(BigDecimal.TEN);
         p.setFornecedorId(1);
         p.setEstoque(BigDecimal.TEN);
-        return produtoService.salvar(p);
+        return p;
     }
 
     private List<ItemVenda> itensValidos() throws Exception {
@@ -208,6 +214,43 @@ class PDVServiceTest extends BaseServiceTest {
         pdvService.devolverVenda(pedido.getId());
 
         assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+    }
+
+    @Test
+    void naoDevePermitirDevolverVendaComProdutoQueNaoAceitaDevolucao() throws Exception {
+        var produto = novoProduto("791", "Produto Sem Devolução");
+        produto.setAceitaDevolucao(false);
+        produtoService.salvar(produto);
+        var item = new ItemVenda(produto);
+        item.quantidade = BigDecimal.ONE;
+        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1, false, 1);
+
+        var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(pedido.getId()));
+        assertTrue(erro.getMessage().contains("Devolução bloqueada"));
+        assertTrue(erro.getMessage().contains("Produto Sem Devolução"));
+
+        // Nada mudou: estoque segue decrescido e o pedido não ganhou marca de devolvida.
+        assertBigDecimalEquals(BigDecimal.valueOf(9),
+                produtoService.buscarPorCodigoBarras(produto.getCodigoBarras()).getEstoque());
+        assertEquals(1, contarLinhas("pedidos", "id = ?", pedido.getId()));
+        assertEquals(0, contarLinhas("pedidos", "id = ? AND devolvida = 1", pedido.getId()));
+    }
+
+    @Test
+    void deveExcluirVendaMesmoComProdutoQueNaoAceitaDevolucao() throws Exception {
+        // Exclusão é correção administrativa — a política de devolução não se aplica.
+        var produto = novoProduto("792", "Produto Sem Devolução 2");
+        produto.setAceitaDevolucao(false);
+        produtoService.salvar(produto);
+        var item = new ItemVenda(produto);
+        item.quantidade = BigDecimal.ONE;
+        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1, false, 1);
+
+        pdvService.excluirVenda(pedido.getId());
+
+        assertEquals(0, contarLinhas("pedidos", "id = ?", pedido.getId()));
+        assertBigDecimalEquals(BigDecimal.TEN,
+                produtoService.buscarPorCodigoBarras(produto.getCodigoBarras()).getEstoque());
     }
 
     @Test
