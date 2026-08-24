@@ -190,4 +190,22 @@ class VendaRepositoryTest extends BaseRepositoryTest {
 
         assertEquals(0, new BigDecimal("20.00").compareTo(total));
     }
+
+    @Test
+    void somarVendasPorPeriodoIgnoraDevolvidas() throws SQLException {
+        var agora = System.currentTimeMillis();
+
+        var v1 = novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00"));
+        v1.setTipoPagamento("A VISTA");
+        repository.salvar(v1);
+
+        var v2 = novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00"));
+        v2.setTipoPagamento("A VISTA");
+        v2.setDevolvida(true);
+        repository.salvar(v2);
+
+        var total = repository.somarVendasPorPeriodo(agora - 86400000L, agora + 86400000L);
+
+        assertEquals(0, new BigDecimal("20.00").compareTo(total));
+    }
 }

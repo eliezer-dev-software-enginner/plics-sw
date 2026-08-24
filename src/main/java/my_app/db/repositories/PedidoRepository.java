@@ -29,9 +29,12 @@ public class PedidoRepository extends BaseRepository<PedidoModel> {
         return somarPedidosPorPeriodo(inicioHoje, fimHoje);
     }
 
+    // Vendas devolvidas não contam como receita — o estoque voltou e a cobrança
+    // foi estornada; o pedido só permanece no banco pelo histórico do caixa.
     public BigDecimal somarPedidosPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
         var pedidos = listarPorPeriodo(dataInicio, dataFim);
         return pedidos.stream()
+                .filter(pedido -> !Boolean.TRUE.equals(pedido.getDevolvida()))
                 .map(PedidoModel::getTotalLiquido)
                 .filter(java.util.Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

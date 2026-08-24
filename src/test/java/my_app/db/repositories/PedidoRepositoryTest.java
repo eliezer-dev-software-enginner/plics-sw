@@ -98,4 +98,34 @@ class PedidoRepositoryTest extends BaseRepositoryTest {
 
         assertNull(deletado);
     }
+
+    @Test
+    void somarPedidosPorPeriodo() throws SQLException {
+        repository.salvar(novoPedido());
+        var segundo = novoPedido();
+        segundo.setTotalLiquido(BigDecimal.valueOf(50.00));
+        repository.salvar(segundo);
+
+        var total = repository.somarPedidosPorPeriodo(
+                System.currentTimeMillis() - 86_400_000L,
+                System.currentTimeMillis() + 86_400_000L);
+
+        assertEquals(0, BigDecimal.valueOf(200.00).compareTo(total));
+    }
+
+    // Venda devolvida continua no banco (histórico), mas não conta como receita.
+    @Test
+    void somarPedidosPorPeriodoIgnoraDevolvidas() throws SQLException {
+        repository.salvar(novoPedido());
+        var devolvido = novoPedido();
+        devolvido.setTotalLiquido(BigDecimal.valueOf(50.00));
+        devolvido.setDevolvida(true);
+        repository.salvar(devolvido);
+
+        var total = repository.somarPedidosPorPeriodo(
+                System.currentTimeMillis() - 86_400_000L,
+                System.currentTimeMillis() + 86_400_000L);
+
+        assertEquals(0, BigDecimal.valueOf(150.00).compareTo(total));
+    }
 }

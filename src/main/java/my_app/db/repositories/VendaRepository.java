@@ -45,6 +45,7 @@ public class VendaRepository extends BaseRepository<VendaModel> {
                 params(dataInicio, dataFim)
         );
         return vendas.stream()
+                .filter(venda -> !Boolean.TRUE.equals(venda.getDevolvida()))
                 .map(VendaModel::getTotalLiquido)
                 .filter(java.util.Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

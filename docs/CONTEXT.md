@@ -26,6 +26,13 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-24: Vendas devolvidas deixam de contar como receita
+- **Reportado pelo usuário**: ao clicar em "Devolver venda selecionada" no PedidosScreen, o estoque voltava, mas "Receitas do mês" na Home continuava mostrando o valor cheio.
+- **Causa**: `PedidoRepository.somarPedidosPorPeriodo()` (e `VendaRepository.somarVendasPorPeriodo()`) somavam o `totalLiquido` de TODAS as vendas do período, incluindo as com `devolvida=true`. A Home até recalculava (evento `DadosFinanceirosAtualizadosEvent` é publicado após a devolução), mas a soma em si estava errada.
+- **Fix**: filtro `.filter(v -> !Boolean.TRUE.equals(v.getDevolvida()))` nas duas somas — Home (Receitas/Lucro/"Hoje você fez") e RelatoriosScreen herdam, pois usam os mesmos métodos. Vendas excluídas nunca tiveram o problema (o registro some do banco).
+- **Testes**: +2 (`somarPedidosPorPeriodoIgnoraDevolvidas`, `somarVendasPorPeriodoIgnoraDevolvidas`) e +1 base (`somarPedidosPorPeriodo`). 294/294.
+- **Em aberto**: cards "Produtos mais vendidos"/"Formas de pagamento mais usadas" do RelatoriosScreen ainda contam vendas devolvidas — ver TODO.md.
+
 ### 2026-08-04: Modal reativo (megalodonte-components) + promoção de Instagram na HomeScreen
 - **Pedido do usuário**: exibir, alguns milissegundos depois de abrir a HomeScreen, um modal chamativo convidando a comprar inscritos para o Instagram. Pediu explicitamente um componente `Modal` reutilizável em `megalodonte-components`, "parecido com o Modal do React", controlado por um `State<Boolean>` de visibilidade.
 - **`megalodonte-components`** (publicado em Maven Local):

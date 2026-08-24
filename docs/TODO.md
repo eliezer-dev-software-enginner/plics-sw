@@ -1,5 +1,22 @@
 # TODO
 
+## Pendências novas
+- [ ] **RelatoriosScreen ainda conta vendas devolvidas nos cards "Produtos mais vendidos" e
+      "Formas de pagamento mais usadas"** (achado em 2026-08-24 ao corrigir a receita da Home):
+      `quantidadesVendidas()` e `formasPagamentoMaisUsadas()` usam `listarPorPeriodo`, que não
+      filtra `devolvida=true` (de propósito — ver DECISIONS.md). Decidir se devolução deve
+      tirar o produto do ranking e do gráfico de formas de pagamento também.
+
+## Concluído (vendas devolvidas contavam como receita na Home — 2026-08-24)
+- [x] **Reportado**: "Devolver venda selecionada" no PedidosScreen devolvia o estoque, mas
+      "Receitas do mês" mantinha o valor cheio
+- [x] **Causa**: `PedidoRepository.somarPedidosPorPeriodo`/`VendaRepository.somarVendasPorPeriodo`
+      somavam vendas com `devolvida=true`; mesmo bug afetava "Hoje você feito" e RelatoriosScreen
+      (mesmos métodos)
+- [x] **Fix**: filtro `!Boolean.TRUE.equals(getDevolvida())` nas duas somas (Home/Relatórios
+      herdam); excluir vs devolver inalterados (ver DECISIONS.md pra diferença entre os dois)
+- [x] **Testes**: 291 → 294 (+3 em Pedido/VendaRepositoryTest), 0 falhas
+
 ## Concluído (log de produção crescendo por causa dos testes — 2026-08-19)
 - [x] **Bug real encontrado e corrigido** (mesmo problema achado primeiro no
       `balanca-gobitech`): testes sem `logback.xml` próprio escreviam direto em

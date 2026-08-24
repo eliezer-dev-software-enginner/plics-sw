@@ -1,5 +1,40 @@
 # Decisões Arquiteturais
 
+## 2026-08-24: Venda devolvida não conta como receita (filtro na agregação, não na listagem)
+
+**Contexto:** o usuário devolveu uma venda PDV pelo PedidosScreen e o estoque voltou, mas o
+card "Receitas do mês" da Home manteve o valor cheio. A devolução (`PDVService.devolverVenda`)
+marca `devolvida=true` e mantém o pedido no banco de propósito (histórico do caixa), mas as
+agregações financeiras não sabiam disso.
+
+**Causa raiz:** `PedidoRepository.somarPedidosPorPeriodo()` somava o `totalLiquido` de todos
+os pedidos do período sem olhar `devolvida`. Mesmo bug em
+`VendaRepository.somarVendasPorPeriodo()` pras devoluções feitas na VendaMercadoriaScreen.
+O card da Home até re-recalculava (o `DadosFinanceirosAtualizadosEvent` publicado pela
+devolução já disparava `calcularFinanceiroMesAtual()`) — o problema era o valor somado.
+
+**Decisão:**
+1. Filtro aplicado **nas somas dos repositories** (stream `.filter(v ->
+   !Boolean.TRUE.equals(v.getDevolvida()))`), NÃO nas queries SQL nem em `listarPorPeriodo`:
+   - `Boolean.TRUE.equals(...)` trata com segurança linhas legadas anteriores à migration
+     V35 (coluna `BIT DEFAULT 0`, pode ser NULL em bancos antigos);
+   - manter `listarPedidos/listarVendas porPeriodo` sem filtro preserva os outros consumidores
+     (ex.: ranking/formas de pagamento no RelatorioService), que são decisão de negócio
+     separada — ver TODO.md.
+2. Excluir ≠ Devolver, mantidos como estão: excluir apaga o registro (nunca contou como
+   receita depois de apagado); devolver mantém o histórico e passa a ser ignorada só nas
+   métricas financeiras. Ambos devolvem estoque; fiado estorna/apaga contas a receber.
+3. Sem mudança de schema nem de fluxo de UI — a correção é toda na camada de agregação.
+
+**Alcance da correção** (todos consomem os 2 métodos corrigidos): Home "Receitas do mês",
+"Lucro líquido" e "Hoje você fez" (`somarPedidosHoje`/`somarVendasHoje` delegam pra versão
+por período) e RelatoriosScreen (receitas/lucro).
+
+**Verificação:** `./gradlew test` — 294/294 (+3: `somarPedidosPorPeriodo`,
+`somarPedidosPorPeriodoIgnoraDevolvidas`, `somarVendasPorPeriodoIgnoraDevolvidas`).
+
+---
+
 ## 2026-08-19: `verificarAtualizacao()` simplificado pra sempre redirecionar; `UpdaterService` removido
 
 **Contexto:** o usuário editou `HomeScreenViewModel.verificarAtualizacao()`/`HomeScreen.java`
