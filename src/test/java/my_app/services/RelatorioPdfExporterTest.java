@@ -32,6 +32,7 @@ class RelatorioPdfExporterTest {
                 BigDecimal.valueOf(15), BigDecimal.valueOf(5),
                 java.util.List.of(),
                 java.util.List.of(),
+                ResumoDevolucoes.vazio(),
                 java.util.List.of(),
                 java.util.List.of(),
                 java.util.List.of()
@@ -88,6 +89,7 @@ class RelatorioPdfExporterTest {
                         new ProdutoMaisVendido("222", "Calça", "UN", BigDecimal.valueOf(8))
                 ),
                 java.util.List.of(),
+                ResumoDevolucoes.vazio(),
                 java.util.List.of(),
                 java.util.List.of(),
                 java.util.List.of()
@@ -106,6 +108,56 @@ class RelatorioPdfExporterTest {
     }
 
     @Test
+    void deveIncluirProdutosDevolvidosNoPdf(@TempDir Path tempDir) throws Exception {
+        File destino = tempDir.resolve("relatorio-devolucoes.pdf").toFile();
+
+        var dados = new RelatorioDados(
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO,
+                java.util.List.of(),
+                java.util.List.of(),
+                new ResumoDevolucoes(
+                        2,
+                        BigDecimal.valueOf(5),
+                        java.util.List.of(
+                                new ProdutoMaisVendido("111", "Camiseta", "UN", BigDecimal.valueOf(3)),
+                                new ProdutoMaisVendido("222", "Meia", "PAR", BigDecimal.valueOf(2))
+                        )
+                ),
+                java.util.List.of(),
+                java.util.List.of(),
+                java.util.List.of()
+        );
+
+        exporter.gerar(destino, null, LocalDate.of(2026, 8, 1), LocalDate.of(2026, 8, 31), dados);
+
+        String texto;
+        try (PDDocument doc = PDDocument.load(destino)) {
+            texto = new PDFTextStripper().getText(doc);
+        }
+        assertTrue(texto.contains("PRODUTOS DEVOLVIDOS NO PERÍODO"), "deveria conter a seção de devolvidos");
+        assertTrue(texto.contains("Total devolvido: 5 unidade(s) em 2 devolução(ões)"), "deveria conter o total");
+        assertTrue(texto.contains("1. Camiseta — 3 UN"), "deveria conter o 1º produto devolvido");
+        assertTrue(texto.contains("2. Meia — 2 PAR"), "deveria conter o 2º produto devolvido");
+    }
+
+    @Test
+    void deveIndicarQuandoNaoHouverDevolucoesNoPdf(@TempDir Path tempDir) throws Exception {
+        File destino = tempDir.resolve("relatorio-sem-devolucoes.pdf").toFile();
+
+        exporter.gerar(destino, null, LocalDate.of(2026, 8, 1), LocalDate.of(2026, 8, 31), dadosValidos());
+
+        String texto;
+        try (PDDocument doc = PDDocument.load(destino)) {
+            texto = new PDFTextStripper().getText(doc);
+        }
+        assertTrue(texto.contains("PRODUTOS DEVOLVIDOS NO PERÍODO"));
+        assertTrue(texto.contains("Nenhum produto devolvido no período"));
+    }
+
+    @Test
     void deveIncluirFormasDePagamentoNoPdf(@TempDir Path tempDir) throws Exception {
         File destino = tempDir.resolve("relatorio-formas-pagamento.pdf").toFile();
 
@@ -116,6 +168,7 @@ class RelatorioPdfExporterTest {
                 BigDecimal.ZERO, BigDecimal.ZERO,
                 java.util.List.of(),
                 java.util.List.of(),
+                ResumoDevolucoes.vazio(),
                 java.util.List.of(),
                 java.util.List.of(),
                 java.util.List.of(

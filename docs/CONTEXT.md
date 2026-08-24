@@ -26,6 +26,12 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-24: Produtos devolvidos no período (tela + PDF do RelatoriosScreen)
+- **Pedido**: mostrar no relatório quantos produtos foram devolvidos no mês (total) e quais foram.
+- **Critério de período**: filtrado por **`data_devolucao`** (quando a devolução aconteceu), não pela data da venda — venda antiga devolvida hoje entra no relatório atual. Fontes: pedidos PDV (`devolvida=1`, soma os `pedido_itens`) + vendas de mercadoria (`devolvida=1`). Lista por produto completa, ordenada por quantidade desc, sem corte de top 10; reutiliza o record `ProdutoMaisVendido`.
+- **Novos**: `ResumoDevolucoes(numeroDevolucoes, totalUnidades, produtos)`; `listarDevolvidasPorPeriodo` em Pedido/VendaRepository (+ delegates nas Services); `RelatorioService.resumoDevolucoes()`; campo `devolucoes` em `RelatorioDados`; card "Produtos devolvidos no período" (ícone ROLLBACK, laranja) na tela; seção "PRODUTOS DEVOLVIDOS NO PERÍODO" no PDF com a linha "Total devolvido: ... unidade(s) em ... devolução(ões)" + lista.
+- **Testes**: 297 → 302 (+3 RelatorioServiceTest: resumo somando PDV+vendas, filtro por data_devolucao, não-devolvidas fora; +2 RelatorioPdfExporterTest). Casos manuais #206/#207 em testes-gerais.md.
+
 ### 2026-08-24: "Aceita devolução/troca?" agora bloqueia devolução de vendas
 - O campo do cadastro de produtos era puramente informativo — nenhum fluxo o consultava.
 - **Regra acordada com o usuário**: bloquear (não só avisar) a DEVOLUÇÃO quando algum item tem o campo "Não"; **Excluir** continua livre (correção administrativa ≠ evento comercial); produtos antigos continuam "Não" e são editados à mão. Detalhes em DECISIONS.md.

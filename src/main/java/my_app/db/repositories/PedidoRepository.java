@@ -47,4 +47,14 @@ public class PedidoRepository extends BaseRepository<PedidoModel> {
                 params(dataInicio, dataFim)
         );
     }
+
+    // Filtra por data_devolucao (quando a devolução aconteceu), não por dataCriacao —
+    // uma venda antiga devolvida hoje pertence ao relatório do mês atual.
+    public List<PedidoModel> listarDevolvidasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM pedidos WHERE devolvida = 1 AND data_devolucao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
 }

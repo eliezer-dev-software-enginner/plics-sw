@@ -38,6 +38,16 @@ public class VendaRepository extends BaseRepository<VendaModel> {
         );
     }
 
+    // Filtra por data_devolucao (quando a devolução aconteceu), não por dataCriacao —
+    // uma venda antiga devolvida hoje pertence ao relatório do mês atual.
+    public java.util.List<VendaModel> listarDevolvidasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM vendas WHERE devolvida = 1 AND data_devolucao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
+
     public BigDecimal somarVendasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
         var vendas = session().query(
                 modelClass(),

@@ -58,6 +58,8 @@ public class RelatoriosScreen implements ScreenComponent {
                         new SpacerVertical(20),
                         cardSemVenda(),
                         new SpacerVertical(20),
+                        cardDevolvidos(),
+                        new SpacerVertical(20),
                         new Row(new RowProps().spacingOf(15)).children(
                                 cardNovosClientes(),
                                 cardNovosFornecedores()
@@ -175,6 +177,14 @@ public class RelatoriosScreen implements ScreenComponent {
                 cardTitulo("Produtos sem venda no período", AntDesignIconsOutlined.INBOX, "#6b7280"),
                 new SpacerVertical(10),
                 new Text(vm.produtosSemVenda, new TextProps().fontSize(ThemeManager.theme().typography().body()))
+        ));
+    }
+
+    private Component cardDevolvidos() {
+        return new Card(new Column(new ColumnProps().fillWidth()).children(
+                cardTitulo("Produtos devolvidos no período", AntDesignIconsOutlined.ROLLBACK, "#f97316"),
+                new SpacerVertical(10),
+                new Text(vm.produtosDevolvidos, new TextProps().fontSize(ThemeManager.theme().typography().body()))
         ));
     }
 

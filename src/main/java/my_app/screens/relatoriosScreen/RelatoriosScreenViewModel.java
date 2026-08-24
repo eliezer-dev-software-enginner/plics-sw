@@ -15,6 +15,7 @@ import my_app.services.ProdutoMaisVendido;
 import my_app.services.RelatorioDados;
 import my_app.services.RelatorioPdfExporter;
 import my_app.services.RelatorioService;
+import my_app.services.ResumoDevolucoes;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
@@ -50,6 +51,7 @@ public class RelatoriosScreenViewModel {
 
     final State<String> produtosMaisVendidos = State.of("");
     final State<String> produtosSemVenda = State.of("");
+    final State<String> produtosDevolvidos = State.of("");
     final State<String> novosClientes = State.of("");
     final State<String> novosFornecedores = State.of("");
 
@@ -163,6 +165,8 @@ public class RelatoriosScreenViewModel {
                         .map(p -> "• " + p.descricao() + (p.unidade() != null && !p.unidade().isBlank() ? " (" + p.unidade() + ")" : ""))
                         .collect(java.util.stream.Collectors.joining("\n")));
 
+        produtosDevolvidos.set(formatarDevolucoes(dados.devolucoes()));
+
         var clientesNovos = dados.novosClientes();
         novosClientes.set(clientesNovos == null || clientesNovos.isEmpty()
                 ? "Nenhum cliente novo no período"
@@ -200,6 +204,22 @@ public class RelatoriosScreenViewModel {
         var produto = produtos.get(indice);
         String unidade = produto.unidade() != null && !produto.unidade().isBlank() ? produto.unidade() : "un";
         return (indice + 1) + "º " + produto.descricao() + " — " + Utils.quantidadeTratada(produto.quantidade()) + " " + unidade;
+    }
+
+    private String formatarDevolucoes(ResumoDevolucoes resumo) {
+        if (resumo == null || resumo.numeroDevolucoes() == 0) {
+            return "Nenhum produto devolvido no período";
+        }
+        var linhas = new java.util.ArrayList<String>();
+        linhas.add("Total devolvido: " + Utils.quantidadeTratada(resumo.totalUnidades())
+                + " unidade(s) em " + resumo.numeroDevolucoes() + " devolução(ões)");
+        for (var produto : resumo.produtos()) {
+            String unidade = produto.unidade() != null && !produto.unidade().isBlank()
+                    ? produto.unidade() : "un";
+            linhas.add("• " + produto.descricao() + " — "
+                    + Utils.quantidadeTratada(produto.quantidade()) + " " + unidade);
+        }
+        return String.join("\n", linhas);
     }
 
     void baixarPdf() {

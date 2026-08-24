@@ -80,6 +80,24 @@ public class RelatorioPdfExporter {
                 }
                 y -= LEADING;
 
+                y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "PRODUTOS DEVOLVIDOS NO PERÍODO");
+                var devolucoes = dados.devolucoes();
+                if (devolucoes == null || devolucoes.numeroDevolucoes() == 0) {
+                    y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Nenhum produto devolvido no período");
+                } else {
+                    y = escreverLinha(cs, fonteTexto, 11, MARGEM, y,
+                            "Total devolvido: " + Utils.quantidadeTratada(devolucoes.totalUnidades())
+                                    + " unidade(s) em " + devolucoes.numeroDevolucoes() + " devolução(ões)");
+                    int posicao = 1;
+                    for (var produto : devolucoes.produtos()) {
+                        String unidade = produto.unidade() != null && !produto.unidade().isBlank() ? produto.unidade() : "un";
+                        y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, posicao + ". " + produto.descricao() + " — " +
+                                Utils.quantidadeTratada(produto.quantidade()) + " " + unidade);
+                        posicao++;
+                    }
+                }
+                y -= LEADING;
+
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "SITUAÇÃO ATUAL (não vinculada ao período)");
                 y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a receber em aberto: " + Utils.toBRLCurrency(dados.contasReceberEmAberto()));
                 y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a pagar em aberto: " + Utils.toBRLCurrency(dados.contasPagarEmAberto()));

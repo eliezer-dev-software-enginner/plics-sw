@@ -10,6 +10,14 @@
       (2026-08-24), todo produto ficou "Não" por default da V33 — quem aceita devolução/troca
       precisa ser editado pra "Sim" na ProdutoScreen, senão a devolução será bloqueada.
 
+## Concluído (produtos devolvidos no relatório + PDF — 2026-08-24)
+- [x] **Pedido**: no RelatoriosScreen e no PDF, mostrar quantos produtos foram devolvidos no
+      período e quais foram
+- [x] **Critério**: filtrado por `data_devolucao` (não pela data da venda) — ver DECISIONS.md
+- [x] `ResumoDevolucoes` + `RelatorioService.resumoDevolucoes()` + `listarDevolvidasPorPeriodo`
+      em Pedido/VendaRepository; card novo na tela + seção nova no PDF
+- [x] **Testes**: 297 → 302 (+5), 0 falhas; casos manuais #206/#207
+
 ## Concluído ("Aceita devolução/troca?" não era respeitado — 2026-08-24)
 - [x] **Reportado**: venda devolvida cujo produto estava marcado "Não" no campo
       Aceita devolução/troca — o sistema deixou; o campo era só informativo

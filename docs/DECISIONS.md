@@ -1,5 +1,33 @@
 # Decisões Arquiteturais
 
+## 2026-08-24: Devoluções no RelatoriosScreen/PDF — agregado próprio, filtrado por data_devolucao
+
+**Contexto:** pedido do usuário — o relatório (e o PDF) deve mostrar quantos produtos foram
+devolvidos no período e quais foram. As devoluções já existiam como flag (`devolvida=true` +
+`dataDevolucao`, V35) mas nenhuma agregação as resumia.
+
+**Decisão:**
+1. **Filtro por `data_devolucao`**, não por `dataCriacao`: "produtos devolvidos no mês" é sobre
+   quando o produto voltou — venda de julho devolvida em agosto pertence ao relatório de agosto.
+   Novos `listarDevolvidasPorPeriodo` nos repositories de Pedido/Venda (`WHERE devolvida = 1 AND
+   data_devolucao BETWEEN ? AND ?`), delegates nas Services. Diferente dos somarXPorPeriodo, que
+   filtram por dataCriacao porque lá importa quando a receita foi gerada.
+2. **Record próprio `ResumoDevolucoes(numeroDevolucoes, totalUnidades, produtos)`** em vez de
+   espalhar 3 campos soltos no RelatorioDados — a lista reutiliza `ProdutoMaisVendido` (mesmo
+   padrão do card "produtos sem venda", que também reaproveita o record com outra semântica).
+   `RelatorioDados` ganha um único campo `devolucoes`.
+3. **Lista completa, sem corte de top 10**: diferente do ranking de mais vendidos, o usuário quer
+   saber TODOS os produtos que voltaram; ordenada por quantidade desc.
+4. Conta como 1 devolução cada pedido/venda com `devolvida=1` no período (PDV e mercadoria
+   somados); unidades = soma das quantidades dos itens.
+
+**Verificação:** `./gradlew test` — 302/302 (+3 RelatorioServiceTest: resumo PDV+vendas com
+ordenação, filtro por data_devolucao excluindo devolução fora da janela, não-devolvidas fora;
++2 RelatorioPdfExporterTest: seção com dados / mensagem vazia). Não verificado visualmente
+(sem automação de UI) — casos manuais #206/#207 em testes-gerais.md.
+
+---
+
 ## 2026-08-24: "Aceita devolução/troca?" do produto passa a bloquear a DEVOLUÇÃO de vendas
 
 **Contexto:** o usuário notou que devolveu uma venda cujo produto estava marcado como

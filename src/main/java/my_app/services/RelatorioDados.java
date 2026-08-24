@@ -22,6 +22,7 @@ public record RelatorioDados(
         BigDecimal contasPagarEmAberto,
         List<ProdutoMaisVendido> produtosMaisVendidos,
         List<ProdutoMaisVendido> produtosSemVenda,
+        ResumoDevolucoes devolucoes,
         List<ClienteModel> novosClientes,
         List<FornecedorModel> novosFornecedores,
         List<FormaPagamentoValor> formasPagamento

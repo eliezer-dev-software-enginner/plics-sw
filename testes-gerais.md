@@ -168,6 +168,8 @@ Acesso: Home > menu "Gerencial" > "Relatórios".
 | 178 | Gerar relatório de um período com vendas | Card "Produtos mais vendidos do período" mostra o ranking: produto mais vendido primeiro (quantidade = soma de PDV + vendas de mercadoria, na unidade do produto), limitado a 10. Conferir com os dados de VendaMercadoriaScreen/PDVScreen do período. | | |
 | 179 | Gerar relatório de período sem vendas | Card "Produtos mais vendidos do período" aparece vazio, sem erro. | | |
 | 180 | Gerar relatório de um período com produtos cadastrados sem venda | Card "Produtos sem venda no período" lista, em ordem alfabética, todos os produtos cadastrados que não tiveram venda no período (com a unidade entre parênteses). Se todos os produtos venderam, mostra "Todos os produtos tiveram venda no período". | | |
+| 206 | Devolver uma venda (PedidosScreen, casos #203/#204) e gerar o relatório do mês da devolução | Card "Produtos devolvidos no período" aparece abaixo do de "sem venda": linha "Total devolvido: X unidade(s) em Y devolução(ões)" + lista por produto com a quantidade e unidade. Venda devolvida de mês anterior à Data Início/Fim escolhido NÃO entra (filtro é pela data em que a devolução foi feita). Conferir também a seção "PRODUTOS DEVOLVIDOS NO PERÍODO" no PDF. | | |
+| 207 | Gerar relatório de período sem nenhuma devolução | Card "Produtos devolvidos no período" mostra "Nenhum produto devolvido no período"; no PDF, a seção mostra a mesma mensagem. | | |
 
 ---
 

@@ -47,4 +47,8 @@ public class PedidoService extends BaseService<PedidoModel> {
     public java.util.List<PedidoModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
         return pedidoRepository.listarPorPeriodo(dataInicio, dataFim);
     }
+
+    public java.util.List<PedidoModel> listarDevolvidasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return pedidoRepository.listarDevolvidasPorPeriodo(dataInicio, dataFim);
+    }
 }

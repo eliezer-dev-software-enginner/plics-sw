@@ -78,6 +78,7 @@ public class RelatorioService implements AutoCloseable {
                 contasReceberEmAberto, contasPagarEmAberto,
                 topProdutosMaisVendidos(quantidades),
                 produtosSemVenda(quantidades),
+                resumoDevolucoes(dataInicio, dataFim),
                 clienteService.listarNovosPorPeriodo(dataInicio, dataFim),
                 fornecedorService.listarNovosPorPeriodo(dataInicio, dataFim),
                 formasPagamentoMaisUsadas(dataInicio, dataFim)
@@ -90,6 +91,40 @@ public class RelatorioService implements AutoCloseable {
 
     public List<ProdutoMaisVendido> produtosSemVenda(long dataInicio, long dataFim) throws SQLException {
         return produtosSemVenda(quantidadesVendidas(dataInicio, dataFim));
+    }
+
+    // Devoluções do período (pedidos PDV + vendas de mercadoria), filtradas por
+    // data_devolucao — a venda pode ser de outro mês, o que importa é quando voltou.
+    // Lista completa por produto (sem corte de top), ordenada por quantidade decrescente.
+    public ResumoDevolucoes resumoDevolucoes(long dataInicio, long dataFim) throws SQLException {
+        Map<String, BigDecimal> quantidades = new LinkedHashMap<>();
+        int numeroDevolucoes = 0;
+
+        for (var pedido : pedidoService.listarDevolvidasPorPeriodo(dataInicio, dataFim)) {
+            numeroDevolucoes++;
+            for (var item : pedidoItemService.listarPorPedido(pedido.getId())) {
+                acumular(quantidades, item);
+            }
+        }
+        for (var venda : vendaService.listarDevolvidasPorPeriodo(dataInicio, dataFim)) {
+            numeroDevolucoes++;
+            acumular(quantidades, venda);
+        }
+
+        var produtos = quantidades.entrySet().stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .map(entry -> {
+                    try {
+                        return toProdutoMaisVendido(entry.getKey(), entry.getValue());
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .toList();
+
+        BigDecimal totalUnidades = quantidades.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return new ResumoDevolucoes(numeroDevolucoes, totalUnidades, produtos);
     }
 
     private Map<String, BigDecimal> quantidadesVendidas(long dataInicio, long dataFim) throws SQLException {

@@ -54,6 +54,9 @@ class RelatorioServiceTest extends BaseServiceTest {
         assertBigDecimalEquals(BigDecimal.ZERO, dados.contasPagarEmAberto());
         assertTrue(dados.produtosMaisVendidos().isEmpty());
         assertTrue(dados.produtosSemVenda().isEmpty());
+        assertEquals(0, dados.devolucoes().numeroDevolucoes());
+        assertBigDecimalEquals(BigDecimal.ZERO, dados.devolucoes().totalUnidades());
+        assertTrue(dados.devolucoes().produtos().isEmpty());
         assertTrue(dados.novosClientes().isEmpty());
         assertTrue(dados.novosFornecedores().isEmpty());
         assertTrue(dados.formasPagamento().isEmpty());
@@ -354,6 +357,84 @@ class RelatorioServiceTest extends BaseServiceTest {
         assertEquals(1, dados.produtosSemVenda().size());
         assertEquals("Arroz", dados.produtosSemVenda().getFirst().descricao());
         assertTrue(dados.produtosMaisVendidos().isEmpty());
+    }
+
+    @Test
+    void deveResumirProdutosDevolvidosDoPeriodoSomandoPdvEVendas() throws Exception {
+        var produtoService = new ProdutoService(session);
+        produtoService.salvar(produto("111", "Camiseta", "UN"));
+        produtoService.salvar(produto("222", "Meia", "PAR"));
+
+        // PDV devolvido: 2 Camisetas + 1 Meia
+        var pedidoService = new PedidoService(session);
+        var pedido = new PedidoModel();
+        pedido.setClienteId(1);
+        pedido.setFormaPagamento("À VISTA");
+        pedido.setTotalLiquido(BigDecimal.valueOf(30));
+        pedido.setDesconto(BigDecimal.ZERO);
+        pedido.setFiado(0);
+        var pedidoSalvo = pedidoService.salvar(pedido);
+
+        var pedidoItemService = new PedidoItemService(session);
+        pedidoItemService.salvar(item(pedidoSalvo.getId(), "111", 2));
+        pedidoItemService.salvar(item(pedidoSalvo.getId(), "222", 1));
+
+        pedidoSalvo.setDevolvida(true);
+        pedidoSalvo.setDataDevolucao(System.currentTimeMillis());
+        pedidoService.atualizar(pedidoSalvo);
+
+        // Venda de mercadoria devolvida: 3 Meias
+        var vendaService = new VendaService(session);
+        var venda = venda("222", 3);
+        var vendaSalva = vendaService.salvar(venda, false);
+        vendaSalva.setDevolvida(true);
+        vendaSalva.setDataDevolucao(System.currentTimeMillis());
+        vendaService.atualizar(vendaSalva);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        var devolucoes = dados.devolucoes();
+        assertEquals(2, devolucoes.numeroDevolucoes());
+        assertBigDecimalEquals(BigDecimal.valueOf(6), devolucoes.totalUnidades());
+        assertEquals(2, devolucoes.produtos().size());
+
+        assertEquals("Meia", devolucoes.produtos().get(0).descricao(), "maior quantidade primeiro");
+        assertBigDecimalEquals(BigDecimal.valueOf(4), devolucoes.produtos().get(0).quantidade());
+        assertEquals("Camiseta", devolucoes.produtos().get(1).descricao());
+        assertBigDecimalEquals(BigDecimal.valueOf(2), devolucoes.produtos().get(1).quantidade());
+    }
+
+    @Test
+    void deveFiltrarDevolucoesPorDataDeDevolucaoENaoPorDataDaVenda() throws Exception {
+        var produtoService = new ProdutoService(session);
+        produtoService.salvar(produto("111", "Camiseta", "UN"));
+
+        var vendaService = new VendaService(session);
+        var venda = venda("111", 2);
+        var salva = vendaService.salvar(venda, false);
+        salva.setDevolvida(true);
+        // devolução registrada fora da janela [INICIO, fim()] — não pode entrar no resumo
+        salva.setDataDevolucao(System.currentTimeMillis() + 10L * 24 * 60 * 60 * 1000);
+        vendaService.atualizar(salva);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        assertEquals(0, dados.devolucoes().numeroDevolucoes());
+        assertTrue(dados.devolucoes().produtos().isEmpty());
+    }
+
+    @Test
+    void naoDeveContarVendasNaoDevolvidasNoResumoDeDevolucoes() throws Exception {
+        var produtoService = new ProdutoService(session);
+        produtoService.salvar(produto("111", "Camiseta", "UN"));
+
+        var vendaService = new VendaService(session);
+        vendaService.salvar(venda("111", 2), false);
+
+        var dados = relatorioService.gerar(INICIO, fim());
+
+        assertEquals(0, dados.devolucoes().numeroDevolucoes());
+        assertTrue(dados.devolucoes().produtos().isEmpty());
     }
 
     private ProdutoModel produto(String codigo, String descricao, String unidade) {
