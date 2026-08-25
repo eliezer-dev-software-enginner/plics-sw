@@ -14,13 +14,17 @@ public class ProcessKiller {
 
     private static final Logger log = LoggerFactory.getLogger(ProcessKiller.class);
 
-    /**
-     * Mata o processo do PID informado (e sua árvore de filhos), de forma
-     * assíncrona e FORA da Job Object da aplicação atual, via Agendador de
-     * Tarefas do Windows. Sem scripts intermediários: a task chama
-     * taskkill.exe diretamente e se autodeleta com /z após rodar.
-     */
     public static void killPidAsync(long pid) {
+        String os = System.getProperty("os.name", "").toLowerCase();
+
+        if (os.contains("win")) {
+            killPidWindows(pid);
+        } else {
+            killPidUnix(pid);
+        }
+    }
+
+    private static void killPidWindows(long pid) {
         String taskName = "PlicsKill_" + System.currentTimeMillis();
         String startTime = LocalTime.now().plusMinutes(1)
                 .format(DateTimeFormatter.ofPattern("HH:mm"));
@@ -41,7 +45,18 @@ public class ProcessKiller {
             logProcessOutput(run, "schtasks /run");
             log.info("Task executada via schtasks /run para PID {}", pid);
         } catch (IOException e) {
-            log.error("Erro ao agendar kill do PID {}", pid, e);
+            log.error("Erro ao agendar kill do PID {} via schtasks", pid, e);
+        }
+    }
+
+    private static void killPidUnix(long pid) {
+        try {
+            var p = new ProcessBuilder("kill", "-9", String.valueOf(pid))
+                    .redirectErrorStream(true).start();
+            logProcessOutput(p, "kill -9");
+            log.info("Sinal SIGKILL enviado para PID {}", pid);
+        } catch (IOException e) {
+            log.error("Erro ao enviar kill para PID {}", pid, e);
         }
     }
 
