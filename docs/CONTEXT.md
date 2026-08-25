@@ -26,6 +26,13 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-24: Troca de venda no Histórico do Caixa (feedback da cliente)
+- **Pedido**: "se na parte de devolução já tivesse a opção de troca, sem precisar excluir seria mais prático" — hoje trocar exige excluir/devolver + lançar venda nova manualmente.
+- **Modelo acordado com o usuário**: devolve a venda original (`devolvida=true`) **e cria um pedido novo** com os itens escolhidos, numa transação única (`PDVService.trocarVenda`). Só no PedidosScreen; vários itens novos com busca por código/nome; diferença de valor fica registrada entre as duas vendas. Detalhes em DECISIONS.md.
+- **Novo**: `PDVService.trocarVenda(pedidoId, itensNovos, formaPagamento)` (+ helper `criarPedidoComItens` extraído de `finalizarVenda`); botão "Trocar venda selecionada" ao lado de "Devolver"; modal com busca (`SelectDropDownSearch`), quantidade editável, forma de pagamento (herda a da venda original) e confirmação. Pedido novo nunca é fiado. Sem migration nova — Status da original continua "Devolvida".
+- **`Components.ShowModal`** passa a retornar a `Stage` (pra fechar o modal após sucesso).
+- **Testes**: 302 → 308 (+6 PDVServiceTest). Casos manuais #208–#211 em testes-gerais.md. Modal não verificado ao vivo (sem automação de UI).
+
 ### 2026-08-24: Produtos devolvidos no período (tela + PDF do RelatoriosScreen)
 - **Pedido**: mostrar no relatório quantos produtos foram devolvidos no mês (total) e quais foram.
 - **Critério de período**: filtrado por **`data_devolucao`** (quando a devolução aconteceu), não pela data da venda — venda antiga devolvida hoje entra no relatório atual. Fontes: pedidos PDV (`devolvida=1`, soma os `pedido_itens`) + vendas de mercadoria (`devolvida=1`). Lista por produto completa, ordenada por quantidade desc, sem corte de top 10; reutiliza o record `ProdutoMaisVendido`.

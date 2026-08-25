@@ -70,49 +70,8 @@ public final class PDVService {
 
         sess.withTransaction(() -> {
             try {
-                BigDecimal totalBruto = itens.stream()
-                        .map(ItemVenda::totalItem)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                BigDecimal descontoValue = desconto != null ? desconto : BigDecimal.ZERO;
-                BigDecimal freteValue = frete != null ? frete : BigDecimal.ZERO;
-                BigDecimal totalLiquido = totalBruto.subtract(descontoValue).add(freteValue);
-                if (totalLiquido.compareTo(BigDecimal.ZERO) < 0) totalLiquido = BigDecimal.ZERO;
-
-                var pedidoService = new PedidoService(sess);
-                var pedidoModel = new PedidoModel();
-                pedidoModel.setClienteId(clienteId);
-                pedidoModel.setFormaPagamento(formaPagamento);
-                pedidoModel.setTotalLiquido(totalLiquido);
-                pedidoModel.setDesconto(descontoValue);
-                pedidoModel.setFrete(freteValue);
-                pedidoModel.setFiado(isFiado ? 1 : 0);
-                var pedido = pedidoService.salvar(pedidoModel);
-
-                var itemRepo = new PedidoItemRepository(sess);
-                var produtoService = new ProdutoService(sess);
-
-                for (ItemVenda item : itens) {
-                    var itemModel = new PedidoItemModel();
-                    itemModel.setPedidoId(pedido.getId());
-                    itemModel.setProdutoCod(item.produto.getCodigoBarras());
-                    itemModel.setQuantidade(item.quantidade);
-                    itemModel.setPrecoUnitario(item.produto.getPrecoVenda());
-                    itemModel.setDesconto(BigDecimal.ZERO);
-                    itemModel.setTotalItem(item.totalItem());
-                    itemModel.setDataCriacao(LocalDateTime.now());
-                    itemRepo.salvar(itemModel);
-
-                    produtoService.decrementarEstoque(item.produto.getCodigoBarras(), item.quantidade);
-                }
-
-                if (isFiado && clienteId != null) {
-                    var contaService = new ContaAreceberService(sess);
-                    var parcelas = Parcela.gerarParcelas(LocalDate.now(), Math.max(1, numeroParcelas), totalLiquido.doubleValue());
-                    contaService.gerarContasDeVenda(pedido.getId(), clienteId, parcelas);
-                }
-
-                result[0] = pedido;
+                result[0] = criarPedidoComItens(sess, itens, formaPagamento, clienteId, isFiado,
+                        desconto, frete, numeroParcelas);
             } catch (SQLException e) {
                 thrown[0] = e;
                 throw new RuntimeException(e);
@@ -126,6 +85,63 @@ public final class PDVService {
         log.info("Venda PDV finalizada: pedidoId={} itens={} totalLiquido={}",
                 result[0].getId(), itens.size(), result[0].getTotalLiquido());
         return result[0];
+    }
+
+    // Corpo de criação do pedido — pressupõe transação ativa. Compartilhado entre
+    // finalizarVenda() e trocarVenda().
+    private PedidoModel criarPedidoComItens(
+            Session sess,
+            List<ItemVenda> itens,
+            String formaPagamento,
+            Integer clienteId,
+            boolean isFiado,
+            BigDecimal desconto,
+            BigDecimal frete,
+            int numeroParcelas
+    ) throws SQLException {
+        BigDecimal totalBruto = itens.stream()
+                .map(ItemVenda::totalItem)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal descontoValue = desconto != null ? desconto : BigDecimal.ZERO;
+        BigDecimal freteValue = frete != null ? frete : BigDecimal.ZERO;
+        BigDecimal totalLiquido = totalBruto.subtract(descontoValue).add(freteValue);
+        if (totalLiquido.compareTo(BigDecimal.ZERO) < 0) totalLiquido = BigDecimal.ZERO;
+
+        var pedidoService = new PedidoService(sess);
+        var pedidoModel = new PedidoModel();
+        pedidoModel.setClienteId(clienteId);
+        pedidoModel.setFormaPagamento(formaPagamento);
+        pedidoModel.setTotalLiquido(totalLiquido);
+        pedidoModel.setDesconto(descontoValue);
+        pedidoModel.setFrete(freteValue);
+        pedidoModel.setFiado(isFiado ? 1 : 0);
+        var pedido = pedidoService.salvar(pedidoModel);
+
+        var itemRepo = new PedidoItemRepository(sess);
+        var produtoService = new ProdutoService(sess);
+
+        for (ItemVenda item : itens) {
+            var itemModel = new PedidoItemModel();
+            itemModel.setPedidoId(pedido.getId());
+            itemModel.setProdutoCod(item.produto.getCodigoBarras());
+            itemModel.setQuantidade(item.quantidade);
+            itemModel.setPrecoUnitario(item.produto.getPrecoVenda());
+            itemModel.setDesconto(BigDecimal.ZERO);
+            itemModel.setTotalItem(item.totalItem());
+            itemModel.setDataCriacao(LocalDateTime.now());
+            itemRepo.salvar(itemModel);
+
+            produtoService.decrementarEstoque(item.produto.getCodigoBarras(), item.quantidade);
+        }
+
+        if (isFiado && clienteId != null) {
+            var contaService = new ContaAreceberService(sess);
+            var parcelas = Parcela.gerarParcelas(LocalDate.now(), Math.max(1, numeroParcelas), totalLiquido.doubleValue());
+            contaService.gerarContasDeVenda(pedido.getId(), clienteId, parcelas);
+        }
+
+        return pedido;
     }
 
     // Reverso de finalizarVenda(): devolve o estoque de cada item, apaga os itens e
@@ -231,5 +247,65 @@ public final class PDVService {
         if (!bloqueados.isEmpty())
             throw new IllegalArgumentException(
                     "Devolução bloqueada — não aceita(m) devolução/troca: " + String.join(", ", bloqueados));
+    }
+
+    // Devolve a venda original (mesmo fluxo de devolverVenda()) e, na mesma transação,
+    // cria um pedido novo com os itens trocados. A original fica devolvida=true pelo valor
+    // antigo; o pedido novo sai pelo valor dos itens novos — a diferença fica registrada
+    // entre os dois. O novo nunca é fiado: a troca quita no balcão, não recria dívida.
+    public PedidoModel trocarVenda(int pedidoId, List<ItemVenda> itensNovos, String formaPagamento) throws SQLException {
+        if (itensNovos == null || itensNovos.isEmpty())
+            throw new IllegalArgumentException("Informe pelo menos um produto para a troca");
+
+        var sess = session != null ? session : DB.getPersismSession();
+        var result = new PedidoModel[1];
+        var thrown = new SQLException[1];
+
+        sess.withTransaction(() -> {
+            try {
+                var pedidoService = new PedidoService(sess);
+                var pedido = pedidoService.buscarById(pedidoId);
+                if (pedido == null) throw new IllegalArgumentException("Venda não encontrada");
+                if (Boolean.TRUE.equals(pedido.getDevolvida()))
+                    throw new IllegalArgumentException("Esta venda já foi devolvida");
+
+                var itemRepo = new PedidoItemRepository(sess);
+                var produtoService = new ProdutoService(sess);
+                var itensOriginais = itemRepo.listarPorPedido(pedidoId);
+
+                validarPoliticaDeDevolucao(itensOriginais, produtoService);
+
+                for (PedidoItemModel item : itensOriginais) {
+                    produtoService.incrementarEstoque(item.getProdutoCod(), item.getQuantidade());
+                }
+
+                if (Integer.valueOf(1).equals(pedido.getFiado())) {
+                    var contaService = new ContaAreceberService(sess);
+                    for (var conta : contaService.buscarPorVenda(pedidoId)) {
+                        if ("PAGO".equals(conta.getStatus()) || "PARCIAL".equals(conta.getStatus())) {
+                            contaService.cancelarRecebimento(conta.getId());
+                        }
+                    }
+                    contaService.excluirPorVendaId(pedidoId);
+                }
+
+                pedido.setDevolvida(true);
+                pedido.setDataDevolucao(System.currentTimeMillis());
+                pedidoService.atualizar(pedido);
+
+                result[0] = criarPedidoComItens(sess, itensNovos, formaPagamento,
+                        pedido.getClienteId(), false, BigDecimal.ZERO, BigDecimal.ZERO, 1);
+            } catch (SQLException e) {
+                thrown[0] = e;
+                throw new RuntimeException(e);
+            }
+        });
+
+        if (thrown[0] != null) {
+            throw thrown[0];
+        }
+        log.info("Venda PDV trocada: pedidoId={} novoPedidoId={} itensNovos={}",
+                pedidoId, result[0].getId(), itensNovos.size());
+        return result[0];
     }
 }

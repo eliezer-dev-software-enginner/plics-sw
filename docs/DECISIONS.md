@@ -1,5 +1,52 @@
 # Decisões Arquiteturais
 
+## 2026-08-24: Troca de venda no Histórico do Caixa — devolve + cria pedido novo, sem campo novo de schema
+
+**Contexto:** feedback da cliente — "se na parte de devolução já tivesse a opção de troca, sem
+precisar excluir seria mais prático". Hoje uma troca (cliente trouxe o produto X e leva o Y,
+ex.: tamanho errado) exige excluir/devolver a venda e lançar a venda nova manualmente, em dois
+passos. Decisões de design confirmadas com o usuário antes de implementar:
+
+1. **Modelo de registro**: devolver a venda original (`devolvida=true`, mesmo fluxo de
+   `devolverVenda()`) **+ criar um pedido novo** com os itens trocados, tudo numa única
+   transação de `PDVService.trocarVenda(pedidoId, itensNovos, formaPagamento)`. Descartadas:
+   substituir itens dentro da mesma venda (mistura venda real do caixa com correção) e tabela
+   separada de trocas (migration + telas + integração em relatórios — escopo maior sem ganho).
+2. **Escopo**: só PedidosScreen (PDV multi-item), onde está o botão "Devolver" que motivou o
+   feedback. VendaMercadoriaScreen fica como está.
+3. **Itens novos**: vários, com busca por código/nome (mesmo padrão `SelectDropDownSearch` +
+   validação de estoque do carrinho do PDV).
+4. **Diferença de valor**: reflete nos totais das duas vendas — a original fica devolvida pelo
+   valor antigo, o pedido novo sai pelo valor dos itens novos. Sem lógica extra de acerto.
+
+**Decisões complementares (minhas, documentadas aqui por serem de negócio):**
+- **O pedido novo nunca é fiado** (`fiado=0`, sem contas a receber): troca quita no balcão;
+  recriar parcelas automaticamente recriaria dívida silenciosamente. Se precisar fiar, o
+  lojista lança uma venda fiada normal.
+- **Sem migration/campo novo**: "trocada" NÃO é um status próprio — a coluna Status continua
+  mostrando "Devolvida" na original; a auditoria da troca é o par (venda devolvida + pedido
+  novo logo abaixo no histórico). Um flag `trocada` obrigaria a rever todas as agregações de
+  `devolvida` (receita, relatório de devoluções) pra decidir se incluem ou não trocas.
+- **Forma de pagamento do novo**: select no modal, default = a da venda original (quando ela
+  estiver em `Data.tiposPagamentoList`); cliente é herdado da original; desconto/frete zerados.
+- **`Components.ShowModal` agora retorna a `Stage`** (antes void) — único jeito limpo de fechar
+  o modal automaticamente após o sucesso; chamadores existentes não mudam nada.
+
+**Implementação:** corpo de criação de pedido extraído de `finalizarVenda()` pro helper privado
+`criarPedidoComItens(...)` (pressupõe transação ativa — evita aninhar `withTransaction`),
+reusado pelos dois. `trocarVenda` valida existência/não-devolvida, roda
+`validarPoliticaDeDevolucao` nos itens ORIGINAIS (a política do cadastro regula o que volta,
+não o que entra), restaura estoque, estorna/apaga contas fiado, marca `devolvida=true` e cria o
+pedido novo — rollback total em qualquer falha (ex.: estoque insuficiente do produto novo).
+
+**Verificação:** `./gradlew test` — 302 → 308 (+6 PDVServiceTest: estoque dos dois lados +
+total/forma do novo, contas fiado apagadas na original e não geradas na nova, cliente herdado,
+bloqueio pela política sem efeito parcial, venda já devolvida, troca sem itens). UI do modal
+não verificada ao vivo (sem automação de mouse/clique neste ambiente) — casos manuais #208–#211
+em testes-gerais.md.
+
+---
+
 ## 2026-08-24: Devoluções no RelatoriosScreen/PDF — agregado próprio, filtrado por data_devolucao
 
 **Contexto:** pedido do usuário — o relatório (e o PDF) deve mostrar quantos produtos foram

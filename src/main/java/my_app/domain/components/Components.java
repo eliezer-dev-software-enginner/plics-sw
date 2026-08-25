@@ -247,7 +247,7 @@ public class Components {
         stage.show();
     }
 
-    public static void ShowModal(Component ui, ScreenContext context, int height) {
+    public static Stage ShowModal(Component ui, ScreenContext context, int height) {
         Stage stage = new Stage();
 
         Scroll scroll = new Scroll(ui);
@@ -263,6 +263,7 @@ public class Components {
         });
 
         stage.show();
+        return stage;
     }
 
     public static void ShowModal(Component ui, ScreenContext context) {

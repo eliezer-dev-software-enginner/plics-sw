@@ -1,5 +1,18 @@
 # TODO
 
+## Concluído (opção de troca na devolução — 2026-08-24)
+- [x] **Feedback da cliente**: "se na parte de devolução já tivesse a opção de troca, sem
+      precisar excluir seria mais prático" — trocar exigia excluir/devolver + lançar venda nova
+      em dois passos
+- [x] **Modelo acordado com o usuário**: devolve a venda original + cria pedido novo com os
+      itens novos (busca por código/nome, vários itens, diferença reflete nos totais); só no
+      Histórico do Caixa/PDV — detalhes em DECISIONS.md
+- [x] **Fix**: `PDVService.trocarVenda()` (transação única, política "Aceita devolução/troca?"
+      aplicada aos itens originais) + botão/modal no PedidosScreen; pedido novo nunca é fiado;
+      sem migration nova
+- [x] **Testes**: 302 → 308 (+6 PDVServiceTest), 0 falhas; casos manuais #208–#211
+- [ ] Verificar o modal ao vivo (sem automação de mouse/clique neste ambiente)
+
 ## Pendências novas
 - [ ] **RelatoriosScreen ainda conta vendas devolvidas nos cards "Produtos mais vendidos" e
       "Formas de pagamento mais usadas"** (achado em 2026-08-24 ao corrigir a receita da Home):

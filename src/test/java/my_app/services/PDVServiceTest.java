@@ -1,6 +1,7 @@
 package my_app.services;
 
 import my_app.db.models.ProdutoModel;
+import my_app.db.services.PedidoService;
 import my_app.db.services.ProdutoService;
 import my_app.screens.pdvScreen.ItemVenda;
 import my_app.db.services.BaseServiceTest;
@@ -266,5 +267,101 @@ class PDVServiceTest extends BaseServiceTest {
     void deveLancarExcecaoAoDevolverVendaInexistente() {
         var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(9999));
         assertEquals("Venda não encontrada", erro.getMessage());
+    }
+
+    // --- Troca: devolve a venda original + cria pedido novo com os itens escolhidos.
+
+    @Test
+    void deveTrocarVendaRestaurandoEstoqueOriginalEBaixandoONovo() throws Exception {
+        var produtoOriginal = criarProduto();
+        var produtoNovo = novoProduto("800", "Produto Troca");
+        produtoService.salvar(produtoNovo);
+
+        var itemOriginal = new ItemVenda(produtoOriginal);
+        var pedido = pdvService.finalizarVenda(List.of(itemOriginal), "À VISTA", 1, false, 1);
+        assertBigDecimalEquals(BigDecimal.valueOf(9),
+                produtoService.buscarPorCodigoBarras(produtoOriginal.getCodigoBarras()).getEstoque());
+
+        var itemNovo = new ItemVenda(produtoNovo);
+        itemNovo.quantidade = BigDecimal.TWO;
+        var novoPedido = pdvService.trocarVenda(pedido.getId(), List.of(itemNovo), "DINHEIRO");
+
+        assertBigDecimalEquals(BigDecimal.TEN,
+                produtoService.buscarPorCodigoBarras(produtoOriginal.getCodigoBarras()).getEstoque());
+        assertBigDecimalEquals(BigDecimal.valueOf(8),
+                produtoService.buscarPorCodigoBarras(produtoNovo.getCodigoBarras()).getEstoque());
+
+        assertEquals(1, contarLinhas("pedidos", "id = ? AND devolvida = 1", pedido.getId()));
+        assertEquals(0, contarLinhas("pedidos", "id = ? AND devolvida = 1", novoPedido.getId()));
+        assertNotNull(novoPedido.getId());
+        assertNotEquals(pedido.getId(), novoPedido.getId());
+        assertEquals(1, contarLinhas("pedido_itens", "pedido_id = ?", novoPedido.getId()));
+
+        var salvo = new PedidoService(session).buscarById(novoPedido.getId());
+        assertBigDecimalEquals(BigDecimal.valueOf(20), salvo.getTotalLiquido());
+        assertEquals("DINHEIRO", salvo.getFormaPagamento());
+    }
+
+    @Test
+    void trocaDeveExcluirContasFiadoDaOriginalENaoGerarNaNova() throws Exception {
+        var itens = itensValidos();
+        var pedido = pdvService.finalizarVenda(itens, "CREDIARIO", 1, true, 3);
+        assertEquals(3, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+
+        var novoPedido = pdvService.trocarVenda(pedido.getId(), itens, "DINHEIRO");
+
+        assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
+        assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", novoPedido.getId()));
+        assertEquals(Integer.valueOf(0), new PedidoService(session).buscarById(novoPedido.getId()).getFiado());
+    }
+
+    @Test
+    void trocaDeveHerdarClienteDaVendaOriginal() throws Exception {
+        var itens = itensValidos();
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 5, false, 1);
+
+        var novoPedido = pdvService.trocarVenda(pedido.getId(),
+                List.of(new ItemVenda(itens.getFirst().produto)), "PIX");
+
+        assertEquals(Integer.valueOf(5), novoPedido.getClienteId());
+    }
+
+    @Test
+    void naoDevePermitirTrocarVendaComProdutoQueNaoAceitaDevolucao() throws Exception {
+        var produto = novoProduto("801", "Produto Sem Troca");
+        produto.setAceitaDevolucao(false);
+        produtoService.salvar(produto);
+        var item = new ItemVenda(produto);
+        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1, false, 1);
+
+        var erro = assertThrows(Exception.class,
+                () -> pdvService.trocarVenda(pedido.getId(), itensValidos(), "À VISTA"));
+
+        assertTrue(erro.getMessage().contains("devolução/troca"));
+
+        // Nada mudou: estoque segue decrescido, sem marca de devolvida e sem pedido novo.
+        assertBigDecimalEquals(BigDecimal.valueOf(9),
+                produtoService.buscarPorCodigoBarras(produto.getCodigoBarras()).getEstoque());
+        assertEquals(0, contarLinhas("pedidos", "id = ? AND devolvida = 1", pedido.getId()));
+    }
+
+    @Test
+    void naoDevePermitirTrocarVendaJaDevolvida() throws Exception {
+        var itens = itensValidos();
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1, false, 1);
+        pdvService.devolverVenda(pedido.getId());
+
+        var erro = assertThrows(Exception.class,
+                () -> pdvService.trocarVenda(pedido.getId(), itens, "À VISTA"));
+        assertEquals("Esta venda já foi devolvida", erro.getMessage());
+    }
+
+    @Test
+    void naoDevePermitirTrocaSemItensNovos() throws Exception {
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
+
+        var erro = assertThrows(Exception.class,
+                () -> pdvService.trocarVenda(pedido.getId(), List.of(), "À VISTA"));
+        assertEquals("Informe pelo menos um produto para a troca", erro.getMessage());
     }
 }

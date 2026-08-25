@@ -10,19 +10,26 @@ import my_app.core.events.EventBus;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
+import my_app.db.models.ProdutoModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.EmpresaService;
 import my_app.db.services.PedidoItemService;
 import my_app.db.services.PedidoService;
 import my_app.db.services.PreferenciasService;
+import my_app.db.services.ProdutoService;
+import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.screens.pdvScreen.ItemVenda;
 import my_app.services.EscPosPrinter;
 import my_app.services.PDVService;
+import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel> {
@@ -34,6 +41,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     private final ClienteService clienteService;
     private final PDVService pdvService;
     private final EmpresaService empresaService;
+    private final ProdutoService produtoService;
     private final EscPosPrinter escPosPrinter;
 
     final megalodonte.v2.ListState<PedidoItemModel> itensDoPedidoSelecionado = megalodonte.v2.ListState.ofEmpty();
@@ -43,6 +51,17 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     final ComputedState<Boolean> podeDevolver = ComputedState.of(
             () -> pedidoSelecionado.get() != null && !Boolean.TRUE.equals(pedidoSelecionado.get().getDevolvida()),
             pedidoSelecionado);
+
+    // --- Modal de troca (devolve a venda original + cria pedido novo com os itens escolhidos)
+    private final Map<String, ProdutoModel> produtosCacheTroca = new HashMap<>();
+    final megalodonte.v2.ListState<ProdutoModel> trocaSugestoes = megalodonte.v2.ListState.ofEmpty();
+    final ComputedState<Boolean> trocaSugestoesVisiveis = ComputedState.of(
+            () -> !trocaSugestoes.get().isEmpty(), trocaSugestoes);
+    final State<ProdutoModel> trocaProdutoEncontrado = State.of(null);
+    final State<String> trocaBuscaInput = State.of("");
+    final State<String> trocaQuantidadeInput = State.of("1");
+    final megalodonte.v2.ListState<ItemVenda> trocaItens = megalodonte.v2.ListState.ofEmpty();
+    final State<String> trocaFormaPagamento = State.of(Data.tiposPagamentoList.getFirst());
 
     // Cache id -> nome, só pra exibir na tabela (evita N chamadas ao clicar em cada linha)
     private final Map<Integer, String> nomesClientes = new HashMap<>();
@@ -54,6 +73,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         this.clienteService = createOrReport(ClienteService::new);
         this.pdvService = createOrReport(PDVService::new);
         this.empresaService = createOrReport(EmpresaService::new);
+        this.produtoService = createOrReport(ProdutoService::new);
         var porta = carregarPortaImpressora();
         this.escPosPrinter = porta != null ? new EscPosPrinter(empresaService, porta) : new EscPosPrinter(empresaService);
         onInit();
@@ -95,6 +115,14 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
                 return;
             }
             loadItensDoPedido(pedido.getId());
+        });
+
+        trocaBuscaInput.subscribe(this::filtrarProdutosTroca);
+        trocaProdutoEncontrado.subscribe(produto -> {
+            if (produto != null) {
+                trocaBuscaInput.set(produto.getCodigoBarras());
+                trocaSugestoes.clear();
+            }
         });
     }
 
@@ -163,6 +191,162 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
             } catch (Exception e) {
                 log.error("Erro ao devolver venda", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao devolver venda: " + e.getMessage()));
+            }
+        }));
+    }
+
+    // --- Troca: devolve a venda selecionada e cria um pedido novo com os itens escolhidos.
+
+    void prepararTroca(Runnable onPronto) {
+        var pedido = pedidoSelecionado.get();
+        if (pedido == null || Boolean.TRUE.equals(pedido.getDevolvida())) return;
+
+        Async.Run(() -> {
+            try {
+                var produtos = produtoService.listar();
+                UI.runOnUi(() -> {
+                    produtosCacheTroca.clear();
+                    produtos.forEach(p -> produtosCacheTroca.put(p.getCodigoBarras(), p));
+                    trocaBuscaInput.set("");
+                    trocaQuantidadeInput.set("1");
+                    trocaProdutoEncontrado.set(null);
+                    trocaSugestoes.clear();
+                    trocaItens.clear();
+                    trocaFormaPagamento.set(pedido.getFormaPagamento() != null
+                            && Data.tiposPagamentoList.contains(pedido.getFormaPagamento())
+                            ? pedido.getFormaPagamento()
+                            : Data.tiposPagamentoList.getFirst());
+                    onPronto.run();
+                });
+            } catch (Exception e) {
+                log.error("Erro ao carregar produtos para troca", e);
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao carregar produtos: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void filtrarProdutosTroca(String termo) {
+        if (termo == null || termo.trim().isEmpty()) {
+            trocaSugestoes.clear();
+            return;
+        }
+
+        var selected = trocaProdutoEncontrado.get();
+        if (selected != null && !selected.getCodigoBarras().equals(termo.trim())) {
+            trocaProdutoEncontrado.set(null);
+        }
+
+        var filtrados = produtosCacheTroca.values().stream()
+                .filter(p -> p.getCodigoBarras().contains(termo.trim())
+                        || (p.getDescricao() != null
+                            && p.getDescricao().toLowerCase().contains(termo.trim().toLowerCase())))
+                .limit(8)
+                .toList();
+
+        trocaSugestoes.set(filtrados);
+    }
+
+    BigDecimal totalItensTroca() {
+        return trocaItens.get().stream()
+                .map(ItemVenda::totalItem)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    void adicionarItemTroca() {
+        var produto = trocaProdutoEncontrado.get();
+        if (produto == null) {
+            Components.ShowAlertError("Busque e selecione um produto para adicionar.");
+            return;
+        }
+
+        BigDecimal quantidadeDesejada;
+        try {
+            quantidadeDesejada = new BigDecimal(trocaQuantidadeInput.get().trim());
+        } catch (NumberFormatException e) {
+            Components.ShowAlertError("Quantidade inválida.");
+            return;
+        }
+        if (quantidadeDesejada.compareTo(BigDecimal.ZERO) <= 0) {
+            Components.ShowAlertError("Quantidade deve ser maior que zero.");
+            return;
+        }
+
+        var estoqueDisponivel = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
+        var jaNaLista = trocaItens.get().stream()
+                .filter(i -> i.produto.getCodigoBarras().equals(produto.getCodigoBarras()))
+                .map(i -> i.quantidade)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (jaNaLista.add(quantidadeDesejada).compareTo(estoqueDisponivel) > 0) {
+            Components.ShowAlertError("Estoque insuficiente para \"" + produto.getDescricao()
+                    + "\". Disponível: " + Utils.quantidadeTratada(estoqueDisponivel)
+                    + ", já na troca: " + Utils.quantidadeTratada(jaNaLista));
+            return;
+        }
+
+        var existente = trocaItens.get().stream()
+                .filter(i -> i.produto.getCodigoBarras().equals(produto.getCodigoBarras()))
+                .findFirst();
+        if (existente.isPresent()) {
+            existente.get().quantidade = jaNaLista.add(quantidadeDesejada);
+            trocaItens.refresh();
+        } else {
+            var item = new ItemVenda(produto);
+            item.quantidade = quantidadeDesejada;
+            trocaItens.add(item);
+        }
+
+        trocaBuscaInput.set("");
+        trocaQuantidadeInput.set("1");
+    }
+
+    void atualizarQuantidadeItemTroca(ItemVenda item, BigDecimal novaQtd) {
+        if (novaQtd.compareTo(BigDecimal.ZERO) <= 0) {
+            trocaItens.remove(item);
+            return;
+        }
+
+        var estoqueDisponivel = item.produto.getEstoque() != null ? item.produto.getEstoque() : BigDecimal.ZERO;
+        if (novaQtd.compareTo(estoqueDisponivel) > 0) {
+            Components.ShowAlertError("Estoque insuficiente para \"" + item.produto.getDescricao()
+                    + "\". Disponível: " + Utils.quantidadeTratada(estoqueDisponivel));
+            trocaItens.refresh();
+            return;
+        }
+
+        item.quantidade = novaQtd;
+        trocaItens.refresh();
+    }
+
+    void confirmarTroca(Runnable onSuccess) {
+        var pedido = pedidoSelecionado.get();
+        if (pedido == null || Boolean.TRUE.equals(pedido.getDevolvida())) return;
+
+        if (trocaItens.get().isEmpty()) {
+            Components.ShowAlertError("Adicione pelo menos um produto para a troca.");
+            return;
+        }
+
+        var mensagem = "Confirma a troca da venda #" + pedido.getId() + " (" + nomeClienteDoPedido(pedido) + ")? "
+                + "Os produtos originais voltam ao estoque e a venda será registrada como devolvida, "
+                + "criando uma nova venda no total de " + Utils.toBRLCurrency(totalItensTroca()) + ".";
+
+        Components.ShowAlertAdvice(mensagem, () -> Async.Run(() -> {
+            try {
+                var novoPedido = pdvService.trocarVenda(pedido.getId(), List.copyOf(trocaItens.get()),
+                        trocaFormaPagamento.get());
+                var originalAtualizado = pedidoService.buscarById(pedido.getId());
+                UI.runOnUi(() -> {
+                    allDataList.updateIf(it -> it.getId().equals(pedido.getId()), it -> originalAtualizado);
+                    allDataList.add(novoPedido);
+                    pedidoSelecionado.set(originalAtualizado);
+                    Components.ShowPopup(ctx, "Troca realizada! Nova venda #" + novoPedido.getId() + " criada.");
+                    EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    onSuccess.run();
+                });
+            } catch (Exception e) {
+                log.error("Erro ao realizar troca da venda #" + pedido.getId(), e);
+                UI.runOnUi(() -> Components.ShowAlertError("Erro ao realizar troca: " + e.getMessage()));
             }
         }));
     }
@@ -257,5 +441,6 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         this.pedidoService.close();
         this.clienteService.close();
         this.empresaService.close();
+        this.produtoService.close();
     }
 }
