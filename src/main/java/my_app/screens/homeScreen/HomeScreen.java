@@ -47,6 +47,7 @@ public class HomeScreen implements ScreenComponent {
 
     @Override
     public void onMount() {
+        //buscarAtualizacao();
         viewModel.calcularFinanceiroMesAtual();
 
         UI.runOnUi(() -> {
