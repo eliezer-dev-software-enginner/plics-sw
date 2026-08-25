@@ -143,10 +143,9 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
             if (produto != null) {
                 var item = trocaItemSelected.get();
                 if (item != null) {
-                    if (trocaOriginaisCodigos.contains(item.produto.getCodigoBarras())
-                            || trocaItens.get().stream().anyMatch(i ->
-                                    i.produto.getCodigoBarras().equals(produto.getCodigoBarras())
-                                            && !i.equals(item))) {
+                    if (trocaItens.get().stream().anyMatch(i ->
+                            i.produto.getCodigoBarras().equals(produto.getCodigoBarras())
+                                    && !i.equals(item))) {
                         Components.ShowAlertError("Este produto já está na lista.");
                         trocaProdutoEncontrado.set(null);
                         return;
