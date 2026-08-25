@@ -26,6 +26,21 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-25: Modal de troca refatorado — clique para substituir produto
+- **Novo fluxo**: ao invés de tabela de originais separada + campo de busca independente, agora
+  há UMA tabela única com todos os itens (originais). Clicar num item revela o campo de busca
+  e o botão "Pesquisar produto para troca". Ao selecionar um produto na busca, o botão muda pra
+  "Trocar" e o clique substitui o produto na tabela, mantendo a quantidade original.
+- **Validação**: pelo menos um item deve ser diferente do original pra confirmar (rastreado via
+  `trocaOriginaisCodigos`). A tabela é clicável (`onItemSelectChange`) e condicional
+  (`Show.when` para busca e botões).
+- **Implementação**: `trocaItemSelected`, `trocaSearchVisible`, `trocaShowPesquisarBtn`,
+  `trocaShowTrocarBtn` (states), `handleTrocaPesquisarClick()`, `updateTrocaBtnStates()`.
+  `prepararTroca()` agora inicializa `trocaItens` a partir dos itens originais.
+  Removidos `adicionarItemTroca()` e `trocaItensOriginais`.
+- **Arquivos modificados**: `PedidosScreenViewModel.java`, `PedidosScreen.java`.
+- **Testes**: 308/308 (comportamento visual, sem automação de UI).
+
 ### 2026-08-25: Produtos da venda original exibidos no modal de troca
 - **Pedido do usuário**: ao abrir o modal de troca, carregar e exibir os produtos do pedido original para que o usuário saiba o que o cliente trouxe antes de selecionar o novo.
 - **Implementação**: `PedidosScreenViewModel.trocaItensOriginais` (`ListState<PedidoItemModel>`) populado em `prepararTroca()` via `pedidoItemService.listarPorPedido(pedido.getId())`. Tabela "Produtos da venda original" adicionada no topo do modal, antes do campo de busca de produto novo.

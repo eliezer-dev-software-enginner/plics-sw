@@ -1,5 +1,35 @@
 # Decisões Arquiteturais
 
+## 2026-08-25: Modal de troca refatorado — clique para substituir produto
+
+**Contexto:** o modal de troca anterior tinha uma tabela de referência (itens originais) e um
+fluxo de "buscar → adicionar" independente, sem conexão visual entre o item que o cliente trouxe
+e o que vai substituir. O usuário pediu um fluxo mais direto: clicar no produto pra trocar,
+buscar o novo, e confirmar.
+
+**Decisão:**
+1. **Uma tabela única** com os itens originais pré-carregados (via `prepararTroca()`), em vez de
+   tabela de referência + tabela de troca separadas. A tabela é clicável — `onItemSelectChange`
+   aciona o campo de busca e o botão correspondente.
+2. **Dois botões condicionais**: "Pesquisar produto para troca" (quando um item está selecionado
+   mas nenhum produto novo foi encontrado) e "Trocar" (quando um produto novo foi encontrado na
+   busca). `Show.when` com `State<Boolean>` alterna entre os dois.
+3. **Substituição direta**: ao clicar "Trocar", o `handleTrocaPesquisarClick()` substitui o
+   produto do item na tabela (via lista nova, já que `ItemVenda.produto` é `final`), mantendo a
+   quantidade original. A validação de estoque e duplicidade é feita na hora da substituição.
+4. **Validação de troca**: `trocaOriginaisCodigos` (Set) rastreia os códigos originais. Pelo
+   menos um item deve ser diferente do original pra permitir a confirmação — evita troca vazia.
+5. **Removidos**: `trocaItensOriginais` (tabela separada), `adicionarItemTroca()`,
+   `trocaQuantidadeInput` (quantidade é herdada do original).
+
+**Arquivos:** `PedidosScreenViewModel.java` (+states, +métodos, -métodos antigos),
+`PedidosScreen.java` (tabela única, busca condicional, botões Show.when).
+
+**Verificação:** `./gradlew test` — 308/308 (sem mudança de comportamento nos testes; é
+modificação visual apenas). Não verificado visualmente (sem automação de UI).
+
+---
+
 ## 2026-08-25: Produtos da venda original exibidos no modal de troca
 
 **Contexto:** ao abrir o modal de troca, o usuário não tinha referência dos produtos que o

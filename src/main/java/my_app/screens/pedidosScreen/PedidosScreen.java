@@ -23,8 +23,6 @@ import my_app.screens.pdvScreen.ItemVenda;
 import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 
-import java.math.BigDecimal;
-
 public class PedidosScreen implements ScreenComponent {
 
     private final ScreenContext ctx;
@@ -110,47 +108,41 @@ public class PedidosScreen implements ScreenComponent {
                 Components.FormTitle("Trocar venda selecionada"),
                 new SpacerVertical(5),
                 new Text("Os produtos da venda original voltam ao estoque e ela fica registrada como devolvida. "
-                        + "Adicione abaixo os produtos novos que o cliente vai levar."),
+                        + "Clique em um produto na tabela para iniciar a busca de um novo produto."),
                 new SpacerVertical(10),
-                Components.FormTitle("Produtos da venda original"),
-                new SimpleTable<PedidoItemModel>()
-                        .fromData(vm.trocaItensOriginais)
-                        .header()
-                        .columns()
-                        .column("Produto", PedidoItemModel::getProdutoCod)
-                        .column("Qtd.", PedidoItemModel::getQuantidade)
-                        .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
-                        .column("Total", it -> Utils.toBRLCurrency(it.getTotalItem()))
-                        .build(),
-                new SpacerVertical(10),
-                Components.FormTitle("Buscar produto novo"),
-                Components.SelectDropDownSearch("Buscar produto", vm.trocaBuscaInput, "Nome ou código...",
-                        vm.trocaSugestoes, vm.trocaProdutoEncontrado, vm.trocaSugestoesVisiveis),
-                new Row(new RowProps().spacingOf(10)).children(
-                        Components.InputColumnComEnterHandler("Quantidade", vm.trocaQuantidadeInput, "Ex: 1",
-                                vm::adicionarItemTroca),
-                        new Button("Adicionar item").onClick(vm::adicionarItemTroca)
-                ),
-                new SpacerVertical(10),
-                Components.FormTitle("Itens da troca"),
+                Components.FormTitle("Produtos da troca (clique para substituir)"),
                 new SimpleTable<ItemVenda>()
                         .fromData(vm.trocaItens)
                         .header()
                         .columns()
                         .column("Cod", it -> it.produto.getCodigoBarras())
                         .column("Nome", it -> it.produto.getDescricao())
-                        .editableColumn("Qtd.", it -> it.quantidade,
-                                (it, val) -> {
-                                    try {
-                                        vm.atualizarQuantidadeItemTroca(it, new BigDecimal(val));
-                                    } catch (NumberFormatException e) {
-                                        // valor inválido, ignora
-                                    }
-                                })
-                        .column("Vlr. Unit.", it -> it.produto.getPrecoVenda())
+                        .column("Qtd.", it -> it.quantidade)
+                        .column("Vl. Unit.", it -> it.produto.getPrecoVenda())
                         .column("Total", ItemVenda::totalItem)
-                        .end()
-                        .build(),
+                        .build()
+                        .onItemSelectChange(vm.trocaItemSelected::set),
+                new SpacerVertical(10),
+                Show.when(vm.trocaSearchVisible, () -> new Column().children(
+                        new Text("Buscando substituto para o produto selecionado:"),
+                        Components.SelectDropDownSearch("Buscar produto", vm.trocaBuscaInput, "Nome ou código...",
+                                vm.trocaSugestoes, vm.trocaProdutoEncontrado, vm.trocaSugestoesVisiveis),
+                        new Row(new RowProps().spacingOf(10)).children(
+                                Show.when(vm.trocaShowPesquisarBtn, () ->
+                                        new Button("Pesquisar produto para troca").onClick(() -> {
+                                            vm.trocaBuscaInput.set("");
+                                            vm.trocaQuantidadeInput.set("1");
+                                            vm.trocaProdutoEncontrado.set(null);
+                                        })
+                                ),
+                                Show.when(vm.trocaShowTrocarBtn, () ->
+                                        new Button("Trocar").onClick(() -> {
+                                            vm.handleTrocaPesquisarClick();
+                                            vm.updateTrocaBtnStates();
+                                        })
+                                )
+                        )
+                )),
                 new SpacerVertical(10),
                 Components.SelectColumn("Forma de pagamento", Data.tiposPagamentoList, vm.trocaFormaPagamento, it -> it),
                 new SpacerVertical(5),

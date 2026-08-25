@@ -1,5 +1,15 @@
 # TODO
 
+## Concluído (modal de troca refatorado — clique para substituir — 2026-08-25)
+- [x] **Pedido do usuário**: fluxo mais direto — clicar no produto, buscar o novo, substituir
+- [x] **Tabela única**: itens originais pré-carregados em `trocaItens`, tabela clicável
+- [x] **Dois botões condicionais**: "Pesquisar produto para troca" / "Trocar" via `Show.when`
+- [x] **Substituição**: `handleTrocaPesquisarClick()` troca produto mantendo quantidade;
+      `trocaOriginaisCodigos` valida pelo menos uma mudança
+- [x] **Removidos**: `trocaItensOriginais`, `adicionarItemTroca()`, `trocaQuantidadeInput`
+- [x] **Testes**: 308/308 (comportamento visual, sem automação de UI)
+- [ ] Verificar ao vivo (sem automação de UI)
+
 ## Concluído (produtos da venda original no modal de troca — 2026-08-25)
 - [x] **Pedido do usuário**: ao abrir modal de troca, carregar e exibir os produtos do pedido
       original como referência

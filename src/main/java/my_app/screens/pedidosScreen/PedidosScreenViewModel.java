@@ -28,9 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel> {
 
@@ -54,7 +58,10 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
 
     // --- Modal de troca (devolve a venda original + cria pedido novo com os itens escolhidos)
     private final Map<String, ProdutoModel> produtosCacheTroca = new HashMap<>();
-    final megalodonte.v2.ListState<PedidoItemModel> trocaItensOriginais = megalodonte.v2.ListState.ofEmpty();
+    final State<ItemVenda> trocaItemSelected = State.of(null);
+    final State<Boolean> trocaSearchVisible = State.of(false);
+    final State<Boolean> trocaShowPesquisarBtn = State.of(false);
+    final State<Boolean> trocaShowTrocarBtn = State.of(false);
     final megalodonte.v2.ListState<ProdutoModel> trocaSugestoes = megalodonte.v2.ListState.ofEmpty();
     final ComputedState<Boolean> trocaSugestoesVisiveis = ComputedState.of(
             () -> !trocaSugestoes.get().isEmpty(), trocaSugestoes);
@@ -63,6 +70,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     final State<String> trocaQuantidadeInput = State.of("1");
     final megalodonte.v2.ListState<ItemVenda> trocaItens = megalodonte.v2.ListState.ofEmpty();
     final State<String> trocaFormaPagamento = State.of(Data.tiposPagamentoList.getFirst());
+    private final Set<String> trocaOriginaisCodigos = new HashSet<>();
 
     // Cache id -> nome, só pra exibir na tabela (evita N chamadas ao clicar em cada linha)
     private final Map<Integer, String> nomesClientes = new HashMap<>();
@@ -119,12 +127,63 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         });
 
         trocaBuscaInput.subscribe(this::filtrarProdutosTroca);
+
+        trocaItemSelected.subscribe(item -> {
+            trocaSearchVisible.set(item != null);
+            trocaShowPesquisarBtn.set(item != null);
+            if (item != null) {
+                trocaBuscaInput.set("");
+                trocaQuantidadeInput.set("1");
+                trocaProdutoEncontrado.set(null);
+                trocaSugestoes.clear();
+            }
+        });
+
         trocaProdutoEncontrado.subscribe(produto -> {
             if (produto != null) {
+                var item = trocaItemSelected.get();
+                if (item != null) {
+                    if (trocaOriginaisCodigos.contains(item.produto.getCodigoBarras())
+                            || trocaItens.get().stream().anyMatch(i ->
+                                    i.produto.getCodigoBarras().equals(produto.getCodigoBarras())
+                                            && !i.equals(item))) {
+                        Components.ShowAlertError("Este produto já está na lista.");
+                        trocaProdutoEncontrado.set(null);
+                        return;
+                    }
+                    trocaShowPesquisarBtn.set(false);
+                    trocaShowTrocarBtn.set(true);
+                }
                 trocaBuscaInput.set(produto.getCodigoBarras());
                 trocaSugestoes.clear();
             }
         });
+    }
+
+    void handleTrocaPesquisarClick() {
+        var produto = trocaProdutoEncontrado.get();
+        var item = trocaItemSelected.get();
+        if (produto == null || item == null) return;
+
+        var list = new ArrayList<>(trocaItens.get());
+        int idx = list.indexOf(item);
+        if (idx >= 0) {
+            var newItem = new ItemVenda(produto);
+            newItem.quantidade = item.quantidade;
+            list.set(idx, newItem);
+            trocaItens.set(list);
+        }
+        trocaItemSelected.set(null);
+        trocaProdutoEncontrado.set(null);
+        trocaBuscaInput.set("");
+        trocaSugestoes.clear();
+    }
+
+    void updateTrocaBtnStates() {
+        var item = trocaItemSelected.get();
+        var produto = trocaProdutoEncontrado.get();
+        trocaShowPesquisarBtn.set(item != null && produto == null);
+        trocaShowTrocarBtn.set(item != null && produto != null);
     }
 
     @Override
@@ -209,12 +268,28 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
                 UI.runOnUi(() -> {
                     produtosCacheTroca.clear();
                     produtos.forEach(p -> produtosCacheTroca.put(p.getCodigoBarras(), p));
-                    trocaItensOriginais.set(itensOriginais);
+
+                    trocaOriginaisCodigos.clear();
+                    var itens = new ArrayList<ItemVenda>();
+                    for (var item : itensOriginais) {
+                        var produto = produtosCacheTroca.get(item.getProdutoCod());
+                        if (produto != null) {
+                            var iv = new ItemVenda(produto);
+                            iv.quantidade = item.getQuantidade();
+                            itens.add(iv);
+                            trocaOriginaisCodigos.add(item.getProdutoCod());
+                        }
+                    }
+                    trocaItens.set(itens);
+
+                    trocaItemSelected.set(null);
+                    trocaSearchVisible.set(false);
+                    trocaShowPesquisarBtn.set(false);
+                    trocaShowTrocarBtn.set(false);
                     trocaBuscaInput.set("");
                     trocaQuantidadeInput.set("1");
                     trocaProdutoEncontrado.set(null);
                     trocaSugestoes.clear();
-                    trocaItens.clear();
                     trocaFormaPagamento.set(pedido.getFormaPagamento() != null
                             && Data.tiposPagamentoList.contains(pedido.getFormaPagamento())
                             ? pedido.getFormaPagamento()
@@ -255,54 +330,6 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    void adicionarItemTroca() {
-        var produto = trocaProdutoEncontrado.get();
-        if (produto == null) {
-            Components.ShowAlertError("Busque e selecione um produto para adicionar.");
-            return;
-        }
-
-        BigDecimal quantidadeDesejada;
-        try {
-            quantidadeDesejada = new BigDecimal(trocaQuantidadeInput.get().trim());
-        } catch (NumberFormatException e) {
-            Components.ShowAlertError("Quantidade inválida.");
-            return;
-        }
-        if (quantidadeDesejada.compareTo(BigDecimal.ZERO) <= 0) {
-            Components.ShowAlertError("Quantidade deve ser maior que zero.");
-            return;
-        }
-
-        var estoqueDisponivel = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
-        var jaNaLista = trocaItens.get().stream()
-                .filter(i -> i.produto.getCodigoBarras().equals(produto.getCodigoBarras()))
-                .map(i -> i.quantidade)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        if (jaNaLista.add(quantidadeDesejada).compareTo(estoqueDisponivel) > 0) {
-            Components.ShowAlertError("Estoque insuficiente para \"" + produto.getDescricao()
-                    + "\". Disponível: " + Utils.quantidadeTratada(estoqueDisponivel)
-                    + ", já na troca: " + Utils.quantidadeTratada(jaNaLista));
-            return;
-        }
-
-        var existente = trocaItens.get().stream()
-                .filter(i -> i.produto.getCodigoBarras().equals(produto.getCodigoBarras()))
-                .findFirst();
-        if (existente.isPresent()) {
-            existente.get().quantidade = jaNaLista.add(quantidadeDesejada);
-            trocaItens.refresh();
-        } else {
-            var item = new ItemVenda(produto);
-            item.quantidade = quantidadeDesejada;
-            trocaItens.add(item);
-        }
-
-        trocaBuscaInput.set("");
-        trocaQuantidadeInput.set("1");
-    }
-
     void atualizarQuantidadeItemTroca(ItemVenda item, BigDecimal novaQtd) {
         if (novaQtd.compareTo(BigDecimal.ZERO) <= 0) {
             trocaItens.remove(item);
@@ -327,6 +354,13 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
 
         if (trocaItens.get().isEmpty()) {
             Components.ShowAlertError("Adicione pelo menos um produto para a troca.");
+            return;
+        }
+
+        boolean algumItemDiferente = trocaItens.get().stream()
+                .anyMatch(item -> !trocaOriginaisCodigos.contains(item.produto.getCodigoBarras()));
+        if (!algumItemDiferente) {
+            Components.ShowAlertError("A troca deve alterar pelo menos um produto em relação à venda original.");
             return;
         }
 
