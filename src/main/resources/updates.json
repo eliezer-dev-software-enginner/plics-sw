@@ -2,9 +2,17 @@
   {
     "version": "v1.1.4",
     "notes": [
-      "Feat: Troca de venda agora abre em janela separada (antes era modal)",
+      "Feat: Troca de venda no Histórico do Caixa — devolve a original e cria uma nova com os itens escolhidos",
+      "Feat: Troca de venda agora abre em janela separada em vez de modal",
+      "Feat: Produtos devolvidos no período exibidos na tela de Relatórios e no PDF",
+      "Feat: Campo \"Aceita devolução/troca\" no cadastro de produtos agora bloqueia devolução de vendas",
+      "Feat: Tela de logs em Suporte + logging em toda a codebase",
+      "Feat: Envio do arquivo de log pro Telegram a cada abertura do app",
+      "Feat: Possibilidade de desativar popup Instagram na abertura do aplicativo",
+      "Refactor: Removida auto-atualização in-app — agora só redireciona pro site",
+      "Fix: Vendas devolvidas deixam de contar como receita (Home e Relatórios)",
       "Fix: ProcessKiller agora funciona no Linux (usava schtasks do Windows)",
-      "Refactor: Código morto de troca removido do PedidosScreenViewModel"
+      "Fix: Validação de troca bloqueava qualquer produto original"
     ]
   },
   {
