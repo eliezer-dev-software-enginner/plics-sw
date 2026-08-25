@@ -1,5 +1,15 @@
 # TODO
 
+## Concluído (produtos da venda original no modal de troca — 2026-08-25)
+- [x] **Pedido do usuário**: ao abrir modal de troca, carregar e exibir os produtos do pedido
+      original como referência
+- [x] **`PedidosScreenViewModel.trocaItensOriginais`** (`ListState<PedidoItemModel>`):
+      populado em `prepararTroca()` via `pedidoItemService.listarPorPedido()`
+- [x] **`PedidosScreen.trocaContent()`**: tabela "Produtos da venda original" no topo do
+      modal, antes do campo de busca de produto novo (mesmo padrão da tabela de itens)
+- [x] **Testes**: 308/308 (sem mudança; comportamento visual)
+- [ ] Verificar ao vivo (sem automação de UI)
+
 ## Concluído (opção de troca na devolução — 2026-08-24)
 - [x] **Feedback da cliente**: "se na parte de devolução já tivesse a opção de troca, sem
       precisar excluir seria mais prático" — trocar exigia excluir/devolver + lançar venda nova

@@ -26,6 +26,12 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-25: Produtos da venda original exibidos no modal de troca
+- **Pedido do usuário**: ao abrir o modal de troca, carregar e exibir os produtos do pedido original para que o usuário saiba o que o cliente trouxe antes de selecionar o novo.
+- **Implementação**: `PedidosScreenViewModel.trocaItensOriginais` (`ListState<PedidoItemModel>`) populado em `prepararTroca()` via `pedidoItemService.listarPorPedido(pedido.getId())`. Tabela "Produtos da venda original" adicionada no topo do modal, antes do campo de busca de produto novo.
+- **Arquivos modificados**: `PedidosScreenViewModel.java` (novo state + carregamento), `PedidosScreen.java` (tabela no modal).
+- **Sem mudança de testes**: 308/308 (comportamento visual, sem automação de UI).
+
 ### 2026-08-24: Troca de venda no Histórico do Caixa (feedback da cliente)
 - **Pedido**: "se na parte de devolução já tivesse a opção de troca, sem precisar excluir seria mais prático" — hoje trocar exige excluir/devolver + lançar venda nova manualmente.
 - **Modelo acordado com o usuário**: devolve a venda original (`devolvida=true`) **e cria um pedido novo** com os itens escolhidos, numa transação única (`PDVService.trocarVenda`). Só no PedidosScreen; vários itens novos com busca por código/nome; diferença de valor fica registrada entre as duas vendas. Detalhes em DECISIONS.md.

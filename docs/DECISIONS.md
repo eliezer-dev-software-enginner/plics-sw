@@ -1,5 +1,34 @@
 # Decisões Arquiteturais
 
+## 2026-08-25: Produtos da venda original exibidos no modal de troca
+
+**Contexto:** ao abrir o modal de troca, o usuário não tinha referência dos produtos que o
+cliente trouxe — só tinha o campo de busca do novo produto. Pedido para carregar e exibir os
+itens do pedido original antes de buscar o novo.
+
+**Decisão:**
+1. **Exibir os itens originais** numa tabela compacta no topo do modal, antes do campo de
+   busca. Isso dá visibilidade imediata do que o cliente trouxe (produto, quantidade, preço).
+2. **Sem seleção interativa** dos itens originais — a tabela é só para referência. O fluxo
+   continua sendo: buscar o novo produto → adicionar → confirmar. A seleção de "qual produto
+   trocar" é implícita pelo que o usuário adiciona à lista de troca.
+3. **Label "Buscar produto novo"** para o campo de busca, pra desambiguar do contexto dos
+   itens originais.
+
+**Implementação:**
+- `PedidosScreenViewModel.trocaItensOriginais` (`ListState<PedidoItemModel>`) — novo state
+  populado em `prepararTroca()` via `pedidoItemService.listarPorPedido(pedido.getId())`.
+- `PedidosScreen.trocaContent()` — tabela `SimpleTable<PedidoItemModel>` com colunas
+  Produto/Qtd/Vl.Unit./Total, usando o mesmo padrão da tabela "Itens da venda selecionada"
+  que já existia na tela.
+
+**Arquivos:** `PedidosScreenViewModel.java` (+state, +carregamento), `PedidosScreen.java` (+tabela).
+
+**Verificação:** `./gradlew test` — 308/308 (sem mudança de comportamento nos testes; é
+modificação visual apenas). Não verificado visualmente (sem automação de UI).
+
+---
+
 ## 2026-08-24: Troca de venda no Histórico do Caixa — devolve + cria pedido novo, sem campo novo de schema
 
 **Contexto:** feedback da cliente — "se na parte de devolução já tivesse a opção de troca, sem

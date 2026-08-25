@@ -54,6 +54,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
 
     // --- Modal de troca (devolve a venda original + cria pedido novo com os itens escolhidos)
     private final Map<String, ProdutoModel> produtosCacheTroca = new HashMap<>();
+    final megalodonte.v2.ListState<PedidoItemModel> trocaItensOriginais = megalodonte.v2.ListState.ofEmpty();
     final megalodonte.v2.ListState<ProdutoModel> trocaSugestoes = megalodonte.v2.ListState.ofEmpty();
     final ComputedState<Boolean> trocaSugestoesVisiveis = ComputedState.of(
             () -> !trocaSugestoes.get().isEmpty(), trocaSugestoes);
@@ -204,9 +205,11 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         Async.Run(() -> {
             try {
                 var produtos = produtoService.listar();
+                var itensOriginais = pedidoItemService.listarPorPedido(pedido.getId());
                 UI.runOnUi(() -> {
                     produtosCacheTroca.clear();
                     produtos.forEach(p -> produtosCacheTroca.put(p.getCodigoBarras(), p));
+                    trocaItensOriginais.set(itensOriginais);
                     trocaBuscaInput.set("");
                     trocaQuantidadeInput.set("1");
                     trocaProdutoEncontrado.set(null);

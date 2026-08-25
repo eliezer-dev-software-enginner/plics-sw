@@ -112,6 +112,18 @@ public class PedidosScreen implements ScreenComponent {
                 new Text("Os produtos da venda original voltam ao estoque e ela fica registrada como devolvida. "
                         + "Adicione abaixo os produtos novos que o cliente vai levar."),
                 new SpacerVertical(10),
+                Components.FormTitle("Produtos da venda original"),
+                new SimpleTable<PedidoItemModel>()
+                        .fromData(vm.trocaItensOriginais)
+                        .header()
+                        .columns()
+                        .column("Produto", PedidoItemModel::getProdutoCod)
+                        .column("Qtd.", PedidoItemModel::getQuantidade)
+                        .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
+                        .column("Total", it -> Utils.toBRLCurrency(it.getTotalItem()))
+                        .build(),
+                new SpacerVertical(10),
+                Components.FormTitle("Buscar produto novo"),
                 Components.SelectDropDownSearch("Buscar produto", vm.trocaBuscaInput, "Nome ou código...",
                         vm.trocaSugestoes, vm.trocaProdutoEncontrado, vm.trocaSugestoesVisiveis),
                 new Row(new RowProps().spacingOf(10)).children(
