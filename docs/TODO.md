@@ -1,5 +1,14 @@
 # TODO
 
+## Concluído (troca migrada para janela via rota — 2026-08-25)
+- [x] **Migração**: `Components.ShowModal()` → `ctx.router().spawnWindow(PEDIDO_DETAILS/${id})`
+- [x] **`PedidoTrocaViewModel`** (novo): states e lógica de troca extraídos do PedidosScreenVM
+- [x] **`PedidoDetails`**: extrai ID da rota, busca pedido em onMount, renderiza troca
+- [x] **`AppRoutes.PEDIDO_DETAILS/${id}`**: factory corrigido pra `PedidoDetails::new`
+- [x] **Limpeza PedidosScreen**: removidos `trocaContent()`, `stageTroca`, troca states
+- [x] **Testes**: 308/308
+- [ ] Verificar ao vivo (sem automação de UI)
+
 ## Concluído (modal de troca refatorado — clique para substituir — 2026-08-25)
 - [x] **Pedido do usuário**: fluxo mais direto — clicar no produto, buscar o novo, substituir
 - [x] **Tabela única**: itens originais pré-carregados em `trocaItens`, tabela clicável

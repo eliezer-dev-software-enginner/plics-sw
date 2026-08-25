@@ -26,6 +26,23 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-25: Troca migrada de ShowModal para janela via rota
+- **Migração**: o modal de troca (antes `Components.ShowModal` dentro de PedidosScreen) agora é
+  uma janela independente aberta via `ctx.router().spawnWindow()` com rota
+  `PEDIDO_DETAILS/${id}`. O ID do pedido é passado na URL e extraído por `PedidoDetails` via
+  `ctx.getParams().get("id")`.
+- **Novo**: `PedidoTrocaViewModel` (dedicado, na pasta `details/`) — extrai do
+  `PedidosScreenViewModel` só os states e métodos de troca (preparar, filtrar, substituir,
+  confirmar). `PedidoDetails` é a tela que recebe o ID e renderiza o conteúdo da troca.
+- **`AppRoutes.PEDIDO_DETAILS/${id}`**: corrigido pra apontar `PedidoDetails::new` (antes
+  apontava `PedidosScreen::new` por engano).
+- **Limpeza em PedidosScreen**: removidos `trocaContent()`, `stageTroca` e troca states
+  (agora ficam no `PedidoTrocaViewModel`). `handleClickMenuTroca()` simplificado — só faz
+  `spawnWindow` com o ID.
+- **Arquivos**: `PedidoTrocaViewModel.java` (novo), `PedidoDetails.java` (reescrito),
+  `AppRoutes.java` (corrigido factory), `PedidosScreen.java` (limpo).
+- **Testes**: 308/308 (sem mudança de comportamento nos testes).
+
 ### 2026-08-25: Modal de troca refatorado — clique para substituir produto
 - **Novo fluxo**: ao invés de tabela de originais separada + campo de busca independente, agora
   há UMA tabela única com todos os itens (originais). Clicar num item revela o campo de busca

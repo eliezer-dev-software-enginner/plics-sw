@@ -1,5 +1,34 @@
 # Decisões Arquiteturais
 
+## 2026-08-25: Troca migrada de ShowModal para janela via rota (PEDIDO_DETAILS/${id})
+
+**Contexto:** o modal de troca usava `Components.ShowModal()` — uma `Stage` avulsa criada
+direto via JavaFX, sem participação no Router nem lifecycle gerenciado. O usuário pediu
+migrar pra uma janela spawnada via rota, passando o ID do pedido na URL.
+
+**Decisão:**
+1. **Rota `PEDIDO_DETAILS/${id}`** — parâmetro `id` extraído pelo Router e disponibilizado
+   via `ctx.getParams().get("id")`. Mesmo padrão já usado (embora único) no projeto.
+2. **`PedidoTrocaViewModel`** (novo, `details/`) — ViewModel dedicado só pra troca, com os
+   states e lógica extraídos do `PedidosScreenViewModel` (preparar, filtrar, substituir,
+   confirmar). Extend `ViewModelScreenContract<PedidoModel>` pra manter o contrato, mas
+   `matchesSearch`/`fetchListData`/`populateModelFromFields`/etc. são no-ops — não há lista
+   nem formulário nesta tela.
+3. **`PedidoDetails`** — extrai o ID no construtor, busca o pedido em `onMount()` via
+   `preparar(pedidoId)`, renderiza o conteúdo da troca. Confirmação fecha a janela via
+   `ctx.selfStage().close()`.
+4. **Limpeza em `PedidosScreen`** — removidos `trocaContent()`, `stageTroca`, e todos os
+   troca states (agora ficam no `PedidoTrocaViewModel`). `handleClickMenuTroca()` só faz
+   `spawnWindow`.
+
+**Arquivos:** `PedidoTrocaViewModel.java` (novo), `PedidoDetails.java` (reescrito),
+`AppRoutes.java` (factory corrigido), `PedidosScreen.java` (limpo).
+
+**Verificação:** `./gradlew test` — 308/308 (sem mudança de comportamento nos testes; é
+migração de infraestrutura de UI apenas). Não verificado visualmente (sem automação de UI).
+
+---
+
 ## 2026-08-25: Modal de troca refatorado — clique para substituir produto
 
 **Contexto:** o modal de troca anterior tinha uma tabela de referência (itens originais) e um
