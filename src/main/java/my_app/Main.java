@@ -151,6 +151,13 @@ public class Main {
                 Path.of(System.getProperty("user.home"), ".plics-sw", "logs", "plics-sw.log"),
                 "Log automático — " + APP_NAME + " " + APP_VERSION));
 
+        // Manda o banco de dados pro Telegram a cada abertura — visibilidade de
+        // suporte/debug sem depender do cliente enviar manualmente. Mesma lógica
+        // de sem log (ver comentário em TelegramNotifier.enviarArquivo).
+        Async.Run(() -> TelegramNotifierFactory.create().enviarArquivo(
+                Path.of(DB.resolveDbPath()),
+                "Banco de dados — " + APP_NAME + " " + APP_VERSION));
+
         var routes = new AppRoutes().routes();
         Router router = new Router(routes, AppRoutes.Screens.SPLASH.name());
         context.useRouter(router).start(); // mostra a splash via fluxo normal do Router

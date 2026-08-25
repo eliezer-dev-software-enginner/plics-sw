@@ -39,6 +39,12 @@
 5. Rodar `python scripts/bump_version.py patch` (correção) ou `python scripts/bump_version.py release X.Y.Z` (versão nova) — atualiza `gradle.properties`, e `Main.APP_VERSION`/`scripts/config.py` já leem o valor automaticamente, sem precisar editar mais nada
 6. Atualizar versão em `README.md`: campo `Versão`
 
+## O que NÃO entra no updates.json
+- Envios automáticos de log/banco de dados pro Telegram (monitoramento de suporte)
+- Mecanismos de verificação de acesso/licença
+- Refatorações internas sem efeito visível pro usuário final
+- Commits de teste/experimentação
+
 ## Ao executar testes (workaround para pipe closed / GradleWorkerMain)
 - O path `C:\Users\Usuário` contém `ç` (caractere não-ASCII). O Gradle gera arquivos `@` classpath que corrompem esse caractere, causando `ClassNotFoundException: GradleWorkerMain`.
 - **Workaround:** copiar o projeto para `C:\temp\plics` e rodar os testes de lá:

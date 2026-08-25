@@ -7,7 +7,6 @@
       "Feat: Produtos devolvidos no período exibidos na tela de Relatórios e no PDF",
       "Feat: Campo \"Aceita devolução/troca\" no cadastro de produtos agora bloqueia devolução de vendas",
       "Feat: Tela de logs em Suporte + logging em toda a codebase",
-      "Feat: Envio do arquivo de log pro Telegram a cada abertura do app",
       "Feat: Possibilidade de desativar popup Instagram na abertura do aplicativo",
       "Refactor: Removida auto-atualização in-app — agora só redireciona pro site",
       "Fix: Vendas devolvidas deixam de contar como receita (Home e Relatórios)",
