@@ -346,12 +346,17 @@ public class Components {
     }
 
     public static Component FormTitle(String title, String textColor) {
-        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().textColor(textColor));
+        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().title()).bold().textColor(textColor));
     }
 
     public static Component FormTitle(String title) {
-        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold());
+        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().title()).bold());
     }
+
+    public static Component FormSubtitle(String title) {
+        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()));
+    }
+
 
     static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
             .fontSize(ThemeManager.theme().typography().small()).textColor("white").bgColor("#2563eb");

@@ -364,8 +364,9 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         }
 
         var mensagem = "Confirma a troca da venda #" + pedido.getId() + " (" + nomeClienteDoPedido(pedido) + ")? "
-                + "Os produtos originais voltam ao estoque e a venda será registrada como devolvida, "
-                + "criando uma nova venda no total de " + Utils.toBRLCurrency(totalItensTroca()) + ".";
+                + "A venda atual será marcada como devolvida e seus produtos voltarão ao estoque. "
+                + "Em seguida, uma nova venda será criada com os produtos escolhidos, no valor de "
+                + Utils.toBRLCurrency(totalItensTroca()) + ".";
 
         Components.ShowAlertAdvice(mensagem, () -> Async.Run(() -> {
             try {

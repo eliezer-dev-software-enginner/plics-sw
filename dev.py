@@ -34,6 +34,26 @@ def content_hash(path_str: str):
         return None
 
 
+def seed_known_hashes(handler: "ChangeHandler"):
+    # known_hashes começa vazio — sem isso, o PRIMEIRO evento de sistema de arquivos
+    # em qualquer arquivo (um touch de metadado sem conteúdo mudado nenhum: indexação
+    # do IntelliJ, Local History, etc.) parece "mudança" por não ter nada pra comparar,
+    # e dispara um restart falso logo depois do dev.py subir.
+    for d in WATCH_DIRS:
+        base = Path(d)
+        if not base.exists():
+            continue
+        for path in base.rglob("*"):
+            if path.is_dir():
+                continue
+            path_str = str(path)
+            if is_noise(path_str):
+                continue
+            file_hash = content_hash(path_str)
+            if file_hash is not None:
+                handler.known_hashes[path_str] = file_hash
+
+
 class ChangeHandler(FileSystemEventHandler):
     """
     Só reinicia quando o CONTEÚDO de um arquivo realmente muda — não a qualquer
@@ -117,6 +137,7 @@ if __name__ == "__main__":
     start()
     observer = Observer()
     handler = ChangeHandler()
+    seed_known_hashes(handler)
     for d in WATCH_DIRS:
         observer.schedule(handler, d, recursive=True)
     observer.start()
