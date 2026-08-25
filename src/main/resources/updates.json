@@ -1,5 +1,13 @@
 [
   {
+    "version": "v1.1.4",
+    "notes": [
+      "Feat: Troca de venda agora abre em janela separada (antes era modal)",
+      "Fix: ProcessKiller agora funciona no Linux (usava schtasks do Windows)",
+      "Refactor: Código morto de troca removido do PedidosScreenViewModel"
+    ]
+  },
+  {
     "version": "v1.1.3",
     "notes": [
       "Feat: Novo campo de frete e de devolução/troca no cadastro de produtos",

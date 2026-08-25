@@ -14,6 +14,12 @@ public class ProcessKiller {
 
     private static final Logger log = LoggerFactory.getLogger(ProcessKiller.class);
 
+    /**
+     * Mata o processo do PID informado (e sua árvore de filhos), de forma
+     * assíncrona e FORA da Job Object da aplicação atual.
+     * No Windows usa o Agendador de Tarefas (schtasks + taskkill.exe);
+     * no Linux/Unix envia SIGKILL (kill -9).
+     */
     public static void killPidAsync(long pid) {
         String os = System.getProperty("os.name", "").toLowerCase();
 
