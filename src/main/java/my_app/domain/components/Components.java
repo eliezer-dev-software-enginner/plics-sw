@@ -1,7 +1,5 @@
 package my_app.domain.components;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -76,7 +74,7 @@ public class Components {
 
     public static Component enderecoComponent(EnderecoState enderecoState){
         return new Container().children(
-                Components.FormTitle("Endereço"),
+                Components.FormSubtitle("Endereço"),
                 new FlowRow(new FlowRowProps().spacingOf(10))
                         .children(
                                 Components.InputColumnCep("Cep", enderecoState.cep),
@@ -219,34 +217,6 @@ public class Components {
         popup.show(context.selfStage());
     }
 
-    public static void ShowPopupForced(ScreenContext context, String message, String buttonText, Runnable onButtonClick) {
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(context.selfStage());
-        stage.initStyle(StageStyle.UTILITY);
-        stage.setAlwaysOnTop(true);
-        stage.setTitle("Aviso");
-
-        Label label = new Label(message);
-        label.setWrapText(true);
-        label.setStyle("-fx-text-fill: #333; -fx-font-size: 14px; -fx-text-alignment: center;");
-
-        javafx.scene.control.Button btn = new javafx.scene.control.Button(buttonText);
-        btn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-font-size: 14px; -fx-background-radius: 4px; -fx-cursor: hand;");
-        btn.setOnAction(e -> {
-            stage.close();
-            onButtonClick.run();
-        });
-
-        VBox vbox = new VBox(20, label, btn);
-        vbox.setPadding(new Insets(24));
-        vbox.setAlignment(Pos.CENTER);
-
-        Scene scene = new Scene(vbox, 420, 200);
-        stage.setScene(scene);
-        stage.show();
-    }
-
     public static Stage ShowModal(Component ui, ScreenContext context, int height) {
         Stage stage = new Stage();
 
@@ -345,23 +315,27 @@ public class Components {
                 .c_child(ButtonCadastro(title, callback));
     }
 
-    public static Component FormTitle(String title, String textColor) {
+    public static Text FormTitle(String title, String textColor) {
         return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().title()).bold().textColor(textColor));
     }
 
-    public static Component FormTitle(String title) {
+    public static Text FormTitle(String title) {
         return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().title()).bold());
     }
 
-    public static Component FormSubtitle(String title) {
-        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()));
+    public static Text FormSubtitle(String title, String color) {
+        return new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().subtitle())
+                .textColor(color));
     }
 
+    public static Text FormSubtitle(String title) {
+        return FormSubtitle(title, "black");
+    }
 
     static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
             .fontSize(ThemeManager.theme().typography().small()).textColor("white").bgColor("#2563eb");
 
-    public static Component ButtonCadastro(String textState, Runnable handleAdd) {
+    public static Button ButtonCadastro(String textState, Runnable handleAdd) {
         return new Button(textState, propsBtnCadastro
         ).onClick(handleAdd);
     }
@@ -797,7 +771,7 @@ public class Components {
                                 it->  it.getCodigoBarras() + " - " + it.getDescricao(),true, sugestoesProdutoVisible )));
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
                                         int borderWidth, int borderRadius, String borderColor, String labelColor,
                                         Integer width,Integer height) {
         var props = getInputPropsV2(placeholder);
@@ -820,14 +794,14 @@ public class Components {
                 );
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
                                         String labelColor, Integer width,Integer height) {
         return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(),
                 ThemeManager.theme().border().radiusMd(),
                 ThemeManager.theme().colors().border(),labelColor, width,height);
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
                                         String labelColor, Integer width) {
         return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(),
                 ThemeManager.theme().border().radiusMd(),
@@ -836,27 +810,44 @@ public class Components {
 
 
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,  String labelColor) {
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,  String labelColor) {
         return InputColumn(label, inputState, placeholder, disableInput,labelColor,null);
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-        return InputColumn(label, inputState, placeholder, disableInput,null,null);
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
+        return InputColumn(label, inputState, placeholder, disableInput,null,null,35);
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, Integer width) {
-        return InputColumn(label, inputState, placeholder, disableInput,null,width);
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, Integer width, Integer height) {
+        return InputColumn(label, inputState, placeholder, disableInput,null,width,height);
     }
 
-    public static Component InputColumnAuth(String label, ReadableState<String> inputState, String placeholder) {
-        return InputColumn(label, inputState, placeholder, false, "#fff",null,35);
+    public static Column InputColumnAuthFill(String label, ReadableState<String> inputState, String placeholder) {
+        var props = getInputPropsV2(placeholder);
+        props.height(35);
+
+        TextProps labelProps = new TextProps().fontSize(ThemeManager.theme().typography().body());
+
+        return new Column(new ColumnProps().fillWidth())
+                .c_child(new Text(label, labelProps))
+                .c_child(new Input((State<String>) inputState,
+                                props.borderWidth(ThemeManager.theme().border().width())
+                                        .borderColor(ThemeManager.theme().colors().border())
+                                        .borderRadius(ThemeManager.theme().border().radiusMd())
+                                        .maxWidth(300)
+                        )
+                );
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder,Integer width) {
-        return InputColumn(label, inputState, placeholder, false,width);
+    public static Column InputColumnAuth(String label, ReadableState<String> inputState, String placeholder, int width) {
+        return InputColumn(label, inputState, placeholder, false,width,35);
     }
 
-    public static Component InputColumn(String label, ReadableState<String> inputState, String placeholder) {
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder,Integer width) {
+        return InputColumn(label, inputState, placeholder, false,width,35);
+    }
+
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder) {
         return InputColumn(label, inputState, placeholder, false);
     }
 
@@ -952,6 +943,14 @@ public class Components {
                         .c_child(new SpacerVertical(6))
                         .c_child(new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().small())))
         ), onClick);
+    }
+
+    public static Component searchInputFill(State<String> stateInput, String placeholder) {
+        var icon = FontIcon.of(AntDesignIconsOutlined.SEARCH, 20, Color.web(ThemeManager.theme().colors().secondary()));
+        return new Input(stateInput,
+                new InputProps().placeHolder(placeholder)
+                        .height(31))
+                .left(icon);
     }
 
     public static Component searchInput(State<String> stateInput, String placeholder) {

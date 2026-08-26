@@ -6,6 +6,7 @@ import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -55,7 +56,7 @@ public class PDVScreen implements ScreenComponent {
                                         ),
                                         vendaFiadaComponent(),
                                         new SpacerVertical(30),
-                                        new Row(new RowProps().spacingOf(10)).children(
+                                        new FlowRow(new FlowRowProps().spacingOf(10)).children(
                                                 new Button("Finalizar Venda").onClick(vm::finalizarVenda),
                                                 new Button("Imprimir nota de venda").onClick(vm::imprimirNota),
                                                 new Button("Imprimir (modo alternativo)").onClick(vm::imprimirNotaAlternativa)
@@ -91,7 +92,7 @@ public class PDVScreen implements ScreenComponent {
     Component produtoForm(){
         return new Card(
                 new Column().children(
-                        Components.FormTitle("Buscar produto"),
+                        Components.FormSubtitle("Buscar produto"),
                         new SpacerVertical(5),
                         //Components.InputColumn("Código do produto", vm.codigoBarrasInput, "Ex: João"),
                         Components.SelectDropDownSearch("Código do produto", vm.codigoBarrasInput, "xxxxxxxx",
@@ -107,7 +108,7 @@ public class PDVScreen implements ScreenComponent {
 
     public Component table() {
         return new Column(new ColumnProps().fillWidth()).children(
-                Components.FormTitle("LISTA DE PRODUTOS"),
+                Components.FormSubtitle("LISTA DE PRODUTOS"),
                 //codigo, descricao(nome), qtd, vlr. Unit., Total
                 new SimpleTable<ItemVenda>()
                     .fromData(vm.itensCarrinho)
@@ -133,7 +134,7 @@ public class PDVScreen implements ScreenComponent {
 
     Component vendaFiadaComponent(){
         return new Column().children(
-                Components.FormTitle("Cliente e pagamento"),
+                Components.FormSubtitle("Cliente e pagamento"),
                 Components.SelectColumnWithButton("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome,
                         true,"+ Criar cliente", vm::handleCriarCliente),
                 Components.SelectColumn("Forma de pagamento", Data.tiposPagamentoList, vm.formaPagamentoSelecionado, it -> it),

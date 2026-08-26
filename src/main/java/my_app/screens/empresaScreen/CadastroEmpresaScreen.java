@@ -47,7 +47,7 @@ public class CadastroEmpresaScreen implements ScreenComponent {
                 .c_child(new SpacerVertical(ThemeManager.theme().spacing().md()))
                 .c_child(TopWithImage())
                 .c_child(new SpacerVertical(ThemeManager.theme().spacing().sm()))
-                .c_child(Components.FormTitle("Endereço"))
+                .c_child(Components.FormSubtitle("Endereço"))
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(ThemeManager.theme().spacing().sm()))
                         .children(
                                 Components.InputColumnCep("Cep", vm.cep),
@@ -57,7 +57,7 @@ public class CadastroEmpresaScreen implements ScreenComponent {
                         )
                 )
                 .c_child(new SpacerVertical(ThemeManager.theme().spacing().sm()))
-                .c_child(Components.FormTitle("Dados de carnê"))
+                .c_child(Components.FormSubtitle("Dados de carnê"))
                 .c_child(new Row(new RowProps().bottomVertically().spacingOf(ThemeManager.theme().spacing().sm()))
                         .r_child(
                                 Components.InputColumn("Local de pagamento",  vm.localPagamento,"Ex: Pagável em qualquer banco ou lotérica"))

@@ -2,6 +2,8 @@
   {
     "version": "v1.1.4",
     "notes": [
+      "Ui: Leve melhoria na UI da tela de autenticação",
+      "Feat: Exibe valores monetários formatados na tela de Troca de produtos",
       "Feat: Troca de venda no Histórico do Caixa — devolve a original e cria uma nova com os itens escolhidos",
       "Feat: Troca de venda agora abre em janela separada em vez de modal",
       "Feat: Produtos devolvidos no período exibidos na tela de Relatórios e no PDF",

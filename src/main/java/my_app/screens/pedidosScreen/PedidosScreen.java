@@ -40,7 +40,7 @@ public class PedidosScreen implements ScreenComponent {
         return new Container(new ContainerProps().paddingAll(10)).children(
                 Components.FormTitle("Histórico do Caixa — Vendas PDV"),
                 new SpacerVertical(10),
-                Components.searchInput(vm.searchState, "Pesquisar por cliente ou forma de pagamento"),
+                Components.searchInputFill(vm.searchState, "Pesquisar por cliente ou forma de pagamento"),
                 new SpacerVertical(10),
                 new Row(new megalodonte.props.RowProps().spacingOf(10)).children(
                         new Column(new megalodonte.props.ColumnProps().fillWidth()).children(pedidosTable()),
@@ -67,7 +67,7 @@ public class PedidosScreen implements ScreenComponent {
 
     Component itensDoPedidoSelecionado() {
         return new Card(new Column().children(
-                Components.FormTitle("Itens da venda selecionada"),
+                Components.FormSubtitle("Itens da venda selecionada"),
                 new SpacerVertical(10),
                 new SimpleTable<PedidoItemModel>()
                         .fromData(vm.itensDoPedidoSelecionado)

@@ -1,5 +1,6 @@
 package my_app.screens.pedidosScreen.details;
 
+import jdk.jshell.execution.Util;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -10,11 +11,13 @@ import megalodonte.components.layout_components.Stack;
 import megalodonte.props.ButtonProps;
 import megalodonte.props.ContainerProps;
 import megalodonte.props.RowProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
 import my_app.screens.pdvScreen.ItemVenda;
+import my_app.utils.Utils;
 
 public class PedidoDetails implements ScreenComponent {
 
@@ -70,16 +73,16 @@ public class PedidoDetails implements ScreenComponent {
                                                 new SpacerHorizontal().fill()
                                         )),
                                         new SpacerVertical(10),
-                                        Components.FormTitle("Produtos da troca (clique para substituir)"),
+                                        new Text("Produtos da troca (clique para substituir)", new TextProps().fontWeight("700")),
                                         new SimpleTable<ItemVenda>()
                                                 .fromData(vm.trocaItens)
                                                 .header()
                                                 .columns()
                                                 .column("Cod", it -> it.produto.getCodigoBarras())
                                                 .column("Nome", it -> it.produto.getDescricao())
-                                                .column("Qtd.", it -> it.quantidade)
-                                                .column("Vl. Unit.", it -> it.produto.getPrecoVenda())
-                                                .column("Total", ItemVenda::totalItem)
+                                                .column("Qtd.",  it -> it.quantidade)
+                                                .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.produto.getPrecoVenda()))
+                                                .column("Total", it->Utils.toBRLCurrency(it.totalItem()))
                                                 .build()
                                                 .onItemSelectChange(vm.trocaItemSelected::set)
                                 ))))

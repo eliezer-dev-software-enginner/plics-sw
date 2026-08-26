@@ -11,6 +11,7 @@ import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -42,26 +43,22 @@ public class WelcomeScreen implements ScreenComponent {
 
     public Component render() {
         return new Container(new ContainerProps().bgImage("/assets/wallpapers/welcome.jpg")).children(
-                new Column(new ColumnProps().centerHorizontally()).c_child(
-                        new Column(new ColumnProps().centerHorizontally().width(400)
-                                .maxWidth(400).paddingTop(100).spacingOf(10))
-                                .children(
-                                        new Image("assets/app_banner.png", new ImageProps().width(400).height(200).preserveRatio(true))
-                                                .ref(logoRef),
-                                        //new Text("Plics SW", new TextProps().fontSize(ThemeManager.theme().typography().title()).bold().color(ThemeManager.theme().colors().secondary())),
-                                        new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
-                                                new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).color("#fff")),
-                                        new LineHorizontal(),
-                                        new Text("Acesso padrão configurado como",
-                                                new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
-                                        textRow(),
-                                        new SpacerVertical(20),
-                                        new Button("Entrar no sistema",
-                                                new ButtonProps()
-                                                        .fontSize(theme.typography().body()).textColor("#fff")
-                                                        .bgColor(theme.colors().primary()))
-                                                .onClick(this::handleClick)
-                                )
+                new Column(new ColumnProps().centerHorizontally().paddingTop(50).spacingOf(10)).children(
+                        new Image("assets/app_banner.png", new ImageProps().width(500).height(400))
+                                .ref(logoRef),
+                        new TextFlow(new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
+                                new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).color("#fff"))
+                        ),
+                        new LineHorizontal(),
+                        new Text("Acesso padrão configurado como",
+                                new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
+                        textRow(),
+                        new SpacerVertical(20),
+                        new Button("Entrar no sistema",
+                                new ButtonProps()
+                                        .fontSize(theme.typography().body()).textColor("#fff")
+                                        .bgColor(theme.colors().primary()))
+                                .onClick(this::handleClick)
                 )
         );
     }

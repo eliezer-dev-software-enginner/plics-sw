@@ -42,16 +42,25 @@ public class AuthScreen implements ScreenComponent {
     @Override
     public Component render() {
         return new Container(new ContainerProps().paddingAll(20).bgImage("/assets/bgAuth.jpg")).children(
-                new Row(new RowProps()).children(new Text("Plics - SW " + Main.APP_VERSION, new TextProps().color("white").bold())),
+                new Row(new RowProps()).children(Components.FormSubtitle("Plics - SW " + Main.APP_VERSION, "white")),
                 new SpacerVertical(20),
                 new Row().children(
                         new Column().children(
-                                new Text("Realize já seu login na Plics SW", new TextProps().color("white").fontSize(14)),
-                                Show.when(vm.showLicensaState, () -> Components.InputColumnAuth("Licença", vm.licensaState, "Ex: ABC123")),
-                                Components.InputColumnAuth("Login", vm.loginState, "Ex: admin"),
-                                Components.InputColumnAuth("Senha", vm.passwordState, "Digite sua senha"),
-                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
+                                Components.FormSubtitle("Realize já seu login na Plics SW", "white"),
+                                new SpacerVertical(ThemeManager.theme().spacing().md()),
+                                new Card(
+                                        new Column(new ColumnProps().maxWidth(185)).children(
+                                                Show.when(true, () -> Components.InputColumnAuthFill("Licença",
+                                                        vm.licensaState, "Ex: ABC123")),
+                                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
+                                                Components.InputColumnAuthFill("Login", vm.loginState, "Ex: admin"),
+                                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
+                                                Components.InputColumnAuthFill("Senha", vm.passwordState, "Digite sua senha"),
+                                                new SpacerVertical(ThemeManager.theme().spacing().md()),
+                                                Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
+                                        ),
+                                        new CardProps().padding(10).borderRadius(10)
+                                )
                         ),
                         new Row(new RowProps().fillWidth()),
                         new Column(new ColumnProps().maxWidth(170)).children(
