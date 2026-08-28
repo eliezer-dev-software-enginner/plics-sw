@@ -119,7 +119,7 @@ public class Components {
         var dtPrimeiraParcela = State.of(LocalDate.now().plusMonths(1).minusDays(1));
         var qtdParcelas = State.of("1");
 
-        Runnable handleGerarParcelas = () -> {
+        RunnableThrowing handleGerarParcelas = () -> {
             int qtd = Integer.parseInt(qtdParcelas.get());
             if(qtd < 1){
                 Components.ShowAlertError("Quantidade de parcelas inválida: " + qtd + ". Informe um valor maior que zero.");
@@ -149,7 +149,7 @@ public class Components {
                 .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
     }
 
-    public static Component actionButtons(ComputedState<String> btnText, Runnable onClick) {
+    public static Component actionButtons(ComputedState<String> btnText, RunnableThrowing onClick) {
         return new Button(btnText,
                 new ButtonProps()
                         .fillWidth()
@@ -171,7 +171,7 @@ public class Components {
     }
 
     public static void ShowPopupWithButton(
-            ScreenContext screenContext, String message, String btnTitle, Runnable callback) {
+            ScreenContext screenContext, String message, String btnTitle, RunnableThrowing callback) {
         Popup popup = new Popup();
         popup.setAutoHide(false);
 
@@ -258,7 +258,7 @@ public class Components {
         }
     }
 
-    public static Card CardImageSelector(State<String> imagemState, Runnable handleChangeImage) {
+    public static Card CardImageSelector(State<String> imagemState, RunnableThrowing handleChangeImage) {
         return new Card(
                 new Column(new ColumnProps().centerHorizontally().spacingOf(15))
                         .c_child(new Text("Foto do produto", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
@@ -268,7 +268,7 @@ public class Components {
                                 new ButtonProps().fontSize(ThemeManager.theme().typography().small()).bgColor("#A6B1E1"))
                                 .onClick(handleChangeImage)
                         ),
-                new CardProps().height(300).padding(20)
+                new CardProps().height(300).paddingAll(20)
         );
     }
 
@@ -308,7 +308,7 @@ public class Components {
 
     public static Column ImageSelector(String title, State<String> imageState,
                                        ImageProps props,
-                                       Runnable callback) {
+                                       RunnableThrowing callback) {
         return new Column()
                 .c_child(new Image(imageState, props))
                 .c_child(new SpacerVertical(10))
@@ -335,18 +335,18 @@ public class Components {
     static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
             .fontSize(ThemeManager.theme().typography().small()).textColor("white").bgColor("#2563eb");
 
-    public static Button ButtonCadastro(String textState, Runnable handleAdd) {
+    public static Button ButtonCadastro(String textState, RunnableThrowing handleAdd) {
         return new Button(textState, propsBtnCadastro
         ).onClick(handleAdd);
     }
 
-    public static Component ButtonCadastro(ComputedState<String> textState, Runnable handleAdd) {
+    public static Component ButtonCadastro(ComputedState<String> textState, RunnableThrowing handleAdd) {
         return new Button(textState, propsBtnCadastro
         ).onClick(handleAdd);
     }
 
     @Deprecated(forRemoval = true)
-    public static Component ButtonCadastro(State<String> textState, Runnable handleAdd) {
+    public static Component ButtonCadastro(State<String> textState, RunnableThrowing handleAdd) {
         return new Button(textState, propsBtnCadastro).onClick(handleAdd);
     }
 
@@ -413,7 +413,7 @@ public class Components {
     public static <T> Component SelectColumnWithButton(
             String label,ListState<T> list, State<T> stateSelected,
             Function<T, String> display, boolean compareById,
-            String btnText, Runnable handleClick) {
+            String btnText, RunnableThrowing handleClick) {
 
         var rowProps = new RowProps().spacingOf(2)
                 .bottomVertically();
@@ -896,7 +896,7 @@ public class Components {
                 .c_child(textAreaInput);
     }
 
-    public static Component InputWithButtonRow(String label, String placeholder, String btnTitle, State<String> inputState, Runnable onClick) {
+    public static Component InputWithButtonRow(String label, String placeholder, String btnTitle, State<String> inputState, RunnableThrowing onClick) {
         return new Row(new RowProps().bottomVertically())
                 .r_child(Components.InputColumn(label, inputState, placeholder))
                 .r_child(new Button(btnTitle, new ButtonProps().height(32).textColor("#FFF")

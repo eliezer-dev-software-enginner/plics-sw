@@ -140,7 +140,7 @@ public class HomeScreen implements ScreenComponent {
                                 new Text("do mês",  new TextProps().fontSize(ThemeManager.theme().typography().small())),
                                 new Text(valueState, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())
                         ),
-                new CardProps().padding(0).height(100).borderRadius(20).width(170)
+                new CardProps().paddingAll(0).height(100).borderRadius(20).width(170)
         );
     }
 
@@ -195,7 +195,7 @@ public class HomeScreen implements ScreenComponent {
                         .c_child(new Image(cardItem.img, new ImageProps().size(60)))
                         .c_child(new Text(cardItem.title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
                         .c_child(new Text(cardItem.desc,  new TextProps().fontSize(ThemeManager.theme().typography().small()))),
-                       new CardProps().padding(0).height(170).width(230).borderRadius(20)),
+                       new CardProps().paddingAll(0).height(170).width(230).borderRadius(20)),
                ()-> ctx.router().spawnWindow(cardItem.destination,e->{})
        );
     }

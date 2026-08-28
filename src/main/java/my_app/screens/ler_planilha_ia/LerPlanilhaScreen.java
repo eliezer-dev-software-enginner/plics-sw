@@ -2,6 +2,7 @@ package my_app.screens.ler_planilha_ia;
 
 import javafx.stage.FileChooser;
 import megalodonte.base.UI;
+import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.state.State;
@@ -65,7 +66,7 @@ public class LerPlanilhaScreen implements ScreenComponent {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("planilha",
                 "*.xlsx", "*.excel"));
 
-        Runnable handleClick = ()->{
+        RunnableThrowing handleClick = ()->{
             var file = fileChooser.showOpenDialog(stage);
 
             if (file != null) {

@@ -59,7 +59,7 @@ public class AuthScreen implements ScreenComponent {
                                                 new SpacerVertical(ThemeManager.theme().spacing().md()),
                                                 Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
                                         ),
-                                        new CardProps().padding(10).borderRadius(10)
+                                        new CardProps().paddingAll(10).borderRadius(10)
                                 )
                         ),
                         new Row(new RowProps().fillWidth()),

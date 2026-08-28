@@ -33,6 +33,11 @@ return new ThemeColors(
         }
 
         @Override
+        public ThemePadding padding() {
+            return new ThemePadding(4, 8, 12, 20, 32);
+        }
+
+        @Override
         public ThemeBorder border() {
             return new ThemeBorder(1,4,8,12);
         }
@@ -67,6 +72,10 @@ return new ThemeColors(
             return new ThemeSpacing(4, 8, 12, 20, 32);
         }
 
+        @Override
+        public ThemePadding padding() {
+            return new ThemePadding(4, 8, 12, 20, 32);
+        }
 
         @Override
         public ThemeBorder border() {

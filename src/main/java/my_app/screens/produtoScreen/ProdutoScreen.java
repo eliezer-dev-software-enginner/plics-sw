@@ -3,6 +3,7 @@ package my_app.screens.produtoScreen;
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
+import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.state.State;
@@ -53,7 +54,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
 
     @Override
     public Component form() {
-        Runnable handleChangeImage = () -> {
+        RunnableThrowing handleChangeImage = () -> {
             var stage = vm.getCtx().selfStage();
 
             FileChooser fileChooser = new FileChooser();
@@ -87,7 +88,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
                                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
                         ),
                 new CardProps()
-                        .padding(10)
+                        .paddingAll(10)
                         .borderRadius(12)
 //                        .bgColor("red")
                         .fillWidth()
@@ -151,7 +152,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
     }
 
     public Component ContainerLeft(ProdutoScreenViewModel vm) {
-        Runnable handleGerarCodigoBarras = () -> {
+        RunnableThrowing handleGerarCodigoBarras = () -> {
             final var codigo = Utils.gerarCodigoBarrasEAN13();
             vm.codigoBarras.set(codigo);
         };

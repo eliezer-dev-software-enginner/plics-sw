@@ -49,7 +49,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3<Tecnic
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate)),
                 new CardProps()
-                        .padding(10)
+                        .paddingAll(10)
                         .borderRadius(12)
         );
     }
