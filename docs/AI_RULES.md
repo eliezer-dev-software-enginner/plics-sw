@@ -45,6 +45,16 @@
 - Refatorações internas sem efeito visível pro usuário final
 - Commits de teste/experimentação
 
+## O que entra no updates.json (somente o que faz sentido ao software)
+- Adicionar no `updates.json` apenas notas que façam sentido pro usuário final do software — ou
+  seja, o que tem impacto visível/utilitário no dia a dia de uso (telas, fluxos, valores,
+  comportamento).
+- **Não** incluir informação técnica de desenvolvimento (renomeação de métodos/classes internos,
+  troca de componente interno, refactor de layout de código, `RunnableThrowing`, `padding`/`maxWidth`,
+  mudança de nomes `FormTitle`→`FormSubtitle`, etc.) — isso é interno e não interessa ao usuário.
+- Agrupar e escrever como nota concisa em português, com o prefixo do tipo (Feat/Fix/Ui/Refactor),
+  sempre pensando em "o que o usuário percebe/ganha" com aquela mudança.
+
 ## Ao executar testes (workaround para pipe closed / GradleWorkerMain)
 - O path `C:\Users\Usuário` contém `ç` (caractere não-ASCII). O Gradle gera arquivos `@` classpath que corrompem esse caractere, causando `ClassNotFoundException: GradleWorkerMain`.
 - **Workaround:** copiar o projeto para `C:\temp\plics` e rodar os testes de lá:
