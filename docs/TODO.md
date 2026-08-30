@@ -1,5 +1,14 @@
 # TODO
 
+## Concluído (papel de parede da Home virando "camada fina" com ScrollPaneDefault — 2026-08-29)
+- [x] **Reportado**: bgImage da Home coberta parcialmente (camada fina) ao usar
+      `Components.ScrollPaneDefault`
+- [x] **Causa**: o skin do `ScrollPane` nativo pinta `.viewport`/`.corner` com fundo opaco do
+      Modena, por cima do bgImage — `-fx-background-color` no nó não alcança a subestrutura
+- [x] **Fix**: `-fx-background: transparent` adicionado no `ScrollPaneDefault` (mesma técnica do
+      `megalodonte.components.Scroll`)
+- [x] **Testes**: `./gradlew test` BUILD SUCCESSFUL (sem teste automatizado — visual)
+
 ## Concluído (troca migrada para janela via rota — 2026-08-25)
 - [x] **Migração**: `Components.ShowModal()` → `ctx.router().spawnWindow(PEDIDO_DETAILS/${id})`
 - [x] **`PedidoTrocaViewModel`** (novo): states e lógica de troca extraídos do PedidosScreenVM

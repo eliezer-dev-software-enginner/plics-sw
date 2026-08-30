@@ -1,5 +1,33 @@
 # Decisões Arquiteturais
 
+## 2026-08-29: Transparência de ScrollPane em cima de bgImage — usar `-fx-background`, não só `-fx-background-color`
+
+**Contexto:** na HomeScreen, o papel de parede (`bgImage` num `Container` ancestral) aparecia
+só como uma "camada fina" quando o conteúdo era um `Components.ScrollPaneDefault`
+(`javafx.scene.control.ScrollPane` nativo). Sem o Scroll, a imagem cobria tudo. Mesma classe de
+bug já resolvida em `megalodonte.components.Scroll` (a versão própria, que luta contra o CSS do
+Modena).
+
+**Causa:** o skin nativo do `ScrollPane` pinta sub-nós com fundo opaco próprio — `.viewport` e
+`.corner` — usando `-fx-control-inner-background` do Modena (branco/light por padrão). Um
+`-fx-background-color: transparent` aplicado no nó do ScrollPane **não alcança esses sub-nós**
+(eles herdaram do cascata de CSS do skin, não do node root). Esse viewport opaco é desenhado por
+cima do `bgImage` atrás dele.
+
+**Decisão:** além de `-fx-background-color: transparent`, setar também
+`-fx-background: transparent` no `ScrollPane`. `-fx-background` é a propriedade looked-up que o
+modena.css usa internamente tanto pro scroll-pane quanto pro viewport — sobrescrevê-la no nó
+cobre a subestrutura inteira de uma vez, sem precisar dar lookup em `.viewport`/`.corner` via JS.
+É a mesma técnica documentada/comentada em `megalodonte.components.Scroll` (que explicitamente
+transparentiza o viewport). Alternativa mais robusta/carregada demais (rodear o skin via
+`transparentizeViewport` com listener) não foi necessária aqui — o `-fx-background` basta.
+
+**Arquivos:** `Components.java` (`ScrollPaneDefault`), `HomeScreen.java` (padding do container).
+**Verificação:** `./gradlew test` — BUILD SUCCESSFUL. Confirmação real foi do próprio usuário
+(ao comentar o ScrollPane a imagem voltava; após o fix, passou a cobrir).
+
+---
+
 ## 2026-08-25: Troca migrada de ShowModal para janela via rota (PEDIDO_DETAILS/${id})
 
 **Contexto:** o modal de troca usava `Components.ShowModal()` — uma `Stage` avulsa criada

@@ -26,6 +26,26 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-08-29: Papel de parede da Home cobrindo só uma "camada fina" ao usar ScrollPaneDefault
+- **Reportado pelo usuário**: na HomeScreen, o papel de parede aparecia só como uma
+  camada bem fina (não cobria o tamanho disponível). Comentar o
+  `Components.ScrollPaneDefault()` fazia a imagem aparecer certinha — o problema era o Scroll.
+- **Causa raiz** (mesma classe de bug já tratada em `megalodonte.components.Scroll`, ver
+  CONTEXT.md de 2026-08-03): `ScrollPaneDefault` usa um `javafx.scene.control.ScrollPane` nativo.
+  O skin dele pinta sub-nós próprios — `.viewport` (e o `.corner`) — com um fundo opaco herdado
+  do `modena.css` (`-fx-control-inner-background`, branco/light por padrão), independente do
+  `-fx-background-color` que era setado no próprio ScrollPane. Esse fundo opaco do viewport é
+  desenhado por cima do `bgImage` do Container ancestral, cobrindo o papel de parede e
+  deixando visível só as faixas em volta (a "camada fina").
+- **Fix**: `Components.ScrollPaneDefault()` passou a setar também
+  `-fx-background: transparent`. `-fx-background` é a propriedade looked-up que o modena.css
+  usa internamente tanto pro scroll-pane quanto pro viewport, então sobrescrevê-la alcança a
+  subestrutura inteira de uma vez (mesma técnica usada por `megalodonte.components.Scroll`).
+  `HomeScreen` também ganhou `paddingAll(0)` no Container de fundo (cosmético, nada de regressão).
+- **Arquivos**: `Components.java` (ScrollPaneDefault), `HomeScreen.java` (padding do container).
+- **Testes**: `./gradlew test` — BUILD SUCCESSFUL (sem teste automatizado dedicado; é
+  comportamento 100% visual, mesma limitação de sempre pra esse tipo de coisa).
+
 ### 2026-08-25: Troca migrada de ShowModal para janela via rota
 - **Migração**: o modal de troca (antes `Components.ShowModal` dentro de PedidosScreen) agora é
   uma janela independente aberta via `ctx.router().spawnWindow()` com rota

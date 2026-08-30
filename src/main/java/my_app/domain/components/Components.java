@@ -165,7 +165,17 @@ public class Components {
         VBox.setVgrow(scroll, Priority.ALWAYS);
         scroll.setFitToWidth(true);
         scroll.setFitToHeight(true);
-        scroll.setStyle("-fx-background-color: transparent;-fx-border-color: transparent;");
+
+        // -fx-background-color no node raiz não alcança a subestrutura do skin
+        // (.viewport, .corner) — cada um tem seu próprio background opaco herdado
+        // do modena.css, sentando por cima de qualquer bgImage atrás do ScrollPane.
+        // -fx-background é a variável que o modena.css usa internamente tanto pro
+        // scroll-pane quanto pro viewport, então sobrescrever ela aqui cobre os dois.
+        scroll.setStyle(
+                "-fx-background-color: transparent;" +
+                        "-fx-background: transparent;" +
+                        "-fx-border-color: transparent;"
+        );
 
         return Component.CreateFromJavaFxNode(scroll);
     }

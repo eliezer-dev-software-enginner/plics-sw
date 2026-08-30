@@ -22,6 +22,7 @@ import megalodonte.v2.Show;
 import my_app.Main;
 import my_app.core.AppRoutes;
 import my_app.domain.Data;
+import my_app.domain.components.Components;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -58,32 +59,34 @@ public class HomeScreen implements ScreenComponent {
 
     public Component render (){
         var rowProps = new RowProps().spacingOf(10);
-        //return new Container(new ContainerProps().bgImage("/assets/home-bg.jpg")).children(
-        //return new Container(new ContainerProps().bgImage("/assets/wallpapers/alesia-kazantceva-VWcPlbHglYc-unsplash.jpg")).children(
-        //return new Container(new ContainerProps().bgImage("/assets/wallpapers/lukas-blazek-EWDvHNNfUmQ-unsplash.jpg"))
         var homeContent = new Container(new ContainerProps()
+                .paddingAll(0)
                 .fillHeight()
                 .bgImage("/assets/wallpapers/shapelined-_JBKdviweXI-unsplash.jpg"))
                 .children(
                 menuBar(),
-                new Container(new ContainerProps().paddingAll(10))
-                        .children(
-                                new Row(rowProps).children(
-                                        new Column().children(
-                                                financeCard("Receitas", AntDesignIconsOutlined.RISE, viewModel.receitas),
-                                                financeCard("Despesas", AntDesignIconsOutlined.FALL, viewModel.despesas),
-                                                financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, viewModel.lucroLiquido),
-                                                new SpacerVertical(20),
-                                                new Clickable(
-                                                        new Image("assets/banners/banner_convite_playlist_ytb.png",
-                                                                new ImageProps().width(200).height(90))
-                                                                .ref(bannerRef),
-                                                        ()-> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK")
+                        Components.ScrollPaneDefault(
+                                new Container(new ContainerProps().paddingAll(10))
+                                        .children(
+                                                new Row(rowProps).children(
+                                                        new Column().children(
+                                                                financeCard("Receitas", AntDesignIconsOutlined.RISE, viewModel.receitas),
+                                                                financeCard("Despesas", AntDesignIconsOutlined.FALL, viewModel.despesas),
+                                                                financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, viewModel.lucroLiquido),
+                                                                new SpacerVertical(20),
+                                                                new Clickable(
+                                                                        new Image("assets/banners/banner_convite_playlist_ytb.png",
+                                                                                new ImageProps().width(200).height(90))
+                                                                                .ref(bannerRef),
+                                                                        ()-> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK")
+                                                                )
+                                                        ),
+                                                        centerContent()
                                                 )
-                                        ),
-                                        centerContent()
-                                )
+                                        )
                         )
+
+
         );
 
         // Modal chamativo, exibido alguns milissegundos depois da tela abrir (ver
