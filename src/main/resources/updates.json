@@ -14,7 +14,6 @@
       "Refactor: Removida auto-atualização in-app — agora só redireciona pro site",
       "Fix: Papel de parede da tela inicial não ficava mais coberto por uma camada opaca",
       "Fix: Vendas devolvidas deixam de contar como receita (Home e Relatórios)",
-      "Fix: ProcessKiller agora funciona no Linux (usava schtasks do Windows)",
       "Fix: Validação de troca bloqueava qualquer produto original"
     ]
   },
