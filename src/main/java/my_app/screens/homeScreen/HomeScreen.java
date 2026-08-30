@@ -148,18 +148,6 @@ public class HomeScreen implements ScreenComponent {
     }
 
     private Component menuBar(){
-        var suporteMenu = new Menu("Suporte")
-                .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
-                .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
-                .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
-                .item("Ver logs da aplicação", ()-> ctx.router().spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}));
-
-        // Quem instala pela Store recebe atualizações pelo próprio mecanismo da Store
-        // (ver Main.isMicrosoftStore), então nem mostra esse item.
-        if (!Main.isMicrosoftStore) {
-            suporteMenu.item("Buscar atualização", this::buscarAtualizacao);
-        }
-
         return new MenuBar()
                 .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow(AppRoutes.Screens.PREFERENCIAS.name(),e->{})))
                 .menu(new Menu("Cadastros")
@@ -173,7 +161,14 @@ public class HomeScreen implements ScreenComponent {
                         .item("Empresa", ()-> ctx.router().spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
                         .item("Relatórios", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATORIOS.name(),e->{}))
                 )
-                .menu(suporteMenu);
+                .menu(new Menu("Suporte")
+                        .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
+                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
+                        .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
+                        .item("Ver logs da aplicação", ()-> ctx.router().spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}))
+                        .itemIf(!Main.isMicrosoftStore, "Buscar atualização", this::buscarAtualizacao)
+                        .item("Termos de uso", ()-> ctx.router().spawnWindow(AppRoutes.Screens.TERMOS_DE_USO.name(),e->{}))
+                );
     }
 
 

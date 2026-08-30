@@ -6,7 +6,7 @@ public class InitialRouteResolver {
 
     public static String resolve(boolean isFirstAccess, boolean enterWithCredentials) {
         //if(Main.devMode)return AppRoutes.Screens.PEDIDO_DETAILS.name()+"/10";
-        if(Main.devMode)return AppRoutes.Screens.HOME.name();
+        if(Main.devMode)return AppRoutes.Screens.TERMOS_DE_USO.name();
         if (isFirstAccess) {
             return AppRoutes.Screens.WELCOME.name();
         }

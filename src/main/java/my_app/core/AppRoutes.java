@@ -6,6 +6,7 @@ import my_app.Main;
 import my_app.SplashScreen;
 import my_app.screens.acessoBloqueadoScreen.AcessoBloqueadoScreen;
 import my_app.screens.ler_planilha_ia.LerPlanilhaScreen;
+import my_app.screens.termoUsoScreen.TermoUsoScreen;
 import my_app.screens.welcomeScreen.WelcomeScreen;
 import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
 import my_app.screens.feedbackScreen.RelatarErroScreen;
@@ -59,7 +60,8 @@ public class AppRoutes {
         RELATORIOS,
         LOGS,
         ACESSO_BLOQUEADO,
-        PEDIDO_DETAILS
+        PEDIDO_DETAILS,
+        TERMOS_DE_USO,
     }
 
     final int MIN_WIDTH = 600;
@@ -109,7 +111,8 @@ public class AppRoutes {
                 new Router.Route(Screens.LOGS.name(), LogsScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Logs da aplicação", true)),
                 new Router.Route(Screens.PEDIDO_DETAILS.name() + "/${id}", PedidoDetails::new, new RouteProps(MEDIUM_WIDTH, MAX_HEIGHT, "Detalhes do pedido", true)),
                 new Router.Route(Screens.ACESSO_BLOQUEADO.name(), ctx -> new AcessoBloqueadoScreen(),
-                        new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Acesso bloqueado", false))
+                        new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Acesso bloqueado", false)),
+                new Router.Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false))
         );
     }
 }
