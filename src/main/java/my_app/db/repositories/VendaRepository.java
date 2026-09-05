@@ -2,6 +2,7 @@ package my_app.db.repositories;
 
 import my_app.db.models.VendaModel;
 import net.sf.persism.Session;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -9,7 +10,6 @@ import java.time.LocalDate;
 
 import static net.sf.persism.Parameters.params;
 import static net.sf.persism.SQL.sql;
-import static my_app.utils.DateUtils.localDateParaMillis;
 
 public class VendaRepository extends BaseRepository<VendaModel> {
 
@@ -62,7 +62,7 @@ public class VendaRepository extends BaseRepository<VendaModel> {
     }
 
     public BigDecimal somarVendasHoje() throws SQLException {
-        long inicioHoje = localDateParaMillis(LocalDate.now());
+        long inicioHoje = DatePack.localDateParaMillis(LocalDate.now());
         long fimHoje = inicioHoje + (24 * 60 * 60 * 1000L) - 1;
         return somarVendasPorPeriodo(inicioHoje, fimHoje);
     }

@@ -17,6 +17,7 @@ import java.util.List;
 public class AuthScreenViewModel {
 
     private static final Logger log = LoggerFactory.getLogger(AuthScreenViewModel.class);
+    //TODO: REMOVER NO FUTURO: CONSULTAR SERVIDOR
     public static final List<String> LICENCAS_PRODUCAO = List.of(
             "5fZl2OI7f2ksjc8YRzBRR0ycjsCzycXyrX",
             "Fh0OofMRVVE30elP6KvES4AuBBEYcK8qZIyXzL",

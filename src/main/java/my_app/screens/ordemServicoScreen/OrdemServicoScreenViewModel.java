@@ -1,28 +1,28 @@
 package my_app.screens.ordemServicoScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.v2.ListState;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.ListState;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.OrdemServicoModel;
 import my_app.db.models.TecnicoModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.OrdemServicoService;
 import my_app.db.services.TecnicoService;
-import my_app.domain.components.Components;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
-import my_app.utils.DateUtils;
+import my_app.domain.components.Components;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -136,7 +136,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
         equipamento.set(os.getEquipamento());
         tipoPagamentoSelected.set(os.getTipoPagamento());
         statusSelected.set(os.getStatus());
-        dataVisita.set(os.getDataEscolhida() != null ? DateUtils.millisParaLocalDate(os.getDataEscolhida()) : LocalDate.now());
+        dataVisita.set(os.getDataEscolhida() != null ? DatePack.millisParaLocalDate(os.getDataEscolhida()) : LocalDate.now());
         maoDeObra.set(Utils.deRealParaCentavos(os.getMaoDeObraValor()));
         pecasValor.set(Utils.deRealParaCentavos(os.getPecasValor()));
         checklistRelatorio.set(os.getChecklistRelatorio());
@@ -248,12 +248,12 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
         model.setClienteId(clienteSelected.get() != null ? clienteSelected.get().getId() : null);
         model.setTecnicoId(tecnicoSelected.get() != null ? tecnicoSelected.get().getId() : null);
         model.setEquipamento(equipamento.get());
-        model.setMaoDeObraValor(Utils.deCentavosParaReal(maoDeObra.get()));
-        model.setPecasValor(Utils.deCentavosParaReal(pecasValor.get()));
+        model.setMaoDeObraValor(CurrencyPack.deCentavosParaReal(maoDeObra.get()));
+        model.setPecasValor(CurrencyPack.deCentavosParaReal(pecasValor.get()));
         model.setTipoPagamento(tipoPagamentoSelected.get());
         model.setStatus(statusSelected.get());
         model.setChecklistRelatorio(checklistRelatorio.get());
-        model.setDataEscolhida(DateUtils.localDateParaMillis(dataVisita.get()));
+        model.setDataEscolhida(DatePack.localDateParaMillis(dataVisita.get()));
         model.setTotalLiquido(new BigDecimal(totalLiquido.get()));
 
         return model;

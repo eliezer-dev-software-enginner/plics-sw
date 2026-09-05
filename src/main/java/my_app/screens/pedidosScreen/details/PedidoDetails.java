@@ -1,6 +1,5 @@
 package my_app.screens.pedidosScreen.details;
 
-import jdk.jshell.execution.Util;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -17,7 +16,7 @@ import megalodonte.v2.Show;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
 import my_app.screens.pdvScreen.ItemVenda;
-import my_app.utils.Utils;
+import pack.utilities.CurrencyPack;
 
 public class PedidoDetails implements ScreenComponent {
 
@@ -81,8 +80,8 @@ public class PedidoDetails implements ScreenComponent {
                                                 .column("Cod", it -> it.produto.getCodigoBarras())
                                                 .column("Nome", it -> it.produto.getDescricao())
                                                 .column("Qtd.",  it -> it.quantidade)
-                                                .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.produto.getPrecoVenda()))
-                                                .column("Total", it->Utils.toBRLCurrency(it.totalItem()))
+                                                .column("Vl. Unit.", it -> CurrencyPack.toBRLCurrency(it.produto.getPrecoVenda()))
+                                                .column("Total", it-> CurrencyPack.toBRLCurrency(it.totalItem()))
                                                 .build()
                                                 .onItemSelectChange(vm.trocaItemSelected::set)
                                 ))))

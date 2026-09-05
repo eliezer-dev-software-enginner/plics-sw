@@ -8,14 +8,17 @@ import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.ContainerProps;
+import megalodonte.props.RowProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.OrdemServicoModel;
 import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
+import my_app.domain.components.Components;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<OrdemServicoModel> {
     private final OrdemServicoScreenViewModel vm;
@@ -88,7 +91,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<O
                         )
                         .c_child(new SpacerVertical(10))
                         .c_child(Components.TextWithValue("Total geral(líquido): ",
-                                vm.totalLiquido.map(Utils::toBRLCurrency)))
+                                vm.totalLiquido.map(CurrencyPack::toBRLCurrency)))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
         ));
     }
@@ -104,10 +107,10 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<O
                 .column("Cliente", it -> it.getCliente() != null ? it.getCliente().getNome() : "")
                 .column("Status", OrdemServicoModel::getStatus)
                 .column("Equipamento", OrdemServicoModel::getEquipamento)
-                .column("Mão de obra", it -> Utils.toBRLCurrency(it.getMaoDeObraValor()))
-                .column("Total liq.", it -> Utils.toBRLCurrency(it.getTotalLiquido()))
-                .column("Data de visita", it -> DateUtils.millisToBrazilianDate(it.getDataEscolhida()))
-                .column("Data de criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Mão de obra", it -> CurrencyPack.toBRLCurrency(it.getMaoDeObraValor()))
+                .column("Total liq.", it -> CurrencyPack.toBRLCurrency(it.getTotalLiquido()))
+                .column("Data de visita", it -> DatePack.millisToBrazilianDate(it.getDataEscolhida()))
+                .column("Data de criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onItemSelectChange(vm.osSelected::set)
                 .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), ctx))
@@ -128,17 +131,17 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<O
                 .c_child(Components.TextWithDetails("Técnico visitante: ",
                         model.getTecnico() != null ? model.getTecnico().getNome() : ""))
                 .c_child(Components.TextWithDetails("Data de visita: ",
-                        DateUtils.millisToBrazilianDate(model.getDataEscolhida())))
+                        DatePack.millisToBrazilianDate(model.getDataEscolhida())))
                 .c_child(Components.TextWithDetails("Equipamento: ", model.getEquipamento()))
                 .c_child(Components.TextWithDetails("Mão de obra (R$): ",
-                        Utils.toBRLCurrency(model.getMaoDeObraValor())))
+                        CurrencyPack.toBRLCurrency(model.getMaoDeObraValor())))
                 .c_child(Components.TextWithDetails("Peças (R$): ",
-                        Utils.toBRLCurrency(model.getPecasValor())))
+                        CurrencyPack.toBRLCurrency(model.getPecasValor())))
                 .c_child(Components.TextWithDetails("Total líquido (R$): ",
-                        Utils.toBRLCurrency(model.getTotalLiquido())))
+                        CurrencyPack.toBRLCurrency(model.getTotalLiquido())))
                 .c_child(Components.TextWithDetails("Tipo de pagamento: ", model.getTipoPagamento()))
                 .c_child(Components.TextWithDetails("Status: ", model.getStatus()))
                 .c_child(Components.TextWithDetails("Data de criação: ",
-                        DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())));
+                        DatePack.localDateTimeToBrazilianDateTime(model.getDataCriacao())));
     }
 }

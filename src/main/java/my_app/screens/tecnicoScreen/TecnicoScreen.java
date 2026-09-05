@@ -13,9 +13,9 @@ import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.TecnicoModel;
 import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
-import my_app.utils.DateUtils;
+import my_app.domain.components.Components;
+import pack.utilities.DatePack;
 
 public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3<TecnicoModel> {
     private final TecnicoScreenViewModel vm;
@@ -67,7 +67,7 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3<Tecnic
                 .columns()
                 .column("ID", TecnicoModel::getId, 90.0)
                 .column("Nome", TecnicoModel::getNome)
-                .column("Data criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Data criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onItemSelectChange(vm.tecnicoSelected::set)
                 .onChangeFocus(vm::handleFocusChange);

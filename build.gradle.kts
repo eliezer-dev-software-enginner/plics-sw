@@ -29,6 +29,7 @@ version = fullVersion
 repositories {
     mavenCentral()
     mavenLocal()
+    maven { url = uri("https://jitpack.io") }
 }
 
 java {
@@ -128,6 +129,9 @@ dependencies {
     //leitor de excel e afins
     implementation("org.apache.poi:poi:5.3.0")
     implementation("org.apache.poi:poi-ooxml:5.3.0")
+
+    //utilitties
+    implementation("com.github.eliezer-dev-software-enginner:pack-utilities:v1.0.0")
 }
 
 tasks.test {

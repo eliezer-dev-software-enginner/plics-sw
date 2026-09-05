@@ -1,29 +1,29 @@
 package my_app.screens.contasAReceberScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
+import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
+import my_app.db.models.ClienteModel;
 import my_app.db.models.ContaAreceberModel;
 import my_app.db.models.VendaModel;
 import my_app.db.services.ClienteService;
 import my_app.db.services.ContaAreceberService;
 import my_app.db.services.ProdutoService;
 import my_app.db.services.VendaService;
-import my_app.db.models.ClienteModel;
-import my_app.domain.components.Components;
-import my_app.core.events.DadosFinanceirosAtualizadosEvent;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
-import my_app.utils.DateUtils;
+import my_app.domain.components.Components;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -140,8 +140,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
         descricao.set(conta.getDescricao());
         valorOriginal.set(Utils.deRealParaCentavos(conta.getValorOriginal()));
-        dataVencimento.set(DateUtils.millisParaLocalDate(conta.getDataVencimento()));
-        dataRecebimento.set(conta.getDataRecebimento() != null ? DateUtils.millisParaLocalDate(conta.getDataRecebimento()) : null);
+        dataVencimento.set(DatePack.millisParaLocalDate(conta.getDataVencimento()));
+        dataRecebimento.set(conta.getDataRecebimento() != null ? DatePack.millisParaLocalDate(conta.getDataRecebimento()) : null);
         status.set(conta.getStatus());
         tipoDocumento.set(conta.getTipoDocumento());
         numeroDocumento.set(conta.getNumeroDocumento());
@@ -222,7 +222,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
             return;
         }
 
-        var valorRecebimentoBig = Utils.deCentavosParaReal(valorRecebimento.get());
+        var valorRecebimentoBig = CurrencyPack.deCentavosParaReal(valorRecebimento.get());
 
         Async.Run(() -> {
             try {
@@ -324,9 +324,9 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         var model = isNew ? new ContaAreceberModel() : contaSelected.get();
 
         model.setDescricao(descricao.get());
-        model.setValorOriginal(Utils.deCentavosParaReal(valorOriginal.get()));
-        model.setDataVencimento(DateUtils.localDateParaMillis(dataVencimento.get()));
-        model.setDataRecebimento(dataRecebimento.get() != null ? DateUtils.localDateParaMillis(dataRecebimento.get()) : null);
+        model.setValorOriginal(CurrencyPack.deCentavosParaReal(valorOriginal.get()));
+        model.setDataVencimento(DatePack.localDateParaMillis(dataVencimento.get()));
+        model.setDataRecebimento(dataRecebimento.get() != null ? DatePack.localDateParaMillis(dataRecebimento.get()) : null);
         model.setStatus(status.get());
         model.setClienteId(clienteSelected.get() != null ? clienteSelected.get().getId() : null);
         model.setVendaId(null);

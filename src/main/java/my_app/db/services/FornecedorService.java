@@ -3,15 +3,19 @@ package my_app.db.services;
 import my_app.db.DB;
 import my_app.db.models.FornecedorModel;
 import my_app.db.repositories.FornecedorRepository;
+import my_app.utils.Utils;
 import net.sf.persism.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.ValidatorPack;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static my_app.utils.Utils.*;
+import static pack.utilities.ValidatorPack.isValidCnpj;
+import static pack.utilities.ValidatorPack.isValidCpf;
 
 public class FornecedorService extends BaseService<FornecedorModel> {
 
@@ -72,11 +76,11 @@ public class FornecedorService extends BaseService<FornecedorModel> {
         }
 
         String email = model.getEmail();
-        if (email != null && !email.isBlank() && isNotValidEmail(email))
+        if (email != null && !email.isBlank() && Utils.isNotValidEmail(email))
             throw new IllegalArgumentException("Formato de e-mail inválido");
 
         String celular = model.getCelular();
-        if (celular != null && !celular.isBlank() && !isValidPhone(celular))
+        if (celular != null && !celular.isBlank() && !ValidatorPack.isValidPhone(celular))
             throw new IllegalArgumentException("Telefone inválido (informe DDD + Número)");
     }
 

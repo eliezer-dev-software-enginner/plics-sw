@@ -7,17 +7,19 @@ import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import megalodonte.props.ButtonProps;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.RowProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ContaAreceberModel;
 import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
+import my_app.domain.components.Components;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3<ContaAreceberModel> {
     private final ContasAReceberScreenViewModel vm;
@@ -125,9 +127,9 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Descricao: ", model.getDescricao()))
                 .c_child(Components.TextWithDetails("Status: ", formatStatus(model.getStatus())))
-                .c_child(Components.TextWithDetails("Valor original: ", Utils.toBRLCurrency(model.getValorOriginal())))
-                .c_child(Components.TextWithDetails("Valor recebido: ", Utils.toBRLCurrency(model.getValorRecebido())))
-                .c_child(Components.TextWithDetails("Valor restante: ", Utils.toBRLCurrency(model.getValorRestante())))
+                .c_child(Components.TextWithDetails("Valor original: ", CurrencyPack.toBRLCurrency(model.getValorOriginal())))
+                .c_child(Components.TextWithDetails("Valor recebido: ", CurrencyPack.toBRLCurrency(model.getValorRecebido())))
+                .c_child(Components.TextWithDetails("Valor restante: ", CurrencyPack.toBRLCurrency(model.getValorRestante())))
                 .c_child(Show.when(model.getVenda() != null && model.getVenda().getProduto() != null, () -> new Column()
                         .c_child(Components.TextWithDetails("Produto vendido: ", model.getVenda().getProduto().getDescricao()))
                         .c_child(Components.TextWithDetails("- Id do produto: ", model.getVenda().getProduto().getId()))
@@ -135,8 +137,8 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                 .c_child(Components.TextWithDetails("Nome do cliente: ", model.getCliente() != null ? model.getCliente().getNome() : "-"))
                 .c_child(Components.TextWithDetails("- Id do cliente: ", model.getCliente() != null ? model.getCliente().getId() : "-"))
                 .c_child(Components.TextWithDetails("- Id da venda: ", model.getVendaId()))
-                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
-                .c_child(Components.TextWithDetails("Data de vencimento: ", DateUtils.millisToBrazilianDate(model.getDataVencimento())))
+                .c_child(Components.TextWithDetails("Data de criação: ", DatePack.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
+                .c_child(Components.TextWithDetails("Data de vencimento: ", DatePack.millisToBrazilianDate(model.getDataVencimento())))
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }
 
@@ -191,7 +193,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                 new Column(new ColumnProps())
                                                         .c_child(new Text("Em Aberto", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                         .c_child(
-                                                                new Text(Utils.toBRLCurrency(vm.getTotalEmAberto()),
+                                                                new Text(CurrencyPack.toBRLCurrency(vm.getTotalEmAberto()),
                                                                         new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#ff6b6b"))
                                                         )
                                         )
@@ -199,7 +201,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                 new Column(new ColumnProps())
                                                         .c_child(new Text("Vencidas", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                         .c_child(
-                                                                new Text(Utils.toBRLCurrency(vm.getTotalVencidas()),
+                                                                new Text(CurrencyPack.toBRLCurrency(vm.getTotalVencidas()),
                                                                         new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#dc3545"))
                                                         )
                                         )
@@ -216,9 +218,9 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                 .column("ID", it -> it.getId() != null ? "#" + it.getId() : "")
                 .column("Descrição", ContaAreceberModel::getDescricao)
                 .column("Cliente", it -> it.getCliente() != null ? it.getCliente().getNome() : "")
-                .column("Valor Original", it -> Utils.toBRLCurrency(it.getValorOriginal()))
-                .column("Valor Restante", it -> Utils.toBRLCurrency(it.getValorRestante()))
-                .column("Vencimento", it -> it.getDataVencimento() != null ? DateUtils.millisToBrazilianDateTime(it.getDataVencimento()) : "")
+                .column("Valor Original", it -> CurrencyPack.toBRLCurrency(it.getValorOriginal()))
+                .column("Valor Restante", it -> CurrencyPack.toBRLCurrency(it.getValorRestante()))
+                .column("Vencimento", it -> it.getDataVencimento() != null ? DatePack.millisToBrazilianDateTime(it.getDataVencimento()) : "")
                 .column("Status", it -> formatStatus(it.getStatus()))
                 .build()
                 .onItemSelectChange(vm.contaSelected::set)

@@ -14,10 +14,10 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ContasPagarModel;
 import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
+import my_app.domain.components.Components;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3<ContasPagarModel> {
     private final ComprasAPagarScreenViewModel vm;
@@ -175,9 +175,9 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3<
                 .column("ID", it -> it.getId() != null ? "#" + it.getId() : "")
                 .column("Descrição", ContasPagarModel::getDescricao)
                 .column("Fornecedor", it -> it.getFornecedor() != null ? it.getFornecedor().getNome() : "")
-                .column("Valor Original", it -> Utils.toBRLCurrency(it.getValorOriginal()))
-                .column("Valor Restante", it -> Utils.toBRLCurrency(it.getValorRestante()))
-                .column("Vencimento", it -> it.getDataVencimento() != null ? DateUtils.millisToBrazilianDateTime(it.getDataVencimento()) : "")
+                .column("Valor Original", it -> CurrencyPack.toBRLCurrency(it.getValorOriginal()))
+                .column("Valor Restante", it -> CurrencyPack.toBRLCurrency(it.getValorRestante()))
+                .column("Vencimento", it -> it.getDataVencimento() != null ? DatePack.millisToBrazilianDateTime(it.getDataVencimento()) : "")
                 .column("Status", it -> formatStatus(it.getStatus()))
                 .build()
                 .onItemSelectChange(vm.contaSelected::set)

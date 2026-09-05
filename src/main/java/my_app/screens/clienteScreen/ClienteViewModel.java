@@ -1,7 +1,6 @@
 package my_app.screens.clienteScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.v2.ListState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
@@ -14,12 +13,11 @@ import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.domain.states.EnderecoState;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.DatePack;
+import pack.utilities.ValidatorPack;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
@@ -75,7 +73,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         final var data = clienteSelecionado.get();
         if (data == null) return;
         tipoPessoaSelected.set(
-                Utils.isValidCpf(data.getCpfCnpj())
+                ValidatorPack.isValidCpf(data.getCpfCnpj())
                         ? Data.tiposPessoaList.getFirst()
                         : Data.tiposPessoaList.getLast()
         );
@@ -85,7 +83,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         email.set(data.getEmail());
         observacao.set(data.getObservacao() == null? "": data.getObservacao());
         dataNascimento.set(data.getDataNascimento() != null?
-                DateUtils.millisParaLocalDate(data.getDataNascimento()): null
+                DatePack.millisParaLocalDate(data.getDataNascimento()): null
                 );
 
         final Boolean gestante = data.getGestante();
@@ -97,7 +95,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         }
 
         dataNascimentoBebe.set(data.getDataNascimentoBebe() != null?
-                DateUtils.millisParaLocalDate(data.getDataNascimentoBebe()): null
+                DatePack.millisParaLocalDate(data.getDataNascimentoBebe()): null
         );
 
         enderecoState.get().populateFromClienteModel(data);
@@ -125,10 +123,10 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         model.setGestante(isGestanteValue);
 
         model.setDataNascimento(dataNascimento.get() != null ?
-                DateUtils.localDateParaMillis(dataNascimento.get()) : null);
+                DatePack.localDateParaMillis(dataNascimento.get()) : null);
 
         model.setDataNascimentoBebe(dataNascimentoBebe.get() != null ?
-                DateUtils.localDateParaMillis(dataNascimentoBebe.get()) : null);
+                DatePack.localDateParaMillis(dataNascimentoBebe.get()) : null);
 
 
         EnderecoState enderecoStateValue = enderecoState.get();

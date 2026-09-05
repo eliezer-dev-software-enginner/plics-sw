@@ -11,15 +11,12 @@ import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.services.EmpresaService;
 import my_app.domain.components.Components;
-import my_app.services.ProdutoMaisVendido;
-import my_app.services.RelatorioDados;
-import my_app.services.RelatorioPdfExporter;
-import my_app.services.RelatorioService;
-import my_app.services.ResumoDevolucoes;
-import my_app.utils.DateUtils;
+import my_app.services.*;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -127,8 +124,8 @@ public class RelatoriosScreenViewModel {
 
         Async.Run(() -> {
             try {
-                long inicioMillis = DateUtils.localDateParaMillis(inicio);
-                long fimMillis = DateUtils.localDateParaMillis(fim) + UM_DIA_MENOS_1MS;
+                long inicioMillis = DatePack.localDateParaMillis(inicio);
+                long fimMillis = DatePack.localDateParaMillis(fim) + UM_DIA_MENOS_1MS;
                 var dados = relatorioService.gerar(inicioMillis, fimMillis);
                 UI.runOnUi(() -> exibirDados(dados));
             } catch (Exception e) {
@@ -140,16 +137,16 @@ public class RelatoriosScreenViewModel {
 
     private void exibirDados(RelatorioDados dados) {
         ultimoRelatorio = dados;
-        receitasVendas.set(Utils.toBRLCurrency(dados.receitasVendas()));
-        receitasPedidosPdv.set(Utils.toBRLCurrency(dados.receitasPedidosPdv()));
-        receitasContasRecebidas.set(Utils.toBRLCurrency(dados.receitasContasRecebidas()));
-        despesasCompras.set(Utils.toBRLCurrency(dados.despesasCompras()));
-        despesasContasPagas.set(Utils.toBRLCurrency(dados.despesasContasPagas()));
-        totalReceitas.set(Utils.toBRLCurrency(dados.totalReceitas()));
-        totalDespesas.set(Utils.toBRLCurrency(dados.totalDespesas()));
-        lucroLiquido.set(Utils.toBRLCurrency(dados.lucroLiquido()));
-        contasReceberEmAberto.set(Utils.toBRLCurrency(dados.contasReceberEmAberto()));
-        contasPagarEmAberto.set(Utils.toBRLCurrency(dados.contasPagarEmAberto()));
+        receitasVendas.set(CurrencyPack.toBRLCurrency(dados.receitasVendas()));
+        receitasPedidosPdv.set(CurrencyPack.toBRLCurrency(dados.receitasPedidosPdv()));
+        receitasContasRecebidas.set(CurrencyPack.toBRLCurrency(dados.receitasContasRecebidas()));
+        despesasCompras.set(CurrencyPack.toBRLCurrency(dados.despesasCompras()));
+        despesasContasPagas.set(CurrencyPack.toBRLCurrency(dados.despesasContasPagas()));
+        totalReceitas.set(CurrencyPack.toBRLCurrency(dados.totalReceitas()));
+        totalDespesas.set(CurrencyPack.toBRLCurrency(dados.totalDespesas()));
+        lucroLiquido.set(CurrencyPack.toBRLCurrency(dados.lucroLiquido()));
+        contasReceberEmAberto.set(CurrencyPack.toBRLCurrency(dados.contasReceberEmAberto()));
+        contasPagarEmAberto.set(CurrencyPack.toBRLCurrency(dados.contasPagarEmAberto()));
 
         var produtos = dados.produtosMaisVendidos();
         produtosMaisVendidos.set(produtos == null || produtos.isEmpty()

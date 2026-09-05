@@ -11,7 +11,7 @@ import my_app.db.models.CategoriaModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import my_app.utils.DateUtils;
+import pack.utilities.DatePack;
 
 public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3<CategoriaModel> {
     private final CategoriaScreenViewModel vm;
@@ -60,7 +60,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3<Cate
                 .columns()
                 .column("ID", CategoriaModel::getId, 70.0)
                 .column("Nome", CategoriaModel::getNome)
-                .column("Data de criação", it-> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Data de criação", it-> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onItemSelectChange(vm.categoriaSelecionada::set)
                 .onChangeFocus(vm::handleFocusChange)

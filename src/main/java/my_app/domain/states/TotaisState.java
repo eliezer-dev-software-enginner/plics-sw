@@ -2,7 +2,7 @@ package my_app.domain.states;
 
 import megalodonte.ComputedState;
 import megalodonte.base.state.State;
-import my_app.utils.Utils;
+import pack.utilities.CurrencyPack;
 
 import java.math.BigDecimal;
 
@@ -16,7 +16,7 @@ public class TotaisState {
             BigDecimal qtdValue = qtd.get().trim().isEmpty()
                     ? BigDecimal.ZERO : new BigDecimal(qtd.get());
             BigDecimal precoValue = new BigDecimal(preco.get()).movePointLeft(2);
-            return Utils.toBRLCurrency(qtdValue.multiply(precoValue));
+            return CurrencyPack.toBRLCurrency(qtdValue.multiply(precoValue));
         }, qtd, preco, desconto);
 
         this.totalLiquido = ComputedState.of(() -> {
@@ -28,7 +28,7 @@ public class TotaisState {
         }, qtd, preco, desconto);
 
         this.descontoComputed = ComputedState.of(
-                () -> Utils.toBRLCurrency(Utils.deCentavosParaReal(desconto.get())),
+                () -> CurrencyPack.toBRLCurrency(CurrencyPack.deCentavosParaReal(desconto.get())),
                 desconto);
     }
 }

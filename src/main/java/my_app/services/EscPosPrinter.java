@@ -7,20 +7,17 @@ import com.github.anastaciocintra.escpos.EscPos;
 import com.github.anastaciocintra.escpos.EscPosConst;
 import com.github.anastaciocintra.escpos.Style;
 import com.github.anastaciocintra.output.PrinterOutputStream;
-import com.github.anastaciocintra.output.TcpIpOutputStream;
-import my_app.db.models.ClienteModel;
-import my_app.db.models.ContaAreceberModel;
-import my_app.db.models.EmpresaModel;
-import my_app.db.models.PedidoItemModel;
-import my_app.db.models.PedidoModel;
-import my_app.db.models.VendaModel;
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import my_app.db.models.*;
 import my_app.db.services.EmpresaService;
 import my_app.domain.telegram.TelegramNotifier;
 import my_app.domain.telegram.TelegramNotifierFactory;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
+import pack.utilities.FormatterPack;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
@@ -36,8 +33,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import jssc.SerialPort;
-import jssc.SerialPortException;
+
 public class EscPosPrinter implements ComprovanteBuilder {
     private static final Logger log = LoggerFactory.getLogger(EscPosPrinter.class);
     private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -107,7 +103,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
             linha(escpos, "N. " + (venda.getNumeroNota() != null ? venda.getNumeroNota() : String.valueOf(venda.getId())));
             linha(escpos, "Data: " + (venda.getDataCriacao() != null
                     ? venda.getDataCriacao().format(DT_FMT)
-                    : DateUtils.millisToBrazilianDateTime(venda.getDataVenda())));
+                    : DatePack.millisToBrazilianDateTime(venda.getDataVenda())));
             ClienteModel cliente = venda.getCliente();
             if (cliente != null) linha(escpos, "Cliente: " + cliente.getNome());
             separador(escpos);
@@ -115,19 +111,19 @@ public class EscPosPrinter implements ComprovanteBuilder {
             if (venda.getProduto() != null) linha(escpos, "Produto: " + venda.getProduto().getDescricao());
             linha(escpos, "Cod: " + venda.getProdutoCod());
             linha(escpos, "Qtd: " + venda.getQuantidade().stripTrailingZeros().toPlainString());
-            linha(escpos, "Vl. Unit.: " + Utils.toBRLCurrency(venda.getPrecoUnitario()));
+            linha(escpos, "Vl. Unit.: " + CurrencyPack.toBRLCurrency(venda.getPrecoUnitario()));
             if (venda.getDesconto() != null && venda.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
-                linha(escpos, "Desconto: " + Utils.toBRLCurrency(venda.getDesconto()));
+                linha(escpos, "Desconto: " + CurrencyPack.toBRLCurrency(venda.getDesconto()));
             }
-            linha(escpos, "Total: " + Utils.toBRLCurrency(venda.getTotalLiquido()));
+            linha(escpos, "Total: " + CurrencyPack.toBRLCurrency(venda.getTotalLiquido()));
             separador(escpos);
             linha(escpos, "Pagamento: " + venda.getTipoPagamento());
             if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
                 separador(escpos);
                 titulo(escpos, "PARCELAS");
                 for (var parcela : parcelas) {
-                    linha(escpos, parcela.getNumeroDocumento() + " - " + Utils.toBRLCurrency(parcela.getValorOriginal())
-                            + " - Venc: " + DateUtils.millisToBrazilianDate(parcela.getDataVencimento()));
+                    linha(escpos, parcela.getNumeroDocumento() + " - " + CurrencyPack.toBRLCurrency(parcela.getValorOriginal())
+                            + " - Venc: " + DatePack.millisToBrazilianDate(parcela.getDataVencimento()));
                 }
             }
             if (parcelas != null && !parcelas.isEmpty()) {
@@ -165,21 +161,21 @@ public class EscPosPrinter implements ComprovanteBuilder {
             titulo(escpos, "ITENS");
             for (var item : itens) {
                 linha(escpos, item.getProdutoCod() + "  x" + item.getQuantidade().stripTrailingZeros().toPlainString()
-                        + "  " + Utils.toBRLCurrency(item.getPrecoUnitario())
-                        + "  = " + Utils.toBRLCurrency(item.getTotalItem()));
+                        + "  " + CurrencyPack.toBRLCurrency(item.getPrecoUnitario())
+                        + "  = " + CurrencyPack.toBRLCurrency(item.getTotalItem()));
             }
             separador(escpos);
-            linha(escpos, "Total: " + Utils.toBRLCurrency(pedido.getTotalLiquido()));
+            linha(escpos, "Total: " + CurrencyPack.toBRLCurrency(pedido.getTotalLiquido()));
             if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
-                linha(escpos, "Desconto: " + Utils.toBRLCurrency(pedido.getDesconto()));
+                linha(escpos, "Desconto: " + CurrencyPack.toBRLCurrency(pedido.getDesconto()));
             }
             linha(escpos, "Pagamento: " + (pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA"));
             if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
                 separador(escpos);
                 titulo(escpos, "PARCELAS");
                 for (var parcela : parcelas) {
-                    linha(escpos, parcela.getNumeroDocumento() + " - " + Utils.toBRLCurrency(parcela.getValorOriginal())
-                            + " - Venc: " + DateUtils.millisToBrazilianDate(parcela.getDataVencimento()));
+                    linha(escpos, parcela.getNumeroDocumento() + " - " + CurrencyPack.toBRLCurrency(parcela.getValorOriginal())
+                            + " - Venc: " + DatePack.millisToBrazilianDate(parcela.getDataVencimento()));
                 }
             }
             if (parcelas != null && !parcelas.isEmpty()) {
@@ -217,7 +213,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
             linha(escpos, "N. " + (venda.getNumeroNota() != null ? venda.getNumeroNota() : String.valueOf(venda.getId())));
             linha(escpos, "Data: " + (venda.getDataCriacao() != null
                     ? venda.getDataCriacao().format(DT_FMT)
-                    : DateUtils.millisToBrazilianDateTime(venda.getDataVenda())));
+                    : DatePack.millisToBrazilianDateTime(venda.getDataVenda())));
             ClienteModel cliente = venda.getCliente();
             if (cliente != null) linha(escpos, "Cliente: " + cliente.getNome());
             separador(escpos);
@@ -225,11 +221,11 @@ public class EscPosPrinter implements ComprovanteBuilder {
             if (venda.getProduto() != null) linha(escpos, "Produto: " + venda.getProduto().getDescricao());
             linha(escpos, "Cod: " + venda.getProdutoCod());
             linha(escpos, "Qtd: " + venda.getQuantidade().stripTrailingZeros().toPlainString());
-            linha(escpos, "Vl. Unit.: " + Utils.toBRLCurrency(venda.getPrecoUnitario()));
+            linha(escpos, "Vl. Unit.: " + CurrencyPack.toBRLCurrency(venda.getPrecoUnitario()));
             if (venda.getDesconto() != null && venda.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
-                linha(escpos, "Desconto: " + Utils.toBRLCurrency(venda.getDesconto()));
+                linha(escpos, "Desconto: " + CurrencyPack.toBRLCurrency(venda.getDesconto()));
             }
-            linha(escpos, "Total: " + Utils.toBRLCurrency(venda.getTotalLiquido()));
+            linha(escpos, "Total: " + CurrencyPack.toBRLCurrency(venda.getTotalLiquido()));
             separador(escpos);
             linha(escpos, "Pagamento: " + venda.getTipoPagamento());
             if (venda.getObservacao() != null && !venda.getObservacao().isBlank()) {
@@ -263,21 +259,21 @@ public class EscPosPrinter implements ComprovanteBuilder {
             titulo(escpos, "ITENS");
             for (var item : itens) {
                 linha(escpos, item.getProdutoCod() + "  x" + item.getQuantidade().stripTrailingZeros().toPlainString()
-                        + "  " + Utils.toBRLCurrency(item.getPrecoUnitario())
-                        + "  = " + Utils.toBRLCurrency(item.getTotalItem()));
+                        + "  " + CurrencyPack.toBRLCurrency(item.getPrecoUnitario())
+                        + "  = " + CurrencyPack.toBRLCurrency(item.getTotalItem()));
             }
             separador(escpos);
-            linha(escpos, "Total: " + Utils.toBRLCurrency(pedido.getTotalLiquido()));
+            linha(escpos, "Total: " + CurrencyPack.toBRLCurrency(pedido.getTotalLiquido()));
             if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
-                linha(escpos, "Desconto: " + Utils.toBRLCurrency(pedido.getDesconto()));
+                linha(escpos, "Desconto: " + CurrencyPack.toBRLCurrency(pedido.getDesconto()));
             }
             linha(escpos, "Pagamento: " + (pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA"));
             if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
                 separador(escpos);
                 titulo(escpos, "PARCELAS");
                 for (var parcela : parcelas) {
-                    linha(escpos, parcela.getNumeroDocumento() + " - " + Utils.toBRLCurrency(parcela.getValorOriginal())
-                            + " - Venc: " + DateUtils.millisToBrazilianDate(parcela.getDataVencimento()));
+                    linha(escpos, parcela.getNumeroDocumento() + " - " + CurrencyPack.toBRLCurrency(parcela.getValorOriginal())
+                            + " - Venc: " + DatePack.millisToBrazilianDate(parcela.getDataVencimento()));
                 }
             }
             if (parcelas != null && !parcelas.isEmpty()) {
@@ -443,12 +439,12 @@ public class EscPosPrinter implements ComprovanteBuilder {
             sb.append(centrado(empresa.getNome())).append("\n");
             if (empresa.getCpfCnpj() != null && !empresa.getCpfCnpj().isBlank()) {
                 String doc = empresa.getCpfCnpj().length() == 14
-                        ? Utils.formatCnpj(empresa.getCpfCnpj())
-                        : Utils.formatCpf(empresa.getCpfCnpj());
+                        ? FormatterPack.formatCnpj(empresa.getCpfCnpj())
+                        : FormatterPack.formatCpf(empresa.getCpfCnpj());
                 sb.append(centrado("CNPJ/CPF: " + doc)).append("\n");
             }
             if (empresa.getTelefone() != null && !empresa.getTelefone().isBlank()) {
-                sb.append(centrado("Tel: " + Utils.formatPhone(empresa.getTelefone()))).append("\n");
+                sb.append(centrado("Tel: " + FormatterPack.formatPhone(empresa.getTelefone()))).append("\n");
             }
         }
         sb.append(SEP).append("\n");
@@ -456,7 +452,7 @@ public class EscPosPrinter implements ComprovanteBuilder {
         sb.append("N. ").append(venda.getNumeroNota() != null ? venda.getNumeroNota() : String.valueOf(venda.getId())).append("\n");
         sb.append("Data: ").append(venda.getDataCriacao() != null
                 ? venda.getDataCriacao().format(DT_FMT)
-                : DateUtils.millisToBrazilianDateTime(venda.getDataVenda())).append("\n");
+                : DatePack.millisToBrazilianDateTime(venda.getDataVenda())).append("\n");
         ClienteModel cliente = venda.getCliente();
         if (cliente != null) sb.append("Cliente: ").append(cliente.getNome()).append("\n");
         sb.append(SEP).append("\n");
@@ -464,11 +460,11 @@ public class EscPosPrinter implements ComprovanteBuilder {
         if (venda.getProduto() != null) sb.append("Produto: ").append(venda.getProduto().getDescricao()).append("\n");
         sb.append("Cod: ").append(venda.getProdutoCod()).append("\n");
         sb.append("Qtd: ").append(venda.getQuantidade().stripTrailingZeros().toPlainString()).append("\n");
-        sb.append("Vl. Unit.: ").append(Utils.toBRLCurrency(venda.getPrecoUnitario())).append("\n");
+        sb.append("Vl. Unit.: ").append(CurrencyPack.toBRLCurrency(venda.getPrecoUnitario())).append("\n");
         if (venda.getDesconto() != null && venda.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
-            sb.append("Desconto: ").append(Utils.toBRLCurrency(venda.getDesconto())).append("\n");
+            sb.append("Desconto: ").append(CurrencyPack.toBRLCurrency(venda.getDesconto())).append("\n");
         }
-        sb.append("Total: ").append(Utils.toBRLCurrency(venda.getTotalLiquido())).append("\n");
+        sb.append("Total: ").append(CurrencyPack.toBRLCurrency(venda.getTotalLiquido())).append("\n");
         sb.append(SEP).append("\n");
         sb.append("Pagamento: ").append(venda.getTipoPagamento()).append("\n");
         if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
@@ -476,8 +472,8 @@ public class EscPosPrinter implements ComprovanteBuilder {
             sb.append(centrado("PARCELAS")).append("\n");
             for (var parcela : parcelas) {
                 sb.append(parcela.getNumeroDocumento()).append(" - ")
-                        .append(Utils.toBRLCurrency(parcela.getValorOriginal()))
-                        .append(" - Venc: ").append(DateUtils.millisToBrazilianDate(parcela.getDataVencimento()))
+                        .append(CurrencyPack.toBRLCurrency(parcela.getValorOriginal()))
+                        .append(" - Venc: ").append(DatePack.millisToBrazilianDate(parcela.getDataVencimento()))
                         .append("\n");
             }
         }
@@ -503,12 +499,12 @@ public class EscPosPrinter implements ComprovanteBuilder {
             sb.append(centrado(empresa.getNome())).append("\n");
             if (empresa.getCpfCnpj() != null && !empresa.getCpfCnpj().isBlank()) {
                 String doc = empresa.getCpfCnpj().length() == 14
-                        ? Utils.formatCnpj(empresa.getCpfCnpj())
-                        : Utils.formatCpf(empresa.getCpfCnpj());
+                        ? FormatterPack.formatCnpj(empresa.getCpfCnpj())
+                        : FormatterPack.formatCpf(empresa.getCpfCnpj());
                 sb.append(centrado("CNPJ/CPF: " + doc)).append("\n");
             }
             if (empresa.getTelefone() != null && !empresa.getTelefone().isBlank()) {
-                sb.append(centrado("Tel: " + Utils.formatPhone(empresa.getTelefone()))).append("\n");
+                sb.append(centrado("Tel: " + FormatterPack.formatPhone(empresa.getTelefone()))).append("\n");
             }
         }
         sb.append(SEP).append("\n");
@@ -523,14 +519,14 @@ public class EscPosPrinter implements ComprovanteBuilder {
         for (var item : itens) {
             sb.append(item.getProdutoCod())
                     .append("  x").append(item.getQuantidade().stripTrailingZeros().toPlainString())
-                    .append("  ").append(Utils.toBRLCurrency(item.getPrecoUnitario()))
-                    .append("  = ").append(Utils.toBRLCurrency(item.getTotalItem()))
+                    .append("  ").append(CurrencyPack.toBRLCurrency(item.getPrecoUnitario()))
+                    .append("  = ").append(CurrencyPack.toBRLCurrency(item.getTotalItem()))
                     .append("\n");
         }
         sb.append(SEP).append("\n");
-        sb.append("Total: ").append(Utils.toBRLCurrency(pedido.getTotalLiquido())).append("\n");
+        sb.append("Total: ").append(CurrencyPack.toBRLCurrency(pedido.getTotalLiquido())).append("\n");
         if (pedido.getDesconto() != null && pedido.getDesconto().compareTo(BigDecimal.ZERO) > 0) {
-            sb.append("Desconto: ").append(Utils.toBRLCurrency(pedido.getDesconto())).append("\n");
+            sb.append("Desconto: ").append(CurrencyPack.toBRLCurrency(pedido.getDesconto())).append("\n");
         }
         sb.append("Pagamento: ").append(pedido.getFormaPagamento() != null ? pedido.getFormaPagamento() : "A VISTA").append("\n");
         if (parcelas != null && !parcelas.isEmpty() && parcelas.size() > 1) {
@@ -538,8 +534,8 @@ public class EscPosPrinter implements ComprovanteBuilder {
             sb.append(centrado("PARCELAS")).append("\n");
             for (var parcela : parcelas) {
                 sb.append(parcela.getNumeroDocumento()).append(" - ")
-                        .append(Utils.toBRLCurrency(parcela.getValorOriginal()))
-                        .append(" - Venc: ").append(DateUtils.millisToBrazilianDate(parcela.getDataVencimento()))
+                        .append(CurrencyPack.toBRLCurrency(parcela.getValorOriginal()))
+                        .append(" - Venc: ").append(DatePack.millisToBrazilianDate(parcela.getDataVencimento()))
                         .append("\n");
             }
         }
@@ -569,12 +565,12 @@ public class EscPosPrinter implements ComprovanteBuilder {
         centralizado(escpos, empresa.getNome(), true, Style.FontSize._2);
         if (empresa.getCpfCnpj() != null && !empresa.getCpfCnpj().isBlank()) {
             String doc = empresa.getCpfCnpj().length() == 14
-                    ? Utils.formatCnpj(empresa.getCpfCnpj())
-                    : Utils.formatCpf(empresa.getCpfCnpj());
+                    ? FormatterPack.formatCnpj(empresa.getCpfCnpj())
+                    : FormatterPack.formatCpf(empresa.getCpfCnpj());
             centralizado(escpos, "CNPJ/CPF: " + doc, false, Style.FontSize._1);
         }
         if (empresa.getTelefone() != null && !empresa.getTelefone().isBlank()) {
-            centralizado(escpos, "Tel: " + Utils.formatPhone(empresa.getTelefone()), false, Style.FontSize._1);
+            centralizado(escpos, "Tel: " + FormatterPack.formatPhone(empresa.getTelefone()), false, Style.FontSize._1);
         }
     }
 

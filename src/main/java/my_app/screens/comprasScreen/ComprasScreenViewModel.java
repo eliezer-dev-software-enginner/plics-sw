@@ -1,31 +1,32 @@
 package my_app.screens.comprasScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.v2.ListState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.ListState;
+import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.db.dto.CompraDto;
 import my_app.db.models.CompraModel;
+import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.CompraService;
 import my_app.db.services.FornecedorService;
 import my_app.db.services.ProdutoService;
-import my_app.db.models.FornecedorModel;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
-import my_app.domain.states.TotaisState;
-import my_app.core.events.DadosFinanceirosAtualizadosEvent;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.domain.states.TotaisState;
 import my_app.services.ContasPagarService;
-import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -195,7 +196,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
         if (data == null) return;
 
         modoEdicao.set(false);
-        dataCompra.set(DateUtils.millisParaLocalDate(data.getDataCompra()));
+        dataCompra.set(DatePack.millisParaLocalDate(data.getDataCompra()));
         numeroNota.set(data.getNumeroNota());
         codigo.set(data.getProdutoCod());
         produtoEncontrado.set(null);
@@ -206,7 +207,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
         descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDescontoEmReais()));
         fornecedorSelected.set(data.getFornecedor());
         dataValidade.set(data.getDataValidade() != null
-                ? DateUtils.millisParaLocalDate(data.getDataValidade())
+                ? DatePack.millisParaLocalDate(data.getDataValidade())
                 : null);
     }
 
@@ -323,16 +324,16 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     @Override
     public CompraModel populateModelFromFields() {
         final var dtValidade = dataValidade.get() != null ?
-                DateUtils.localDateParaMillis(dataValidade.get()) : null;
+                DatePack.localDateParaMillis(dataValidade.get()) : null;
 
         var dto = new CompraDto(
                 codigo.get(),
-                Utils.deCentavosParaReal(pcCompra.get()),
+                CurrencyPack.deCentavosParaReal(pcCompra.get()),
                 fornecedorSelected.get() != null ? fornecedorSelected.get().getId() : null,
                 new BigDecimal(qtd.get()),
-                Utils.deCentavosParaReal(descontoEmDinheiro.get()),
+                CurrencyPack.deCentavosParaReal(descontoEmDinheiro.get()),
                 tipoPagamentoSelected.get(), observacao.get(),
-                DateUtils.localDateParaMillis(dataCompra.get()),
+                DatePack.localDateParaMillis(dataCompra.get()),
                 numeroNota.get(),
                 dtValidade,
                 opcaoEstoqueSelected.get(),

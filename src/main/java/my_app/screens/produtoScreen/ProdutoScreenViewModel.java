@@ -1,30 +1,29 @@
 package my_app.screens.produtoScreen;
 
-import megalodonte.ComputedState;
-import megalodonte.v2.ListState;
-import megalodonte.base.state.State;
-import megalodonte.base.async.Async;
 import megalodonte.base.UI;
+import megalodonte.base.async.Async;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.ListState;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.db.models.CategoriaModel;
 import my_app.db.models.CorModel;
+import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
 import my_app.db.services.CategoriaService;
 import my_app.db.services.CorService;
 import my_app.db.services.FornecedorService;
 import my_app.db.services.ProdutoService;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.EventBus;
-import my_app.db.models.FornecedorModel;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -278,8 +277,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
 
         model.setCodigoBarras(codigoBarras.get());
         model.setDescricao(descricao.get());
-        model.setPrecoCompra(Utils.deCentavosParaReal(precoCompra.get()));
-        model.setPrecoVenda(Utils.deCentavosParaReal(precoVenda.get()));
+        model.setPrecoCompra(CurrencyPack.deCentavosParaReal(precoCompra.get()));
+        model.setPrecoVenda(CurrencyPack.deCentavosParaReal(precoVenda.get()));
         model.setUnidade(unidadeSelected.get());
         model.setCategoriaId(categoriaSelected.get() == null ? 1 : categoriaSelected.get().getId());
         model.setFornecedorId(fornecedorSelected.get() == null ? 1 : fornecedorSelected.get().getId());
@@ -291,9 +290,9 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         model.setCor(String.join(", ", coresSelecionadas.get()));
         model.setTamanho(tamanhoSelected.get());
         model.setModelo(modelo.get());
-        model.setValidade("Sim".equals(perecivelSelected.get()) && !validade.isNull() ? DateUtils.localDateParaMillis(validade.get()) : null);
+        model.setValidade("Sim".equals(perecivelSelected.get()) && !validade.isNull() ? DatePack.localDateParaMillis(validade.get()) : null);
         model.setGarantia(garantia.get());
-        model.setFrete(Utils.deCentavosParaReal(frete.get()));
+        model.setFrete(CurrencyPack.deCentavosParaReal(frete.get()));
         model.setAceitaDevolucao("Sim".equals(aceitaDevolucao.get()));
         // Frete entra no custo real do produto — a margem/lucro (totalLiquido) só faz
         // sentido líquida do que foi de fato gasto pra ter o produto em mãos.
@@ -350,7 +349,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         estoque.set(Utils.quantidadeTratada(model.getEstoque()));
         estoqueMinimo.set(Utils.quantidadeTratada(model.getEstoqueMinimo()));
 
-        validade.set(model.getValidade() != null ? DateUtils.millisParaLocalDate(model.getValidade()) : null);
+        validade.set(model.getValidade() != null ? DatePack.millisParaLocalDate(model.getValidade()) : null);
         perecivelSelected.set(model.getValidade() != null && model.getValidade() > 0 ? "Sim" : "Não");
         observacoes.set(model.getObservacoes());
         imagem.set(model.getImagem());

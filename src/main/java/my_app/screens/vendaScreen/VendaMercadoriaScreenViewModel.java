@@ -1,30 +1,30 @@
 package my_app.screens.vendaScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.v2.ListState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.ListState;
+import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.db.models.*;
 import my_app.db.services.*;
 import my_app.domain.Data;
 import my_app.domain.Parcela;
-import my_app.domain.states.TotaisState;
-import my_app.core.events.DadosFinanceirosAtualizadosEvent;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.EventBus;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
+import my_app.domain.states.TotaisState;
 import my_app.services.EscPosPrinter;
 import my_app.services.WinRawPrinter;
-import my_app.utils.DateUtils;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -90,7 +90,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     // pra não vazar um campo "Frete" indevido lá.
     final ComputedState<String> totalComFrete = ComputedState.of(() -> {
         var liquido = new BigDecimal(totais.totalLiquido.get());
-        var freteValue = Utils.deCentavosParaReal(frete.get());
+        var freteValue = CurrencyPack.deCentavosParaReal(frete.get());
         return liquido.add(freteValue).toString();
     }, totais.totalLiquido, frete);
 
@@ -213,7 +213,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             codigo.set(data.getProdutoCod());
         }
 
-        dataVenda.set(DateUtils.millisParaLocalDate(data.getDataVenda()));
+        dataVenda.set(DatePack.millisParaLocalDate(data.getDataVenda()));
         numeroNota.set(data.getNumeroNota());
         qtd.set(Utils.quantidadeTratada(data.getQuantidade()));
         observacao.set(data.getObservacao());
@@ -222,7 +222,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDesconto()));
         frete.set(Utils.deRealParaCentavos(data.getFrete()));
         dataValidade.set(data.getDataValidade() != null
-                ? DateUtils.millisParaLocalDate(data.getDataValidade())
+                ? DatePack.millisParaLocalDate(data.getDataValidade())
                 : null);
     }
 
@@ -532,14 +532,14 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
                 : null);
 
         model.setQuantidade(new BigDecimal(qtd.get()));
-        model.setPrecoUnitario(Utils.deCentavosParaReal(pcVenda.get()));
-        model.setDesconto(Utils.deCentavosParaReal(descontoEmDinheiro.get()));
-        model.setFrete(Utils.deCentavosParaReal(frete.get()));
+        model.setPrecoUnitario(CurrencyPack.deCentavosParaReal(pcVenda.get()));
+        model.setDesconto(CurrencyPack.deCentavosParaReal(descontoEmDinheiro.get()));
+        model.setFrete(CurrencyPack.deCentavosParaReal(frete.get()));
         model.setTipoPagamento(tipoPagamentoSelecionado.get());
         model.setObservacao(observacao.get());
         model.setTotalLiquido(new BigDecimal(totalComFrete.get()));
-        model.setDataValidade(dataValidade.get() != null ? DateUtils.localDateParaMillis(dataValidade.get()) : null);
-        model.setDataVenda(DateUtils.localDateParaMillis(dataVenda.get()));
+        model.setDataValidade(dataValidade.get() != null ? DatePack.localDateParaMillis(dataValidade.get()) : null);
+        model.setDataVenda(DatePack.localDateParaMillis(dataVenda.get()));
         model.setNumeroNota(numeroNota.get());
 
         return model;

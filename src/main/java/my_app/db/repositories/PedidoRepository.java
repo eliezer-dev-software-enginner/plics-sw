@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static my_app.utils.DateUtils.localDateParaMillis;
 import static net.sf.persism.Parameters.params;
 import static net.sf.persism.SQL.sql;
+import static pack.utilities.DatePack.localDateParaMillis;
 
 public class PedidoRepository extends BaseRepository<PedidoModel> {
 

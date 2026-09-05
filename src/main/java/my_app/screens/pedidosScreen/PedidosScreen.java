@@ -17,8 +17,9 @@ import my_app.core.AppRoutes;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.domain.components.Components;
-import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 public class PedidosScreen implements ScreenComponent {
 
@@ -56,10 +57,10 @@ public class PedidosScreen implements ScreenComponent {
                 .columns()
                 .column("ID",           it -> "#" + it.getId())
                 .column("Cliente",      vm::nomeClienteDoPedido)
-                .column("Total",        it -> Utils.toBRLCurrency(it.getTotalLiquido()))
+                .column("Total",        it -> CurrencyPack.toBRLCurrency(it.getTotalLiquido()))
                 .column("Pagamento", PedidoModel::getFormaPagamento)
                 .column("Fiado?",       it -> it.getFiado() != null && it.getFiado() == 1 ? "Sim" : "Não")
-                .column("Data",         it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Data",         it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .column("Status",       it -> Boolean.TRUE.equals(it.getDevolvida()) ? "Devolvida" : "-")
                 .build()
                 .onItemSelectChange(vm.pedidoSelecionado::set);
@@ -75,8 +76,8 @@ public class PedidosScreen implements ScreenComponent {
                         .columns()
                         .column("Produto", PedidoItemModel::getProdutoCod)
                         .column("Qtd.", PedidoItemModel::getQuantidade)
-                        .column("Vl. Unit.", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
-                        .column("Total",     it -> Utils.toBRLCurrency(it.getTotalItem()))
+                        .column("Vl. Unit.", it -> CurrencyPack.toBRLCurrency(it.getPrecoUnitario()))
+                        .column("Total",     it -> CurrencyPack.toBRLCurrency(it.getTotalItem()))
                         .build(),
                 new SpacerVertical(15),
                 Show.when(vm.temPedidoSelecionado, () ->

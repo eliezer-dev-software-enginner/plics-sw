@@ -6,7 +6,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.*;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
 import megalodonte.application.ErrorReporter;
@@ -23,11 +25,11 @@ import megalodonte.components.Button;
 import megalodonte.components.DatePicker;
 import megalodonte.components.inputs.OnChangeResult;
 import megalodonte.components.inputs.TextAreaInput;
-import megalodonte.components.v2.Input;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
+import megalodonte.components.v2.Input;
 import megalodonte.props.*;
 import megalodonte.props.v2.InputProps;
 import megalodonte.router.v4.ScreenContext;
@@ -38,12 +40,13 @@ import my_app.domain.Data;
 import my_app.domain.Parcela;
 import my_app.domain.states.EnderecoState;
 import my_app.domain.states.TotaisState;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.entypo.Entypo;
 import org.kordamp.ikonli.javafx.FontIcon;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
+import pack.utilities.FormatterPack;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -52,8 +55,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
-
-import static my_app.utils.Utils.*;
 
 public class Components {
 
@@ -65,7 +66,7 @@ public class Components {
     public static Component ItemDetailEndereco(Endereco endereco){
         return new Container()
                 .c_child(Components.TextWithDetails("UF: ", endereco.uf()))
-                .c_child(Components.TextWithDetails("CEP: ", Utils.formatCep(endereco.cep())))
+                .c_child(Components.TextWithDetails("CEP: ", FormatterPack.formatCep(endereco.cep())))
                 .c_child(Components.TextWithDetails("Cidade: ", endereco.cidade()))
                 .c_child(Components.TextWithDetails("Bairro: ", endereco.bairro()))
                 .c_child(Components.TextWithDetails("Rua: ", endereco.rua()))
@@ -145,7 +146,7 @@ public class Components {
     public static Component parcelaItem(Parcela parcela) {
         return new Row(new RowProps())
                 .r_child(Components.TextColumn("PARCELA", String.valueOf(parcela.numero())))
-                .r_child(Components.TextColumn("VENCIMENTO", DateUtils.millisToBrazilianDateTime(parcela.dataVencimento())))
+                .r_child(Components.TextColumn("VENCIMENTO", DatePack.millisToBrazilianDateTime(parcela.dataVencimento())))
                 .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
     }
 
@@ -460,7 +461,7 @@ public class Components {
         return new Row(new RowProps().bottomVertically().spacingOf(ThemeManager.theme().spacing().sm()))
                 .r_child(TextWithValue("Valor total(bruto): ", totais.totalBruto))
                 .r_child(TextWithValue("Desconto: ", totais.descontoComputed))
-                .r_child(TextWithValue("Total geral(líquido): ", totais.totalLiquido.map(Utils::toBRLCurrency)));
+                .r_child(TextWithValue("Total geral(líquido): ", totais.totalLiquido.map(CurrencyPack::toBRLCurrency)));
     }
 
     public static Component TextWithValue(String label, ReadableState<String> valueState) {
@@ -474,7 +475,7 @@ public class Components {
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
-                    String formatted = formatCep(value);
+                    String formatted = FormatterPack.formatCep(value);
                     return OnChangeResult.of(formatted, value);
                 })
                 .onChange(value -> {
@@ -484,7 +485,7 @@ public class Components {
                         numeric = numeric.substring(0, 8);
                     }
 
-                    String formatted = formatCep(numeric);
+                    String formatted = FormatterPack.formatCep(numeric);
                     return OnChangeResult.of(formatted, numeric);
                 })
                 .lockCursorToEnd();
@@ -499,7 +500,7 @@ public class Components {
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
-                    String formatted = formatCpf(value);
+                    String formatted = FormatterPack.formatCpf(value);
                     return OnChangeResult.of(formatted, value);
                 })
                 .onChange(value -> {
@@ -509,7 +510,7 @@ public class Components {
                         numeric = numeric.substring(0, 11);
                     }
 
-                    String formatted = formatCpf(numeric);
+                    String formatted = FormatterPack.formatCpf(numeric);
                     return OnChangeResult.of(formatted, numeric);
                 })
                 .lockCursorToEnd();
@@ -598,7 +599,7 @@ public class Components {
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
-                    String formatted = formatCnpj(value);
+                    String formatted = FormatterPack.formatCnpj(value);
                     return OnChangeResult.of(formatted, value);
                 })
                 .onChange(value -> {
@@ -608,7 +609,7 @@ public class Components {
                         raw = raw.substring(0, 14);
                     }
 
-                    String formatted = formatCnpj(raw);
+                    String formatted = FormatterPack.formatCnpj(raw);
                     return OnChangeResult.of(formatted, raw);
                 })
                 .lockCursorToEnd();
@@ -623,7 +624,7 @@ public class Components {
 
         var input = new Input(inputState, inputProps)
                 .onInitialize(value -> {
-                    String formatted = formatPhone(value);
+                    String formatted = FormatterPack.formatPhone(value);
                     return OnChangeResult.of(formatted, value);
                 })
                 .onChange(value -> {
@@ -634,7 +635,7 @@ public class Components {
                         numeric = numeric.substring(0, 11);
                     }
 
-                    String formatted = formatPhone(numeric);
+                    String formatted = FormatterPack.formatPhone(numeric);
                     return OnChangeResult.of(formatted, numeric);
                 })
                 .lockCursorToEnd();

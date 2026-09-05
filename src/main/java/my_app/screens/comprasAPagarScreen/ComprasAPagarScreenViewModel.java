@@ -1,23 +1,23 @@
 package my_app.screens.comprasAPagarScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
 import my_app.db.models.ContasPagarModel;
 import my_app.db.models.FornecedorModel;
 import my_app.db.services.ContasPagarService;
 import my_app.db.services.FornecedorService;
-import my_app.domain.components.Components;
 import my_app.domain.ViewModelScreenContract;
-import my_app.utils.DateUtils;
+import my_app.domain.components.Components;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -148,8 +148,8 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
         descricao.set(conta.getDescricao());
         valorOriginal.set(Utils.deRealParaCentavos(conta.getValorOriginal()));
-        dataVencimento.set(DateUtils.millisParaLocalDate(conta.getDataVencimento()));
-        dataPagamento.set(conta.getDataPagamento() != null ? DateUtils.millisParaLocalDate(conta.getDataPagamento()) : null);
+        dataVencimento.set(DatePack.millisParaLocalDate(conta.getDataVencimento()));
+        dataPagamento.set(conta.getDataPagamento() != null ? DatePack.millisParaLocalDate(conta.getDataPagamento()) : null);
         status.set(conta.getStatus());
         tipoDocumento.set(conta.getTipoDocumento());
         numeroDocumento.set(conta.getNumeroDocumento());
@@ -229,7 +229,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
             return;
         }
 
-        var valorPagamentoBig = Utils.deCentavosParaReal(valorPagamento.get());
+        var valorPagamentoBig = CurrencyPack.deCentavosParaReal(valorPagamento.get());
 
         Async.Run(() -> {
             try {
@@ -328,9 +328,9 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         var model = isNew ? new ContasPagarModel() : contaSelected.get();
 
         model.setDescricao(descricao.get());
-        model.setValorOriginal(Utils.deCentavosParaReal(valorOriginal.get()));
-        model.setDataVencimento(DateUtils.localDateParaMillis(dataVencimento.get()));
-        model.setDataPagamento(dataPagamento.get() != null ? DateUtils.localDateParaMillis(dataPagamento.get()) : null);
+        model.setValorOriginal(CurrencyPack.deCentavosParaReal(valorOriginal.get()));
+        model.setDataVencimento(DatePack.localDateParaMillis(dataVencimento.get()));
+        model.setDataPagamento(dataPagamento.get() != null ? DatePack.localDateParaMillis(dataPagamento.get()) : null);
         model.setStatus(status.get());
         model.setFornecedorId(fornecedorSelected.get() != null ? fornecedorSelected.get().getId() : null);
         model.setCompraId(null);

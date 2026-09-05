@@ -1,6 +1,7 @@
 package my_app.domain;
 
 import my_app.utils.Utils;
+import pack.utilities.FormatterPack;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class Data {
     public static final String linkWebsiteOfficial = "https://plics-sw-webpage.vercel.app/";
 
     public static String getNumberWhatsappSupportFormatted() {
-        return Utils.formatPhone(numberWhatsappSupport.replace("55",""));
+        return FormatterPack.formatPhone(numberWhatsappSupport.replace("55",""));
     }
 
     static void main() {

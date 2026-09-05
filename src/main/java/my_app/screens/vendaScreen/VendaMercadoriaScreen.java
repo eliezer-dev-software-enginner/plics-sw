@@ -7,21 +7,20 @@ import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.FlowRow;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.ClienteModel;
+import my_app.db.models.VendaModel;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import megalodonte.components.layout_components.Row;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
-
-import my_app.db.models.VendaModel;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3<VendaModel> {
     private final VendaMercadoriaScreenViewModel vm;
@@ -50,7 +49,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 new SpacerVertical(20),
                 formFirstRow(),
                 Components.displayOperationsRow(vm.totais),
-                Components.TextWithValue("Total com frete:", vm.totalComFrete.map(Utils::toBRLCurrency)),
+                Components.TextWithValue("Total com frete:", vm.totalComFrete.map(CurrencyPack::toBRLCurrency)),
                 Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalComFrete),
                 Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
         );
@@ -92,10 +91,10 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .column("ID", VendaModel::getId)
                 .imageColumn("Imagem", it -> it.getProduto().getImagem())
                 .column("Produto", it -> it.getProduto().getDescricao())
-                .column("Preço de venda", it -> Utils.toBRLCurrency(it.getPrecoUnitario()))
+                .column("Preço de venda", it -> CurrencyPack.toBRLCurrency(it.getPrecoUnitario()))
                 .column("Quantidade", VendaModel::getQuantidade)
-                .column("Total líquido", it -> Utils.toBRLCurrency(it.getTotalLiquido()))
-                .column("Data", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Total líquido", it -> CurrencyPack.toBRLCurrency(it.getTotalLiquido()))
+                .column("Data", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .column("Status", it -> Boolean.TRUE.equals(it.getDevolvida()) ? "Devolvida" : "-")
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
@@ -104,7 +103,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
     }
 
     public Component itemDetails(VendaModel model) {
-        var validade = model.getDataValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getDataValidade()) : "Sem validade";
+        var validade = model.getDataValidade() != null ? DatePack.millisToBrazilianDateTime(model.getDataValidade()) : "Sem validade";
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes da venda de mercadoria", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
                 .c_child(new SpacerVertical(20))
@@ -119,16 +118,16 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 .c_child(Components.TextWithDetails("Número da nota: ", model.getNumeroNota()))
                 .c_child(Components.TextWithDetails("Tipo de pagamento: ", model.getTipoPagamento()))
                 .c_child(Components.TextWithDetails("Quantidade: ", model.getQuantidade()))
-                .c_child(Components.TextWithDetails("Preço de venda: ", Utils.toBRLCurrency(model.getPrecoUnitario())))
-                .c_child(Components.TextWithDetails("Desconto: ", Utils.toBRLCurrency(model.getDesconto())))
-                .c_child(Components.TextWithDetails("Frete: ", Utils.toBRLCurrency(model.getFrete())))
-                .c_child(Components.TextWithDetails("Total da venda: ", Utils.toBRLCurrency(model.getTotalLiquido())))
-                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
+                .c_child(Components.TextWithDetails("Preço de venda: ", CurrencyPack.toBRLCurrency(model.getPrecoUnitario())))
+                .c_child(Components.TextWithDetails("Desconto: ", CurrencyPack.toBRLCurrency(model.getDesconto())))
+                .c_child(Components.TextWithDetails("Frete: ", CurrencyPack.toBRLCurrency(model.getFrete())))
+                .c_child(Components.TextWithDetails("Total da venda: ", CurrencyPack.toBRLCurrency(model.getTotalLiquido())))
+                .c_child(Components.TextWithDetails("Data de criação: ", DatePack.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
                 .c_child(Components.TextWithDetails("Validade: ", validade))
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true))
                 .c_child(Show.when(Boolean.TRUE.equals(model.getDevolvida()),
                         () -> Components.TextWithDetails("Devolvida em: ",
-                                DateUtils.millisToBrazilianDateTime(model.getDataDevolucao()))
+                                DatePack.millisToBrazilianDateTime(model.getDataDevolucao()))
                 ))
                 .c_child(new Row(new RowProps().spacingOf(10)).children(
                         new Button("Imprimir nota de venda").onClick(() -> vm.imprimirNotaDeVenda(model)),

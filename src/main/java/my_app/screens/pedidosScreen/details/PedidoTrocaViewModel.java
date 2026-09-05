@@ -1,9 +1,9 @@
 package my_app.screens.pedidosScreen.details;
 
 import megalodonte.ComputedState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
+import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
@@ -17,17 +17,12 @@ import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
 import my_app.screens.pdvScreen.ItemVenda;
 import my_app.services.PDVService;
-import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
 
@@ -249,7 +244,7 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
 
         var mensagem = "Confirma a troca da venda #" + pedido.getId() + "? "
                 + "Os produtos originais voltam ao estoque e a venda será registrada como devolvida, "
-                + "criando uma nova venda no total de " + Utils.toBRLCurrency(totalItensTroca()) + ".";
+                + "criando uma nova venda no total de " + CurrencyPack.toBRLCurrency(totalItensTroca()) + ".";
 
         Components.ShowAlertAdvice(mensagem, () -> Async.Run(() -> {
             try {

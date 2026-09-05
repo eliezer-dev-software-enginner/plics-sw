@@ -21,8 +21,8 @@ import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
+import pack.utilities.DatePack;
+import pack.utilities.FormatterPack;
 
 public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3<ClienteModel> {
     private final ClienteViewModel vm;
@@ -92,12 +92,12 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3<Client
                 .columns()
                 .column("ID", ClienteModel::getId)
                 .column("Nome", ClienteModel::getNome)
-                .column("Celular/Telefone",          it -> Utils.formatPhone(it.getCelular()))
+                .column("Celular/Telefone",          it -> FormatterPack.formatPhone(it.getCelular()))
                 .column("Email", ClienteModel::getEmail)
                 .column("CPF/CNPJ",      it -> it.getCpfCnpj().length() == 11
-                        ? Utils.formatCpf(it.getCpfCnpj())
-                        : Utils.formatCnpj(it.getCpfCnpj()))
-                .column("Data de criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                        ? FormatterPack.formatCpf(it.getCpfCnpj())
+                        : FormatterPack.formatCnpj(it.getCpfCnpj()))
+                .column("Data de criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemSelectChange(vm.clienteSelecionado::set)
@@ -114,14 +114,14 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3<Client
                 .c_child(Components.TextWithDetails("Nome: ", model.getNome()))
                 .c_child(Components.TextWithDetails("CPF/CNPJ: ", model.getCpfCnpj()))
                 .c_child(Components.TextWithDetails("Email: ", model.getEmail()))
-                .c_child(Components.TextWithDetails("Telefone: ",Utils.formatPhone(model.getCelular())))
-                .c_child(Components.TextWithDetails("Data de nascimento: ", DateUtils.millisToBrazilianDate(model.getDataNascimento())))
+                .c_child(Components.TextWithDetails("Telefone: ",FormatterPack.formatPhone(model.getCelular())))
+                .c_child(Components.TextWithDetails("Data de nascimento: ", DatePack.millisToBrazilianDate(model.getDataNascimento())))
                 .c_child(Components.TextWithDetails("É gestante: ", model.getGestanteText()))
                 .c_child(Show.when(model.getGestante()!=null && model.getGestante(), ()-> new Container().children(
-                        Components.TextWithDetails("Data de nascimento do bebê: ", DateUtils.millisToBrazilianDate(model.getDataNascimentoBebe()))
+                        Components.TextWithDetails("Data de nascimento do bebê: ", DatePack.millisToBrazilianDate(model.getDataNascimentoBebe()))
                 )))
                 .c_child(Components.ItemDetailEndereco(model.getEndereco()))
-                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
+                .c_child(Components.TextWithDetails("Data de criação: ", DatePack.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }
 }

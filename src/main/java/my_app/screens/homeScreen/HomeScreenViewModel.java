@@ -1,26 +1,20 @@
 package my_app.screens.homeScreen;
 
+import megalodonte.base.Redirect;
+import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.base.UI;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.services.ContaAreceberService;
-import my_app.db.services.ContasPagarService;
-import my_app.db.services.PreferenciasService;
-import my_app.db.services.VendaService;
-import my_app.db.services.CompraService;
-import my_app.db.services.PedidoService;
+import my_app.Main;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
-import my_app.Main;
+import my_app.db.services.*;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
-import my_app.screens.authScreen.AuthScreenViewModel;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
-import megalodonte.base.Redirect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -131,8 +125,8 @@ public class HomeScreenViewModel {
                 BigDecimal totalVendasHoje = vendaService.somarVendasHoje();
                 BigDecimal totalHoje = totalPedidosHoje.add(totalVendasHoje);
 
-                long inicioMillis = DateUtils.localDateParaMillis(primeiroDia);
-                long fimMillis = DateUtils.localDateParaMillis(ultimoDia) + 86399999L;
+                long inicioMillis = DatePack.localDateParaMillis(primeiroDia);
+                long fimMillis = DatePack.localDateParaMillis(ultimoDia) + 86399999L;
 
                 BigDecimal receitasContas = receitasService.somarReceitasPorPeriodo(inicioMillis, fimMillis);
                 BigDecimal receitasVendas = vendaService.somarVendasPorPeriodo(inicioMillis, fimMillis);
@@ -148,12 +142,12 @@ public class HomeScreenViewModel {
                 String mesFormatado = now.getMonth().getValue() + "/" + now.getYear();
 
                 UI.runOnUi(() -> {
-                    this.receitas.set(Utils.toBRLCurrency(totalReceitas));
-                    this.despesas.set(Utils.toBRLCurrency(totalDespesas));
-                    this.lucroLiquido.set(Utils.toBRLCurrency(lucro));
+                    this.receitas.set(CurrencyPack.toBRLCurrency(totalReceitas));
+                    this.despesas.set(CurrencyPack.toBRLCurrency(totalDespesas));
+                    this.lucroLiquido.set(CurrencyPack.toBRLCurrency(lucro));
                     this.mesAtual.set(mesFormatado);
 
-                    this.vendasHoje.set("Hoje você fez: " + Utils.toBRLCurrency(totalHoje) + " (bruto)");
+                    this.vendasHoje.set("Hoje você fez: " + CurrencyPack.toBRLCurrency(totalHoje) + " (bruto)");
 
                     exibirGifNaUI(totalHoje);
                 });

@@ -8,6 +8,8 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import pack.utilities.CurrencyPack;
+import pack.utilities.FormatterPack;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +41,8 @@ public class RelatorioPdfExporter {
                 y = escreverLinha(cs, fonteTitulo, 18, MARGEM, y, empresa != null && empresa.getNome() != null ? empresa.getNome() : "Plics SW");
                 if (empresa != null && empresa.getCpfCnpj() != null && !empresa.getCpfCnpj().isBlank()) {
                     String doc2 = empresa.getCpfCnpj().length() == 14
-                            ? Utils.formatCnpj(empresa.getCpfCnpj())
-                            : Utils.formatCpf(empresa.getCpfCnpj());
+                            ? FormatterPack.formatCnpj(empresa.getCpfCnpj())
+                            : FormatterPack.formatCpf(empresa.getCpfCnpj());
                     y = escreverLinha(cs, fonteTexto, 10, MARGEM, y, "CNPJ/CPF: " + doc2);
                 }
                 y -= LEADING / 2;
@@ -51,19 +53,19 @@ public class RelatorioPdfExporter {
                 y -= LEADING;
 
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "RECEITAS");
-                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Vendas de mercadoria: " + Utils.toBRLCurrency(dados.receitasVendas()));
-                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Vendas no PDV: " + Utils.toBRLCurrency(dados.receitasPedidosPdv()));
-                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a receber recebidas: " + Utils.toBRLCurrency(dados.receitasContasRecebidas()));
-                y = escreverLinha(cs, fonteSecao, 11, MARGEM, y, "Total de receitas: " + Utils.toBRLCurrency(dados.totalReceitas()));
+                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Vendas de mercadoria: " + CurrencyPack.toBRLCurrency(dados.receitasVendas()));
+                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Vendas no PDV: " + CurrencyPack.toBRLCurrency(dados.receitasPedidosPdv()));
+                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a receber recebidas: " + CurrencyPack.toBRLCurrency(dados.receitasContasRecebidas()));
+                y = escreverLinha(cs, fonteSecao, 11, MARGEM, y, "Total de receitas: " + CurrencyPack.toBRLCurrency(dados.totalReceitas()));
                 y -= LEADING;
 
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "DESPESAS");
-                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Compras de mercadoria: " + Utils.toBRLCurrency(dados.despesasCompras()));
-                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a pagar pagas: " + Utils.toBRLCurrency(dados.despesasContasPagas()));
-                y = escreverLinha(cs, fonteSecao, 11, MARGEM, y, "Total de despesas: " + Utils.toBRLCurrency(dados.totalDespesas()));
+                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Compras de mercadoria: " + CurrencyPack.toBRLCurrency(dados.despesasCompras()));
+                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a pagar pagas: " + CurrencyPack.toBRLCurrency(dados.despesasContasPagas()));
+                y = escreverLinha(cs, fonteSecao, 11, MARGEM, y, "Total de despesas: " + CurrencyPack.toBRLCurrency(dados.totalDespesas()));
                 y -= LEADING;
 
-                y = escreverLinha(cs, fonteTitulo, 13, MARGEM, y, "Lucro líquido do período: " + Utils.toBRLCurrency(dados.lucroLiquido()));
+                y = escreverLinha(cs, fonteTitulo, 13, MARGEM, y, "Lucro líquido do período: " + CurrencyPack.toBRLCurrency(dados.lucroLiquido()));
                 y -= LEADING;
 
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "PRODUTOS MAIS VENDIDOS DO PERÍODO");
@@ -99,8 +101,8 @@ public class RelatorioPdfExporter {
                 y -= LEADING;
 
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "SITUAÇÃO ATUAL (não vinculada ao período)");
-                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a receber em aberto: " + Utils.toBRLCurrency(dados.contasReceberEmAberto()));
-                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a pagar em aberto: " + Utils.toBRLCurrency(dados.contasPagarEmAberto()));
+                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a receber em aberto: " + CurrencyPack.toBRLCurrency(dados.contasReceberEmAberto()));
+                y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Contas a pagar em aberto: " + CurrencyPack.toBRLCurrency(dados.contasPagarEmAberto()));
                 y -= LEADING;
 
                 y = escreverLinha(cs, fonteSecao, 12, MARGEM, y, "NOVOS CLIENTES NO PERÍODO");
@@ -128,7 +130,7 @@ public class RelatorioPdfExporter {
                     y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, "Nenhuma venda no período");
                 } else {
                     for (var forma : dados.formasPagamento()) {
-                        y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, forma.forma() + ": " + Utils.toBRLCurrency(forma.valor()));
+                        y = escreverLinha(cs, fonteTexto, 11, MARGEM, y, forma.forma() + ": " + CurrencyPack.toBRLCurrency(forma.valor()));
                     }
                 }
                 y -= LEADING;

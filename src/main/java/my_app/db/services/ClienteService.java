@@ -3,15 +3,15 @@ package my_app.db.services;
 import my_app.db.DB;
 import my_app.db.models.ClienteModel;
 import my_app.db.repositories.ClienteRepository;
+import my_app.utils.Utils;
 import net.sf.persism.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.ValidatorPack;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static my_app.utils.Utils.*;
 
 public class ClienteService extends BaseService<ClienteModel> {
 
@@ -60,10 +60,10 @@ public class ClienteService extends BaseService<ClienteModel> {
             }
         }
 
-        if (!model.getEmail().isEmpty() && isNotValidEmail(model.getEmail())) {
+        if (!model.getEmail().isEmpty() && Utils.isNotValidEmail(model.getEmail())) {
             throw new IllegalArgumentException("Formato de e-mail inválido");
         }
-        if (!model.getCelular().isEmpty() && !isValidPhone(model.getCelular())) {
+        if (!model.getCelular().isEmpty() && !ValidatorPack.isValidPhone(model.getCelular())) {
             throw new IllegalArgumentException("Telefone inválido (informe DDD + Número)");
         }
     }

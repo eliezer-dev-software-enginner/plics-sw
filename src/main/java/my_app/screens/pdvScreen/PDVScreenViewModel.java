@@ -1,25 +1,20 @@
 package my_app.screens.pdvScreen;
 
 import megalodonte.ComputedState;
+import megalodonte.base.UI;
+import megalodonte.base.async.Async;
 import megalodonte.base.components.Ref;
 import megalodonte.base.state.State;
 import megalodonte.components.v2.Input;
-import megalodonte.v2.ListState;
-import megalodonte.base.UI;
-import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.Main;
+import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
+import my_app.core.events.DadosFinanceirosAtualizadosEvent;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.db.models.ClienteModel;
 import my_app.db.models.ProdutoModel;
-import my_app.db.services.ClienteService;
-import my_app.db.services.EmpresaService;
-import my_app.db.services.PedidoItemService;
-import my_app.db.services.PreferenciasService;
-import my_app.db.services.ProdutoService;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.DadosFinanceirosAtualizadosEvent;
-import my_app.core.events.EventBus;
+import my_app.db.services.*;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
 import my_app.services.EscPosPrinter;
@@ -28,9 +23,9 @@ import my_app.services.WinRawPrinter;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pack.utilities.CurrencyPack;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,16 +147,16 @@ public class PDVScreenViewModel {
     }
 
     private BigDecimal calcularTotalLiquido() {
-        BigDecimal subtotalBD = Utils.deCentavosParaReal(subtotal.get());
+        BigDecimal subtotalBD = CurrencyPack.deCentavosParaReal(subtotal.get());
         BigDecimal descontoBD;
         try {
-            descontoBD = Utils.deCentavosParaReal(desconto.get());
+            descontoBD = CurrencyPack.deCentavosParaReal(desconto.get());
         } catch (NumberFormatException e) {
             descontoBD = BigDecimal.ZERO;
         }
         BigDecimal freteBD;
         try {
-            freteBD = Utils.deCentavosParaReal(frete.get());
+            freteBD = CurrencyPack.deCentavosParaReal(frete.get());
         } catch (NumberFormatException e) {
             freteBD = BigDecimal.ZERO;
         }
@@ -174,7 +169,7 @@ public class PDVScreenViewModel {
         totalAPagar.set(Utils.deRealParaCentavos(liquido));
 
         try {
-            BigDecimal recebidoBD = Utils.deCentavosParaReal(totalRecebido.get());
+            BigDecimal recebidoBD = CurrencyPack.deCentavosParaReal(totalRecebido.get());
             BigDecimal t = recebidoBD.subtract(liquido);
             troco.set(t.compareTo(BigDecimal.ZERO) < 0 ? "0" : Utils.deRealParaCentavos(t));
         } catch (NumberFormatException e) {
@@ -361,7 +356,7 @@ public class PDVScreenViewModel {
         // quando o pagamento é esperado na hora (a vista, crédito, débito, pix).
         if (!fiado) {
             try {
-                BigDecimal recebidoBD = Utils.deCentavosParaReal(totalRecebido.get());
+                BigDecimal recebidoBD = CurrencyPack.deCentavosParaReal(totalRecebido.get());
                 if (recebidoBD.compareTo(totalLiquido) < 0) {
                     Components.ShowAlertError("Valor recebido insuficiente. Informe o total recebido do cliente.");
                     return;
@@ -377,14 +372,14 @@ public class PDVScreenViewModel {
         final String formaPagamento = formaPagamentoSelecionado.get();
         final BigDecimal descontoValue;
         try {
-            descontoValue = Utils.deCentavosParaReal(desconto.get());
+            descontoValue = CurrencyPack.deCentavosParaReal(desconto.get());
         } catch (NumberFormatException e) {
             Components.ShowAlertError("Desconto inválido.");
             return;
         }
         final BigDecimal freteValue;
         try {
-            freteValue = Utils.deCentavosParaReal(frete.get());
+            freteValue = CurrencyPack.deCentavosParaReal(frete.get());
         } catch (NumberFormatException e) {
             Components.ShowAlertError("Frete inválido.");
             return;

@@ -7,6 +7,8 @@ import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.state.State;
+import megalodonte.base.theme.ThemeInterface;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
@@ -19,14 +21,13 @@ import my_app.db.models.CategoriaModel;
 import my_app.db.models.CorModel;
 import my_app.db.models.FornecedorModel;
 import my_app.db.models.ProdutoModel;
-import megalodonte.base.theme.ThemeInterface;
-import megalodonte.base.theme.ThemeManager;
 import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import my_app.utils.DateUtils;
 import my_app.utils.Utils;
+import pack.utilities.CurrencyPack;
+import pack.utilities.DatePack;
 
 import java.util.List;
 
@@ -109,10 +110,10 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
                 .column("Estoque", ProdutoModel::getEstoque)
                 .column("Est. Mínimo", ProdutoModel::getEstoqueMinimo)
                 .column("Descrição", ProdutoModel::getDescricao)
-                .column("Preço de compra", it -> Utils.toBRLCurrency(it.getPrecoCompra()))
-                .column("Preço de venda", it -> Utils.toBRLCurrency(it.getPrecoVenda()))
+                .column("Preço de compra", it -> CurrencyPack.toBRLCurrency(it.getPrecoCompra()))
+                .column("Preço de venda", it -> CurrencyPack.toBRLCurrency(it.getPrecoVenda()))
                 .column("Categoria", it -> it.getCategoria() != null ? it.getCategoria().getNome() : "")
-                .column("Data de criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Data de criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onItemSelectChange(vm.produtoSelected::set)
                 .onChangeFocus(vm::handleFocusChange)
@@ -185,7 +186,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
     }
 
      public Component itemDetails(ProdutoModel model) {
-        var validade = model.getValidade() != null ? DateUtils.millisToBrazilianDateTime(model.getValidade()) : "Sem validade";
+        var validade = model.getValidade() != null ? DatePack.millisToBrazilianDateTime(model.getValidade()) : "Sem validade";
 
         return new Column(new ColumnProps().paddingAll(theme.spacing().md()))
                 .children(
@@ -204,13 +205,13 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
                         Components.TextWithDetails("Marca: ", model.getMarca()),
                         Components.TextWithDetails("Estoque: ", model.getEstoque()),
                         Components.TextWithDetails("Estoque Mínimo: ", model.getEstoqueMinimo()),
-                        Components.TextWithDetails("Preço de compra (R$): ", Utils.toBRLCurrency(model.getPrecoCompra())),
-                        Components.TextWithDetails("Frete (R$): ", Utils.toBRLCurrency(model.getFrete())),
-                        Components.TextWithDetails("Preço de venda (R$): ", Utils.toBRLCurrency(model.getPrecoVenda())),
-                        Components.TextWithDetails("Ganho líquido estimado (R$): ", Utils.toBRLCurrency(model.getTotalLiquido())),
+                        Components.TextWithDetails("Preço de compra (R$): ", CurrencyPack.toBRLCurrency(model.getPrecoCompra())),
+                        Components.TextWithDetails("Frete (R$): ", CurrencyPack.toBRLCurrency(model.getFrete())),
+                        Components.TextWithDetails("Preço de venda (R$): ", CurrencyPack.toBRLCurrency(model.getPrecoVenda())),
+                        Components.TextWithDetails("Ganho líquido estimado (R$): ", CurrencyPack.toBRLCurrency(model.getTotalLiquido())),
                         Components.TextWithDetails("Garantia: ", model.getGarantia()),
                         Components.TextWithDetails("Aceita devolução/troca: ", Boolean.TRUE.equals(model.getAceitaDevolucao()) ? "Sim" : "Não"),
-                        Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())),
+                        Components.TextWithDetails("Data de criação: ", DatePack.localDateTimeToBrazilianDateTime(model.getDataCriacao())),
                         Components.TextWithDetails("Validade: ", validade),
                         Components.TextWithDetails("Observação: ", model.getObservacoes(), true)
                 );

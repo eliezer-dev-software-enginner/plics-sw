@@ -7,7 +7,10 @@ import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.FlowRowProps;
+import megalodonte.props.RowProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.db.models.FornecedorModel;
@@ -15,8 +18,8 @@ import my_app.domain.ContratoTelaCrudV3;
 import my_app.domain.Data;
 import my_app.domain.ViewModelScreenContract;
 import my_app.domain.components.Components;
-import my_app.utils.DateUtils;
-import my_app.utils.Utils;
+import pack.utilities.DatePack;
+import pack.utilities.FormatterPack;
 
 public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<FornecedorModel> {
     private final FornecedorScreenViewModel vm;
@@ -82,12 +85,12 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<For
                 .header().columns()
                 .column("ID", FornecedorModel::getId)
                 .column("Nome", FornecedorModel::getNome)
-                .column("Telefone", it -> Utils.formatPhone(it.getCelular()))
+                .column("Telefone", it -> FormatterPack.formatPhone(it.getCelular()))
                 .column("CPF/CNPJ",      it -> it.getCpfCnpj().length() == 11
-                        ? Utils.formatCpf(it.getCpfCnpj())
-                        : Utils.formatCnpj(it.getCpfCnpj()))
+                        ? FormatterPack.formatCpf(it.getCpfCnpj())
+                        : FormatterPack.formatCnpj(it.getCpfCnpj()))
                 .column("Email", FornecedorModel::getEmail)
-                .column("Data de Criação", it -> DateUtils.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
+                .column("Data de Criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .end()
                 .build()
                 .onItemSelectChange(vm.fornecedorSelected::set)
@@ -102,11 +105,11 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<For
                 .c_child(Components.TextWithDetails("ID: ", model.getId()))
                 .c_child(Components.TextWithDetails("Nome: ", model.getNome()))
                 .c_child(Components.TextWithDetails("CPF/CNPJ: ", model.getCpfCnpj()))
-                .c_child(Components.TextWithDetails("Telefone: ",Utils.formatPhone(model.getCelular())))
+                .c_child(Components.TextWithDetails("Telefone: ",FormatterPack.formatPhone(model.getCelular())))
                 .c_child(Components.TextWithDetails("Inscrição estadual: ", model.getInscricaoEstadual()))
                 .c_child(Components.TextWithDetails("Email: ", model.getEmail()))
                 .c_child(Components.ItemDetailEndereco(model.getEndereco()))
-                .c_child(Components.TextWithDetails("Data de criação: ", DateUtils.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
+                .c_child(Components.TextWithDetails("Data de criação: ", DatePack.localDateTimeToBrazilianDateTime(model.getDataCriacao())))
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }
 }
