@@ -50,7 +50,7 @@ public class AuthScreen implements ScreenComponent {
                                 new SpacerVertical(ThemeManager.theme().spacing().md()),
                                 new Card(
                                         new Column(new ColumnProps().maxWidth(185)).children(
-                                                Show.when(true, () -> Components.InputColumnAuthFill("Licença",
+                                                Show.when(vm.showLicensaState, () -> Components.InputColumnAuthFill("Licença",
                                                         vm.licensaState, "Ex: ABC123")),
                                                 new SpacerVertical(ThemeManager.theme().spacing().sm()),
                                                 Components.InputColumnAuthFill("Login", vm.loginState, "Ex: admin"),
