@@ -1,5 +1,6 @@
 package my_app.screens.empresaScreen;
 
+import disgust.io.ButtonsPack;
 import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
@@ -11,6 +12,7 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
+import megalodonte.props.ButtonVariant;
 import megalodonte.props.ContainerProps;
 import megalodonte.props.ImageProps;
 import megalodonte.props.RowProps;
@@ -70,7 +72,7 @@ public class CadastroEmpresaScreen implements ScreenComponent {
                                         "Ex: Após o vencimento cobrar multa...",200))
                 )
                 .c_child(new SpacerVertical(20))
-                .c_child(Components.ButtonCadastro("Salvar",vm::handleSave)));
+                .c_child(ButtonsPack.ContainedButton("Salvar", ButtonVariant.PRIMARY,true,vm::handleSave)));
     }
 
     Row TopWithImage() {

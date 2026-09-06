@@ -1,5 +1,6 @@
 package my_app.screens.authScreen;
 
+import disgust.io.ButtonsPack;
 import megalodonte.base.Redirect;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
@@ -57,7 +58,8 @@ public class AuthScreen implements ScreenComponent {
                                                 new SpacerVertical(ThemeManager.theme().spacing().sm()),
                                                 Components.InputColumnAuthFill("Senha", vm.passwordState, "Digite sua senha"),
                                                 new SpacerVertical(ThemeManager.theme().spacing().md()),
-                                                Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
+                                                ButtonsPack.ContainedButton("Entrar", ButtonVariant.PRIMARY,true, () -> vm.entrar(ctx))
+                                                //Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
                                         ),
                                         new CardProps().paddingAll(10).borderRadius(10)
                                 )

@@ -1,21 +1,21 @@
 package my_app.screens.preferenciasScreen;
 
+import disgust.io.ButtonsPack;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.RowProps;
-import megalodonte.props.TextProps;
-import megalodonte.v2.Show;
-import megalodonte.components.Button;
 import megalodonte.components.LineHorizontal;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
-import megalodonte.props.ButtonProps;
+import megalodonte.components.layout_components.Row;
+import megalodonte.props.ButtonVariant;
 import megalodonte.props.ColumnProps;
+import megalodonte.props.RowProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
+import megalodonte.v2.Show;
 import my_app.domain.Data;
 import my_app.domain.components.Components;
 
@@ -51,15 +51,12 @@ public class PreferenciasScreen implements ScreenComponent {
                         Components.InputColumn("Login", vm.loginState, "Ex: admin"),
                         Components.InputColumn("Senha", vm.passwordState, "Digite uma senha")
                 )),
-                Components.ButtonCadastro("Salvar Preferências", vm::salvar),
+                ButtonsPack.ContainedButton("Salvar Preferências", ButtonVariant.PRIMARY, true, vm::salvar),
                 new LineHorizontal(),
-                new Button("Encerrar sessão",
-                        new ButtonProps().fillWidth().height(31)
-                                .fontSize(14).textColor("white").bgColor("#dc2626"))
-                        .onClick(() -> Components.ShowAlertAdvice(
-                                "Tem certeza que deseja sair? Não se preocupe seus dados serão mantidos ;)",
-                                vm::signOut
-                        ))
+                ButtonsPack.OutlinedButton("Encerrar sessão", ButtonVariant.DANGER, true, () -> Components.ShowAlertAdvice(
+                        "Tem certeza que deseja sair? Não se preocupe seus dados serão mantidos ;)",
+                        vm::signOut
+                ))
         );
     }
 }

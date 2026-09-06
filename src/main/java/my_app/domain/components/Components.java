@@ -1,5 +1,6 @@
 package my_app.domain.components;
 
+import disgust.io.ButtonsPack;
 import disgust.io.br.Pack;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -137,7 +138,7 @@ public class Components {
                                 new Row(new RowProps().spacingOf(10).bottomVertically())
                                         .r_child(Components.DatePickerColumn(dtPrimeiraParcela, "Data primeira parcela"))
                                         .r_child(Components.InputColumnNumeric("Quantidade de parcelas", qtdParcelas, "Ex: 1"))
-                                        .r_child(Components.ButtonCadastro("Gerar parcelas", handleGerarParcelas)))
+                                        .r_child(ButtonsPack.OutlinedButton("Gerar parcelas",ButtonVariant.PRIMARY, handleGerarParcelas)))
                         .items(parcelaComponentForEachState)
         );
     }
@@ -322,7 +323,7 @@ public class Components {
         return new Column()
                 .c_child(new Image(imageState, props))
                 .c_child(new SpacerVertical(10))
-                .c_child(ButtonCadastro(title, callback));
+                .c_child(ButtonsPack.OutlinedButton(title, ButtonVariant.PRIMARY, callback));
     }
 
     public static Text FormTitle(String title, String textColor) {
@@ -344,11 +345,6 @@ public class Components {
 
     static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
             .fontSize(ThemeManager.theme().typography().small()).textColor("white").bgColor("#2563eb");
-
-    public static Button ButtonCadastro(String textState, RunnableThrowing handleAdd) {
-        return new Button(textState, propsBtnCadastro
-        ).onClick(handleAdd);
-    }
 
     public static Component ButtonCadastro(ComputedState<String> textState, RunnableThrowing handleAdd) {
         return new Button(textState, propsBtnCadastro
