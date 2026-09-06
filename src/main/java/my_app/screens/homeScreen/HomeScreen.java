@@ -79,7 +79,13 @@ public class HomeScreen implements ScreenComponent {
                                                                                 new ImageProps().width(200).height(90))
                                                                                 .ref(bannerRef),
                                                                         ()-> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK")
-                                                                )
+                                                                ),
+                                                                new SpacerVertical(20),
+                                                                new Clickable(
+                                                                        new Image("assets/banners/instagram-comprar-inscritos.png",
+                                                                                new ImageProps().size(180))
+                                                                                .ref(bannerRef)
+                                                                ).onClick(()-> Redirect.to(Data.linkWebsiteOfficial+"comprar-inscritos-instagram"))
                                                         ),
                                                         centerContent()
                                                 )
@@ -118,11 +124,6 @@ public class HomeScreen implements ScreenComponent {
                 new FlowRow(new FlowRowProps().fillWidth().spacingOf(10))
                         .withTransition(Animations::riseIn)
                         .items(cardsForEach)
-                        .children(new Clickable(
-                                new Image("assets/banners/instagram-comprar-inscritos.png",
-                                        new ImageProps().width(200).height(160))
-                                        .ref(bannerRef)
-                        ).onClick(()-> Redirect.to(Data.linkWebsiteOfficial+"comprar-inscritos-instagram")))
                         .children(saudacaoComponent())
         );
     }

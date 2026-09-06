@@ -14,7 +14,9 @@
       "Refactor: Removida auto-atualização in-app — agora só redireciona pro site",
       "Fix: Papel de parede da tela inicial não ficava mais coberto por uma camada opaca",
       "Fix: Vendas devolvidas deixam de contar como receita (Home e Relatórios)",
-      "Fix: Validação de troca bloqueava qualquer produto original"
+      "Fix: Validação de troca bloqueava qualquer produto original",
+      "UI: Botões repaginados na tela de Histórico do Caixa",
+      "UI: formulário na tela de Vendas agora é envolvido por um card"
     ]
   },
   {

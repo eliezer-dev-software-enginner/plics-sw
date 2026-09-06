@@ -45,14 +45,16 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
 
     @Override
     public Component form() {
-        return new Column(new ColumnProps().spacingOf(10)).children(
-                Components.FormTitle("Cadastrar Nova Venda"),
-                new SpacerVertical(20),
-                formFirstRow(),
-                Components.displayOperationsRow(vm.totais),
-                Components.TextWithValue("Total com frete:", vm.totalComFrete.map(CurrencyPack::toBRLCurrency)),
-                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalComFrete),
-                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
+        return new Card(
+                new Column(new ColumnProps().spacingOf(10)).children(
+                        Components.FormSubtitle("Cadastrar Nova Venda"),
+                        new SpacerVertical(20),
+                        formFirstRow(),
+                        Components.displayOperationsRow(vm.totais),
+                        Components.TextWithValue("Total com frete:", vm.totalComFrete.map(CurrencyPack::toBRLCurrency)),
+                        Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalComFrete),
+                        Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
+        )
         );
     }
 

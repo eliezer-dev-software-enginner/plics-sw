@@ -70,7 +70,7 @@ public class Themes {
 
         @Override
         public ThemeTypography typography() {
-            return new ThemeTypography("Roboto", 23, 20, 16, 13);
+            return new ThemeTypography("Roboto", 23, 17, 16, 13);
         }
 
         @Override

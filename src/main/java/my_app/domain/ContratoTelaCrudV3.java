@@ -92,6 +92,7 @@ public interface ContratoTelaCrudV3<T> {
                                                     }
                                                 }),
                                                 new SpacerVertical(30),
+
                                                 new Container(new ContainerProps().paddingLeft(20).paddingRight(20).fillHeight())
                                                         .children(
                                                                 Components.searchInput(viewModel().searchState, "Pesquisar"),
