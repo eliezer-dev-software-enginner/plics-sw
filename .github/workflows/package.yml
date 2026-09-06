@@ -57,6 +57,27 @@ jobs:
         working-directory: ${{ runner.temp }}/megalodonte-libs
         run: .\install-all.ps1
 
+      # disgust-components (biblioteca de components prontos sobre Megalodonte) depende de
+      # megalodonte:*:1.0.0-beta via mavenLocal — precisa ser clonado e publicado DEPOIS das
+      # libs Megalodonte acima, e ANTES do build do plics-sw logo abaixo, que consome
+      # disgust-components pelos mesmos moldes (mavenLocal, sem repositório remoto).
+      - name: Clonar disgust-components
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/eliezer-dev-software-enginner/disgust-components.git "${{ runner.temp }}/disgust-components"
+
+      - name: Publicar disgust-components em mavenLocal (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: ${{ runner.temp }}/disgust-components
+        run: ./gradlew publishToMavenLocal --no-daemon
+
+      - name: Publicar disgust-components em mavenLocal (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}/disgust-components
+        run: .\gradlew.bat publishToMavenLocal --no-daemon
+
       # jpackage --type msi shella pro WiX pra montar o instalador — não precisa disso
       # pro --type deb do Linux.
       - name: Instalar WiX Toolset (só Windows)
