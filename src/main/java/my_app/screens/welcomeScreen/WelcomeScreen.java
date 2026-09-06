@@ -11,7 +11,6 @@ import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
@@ -47,11 +46,11 @@ public class WelcomeScreen implements ScreenComponent {
                         new Image("assets/app_banner.png", new ImageProps().width(500).height(400))
                                 .ref(logoRef),
                         new TextFlow(new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
-                                new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).color("#fff"))
+                                new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).textColor("#fff"))
                         ),
                         new LineHorizontal(),
                         new Text("Acesso padrão configurado como",
-                                new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
+                                new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#fff")),
                         textRow(),
                         new SpacerVertical(20),
                         new Button("Entrar no sistema",
@@ -70,10 +69,10 @@ public class WelcomeScreen implements ScreenComponent {
     public Component textRow() {
         return new Row(new RowProps().width(200).maxWidth(300).centerHorizontally().bgColor(ThemeManager.theme().colors().border()))
                 .children(
-                        new Text("usuário", new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
-                        new Text(" admin", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().color("#fff")),
-                        new Text(" e senha", new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#fff")),
-                        new Text(" 1234", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().color("#fff"))
+                        new Text("usuário", new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#fff")),
+                        new Text(" admin", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().textColor("#fff")),
+                        new Text(" e senha", new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#fff")),
+                        new Text(" 1234", new TextProps().fontSize(ThemeManager.theme().typography().body()).bold().textColor("#fff"))
                 );
     }
 }

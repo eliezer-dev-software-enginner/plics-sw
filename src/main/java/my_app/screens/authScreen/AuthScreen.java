@@ -68,7 +68,7 @@ public class AuthScreen implements ScreenComponent {
                         new Column(new ColumnProps().maxWidth(170)).children(
                                 new Column(new ColumnProps().centerHorizontally()).children(
                                         new Image("/assets/qrcode2.png", new ImageProps().size(170)),
-                                        new Text("Plics - SW", new TextProps().color("white").bold())
+                                        new Text("Plics - SW", new TextProps().textColor("white").bold())
                                 ),
                                 new SpacerVertical(10),
                                 new TextFlow(new Text("Scaneie o QRCode para ir para o suporte no WhatsApp.",

@@ -1,15 +1,18 @@
 package my_app.screens.pedidosScreen;
 
+import disgust.io.ButtonsPack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.components.Button;
 import megalodonte.components.Card;
 import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
+import megalodonte.props.ButtonVariant;
 import megalodonte.props.ContainerProps;
+import megalodonte.props.FlowRowProps;
 import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
@@ -17,7 +20,8 @@ import my_app.core.AppRoutes;
 import my_app.db.models.PedidoItemModel;
 import my_app.db.models.PedidoModel;
 import my_app.domain.components.Components;
-import my_app.utils.Utils;
+import org.kordamp.ikonli.antdesignicons.AntDesignIconsFilled;
+import org.kordamp.ikonli.entypo.Entypo;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
@@ -70,6 +74,26 @@ public class PedidosScreen implements ScreenComponent {
         return new Card(new Column().children(
                 Components.FormSubtitle("Itens da venda selecionada"),
                 new SpacerVertical(10),
+                Show.when(vm.temPedidoSelecionado, () ->
+                        new FlowRow(new FlowRowProps().spacingOf(10)).children(
+                                //new Button("Imprimir venda").onClick(vm::imprimirVendaSelecionada),
+                                ButtonsPack.ContainedButtonWithIconStart("Imprimir venda", ButtonVariant.PRIMARY,
+                                        AntDesignIconsFilled.PRINTER,
+                                        vm::imprimirVendaSelecionada),
+                                ButtonsPack.ContainedButtonWithIconStart("Excluir venda selecionada", ButtonVariant.DANGER,
+                                                AntDesignIconsFilled.DELETE, vm::handleClickMenuDelete)
+                        )
+                ),
+                Show.when(vm.podeDevolver, () ->
+                        new Row(new RowProps().spacingOf(10)).children(
+                                ButtonsPack.ContainedButtonWithIconStart("Devolver venda selecionada", ButtonVariant.WARNING,
+                                        Entypo.BACK_IN_TIME,
+                                        vm::handleClickMenuDevolucaoVenda),
+                                ButtonsPack.ContainedButtonWithIconStart("Trocar venda selecionada", ButtonVariant.SUCCESS,
+                                        Entypo.SWAP,
+                                        this::handleClickMenuTroca)
+                        )
+                ),
                 new SimpleTable<PedidoItemModel>()
                         .fromData(vm.itensDoPedidoSelecionado)
                         .header()
@@ -79,20 +103,8 @@ public class PedidosScreen implements ScreenComponent {
                         .column("Vl. Unit.", it -> CurrencyPack.toBRLCurrency(it.getPrecoUnitario()))
                         .column("Total",     it -> CurrencyPack.toBRLCurrency(it.getTotalItem()))
                         .build(),
-                new SpacerVertical(15),
-                Show.when(vm.temPedidoSelecionado, () ->
-                        new Row(new RowProps().spacingOf(10)).children(
-                                new Button("Imprimir venda").onClick(vm::imprimirVendaSelecionada),
-                                new Button("Excluir venda selecionada").onClick(vm::handleClickMenuDelete)
-                        )
-                ),
-                new SpacerVertical(15),
-                Show.when(vm.podeDevolver, () ->
-                        new Row(new RowProps().spacingOf(10)).children(
-                                new Button("Devolver venda selecionada").onClick(vm::handleClickMenuDevolucaoVenda),
-                                new Button("Trocar venda selecionada").onClick(this::handleClickMenuTroca)
-                        )
-                )
+                new SpacerVertical(15)
+
         ));
     }
 

@@ -195,7 +195,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                         .c_child(new Text("Em Aberto", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                         .c_child(
                                                                 new Text(CurrencyPack.toBRLCurrency(vm.getTotalEmAberto()),
-                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#ff6b6b"))
+                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#ff6b6b"))
                                                         )
                                         )
                                         .r_child(
@@ -203,7 +203,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                         .c_child(new Text("Vencidas", new TextProps().fontSize(ThemeManager.theme().typography().body())))
                                                         .c_child(
                                                                 new Text(CurrencyPack.toBRLCurrency(vm.getTotalVencidas()),
-                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).color("#dc3545"))
+                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#dc3545"))
                                                         )
                                         )
                         )

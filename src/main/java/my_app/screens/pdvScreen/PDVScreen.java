@@ -81,7 +81,7 @@ public class PDVScreen implements ScreenComponent {
                 //qrCode
                 new Column().children(
                         new Image("/assets/qrcode_suporte.jpg", new ImageProps().size(80)),
-                        new Text("Plics - SW", new TextProps().color("white").bold().fontSize(14))
+                        new Text("Plics - SW", new TextProps().textColor("white").bold().fontSize(14))
                         ),
                         new SpacerVertical(10),
                         new Text("Scaneie o QRCode para ir para o suporte no WhatsApp.",
