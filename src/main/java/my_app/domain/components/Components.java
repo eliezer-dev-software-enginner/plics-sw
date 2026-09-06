@@ -49,7 +49,6 @@ import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 import pack.utilities.FormatterPack;
 
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -365,15 +364,6 @@ public class Components {
             .minWidth(100)
             .height(31);
 
-    public static <T> Component SelectColumn(String label, State<List<T>> listState, State<T> stateSelected, Function<T, String> display) {
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(new Select<T>(selectProps)
-                        .items(listState)
-                        .value(stateSelected)
-                        .displayText(display)
-                );
-    }
 
     public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display) {
         return new Column()
@@ -564,10 +554,6 @@ public class Components {
                 .c_child(input);
     }
 
-    private static final NumberFormat BRL =
-            NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-
-
     static megalodonte.props.InputProps getInputProps(String placeholder, int height) {
         return new megalodonte.props.InputProps().height(height)
                 .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small())
@@ -581,10 +567,6 @@ public class Components {
     static InputProps getInputPropsV2(String placeholder, int height) {
         return new InputProps().height(height)
                 .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small());
-    }
-
-    public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder, Runnable onEnter) {
-        return InputColumnComEnterHandler(label, inputState, placeholder, onEnter, null);
     }
 
     public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder,
@@ -683,7 +665,6 @@ public class Components {
     }
 
 
-
     public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,  String labelColor) {
         return InputColumn(label, inputState, placeholder, disableInput,labelColor,null);
     }
@@ -711,10 +692,6 @@ public class Components {
                                         .maxWidth(300)
                         )
                 );
-    }
-
-    public static Column InputColumnAuth(String label, ReadableState<String> inputState, String placeholder, int width) {
-        return InputColumn(label, inputState, placeholder, false,width,35);
     }
 
     public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder,Integer width) {

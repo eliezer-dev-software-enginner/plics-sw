@@ -45,7 +45,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<O
     public Component render() {
         var mainContent = new Container(new ContainerProps().bgColor(theme.colors().background()))
                 .children(
-                        Components.searchInput(viewModel().searchState, ""),
+                        disgust.io.Pack.searchInput(viewModel().searchState, ""),
                         form(),
                         new SpacerVertical(30),
                         table()
