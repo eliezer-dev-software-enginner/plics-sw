@@ -1,5 +1,6 @@
 package my_app.screens.pdvScreen;
 
+import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
@@ -44,15 +45,15 @@ public class PDVScreen implements ScreenComponent {
                                 table(),
                                 new Column().children(
                                         new Row().children(
-                                                Components.InputColumnCurrency("SUBTOTAL", vm.subtotal,true),
-                                                Components.InputColumnCurrency("TOTAL A PAGAR", vm.totalAPagar,true),
-                                                Components.InputColumnCurrency("TROCO", vm.troco,true)
+                                                Pack.InputColumnCurrency("SUBTOTAL", vm.subtotal,true),
+                                                Pack.InputColumnCurrency("TOTAL A PAGAR", vm.totalAPagar,true),
+                                                Pack.InputColumnCurrency("TROCO", vm.troco,true)
                                         ),
                                         new SpacerVertical(20),
                                         new Row().children(
-                                                Components.InputColumnCurrency("TOTAL RECEBIDO", vm.totalRecebido),
-                                                Components.InputColumnCurrency("DESCONTO", vm.desconto),
-                                                Components.InputColumnCurrency("FRETE", vm.frete)
+                                                Pack.InputColumnCurrency("TOTAL RECEBIDO", vm.totalRecebido),
+                                                Pack.InputColumnCurrency("DESCONTO", vm.desconto),
+                                                Pack.InputColumnCurrency("FRETE", vm.frete)
                                         ),
                                         vendaFiadaComponent(),
                                         new SpacerVertical(30),

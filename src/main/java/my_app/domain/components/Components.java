@@ -1,5 +1,6 @@
 package my_app.domain.components;
 
+import disgust.io.br.Pack;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -48,7 +49,6 @@ import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 import pack.utilities.FormatterPack;
 
-import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -78,7 +78,7 @@ public class Components {
                 Components.FormSubtitle("Endereço"),
                 new FlowRow(new FlowRowProps().spacingOf(10))
                         .children(
-                                Components.InputColumnCep("Cep", enderecoState.cep),
+                                Pack.InputColumnCep("Cep", enderecoState.cep),
                                 Components.SelectColumn("UF", Data.ufList, enderecoState.ufSelected, it -> it),
                                 Components.InputColumn("Cidade", enderecoState.cidade, "Ex: São Paulo"),
                                 Components.InputColumn("Bairro", enderecoState.bairro, "Ex: Centro"),
@@ -470,55 +470,7 @@ public class Components {
                 .r_child(new Text(valueState, new TextProps().fontSize(ThemeManager.theme().typography().body())));
     }
 
-    public static Component InputColumnCep(String label, State<String> inputState) {
-        var inputProps = getInputPropsV2("00000-000").width(120);
 
-        var input = new Input(inputState, inputProps)
-                .onInitialize(value -> {
-                    String formatted = FormatterPack.formatCep(value);
-                    return OnChangeResult.of(formatted, value);
-                })
-                .onChange(value -> {
-                    String numeric = value.replaceAll("[^0-9]", "");
-
-                    if (numeric.length() > 8) {
-                        numeric = numeric.substring(0, 8);
-                    }
-
-                    String formatted = FormatterPack.formatCep(numeric);
-                    return OnChangeResult.of(formatted, numeric);
-                })
-                .lockCursorToEnd();
-
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(input);
-    }
-
-    public static Component InputColumnCpf(String label, State<String> inputState) {
-        var inputProps = getInputPropsV2("000.000.000-00").width(160);
-
-        var input = new Input(inputState, inputProps)
-                .onInitialize(value -> {
-                    String formatted = FormatterPack.formatCpf(value);
-                    return OnChangeResult.of(formatted, value);
-                })
-                .onChange(value -> {
-                    String numeric = value.replaceAll("[^0-9]", "");
-
-                    if (numeric.length() > 11) {
-                        numeric = numeric.substring(0, 11);
-                    }
-
-                    String formatted = FormatterPack.formatCpf(numeric);
-                    return OnChangeResult.of(formatted, numeric);
-                })
-                .lockCursorToEnd();
-
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(input);
-    }
 
     /**
      * Trocar por Ref do pacote megalodonte.base
@@ -594,57 +546,6 @@ public class Components {
         return decPart.isEmpty() ? fmt.toString() : fmt + "," + decPart;
     }
 
-    public static Component InputColumnCnpjAlfanumerico(String label, State<String> inputState) {
-        var inputProps = getInputPropsV2("AA.AAA.AAA/AAAA-DD").width(190);
-
-        var input = new Input(inputState, inputProps)
-                .onInitialize(value -> {
-                    String formatted = FormatterPack.formatCnpj(value);
-                    return OnChangeResult.of(formatted, value);
-                })
-                .onChange(value -> {
-                    String raw = value.toUpperCase().replaceAll("[^0-9A-Z]", "");
-
-                    if (raw.length() > 14) {
-                        raw = raw.substring(0, 14);
-                    }
-
-                    String formatted = FormatterPack.formatCnpj(raw);
-                    return OnChangeResult.of(formatted, raw);
-                })
-                .lockCursorToEnd();
-
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(input);
-    }
-
-    public static Component InputColumnPhone(String label, State<String> inputState) {
-        var inputProps = getInputPropsV2("(00) 00000-0000").width(160);
-
-        var input = new Input(inputState, inputProps)
-                .onInitialize(value -> {
-                    String formatted = FormatterPack.formatPhone(value);
-                    return OnChangeResult.of(formatted, value);
-                })
-                .onChange(value -> {
-                    String numeric = value.replaceAll("[^0-9]", "");
-
-                    // Limita a 11 dígitos (padrão BR com DDD)
-                    if (numeric.length() > 11) {
-                        numeric = numeric.substring(0, 11);
-                    }
-
-                    String formatted = FormatterPack.formatPhone(numeric);
-                    return OnChangeResult.of(formatted, numeric);
-                })
-                .lockCursorToEnd();
-
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(input);
-    }
-
     public static Component InputColumnNumeric(String label, State<String> inputState, String placeholder) {
         var inputProps = getInputPropsV2(placeholder).width(100);
 
@@ -666,44 +567,6 @@ public class Components {
     private static final NumberFormat BRL =
             NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
 
-    public static Component InputColumnCurrency(String label, State<String> inputState, boolean disableInput) {
-        var icon = Entypo.CREDIT;
-        var fonticon = FontIcon.of(icon, 15, Color.web("green"));
-
-        var inputProps = getInputPropsV2("R$ 0,00").width(140);
-
-        if (disableInput) inputProps.disable();
-
-        // inputState armazena valores brutos (em centavos), campo exibe formato BRL
-        var input = new Input(inputState, inputProps)
-                .onInitialize(value -> {
-                    if (value.matches("\\d+")) {
-                        BigDecimal realValue = new BigDecimal(value).movePointLeft(2);
-                        return OnChangeResult.of(BRL.format(realValue), value);
-                    }
-                    return OnChangeResult.of(value, value);
-                })
-                .onChange(value -> {
-                    String numeric = value.replaceAll("[^0-9]", "");
-                    if (numeric.isEmpty()) {
-                        return OnChangeResult.of("R$ 0,00", "0");
-                    }
-
-                    // Converte centavos para BigDecimal do valor real
-                    BigDecimal realValue = new BigDecimal(numeric).movePointLeft(2);
-                    return OnChangeResult.of(BRL.format(realValue), numeric);
-                })
-                .lockCursorToEnd()
-                .left(fonticon);
-
-        return new Column()
-                .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(input);
-    }
-
-    public static Component InputColumnCurrency(String label, State<String> inputState) {
-        return InputColumnCurrency(label, inputState, false);
-    }
 
     static megalodonte.props.InputProps getInputProps(String placeholder, int height) {
         return new megalodonte.props.InputProps().height(height)
@@ -749,8 +612,8 @@ public class Components {
                             new Card(new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm())).children(
                                     Show.when(produtoModel.getImagem()!=null, ()-> new Image(produtoModel.getImagem(), new ImageProps().size(30))),
                                     new Text(produtoModel.getCodigoBarras() + " - " + produtoModel.getDescricao())
-                            )), ()-> produtoSelected.set(produtoModel)
-                    )
+                            ))
+                    ).onClick(()-> produtoSelected.set(produtoModel))
                 );
 
         return new Column()

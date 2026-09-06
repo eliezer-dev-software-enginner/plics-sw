@@ -1,5 +1,6 @@
 package my_app.screens.ordemServicoScreen;
 
+import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeInterface;
@@ -78,12 +79,12 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<O
                                                 vm.tecnicoSelected, it -> it != null ? it.getNome() : "", true,
                                                 "+", vm::openTecnicoWindow))
                                         .r_child(Components.InputColumn("Equipamento", vm.equipamento, "Marca, Modelo ou Serial"))
-                                        .r_child(Components.InputColumnCurrency("Mão de obra (R$)", vm.maoDeObra))
+                                        .r_child(Pack.InputColumnCurrency("Mão de obra (R$)", vm.maoDeObra))
                         )
                         .c_child(new SpacerVertical(10))
                         .c_child(
                                 new Row(new RowProps().spacingOf(10))
-                                        .r_child(Components.InputColumnCurrency("Peças (R$)", vm.pecasValor))
+                                        .r_child(Pack.InputColumnCurrency("Peças (R$)", vm.pecasValor))
                                         .r_child(Components.SelectColumn("Tipo de pagamento",
                                                 vm.tiposPagamento, vm.tipoPagamentoSelected, it -> it))
                                         .r_child(Components.TextAreaColumn("Checklist / Relatório do Serviço",

@@ -1,5 +1,6 @@
 package my_app.screens.contasAReceberScreen;
 
+import disgust.io.br.Pack;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
@@ -74,7 +75,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())
                                         .r_child(Components.InputColumn("Descrição", vm.descricao, "Descrição da conta"))
-                                        .r_child(Components.InputColumnCurrency("Valor Original", vm.valorOriginal))
+                                        .r_child(Pack.InputColumnCurrency("Valor Original", vm.valorOriginal))
                                         .r_child(Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected,
                                                 f -> f != null ? f.getNome() : "", true))
                                         .r_child(Components.SelectColumn("Status", vm.statusOptions, vm.status, s -> s))
@@ -152,7 +153,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                                 .r_child(
                                                         new Column(new ColumnProps())
                                                                 .c_child(new Text("Valor do Recebimento:", new TextProps().fontSize(ThemeManager.theme().typography().body())))
-                                                                .c_child(Components.InputColumnCurrency("Valor", vm.valorRecebimento))
+                                                                .c_child(Pack.InputColumnCurrency("Valor", vm.valorRecebimento))
                                                 )
                                                 .r_child(
                                                         new Row(new RowProps().spacingOf(8))

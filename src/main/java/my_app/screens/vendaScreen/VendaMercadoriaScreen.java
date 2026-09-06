@@ -1,5 +1,6 @@
 package my_app.screens.vendaScreen;
 
+import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.IconInterface;
 import megalodonte.base.components.ScreenComponent;
@@ -64,9 +65,9 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome, true),
                 Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2",vm.quantidadeRef),
-                Components.InputColumnCurrency("Pc. de venda", vm.pcVenda),
-                Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro),
-                Components.InputColumnCurrency("Frete", vm.frete),
+                Pack.InputColumnCurrency("Pc. de venda", vm.pcVenda),
+                Pack.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro),
+                Pack.InputColumnCurrency("Frete", vm.frete),
                 Components.SelectColumn("Tipo de pagamento",
                         Data.tiposPagamentoList, vm.tipoPagamentoSelecionado, it -> it),
                 Components.SelectColumn("Refletir no estoque?",

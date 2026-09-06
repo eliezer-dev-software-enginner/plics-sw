@@ -1,13 +1,10 @@
 package my_app.screens.clienteScreen;
 
+import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.Card;
-import megalodonte.components.LineHorizontal;
-import megalodonte.components.SimpleTable;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.Text;
+import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
@@ -59,10 +56,10 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3<Client
                                         Components.InputColumn("Nome", vm.nome, "Ex: João"),
                                         Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it),
                                         Show.when(vm.tipoPessoaEhFisica,
-                                                () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
-                                                () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
+                                                () -> Pack.InputColumnCpf("CPF", vm.cnpjCpf),
+                                                () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                                         ),
-                                        Components.InputColumnPhone("Celular", vm.celular),
+                                        Pack.InputColumnPhone("Celular", vm.celular),
                                         Components.InputColumn("Email", vm.email, "Ex: email@teste.com"),
                                         Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"),
                                         Components.SelectColumn("É gestante?", Data.simNaoList, vm.isGestante, it -> it),

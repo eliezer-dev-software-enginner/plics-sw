@@ -1,5 +1,6 @@
 package my_app.screens.fornecedorScreen;
 
+import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
@@ -65,10 +66,10 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<For
                 .r_child(Components.InputColumn("Nome Fantasia", vm.nome, "Ex: Empresa 123"))
                 .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
                 .r_child(Show.when(vm.tipoPessoaEhFisica,
-                        () -> Components.InputColumnCpf("CPF", vm.cnpjCpf),
-                        () -> Components.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
+                        () -> Pack.InputColumnCpf("CPF", vm.cnpjCpf),
+                        () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                 ))
-                .r_child(Components.InputColumnPhone("Celular", vm.celular))
+                .r_child(Pack.InputColumnPhone("Celular", vm.celular))
                 .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, "Ex: 123.456.789.123"))
                 .r_child(Components.InputColumn("Email", vm.email, "Ex: email@teste.com"));
     }

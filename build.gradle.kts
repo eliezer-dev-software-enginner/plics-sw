@@ -132,6 +132,9 @@ dependencies {
 
     //utilitties
     implementation("com.github.eliezer-dev-software-enginner:pack-utilities:v1.0.0")
+
+    //disgust-components
+    implementation("disgust:distust-io-components:1.0.0-beta")
 }
 
 tasks.test {

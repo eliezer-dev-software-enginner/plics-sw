@@ -1,5 +1,6 @@
 package my_app.screens.comprasScreen;
 
+import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
@@ -95,7 +96,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3<Compra
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
                 Components.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""), "Ex: Paraiso",true),
-                Components.InputColumnCurrency("Pc. de compra", vm.pcCompra)
+                Pack.InputColumnCurrency("Pc. de compra", vm.pcCompra)
         );
     }
 
@@ -104,7 +105,7 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3<Compra
 
         return new Row(new RowProps().bottomVertically().spacingOf(10))
                 .r_child(quantidadeInput)
-                .r_child(Components.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
+                .r_child(Pack.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
                 .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSelected, it -> it))
                 .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
                 .r_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta compra?"));

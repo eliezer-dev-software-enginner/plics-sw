@@ -1,5 +1,6 @@
 package my_app.screens.produtoScreen;
 
+import disgust.io.br.Pack;
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
@@ -170,9 +171,9 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
                         coresCheckboxes(),
                         Components.InputColumn("Tamanho", vm.tamanhoSelected, "Ex: M",90),
                         Components.InputColumn("Modelo", vm.modelo, "Ex: Slim Fit",150),
-                        Components.InputColumnCurrency("Preço de compra", vm.precoCompra),
-                        Components.InputColumnCurrency("Frete", vm.frete),
-                        Components.InputColumnCurrency("Preço de venda", vm.precoVenda),
+                        Pack.InputColumnCurrency("Preço de compra", vm.precoCompra),
+                        Pack.InputColumnCurrency("Frete", vm.frete),
+                        Pack.InputColumnCurrency("Preço de venda", vm.precoVenda),
                         Components.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, CategoriaModel::getNome),
                         Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome),
                         Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it),
