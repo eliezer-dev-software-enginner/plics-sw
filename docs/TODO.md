@@ -1,5 +1,11 @@
 # TODO
 
+## Concluído (testes ajustados à migração pro pack-utilities — 2026-09-06)
+- [x] **`UtilsTest`**: `Utils.isValidCnpj` → `pack.utilities.ValidatorPack.isValidCnpj` (método removido do `Utils`)
+- [x] **`ProdutoServiceTest`**: `DateUtils.localDateParaMillis` → `pack.utilities.DatePack.localDateParaMillis` (classe removida)
+- [x] **`FornecedorServiceTest`**: fixtures de CPF `12345678901` → `52998224725` — o `ValidatorPack.isValidCpf` confere os dígitos verificadores de verdade; o `Utils` antigo só validava tamanho
+- [x] `./gradlew test`: 308/308, BUILD SUCCESSFUL
+
 ## Concluído (papel de parede da Home virando "camada fina" com ScrollPaneDefault — 2026-08-29)
 - [x] **Reportado**: bgImage da Home coberta parcialmente (camada fina) ao usar
       `Components.ScrollPaneDefault`

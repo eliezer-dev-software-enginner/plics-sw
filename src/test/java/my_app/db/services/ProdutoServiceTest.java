@@ -2,6 +2,7 @@ package my_app.db.services;
 
 import my_app.db.models.ProdutoModel;
 import org.junit.jupiter.api.Test;
+import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
 
@@ -69,7 +70,7 @@ class ProdutoServiceTest extends BaseServiceTest {
     @Test
     void devePermitirValidadeHoje() throws Exception {
         var p = produtoValido();
-        p.setValidade(my_app.utils.DateUtils.localDateParaMillis(java.time.LocalDate.now()));
+        p.setValidade(DatePack.localDateParaMillis(java.time.LocalDate.now()));
         assertDoesNotThrow(() -> produtoService.salvar(p));
     }
 

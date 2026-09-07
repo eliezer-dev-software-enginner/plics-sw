@@ -108,10 +108,10 @@ class FornecedorServiceTest extends BaseServiceTest {
     void deveAceitarCpfValido() throws Exception {
         var f = new FornecedorModel();
         f.setNome("Fornecedor PF");
-        f.setCpfCnpj("12345678901");
+        f.setCpfCnpj("52998224725");
         var salvo = fornecedorService.salvar(f);
         assertNotNull(salvo.getId());
-        assertEquals("12345678901", salvo.getCpfCnpj());
+        assertEquals("52998224725", salvo.getCpfCnpj());
     }
 
     @Test
@@ -126,7 +126,7 @@ class FornecedorServiceTest extends BaseServiceTest {
     void deveAceitarCpfNoUpdate() throws Exception {
         var f = new FornecedorModel();
         f.setNome("Fornecedor PF");
-        f.setCpfCnpj("12345678901");
+        f.setCpfCnpj("52998224725");
         var salvo = fornecedorService.salvar(f);
         assertDoesNotThrow(() -> fornecedorService.atualizar(salvo));
     }
@@ -143,7 +143,7 @@ class FornecedorServiceTest extends BaseServiceTest {
     void deveRejeitarCpfQuandoPessoaJuridicaSelecionada() {
         var f = new FornecedorModel();
         f.setNome("Fornecedor PF");
-        f.setCpfCnpj("12345678901");
+        f.setCpfCnpj("52998224725");
         f.setPessoaFisica(false);
         var erro = assertThrows(IllegalArgumentException.class, () -> fornecedorService.salvar(f));
         assertEquals("CNPJ inválido", erro.getMessage());
@@ -153,7 +153,7 @@ class FornecedorServiceTest extends BaseServiceTest {
     void deveAceitarCpfQuandoPessoaFisicaSelecionada() throws Exception {
         var f = new FornecedorModel();
         f.setNome("Fornecedor PF");
-        f.setCpfCnpj("12345678901");
+        f.setCpfCnpj("52998224725");
         f.setPessoaFisica(true);
         var salvo = fornecedorService.salvar(f);
         assertNotNull(salvo.getId());

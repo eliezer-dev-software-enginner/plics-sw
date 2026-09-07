@@ -26,6 +26,21 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-06: Utilitários migrados pro pacote `pack-utilities`; testes ajustados
+- **Migração**: métodos utilitários genéricos (moeda, CPF/CNPJ/CEP/telefone/e-mail, máscaras, datas)
+  agora vêm do pacote externo `pack-utilities` (`pack.utilities.{DatePack, ValidatorPack, CurrencyPack,
+  FormatterPack}) — dependência `com.github.eliezer-dev-software-enginner:pack-utilities:v1.0.0`. Em
+  `my_app.utils`, `DateUtils` foi **removido** e `Utils` ficou só com o que não tem equivalente no pack
+  (`gerarCodigoBarrasEAN13`, `deRealParaCentavos`, `isNotValidEmail`, `quantidadeTratada`).
+- **Testes corrigidos** (quebravam por referenciar métodos/classe removidos):
+  - `UtilsTest` → passa a testar `pack.utilities.ValidatorPack.isValidCnpj` (as fixtures continuam
+    válidas — já eram CNPJs com dígitos verificadores reais).
+  - `ProdutoServiceTest` → `DatePack.localDateParaMillis` no lugar do `DateUtils` removido.
+  - `FornecedorServiceTest` → fixtures de CPF com dígitos verificadores reais (`52998224725`): o
+    `ValidatorPack.isValidCpf` valida o algoritmo de verdade, enquanto o `Utils` antigo só conferia
+    tamanho (o `12345678901` passava no antigo, mas é inválido de fato).
+- **Testes**: `./gradlew test` — 308/308, BUILD SUCCESSFUL.
+
 ### 2026-08-29: Papel de parede da Home cobrindo só uma "camada fina" ao usar ScrollPaneDefault
 - **Reportado pelo usuário**: na HomeScreen, o papel de parede aparecia só como uma
   camada bem fina (não cobria o tamanho disponível). Comentar o

@@ -1,6 +1,7 @@
 package my_app.utils;
 
 import org.junit.jupiter.api.Test;
+import pack.utilities.ValidatorPack;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,61 +9,61 @@ class UtilsTest {
 
     @Test
     void isValidCnpj_aceitaNumericoValido() {
-        assertTrue(Utils.isValidCnpj("11222333000181"));
+        assertTrue(ValidatorPack.isValidCnpj("11222333000181"));
     }
 
     @Test
     void isValidCnpj_aceitaNumericoComMascara() {
-        assertTrue(Utils.isValidCnpj("11.222.333/0001-81"));
+        assertTrue(ValidatorPack.isValidCnpj("11.222.333/0001-81"));
     }
 
     @Test
     void isValidCnpj_aceitaAlfanumericoValido() {
-        assertTrue(Utils.isValidCnpj("12ABC34501DE35"));
+        assertTrue(ValidatorPack.isValidCnpj("12ABC34501DE35"));
     }
 
     @Test
     void isValidCnpj_aceitaAlfanumericoComMascara() {
-        assertTrue(Utils.isValidCnpj("12.ABC.345/01DE-35"));
+        assertTrue(ValidatorPack.isValidCnpj("12.ABC.345/01DE-35"));
     }
 
     @Test
     void isValidCnpj_rejeitaNull() {
-        assertFalse(Utils.isValidCnpj(null));
+        assertFalse(ValidatorPack.isValidCnpj(null));
     }
 
     @Test
     void isValidCnpj_rejeitaVazio() {
-        assertFalse(Utils.isValidCnpj(""));
+        assertFalse(ValidatorPack.isValidCnpj(""));
     }
 
     @Test
     void isValidCnpj_rejeitaTamanhoIncorreto() {
-        assertFalse(Utils.isValidCnpj("123"));
+        assertFalse(ValidatorPack.isValidCnpj("123"));
     }
 
     @Test
     void isValidCnpj_rejeitaUltimosDigitosComLetra() {
-        assertFalse(Utils.isValidCnpj("112223330001AB"));
+        assertFalse(ValidatorPack.isValidCnpj("112223330001AB"));
     }
 
     @Test
     void isValidCnpj_rejeitaLetrasInvalidas() {
-        assertFalse(Utils.isValidCnpj("OI__ABC__DE__FG"));
+        assertFalse(ValidatorPack.isValidCnpj("OI__ABC__DE__FG"));
     }
 
     @Test
     void isValidCnpj_aceitaMistoNumericoAlfanumerico() {
-        assertTrue(Utils.isValidCnpj("12AB3456789C11"));
+        assertTrue(ValidatorPack.isValidCnpj("12AB3456789C11"));
     }
 
     @Test
     void isValidCnpj_rejeitaUltimosDigitosLetra() {
-        assertFalse(Utils.isValidCnpj("12ABC34501DEAB"));
+        assertFalse(ValidatorPack.isValidCnpj("12ABC34501DEAB"));
     }
 
     @Test
     void isValidCnpj_aceitaMistoLetrasDigitos() {
-        assertTrue(Utils.isValidCnpj("AB123456789082"));
+        assertTrue(ValidatorPack.isValidCnpj("AB123456789082"));
 }
 }

@@ -1,5 +1,28 @@
 # Decisões Arquiteturais
 
+## 2026-09-06: Migração de utilitários pro `pack-utilities` — testes ajustados
+
+**Contexto:** os métodos utilitários genéricos (formatação de moeda, validação de CPF/CNPJ/CEP/telefone/
+e-mail, máscaras, conversão de datas) foram migrados pro pacote externo `pack-utilities`
+(`com.github.eliezer-dev-software-enginner:pack-utilities:v1.0.0` — classes `DatePack`, `ValidatorPack`,
+`CurrencyPack`, `FormatterPack`). Em `my_app.utils`, o `DateUtils` foi removido inteiro e o `Utils` ficou
+só com o que não tem equivalente no pack (`gerarCodigoBarrasEAN13`, `deRealParaCentavos`,
+`isNotValidEmail`, `quantidadeTratada`).
+
+**Consequência nos testes (o que quebrou e como foi corrigido):**
+1. `UtilsTest` validava `Utils.isValidCnpj` (método removido) — passou a validar
+   `pack.utilities.ValidatorPack.isValidCnpj`. As fixtures seguem passando porque já eram CNPJs com os
+   dígitos verificadores calculados pelo algoritmo real do alfanumérico.
+2. `ProdutoServiceTest.devePermitirValidadeHoje` usava `DateUtils.localDateParaMillis` (classe removida) —
+   trocado por `DatePack.localDateParaMillis`, assinatura idêntica.
+3. `FornecedorServiceTest` usava `12345678901` como "CPF válido" — funcionava quando o `Utils.isValidCpf`
+   só conferia 11 dígitos, mas o `ValidatorPack.isValidCpf` confere os dígitos verificadores de verdade.
+   Fixture trocada pro CPF válido `52998224725` (todos os 4 testes que usam CPF).
+
+**Verificação:** `./gradlew test` — 308/308, BUILD SUCCESSFUL.
+
+---
+
 ## 2026-08-29: Transparência de ScrollPane em cima de bgImage — usar `-fx-background`, não só `-fx-background-color`
 
 **Contexto:** na HomeScreen, o papel de parede (`bgImage` num `Container` ancestral) aparecia
