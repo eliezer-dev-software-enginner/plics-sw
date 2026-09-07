@@ -70,7 +70,9 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         working-directory: ${{ runner.temp }}/disgust-components
-        run: ./gradlew publishToMavenLocal --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal --no-daemon
 
       - name: Publicar disgust-components em mavenLocal (Windows)
         if: runner.os == 'Windows'
