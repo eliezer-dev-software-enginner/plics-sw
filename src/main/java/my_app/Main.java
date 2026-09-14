@@ -1,8 +1,5 @@
 package my_app;
 
-import java.nio.file.Path;
-import java.util.Objects;
-
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import megalodonte.ListenerManager;
@@ -14,12 +11,12 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.router.v4.Router;
+import my_app.core.AppRoutes;
 import my_app.core.InitialRouteResolver;
 import my_app.core.Themes;
 import my_app.db.DB;
 import my_app.db.services.PreferenciasService;
 import my_app.domain.components.Components;
-import my_app.core.AppRoutes;
 import my_app.domain.telegram.TelegramNotifierFactory;
 import my_app.infra.ProcessKiller;
 import my_app.screens.authScreen.AuthScreenViewModel;
@@ -28,10 +25,14 @@ import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
+import java.util.Objects;
+
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static final boolean devMode = "true".equals(System.getenv("DEV_MODE"));
+    public static final String devModeEntrypointRoute = System.getenv("DEV_ROUTE");
 
     // Presente sempre que a app roda dentro do sandbox do Flatpak. Nesse caso quem
     // atualiza é o próprio `flatpak update`, não o usuário manualmente — "Buscar

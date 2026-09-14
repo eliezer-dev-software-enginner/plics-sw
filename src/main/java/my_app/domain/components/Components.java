@@ -154,7 +154,7 @@ public class Components {
         return new Button(btnText,
                 new ButtonProps()
                         .fillWidth()
-                        .height(31)
+                        
                         .fontSize(16)
                         .textColor("white").bgColor("#10b981")
         ).onClick(onClick);
@@ -300,7 +300,7 @@ public class Components {
 
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label, IconInterface icon) {
         var datePicker = new DatePicker(localDateState,
-                new DatePickerProps().fontSize(ThemeManager.theme().typography().small()).height(31)
+                new DatePickerProps().fontSize(ThemeManager.theme().typography().small())
                         .placeHolder("dd/mm/yyyy")
                         .locale(new Locale("pt", "BR"))
                         .pattern("dd/MM/yyyy")
@@ -343,7 +343,7 @@ public class Components {
         return FormSubtitle(title, "black");
     }
 
-    static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth().height(31)
+    static final ButtonProps propsBtnCadastro = new ButtonProps().fillWidth()
             .fontSize(ThemeManager.theme().typography().small()).textColor("white").bgColor("#2563eb");
 
     public static Component ButtonCadastro(ComputedState<String> textState, RunnableThrowing handleAdd) {
@@ -357,8 +357,7 @@ public class Components {
     }
 
     private final static SelectProps selectProps = new SelectProps()
-            .minWidth(100)
-            .height(31);
+            .minWidth(100);
 
 
     public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display) {
@@ -417,7 +416,7 @@ public class Components {
 
         return new Row(rowProps)
                 .r_child(Components.SelectColumn(label, list, stateSelected, display, compareById))
-                .r_child(new Button(btnText, new ButtonProps().height(31)
+                .r_child(new Button(btnText, new ButtonProps()
                         .textColor("#FFF")).onClick(handleClick)
                 ).r_child(new SpacerVertical(2));
     }
@@ -556,12 +555,9 @@ public class Components {
                 .fontSize(ThemeManager.theme().typography().small());
     }
 
-    static InputProps getInputPropsV2(String placeholder) {
-        return getInputPropsV2(placeholder, 31);
-    }
 
-    static InputProps getInputPropsV2(String placeholder, int height) {
-        return new InputProps().height(height)
+    static InputProps getInputPropsV2(String placeholder) {
+        return new InputProps()
                 .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small());
     }
 
@@ -623,14 +619,13 @@ public class Components {
                                 it->  it.getCodigoBarras() + " - " + it.getDescricao(),true, sugestoesProdutoVisible )));
     }
 
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
-                                        int borderWidth, int borderRadius, String borderColor, String labelColor,
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, String borderColor, String labelColor,
                                         Integer width,Integer height) {
         var props = getInputPropsV2(placeholder);
         if (disableInput) props.disable();
         props.width(width != null ? width : 220);
 
-        props.height(height != null ? height : 35);
+        if(height!=null) props.height(height);
 
         TextProps labelProps = new TextProps().fontSize(ThemeManager.theme().typography().small());
         if (labelColor!=null) {
@@ -640,22 +635,20 @@ public class Components {
         return new Column()
                 .c_child(new Text(label, labelProps))
                 .c_child(new Input((State<String>) inputState,
-                                props.borderWidth(borderWidth).borderColor(borderColor).borderRadius(borderRadius)
+                                props.borderColor(borderColor)
                         )
                 );
     }
 
     public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
                                         String labelColor, Integer width,Integer height) {
-        return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(),
-                ThemeManager.theme().border().radiusMd(),
+        return InputColumn(label, inputState, placeholder, disableInput,
                 ThemeManager.theme().colors().border(),labelColor, width,height);
     }
 
     public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
                                         String labelColor, Integer width) {
-        return InputColumn(label, inputState, placeholder, disableInput, ThemeManager.theme().border().width(),
-                ThemeManager.theme().border().radiusMd(),
+        return InputColumn(label, inputState, placeholder, disableInput,
                 ThemeManager.theme().colors().border(),labelColor, width,null);
     }
 
@@ -665,16 +658,15 @@ public class Components {
     }
 
     public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-        return InputColumn(label, inputState, placeholder, disableInput,null,null,35);
+        return InputColumn(label, inputState, placeholder, disableInput,null,null,null);
     }
 
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, Integer width, Integer height) {
-        return InputColumn(label, inputState, placeholder, disableInput,null,width,height);
+    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, Integer width) {
+        return InputColumn(label, inputState, placeholder, disableInput,null,width);
     }
 
     public static Column InputColumnAuthFill(String label, ReadableState<String> inputState, String placeholder) {
         var props = getInputPropsV2(placeholder);
-        props.height(35);
 
         TextProps labelProps = new TextProps().fontSize(ThemeManager.theme().typography().body());
 
@@ -690,7 +682,7 @@ public class Components {
     }
 
     public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder,Integer width) {
-        return InputColumn(label, inputState, placeholder, false,width,35);
+        return InputColumn(label, inputState, placeholder, false,width);
     }
 
     public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder) {
@@ -745,9 +737,7 @@ public class Components {
     public static Component InputWithButtonRow(String label, String placeholder, String btnTitle, State<String> inputState, RunnableThrowing onClick) {
         return new Row(new RowProps().bottomVertically())
                 .r_child(Components.InputColumn(label, inputState, placeholder))
-                .r_child(new Button(btnTitle, new ButtonProps().height(32).textColor("#FFF")
-                                .borderRadius(ThemeManager.theme().border().radiusSm()).borderWidth(ThemeManager.theme().border().width()).borderColor(ThemeManager.theme().colors().primary())
-                        )
+                .r_child(new Button(btnTitle, new ButtonProps().textColor("#FFF"))
                                 .onClick(onClick)
                 );
     }
@@ -794,8 +784,7 @@ public class Components {
     public static Component searchInputFill(State<String> stateInput, String placeholder) {
         var icon = FontIcon.of(AntDesignIconsOutlined.SEARCH, 20, Color.web(ThemeManager.theme().colors().secondary()));
         return new Input(stateInput,
-                new InputProps().placeHolder(placeholder)
-                        .height(31))
+                new InputProps().placeHolder(placeholder))
                 .left(icon);
     }
 
@@ -803,8 +792,7 @@ public class Components {
         var icon = FontIcon.of(AntDesignIconsOutlined.SEARCH, 20, Color.web(ThemeManager.theme().colors().secondary()));
         return new Input(stateInput,
                 new InputProps().placeHolder(placeholder)
-                        .width(300)
-                        .height(31))
+                        .width(300))
                 .left(icon);
     }
 

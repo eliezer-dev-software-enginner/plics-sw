@@ -166,6 +166,7 @@ tasks.named<JavaExec>("run") {
     )
 
     environment("DEV_MODE", "true")
+    environment("DEV_ROUTE", "PRODUTOS")
 }
 application {
     mainClass.set(props.getProperty("appMainClass"))
