@@ -49,18 +49,18 @@ public class ClienteScreen implements ScreenComponent, ContratoTelaCrudV3<Client
     public Component form() {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20))
-                        .c_child(Components.FormTitle("Cadastrar cliente"))
+                        .c_child(Components.FormSubtitle("Cadastrar cliente"))
                         .c_child(new SpacerVertical(20))
                         .c_child(new FlowRow(new FlowRowProps().spacingOf(10))
                                 .children(
-                                        Components.InputColumn("Nome", vm.nome, "Ex: João"),
+                                        disgust.io.Pack.InputColumn("Nome *", vm.nome, "Ex: João"),
                                         Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it),
                                         Show.when(vm.tipoPessoaEhFisica,
                                                 () -> Pack.InputColumnCpf("CPF", vm.cnpjCpf),
                                                 () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                                         ),
                                         Pack.InputColumnPhone("Celular", vm.celular),
-                                        Components.InputColumn("Email", vm.email, "Ex: email@teste.com"),
+                                        disgust.io.Pack.InputColumn("Email", vm.email, "Ex: email@teste.com"),
                                         Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"),
                                         Components.SelectColumn("É gestante?", Data.simNaoList, vm.isGestante, it -> it),
                                         Show.when(vm.isGestanteComputed,()->Components.DatePickerColumn(vm.dataNascimentoBebe,"Data de nascimento do bebê") )

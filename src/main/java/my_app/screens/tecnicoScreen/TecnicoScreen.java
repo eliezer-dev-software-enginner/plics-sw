@@ -1,5 +1,6 @@
 package my_app.screens.tecnicoScreen;
 
+import disgust.io.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.Card;
@@ -42,10 +43,10 @@ public class TecnicoScreen implements ScreenComponent, ContratoTelaCrudV3<Tecnic
     public Component form() {
         return new Card(
                 new Column(new ColumnProps().paddingAll(5))
-                        .c_child(Components.FormTitle("Cadastrar Novo Técnico"))
+                        .c_child(Components.FormSubtitle("Cadastrar Novo Técnico"))
                         .c_child(new SpacerVertical(20))
                         .c_child(new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(Components.InputColumn("Nome", vm.nome, "Ex: Matias")))
+                                .r_child(Pack.InputColumn("Nome *", vm.nome, "Ex: Matias")))
                         .c_child(new SpacerVertical(20))
                         .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate)),
                 new CardProps()

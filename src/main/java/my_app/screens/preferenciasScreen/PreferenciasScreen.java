@@ -1,6 +1,7 @@
 package my_app.screens.preferenciasScreen;
 
 import disgust.io.ButtonsPack;
+import disgust.io.Pack;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
@@ -48,8 +49,8 @@ public class PreferenciasScreen implements ScreenComponent {
                      Show.when(credentialsScreenIsVisible, () -> new Column().children(
                         new Text("Escolha seu login e senha de acesso", new TextProps().bold()),
                         new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                        Components.InputColumn("Login", vm.loginState, "Ex: admin"),
-                        Components.InputColumn("Senha", vm.passwordState, "Digite uma senha")
+                        Pack.InputColumn("Login", vm.loginState, "Ex: admin"),
+                        Pack.InputColumn("Senha", vm.passwordState, "Digite uma senha")
                 )),
                 ButtonsPack.ContainedButton("Salvar Preferências", ButtonVariant.PRIMARY, true, vm::salvar),
                 new LineHorizontal(),

@@ -164,13 +164,13 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
         //return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()).bgColor("yellow"))
         return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()))
                 .children(
-                        Components.InputWithButtonRow("SKU(Código de barras)", "Ex: 7891234567895", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
-                        Components.InputColumn("Nome", vm.descricao, "Ex: Camiseta Polo M",150),
+                        disgust.io.Pack.InputWithButtonRow("SKU(Código de barras) *", "Ex: 7891234567895", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
+                        disgust.io.Pack.InputColumn("Nome *", vm.descricao, "Ex: Camiseta Polo M",150),
                         Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
-                        Components.InputColumn("Marca", vm.marca, "Ex: Nike",150),
+                        disgust.io.Pack.InputColumn("Marca", vm.marca, "Ex: Nike",150),
                         coresCheckboxes(),
-                        Components.InputColumn("Tamanho", vm.tamanhoSelected, "Ex: M",90),
-                        Components.InputColumn("Modelo", vm.modelo, "Ex: Slim Fit",150),
+                        disgust.io.Pack.InputColumn("Tamanho", vm.tamanhoSelected, "Ex: M",90),
+                        disgust.io.Pack.InputColumn("Modelo", vm.modelo, "Ex: Slim Fit",150),
                         Pack.InputColumnCurrency("Preço de compra", vm.precoCompra),
                         Pack.InputColumnCurrency("Frete", vm.frete),
                         Pack.InputColumnCurrency("Preço de venda", vm.precoVenda),
@@ -178,7 +178,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
                         disgust.io.Pack.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome),
                         Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it),
                         Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade")),
-                        Components.InputColumn("Garantia", vm.garantia, "Ex: 12 meses",150),
+                        disgust.io.Pack.InputColumn("Garantia", vm.garantia, "Ex: 12 meses",150),
                         Components.SelectColumn("Aceita devolução/troca?", Data.simNaoList, vm.aceitaDevolucao, it -> it),
                         Components.TextAreaColumn("Observações", vm.observacoes, "Ex: Produto frágil, manusear com cuidado", 60, 160),
                         Components.InputColumnNumeric("Estoque", vm.estoque, "Ex: 100"),

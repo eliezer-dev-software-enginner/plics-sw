@@ -74,7 +74,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                         .c_child(new SpacerVertical(20))
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())
-                                        .r_child(Components.InputColumn("Descrição", vm.descricao, "Descrição da conta"))
+                                        .r_child(disgust.io.Pack.InputColumn("Descrição", vm.descricao, "Descrição da conta"))
                                         .r_child(Pack.InputColumnCurrency("Valor Original", vm.valorOriginal))
                                         .r_child(Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected,
                                                 f -> f != null ? f.getNome() : "", true))
@@ -85,7 +85,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
                                         .r_child(Components.DatePickerColumn(vm.dataVencimento, "Data Vencimento"))
                                         .r_child(Components.DatePickerColumn(vm.dataRecebimento, "Data Recebimento"))
                                         .r_child(Components.SelectColumn("Tipo Doc", vm.tipoDocumentoOptions, vm.tipoDocumento, t -> t))
-                                        .r_child(Components.InputColumn("Número Doc", vm.numeroDocumento, "Número do documento"))
+                                        .r_child(disgust.io.Pack.InputColumn("Número Doc", vm.numeroDocumento, "Número do documento"))
                         )
                         .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta conta?"))
                         .c_child(new SpacerVertical(20))

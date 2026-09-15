@@ -78,7 +78,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<O
                                         .r_child(Components.SelectColumnWithButton("Técnico", vm.tecnicos,
                                                 vm.tecnicoSelected, it -> it != null ? it.getNome() : "", true,
                                                 "+", vm::openTecnicoWindow))
-                                        .r_child(Components.InputColumn("Equipamento", vm.equipamento, "Marca, Modelo ou Serial"))
+                                        .r_child(disgust.io.Pack.InputColumn("Equipamento", vm.equipamento, "Marca, Modelo ou Serial"))
                                         .r_child(Pack.InputColumnCurrency("Mão de obra (R$)", vm.maoDeObra))
                         )
                         .c_child(new SpacerVertical(10))

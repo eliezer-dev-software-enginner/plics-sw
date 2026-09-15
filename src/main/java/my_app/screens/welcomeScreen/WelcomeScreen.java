@@ -1,5 +1,6 @@
 package my_app.screens.welcomeScreen;
 
+import disgust.io.ButtonsPack;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 import megalodonte.base.UI;
@@ -45,7 +46,7 @@ public class WelcomeScreen implements ScreenComponent {
                 new Column(new ColumnProps().centerHorizontally().paddingTop(50).spacingOf(10)).children(
                         new Image("assets/app_banner.png", new ImageProps().width(500).height(400))
                                 .ref(logoRef),
-                        new TextFlow(new Text("Plics - Sistema de gestão para pequenos negócios. Controle vendas, compras, estoque e financeiro.",
+                        new TextFlow(new Text("Plics - Sistema de gestão para pequenos e médios negócios. Controle vendas, compras, estoque e financeiro.",
                                 new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).textColor("#fff"))
                         ),
                         new LineHorizontal(),
@@ -53,11 +54,7 @@ public class WelcomeScreen implements ScreenComponent {
                                 new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#fff")),
                         textRow(),
                         new SpacerVertical(20),
-                        new Button("Entrar no sistema",
-                                new ButtonProps()
-                                        .fontSize(theme.typography().body()).textColor("#fff")
-                                        .bgColor(theme.colors().primary()))
-                                .onClick(this::handleClick)
+                        ButtonsPack.ContainedButton("Entrar no sistema", ButtonVariant.PRIMARY, this::handleClick)
                 )
         );
     }

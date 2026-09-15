@@ -80,10 +80,10 @@ public class Components {
                         .children(
                                 Pack.InputColumnCep("Cep", enderecoState.cep),
                                 Components.SelectColumn("UF", Data.ufList, enderecoState.ufSelected, it -> it),
-                                Components.InputColumn("Cidade", enderecoState.cidade, "Ex: São Paulo"),
-                                Components.InputColumn("Bairro", enderecoState.bairro, "Ex: Centro"),
-                                Components.InputColumn("Rua", enderecoState.rua, "Ex: Av. Brasil"),
-                                Components.InputColumnNumeric("Número", enderecoState.numero, "Ex: 123")
+                                disgust.io.Pack.InputColumn("Cidade", enderecoState.cidade, "Ex: São Paulo"),
+                                disgust.io.Pack.InputColumn("Bairro", enderecoState.bairro, "Ex: Centro"),
+                                disgust.io.Pack.InputColumn("Rua", enderecoState.rua, "Ex: Av. Brasil"),
+                                disgust.io.Pack.InputColumnNumeric("Número", enderecoState.numero, "Ex: 123")
                         )
         );
     }
@@ -300,11 +300,11 @@ public class Components {
 
     public static Component DatePickerColumn(State<LocalDate> localDateState, String label, IconInterface icon) {
         var datePicker = new DatePicker(localDateState,
-                new DatePickerProps().fontSize(ThemeManager.theme().typography().small())
+                new DatePickerProps()
                         .placeHolder("dd/mm/yyyy")
                         .locale(new Locale("pt", "BR"))
                         .pattern("dd/MM/yyyy")
-                        .width(140)
+                        .width(160)
                         .editable(false)
         );
 
@@ -619,52 +619,6 @@ public class Components {
                                 it->  it.getCodigoBarras() + " - " + it.getDescricao(),true, sugestoesProdutoVisible )));
     }
 
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, String borderColor, String labelColor,
-                                        Integer width,Integer height) {
-        var props = getInputPropsV2(placeholder);
-        if (disableInput) props.disable();
-        props.width(width != null ? width : 220);
-
-        if(height!=null) props.height(height);
-
-        TextProps labelProps = new TextProps().fontSize(ThemeManager.theme().typography().small());
-        if (labelColor!=null) {
-            labelProps.textColor(labelColor);
-        }
-
-        return new Column()
-                .c_child(new Text(label, labelProps))
-                .c_child(new Input((State<String>) inputState,
-                                props.borderColor(borderColor)
-                        )
-                );
-    }
-
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
-                                        String labelColor, Integer width,Integer height) {
-        return InputColumn(label, inputState, placeholder, disableInput,
-                ThemeManager.theme().colors().border(),labelColor, width,height);
-    }
-
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,
-                                        String labelColor, Integer width) {
-        return InputColumn(label, inputState, placeholder, disableInput,
-                ThemeManager.theme().colors().border(),labelColor, width,null);
-    }
-
-
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput,  String labelColor) {
-        return InputColumn(label, inputState, placeholder, disableInput,labelColor,null);
-    }
-
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput) {
-        return InputColumn(label, inputState, placeholder, disableInput,null,null,null);
-    }
-
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder, boolean disableInput, Integer width) {
-        return InputColumn(label, inputState, placeholder, disableInput,null,width);
-    }
-
     public static Column InputColumnAuthFill(String label, ReadableState<String> inputState, String placeholder) {
         var props = getInputPropsV2(placeholder);
 
@@ -679,14 +633,6 @@ public class Components {
                                         .maxWidth(300)
                         )
                 );
-    }
-
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder,Integer width) {
-        return InputColumn(label, inputState, placeholder, false,width);
-    }
-
-    public static Column InputColumn(String label, ReadableState<String> inputState, String placeholder) {
-        return InputColumn(label, inputState, placeholder, false);
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder) {
@@ -733,15 +679,6 @@ public class Components {
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
                 .c_child(textAreaInput);
     }
-
-    public static Component InputWithButtonRow(String label, String placeholder, String btnTitle, State<String> inputState, RunnableThrowing onClick) {
-        return new Row(new RowProps().bottomVertically())
-                .r_child(Components.InputColumn(label, inputState, placeholder))
-                .r_child(new Button(btnTitle, new ButtonProps().textColor("#FFF"))
-                                .onClick(onClick)
-                );
-    }
-
     //v3
     public static <T> Component commonCustomMenusv3(
             State<Boolean> focusState, Runnable onClickNew,

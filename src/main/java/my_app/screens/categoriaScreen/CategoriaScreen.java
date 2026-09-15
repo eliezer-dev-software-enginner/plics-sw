@@ -1,5 +1,6 @@
 package my_app.screens.categoriaScreen;
 
+import disgust.io.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -33,10 +34,10 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3<Cate
     public Component form() {
         return new Card(new Column(new ColumnProps().spacingOf(20))
                 .children(
-                        Components.FormTitle("Cadastrar Nova Categoria"),
+                        Components.FormSubtitle("Cadastrar Nova Categoria"),
                         new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(
-                                        Components.InputColumn("Nome", vm.nome, "Ex: Eletrônicos")),
+                                        Pack.InputColumn("Nome *", vm.nome, "Ex: Eletrônicos")),
                         Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
                 )
         );

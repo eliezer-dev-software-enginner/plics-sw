@@ -1,5 +1,6 @@
 package my_app.screens.relatoriosScreen;
 
+import disgust.io.ButtonsPack;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -16,11 +17,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.ContainerProps;
-import megalodonte.props.FlowRowProps;
-import megalodonte.props.RowProps;
-import megalodonte.props.TextProps;
+import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import my_app.domain.components.Components;
 import org.kordamp.ikonli.Ikon;
@@ -117,9 +114,7 @@ public class RelatoriosScreen implements ScreenComponent {
         return new Card(new Row(new RowProps().spacingOf(15).centerVertically()).children(
                 Components.DatePickerColumn(vm.dataInicio, "Data início"),
                 Components.DatePickerColumn(vm.dataFim, "Data fim"),
-                new Button("Gerar relatório")
-                        .icon(Components.ikon(AntDesignIconsOutlined.BAR_CHART, 16, "white"))
-                        .onClick(vm::gerarRelatorio)
+                ButtonsPack.ContainedButtonWithIconEnd("Gerar relatório", ButtonVariant.PRIMARY,AntDesignIconsOutlined.BAR_CHART, vm::gerarRelatorio)
         ));
     }
 

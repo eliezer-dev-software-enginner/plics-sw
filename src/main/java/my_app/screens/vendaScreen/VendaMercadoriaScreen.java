@@ -65,7 +65,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
                 Components.DatePickerColumn(vm.dataVenda, "Data de venda",
                         IconInterface.of(FontIcon.of(AntDesignIconsOutlined.CALENDAR))),
                 Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome, true),
-                Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
+                disgust.io.Pack.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2",vm.quantidadeRef),
                 Pack.InputColumnCurrency("Pc. de venda", vm.pcVenda),
                 Pack.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro),

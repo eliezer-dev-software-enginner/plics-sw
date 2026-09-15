@@ -2,6 +2,8 @@
   {
     "version": "v1.1.4",
     "notes": [
+      "UI: Campo de data agora está mais moderno e não fica mais esprimido",
+      "UI: Adicionado * em campos obrigatórios",
       "Ui: Leve melhoria na UI da tela de autenticação",
       "Feat: Exibe valores monetários formatados na tela de Troca de produtos",
       "Feat: Troca de venda no Histórico do Caixa — devolve a original e cria uma nova com os itens escolhidos",

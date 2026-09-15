@@ -63,15 +63,15 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<For
 
     private Component informacoesPessoais() {
         return new FlowRow(new FlowRowProps().spacingOf(10))
-                .r_child(Components.InputColumn("Nome Fantasia", vm.nome, "Ex: Empresa 123"))
+                .r_child(disgust.io.Pack.InputColumn("Nome Fantasia *", vm.nome, "Ex: Empresa 123"))
                 .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
                 .r_child(Show.when(vm.tipoPessoaEhFisica,
                         () -> Pack.InputColumnCpf("CPF", vm.cnpjCpf),
                         () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
                 ))
                 .r_child(Pack.InputColumnPhone("Celular", vm.celular))
-                .r_child(Components.InputColumn("Inscrição estadual", vm.inscricaoEstadual, "Ex: 123.456.789.123"))
-                .r_child(Components.InputColumn("Email", vm.email, "Ex: email@teste.com"));
+                .r_child(disgust.io.Pack.InputColumn("Inscrição estadual", vm.inscricaoEstadual, "Ex: 123.456.789.123"))
+                .r_child(disgust.io.Pack.InputColumn("Email", vm.email, "Ex: email@teste.com"));
     }
 
     @Override

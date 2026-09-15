@@ -92,10 +92,10 @@ public class ComprasScreen implements ScreenComponent, ContratoTelaCrudV3<Compra
         return new FlowRow(new FlowRowProps().spacingOf(10)).children(
                 Components.DatePickerColumn(vm.dataCompra, "Data de compra"),
                 Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome, true),
-                Components.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
+                disgust.io.Pack.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
                 Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
                         vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
-                Components.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""), "Ex: Paraiso",true),
+                disgust.io.Pack.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""), "Ex: Paraiso",true),
                 Pack.InputColumnCurrency("Pc. de compra", vm.pcCompra)
         );
     }

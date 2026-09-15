@@ -140,7 +140,7 @@ public class PDVScreen implements ScreenComponent {
                         true,"+ Criar cliente", vm::handleCriarCliente),
                 Components.SelectColumn("Forma de pagamento", Data.tiposPagamentoList, vm.formaPagamentoSelecionado, it -> it),
                 Show.when(vm.tipoPagamentoIsAPrazo, ()->
-                        Components.InputColumn("Nº Parcelas", vm.numeroParcelas, "Ex: 3")
+                        disgust.io.Pack.InputColumn("Nº Parcelas", vm.numeroParcelas, "Ex: 3")
                 )
         );
     }
