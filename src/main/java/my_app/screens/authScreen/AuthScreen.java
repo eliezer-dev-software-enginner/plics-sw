@@ -1,6 +1,7 @@
 package my_app.screens.authScreen;
 
 import disgust.io.ButtonsPack;
+import disgust.io.Pack;
 import megalodonte.base.Redirect;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
@@ -51,12 +52,14 @@ public class AuthScreen implements ScreenComponent {
                                 new SpacerVertical(ThemeManager.theme().spacing().md()),
                                 new Card(
                                         new Column(new ColumnProps().maxWidth(185)).children(
-                                                Show.when(vm.showLicensaState, () -> Components.InputColumnAuthFill("Licença",
+                                                Show.when(vm.showLicensaState, () -> Pack.InputColumn("Licença",
                                                         vm.licensaState, "Ex: ABC123")),
                                                 new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                                Components.InputColumnAuthFill("Login", vm.loginState, "Ex: admin"),
+                                                //Components.InputColumnAuthFill("Login", vm.loginState, "Ex: admin"),
+                                                Pack.InputColumn("Login", vm.loginState, "Ex: admin"),
                                                 new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                                Components.InputColumnAuthFill("Senha", vm.passwordState, "Digite sua senha"),
+                                                //Components.InputColumnAuthFill("Senha", vm.passwordState, "Digite sua senha"),
+                                                Pack.InputColumn("Senha", vm.passwordState, "Digite sua senha"),
                                                 new SpacerVertical(ThemeManager.theme().spacing().md()),
                                                 ButtonsPack.ContainedButton("Entrar", ButtonVariant.PRIMARY,true, () -> vm.entrar(ctx))
                                                 //Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))

@@ -462,9 +462,9 @@ public class Components {
      */
     @Deprecated(forRemoval = true)
     public static class InputRef {
-        private Input inputRef;
+        private megalodonte.components.inputs.Input inputRef;
 
-        public void set(Input input) {
+        public void set(megalodonte.components.inputs.Input input) {
             this.inputRef = input;
         }
 
@@ -474,9 +474,9 @@ public class Components {
     }
 
     public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder, InputRef inputRef) {
-        var inputProps = getInputPropsV2(placeholder).width(140);
+        var inputProps = getInputProps(placeholder).width(140);
 
-        var input = new Input(inputState, inputProps)
+        var input = new megalodonte.components.inputs.Input(inputState, inputProps)
                 .onInitialize(value -> {
                     if (value == null || value.trim().isEmpty()) {
                         return OnChangeResult.of("", "");
@@ -506,7 +506,7 @@ public class Components {
                 })
                 .lockCursorToEnd();
 
-        if(inputRef != null) inputRef.set((Input) input);
+        if(inputRef != null) inputRef.set((megalodonte.components.inputs.Input) input);
 
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
@@ -532,9 +532,9 @@ public class Components {
     }
 
     public static Component InputColumnNumeric(String label, State<String> inputState, String placeholder) {
-        var inputProps = getInputPropsV2(placeholder).width(100);
+        var inputProps = getInputProps(placeholder).width(100);
 
-        var input = new Input(inputState, inputProps)
+        var input = new megalodonte.components.inputs.Input(inputState, inputProps)
                 .onChange(value -> {
                     String numeric = value.replaceAll("[^0-9]", "");
                     if (numeric.isEmpty()) {
@@ -549,22 +549,17 @@ public class Components {
                 .c_child(input);
     }
 
-    static megalodonte.props.InputProps getInputProps(String placeholder, int height) {
-        return new megalodonte.props.InputProps().height(height)
+    static megalodonte.props.InputProps getInputProps(String placeholder) {
+        return new megalodonte.props.InputProps()
                 .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small())
                 .fontSize(ThemeManager.theme().typography().small());
     }
 
 
-    static InputProps getInputPropsV2(String placeholder) {
-        return new InputProps()
-                .placeHolder(placeholder).fontSize(ThemeManager.theme().typography().small());
-    }
-
     public static Component InputColumnComEnterHandler(String label, ReadableState<String> inputState, String placeholder,
                                                          Runnable onEnter, Ref<Input> ref) {
-        var input = new Input((State<String>) inputState,
-                        getInputPropsV2(placeholder).width(100).borderWidth(ThemeManager.theme().border().width())
+        var input = new megalodonte.components.inputs.Input((State<String>) inputState,
+                        getInputProps(placeholder).width(100).borderWidth(ThemeManager.theme().border().width())
                                 .borderColor(ThemeManager.theme().colors().border()).borderRadius(ThemeManager.theme().border().radiusMd())
                 ).onEnter(onEnter);
         if (ref != null) input.ref(ref);
@@ -592,8 +587,8 @@ public class Components {
 
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(new Input((State<String>) inputState,
-                                getInputPropsV2(placeholder).width(220)
+                .c_child(new megalodonte.components.inputs.Input((State<String>) inputState,
+                                getInputProps(placeholder).width(220)
                         )
                 )
                 .c_child(Show.when(sugestoesProdutoVisible,
@@ -610,29 +605,13 @@ public class Components {
                                                         ComputedState<Boolean> sugestoesProdutoVisible) {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(new Input((State<String>) inputState,
-                                getInputPropsV2(placeholder).width(220)
+                .c_child(new megalodonte.components.inputs.Input((State<String>) inputState,
+                                getInputProps(placeholder).width(220)
                         )
                 )
                 .c_child(Show.when(sugestoesProdutoVisible,
                         ()-> SelectColumn("Produto encontrado", produtoModelListState, produtoSelected,
                                 it->  it.getCodigoBarras() + " - " + it.getDescricao(),true, sugestoesProdutoVisible )));
-    }
-
-    public static Column InputColumnAuthFill(String label, ReadableState<String> inputState, String placeholder) {
-        var props = getInputPropsV2(placeholder);
-
-        TextProps labelProps = new TextProps().fontSize(ThemeManager.theme().typography().body());
-
-        return new Column(new ColumnProps().fillWidth())
-                .c_child(new Text(label, labelProps))
-                .c_child(new Input((State<String>) inputState,
-                                props.borderWidth(ThemeManager.theme().border().width())
-                                        .borderColor(ThemeManager.theme().colors().border())
-                                        .borderRadius(ThemeManager.theme().border().radiusMd())
-                                        .maxWidth(300)
-                        )
-                );
     }
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder) {
@@ -641,7 +620,7 @@ public class Components {
 
     public static Component TextAreaColumnWidthNoRestricted(String label, State<String> inputState, String placeholder, int height) {
         TextAreaInput textAreaInput = new TextAreaInput(inputState,
-                getInputProps(placeholder, height)
+                getInputProps(placeholder).height(height)
         );
 
         return new Column()
@@ -651,7 +630,7 @@ public class Components {
 
     public static Component TextAreaColumn(String label, State<String> inputState, String placeholder, int height) {
         TextAreaInput textAreaInput = new TextAreaInput(inputState,
-                getInputProps(placeholder, height).width(400)
+                getInputProps(placeholder).width(400).height(height)
         );
 
         return new Column()
@@ -727,9 +706,8 @@ public class Components {
 
     public static Component searchInput(State<String> stateInput, String placeholder) {
         var icon = FontIcon.of(AntDesignIconsOutlined.SEARCH, 20, Color.web(ThemeManager.theme().colors().secondary()));
-        return new Input(stateInput,
-                new InputProps().placeHolder(placeholder)
-                        .width(300))
+
+        return new megalodonte.components.inputs.Input(stateInput,getInputProps(placeholder).width(300))
                 .left(icon);
     }
 
