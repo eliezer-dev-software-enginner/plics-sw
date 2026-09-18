@@ -5,26 +5,27 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
+import my_app.core.db.models.ContaAreceberModel;
+import my_app.core.db.models.EmpresaModel;
+import my_app.core.db.services.ContaAreceberService;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
-import my_app.db.models.ClienteModel;
-import my_app.db.models.PedidoItemModel;
-import my_app.db.models.PedidoModel;
-import my_app.db.services.ClienteService;
-import my_app.db.services.EmpresaService;
-import my_app.db.services.PedidoItemService;
-import my_app.db.services.PedidoService;
-import my_app.db.services.PreferenciasService;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.models.PedidoItemModel;
+import my_app.core.db.models.PedidoModel;
+import my_app.core.db.services.ClienteService;
+import my_app.core.db.services.EmpresaService;
+import my_app.core.db.services.PedidoItemService;
+import my_app.core.db.services.PedidoService;
+import my_app.core.db.services.PreferenciasService;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import my_app.services.EscPosPrinter;
 import my_app.services.PDVService;
-import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel> {
@@ -196,8 +197,8 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     private record DadosNotaPedido(
             java.util.List<PedidoItemModel> itens,
             ClienteModel cliente,
-            my_app.db.models.EmpresaModel empresa,
-            java.util.List<my_app.db.models.ContaAreceberModel> parcelas
+            EmpresaModel empresa,
+            java.util.List<ContaAreceberModel> parcelas
     ) {}
 
     private DadosNotaPedido carregarDadosNotaPedido(PedidoModel pedido) throws Exception {
@@ -214,9 +215,9 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
             cliente = null;
         }
 
-        java.util.List<my_app.db.models.ContaAreceberModel> parcelas = null;
+        java.util.List<ContaAreceberModel> parcelas = null;
         if (pedido.getFiado() != null && pedido.getFiado() == 1) {
-            try (var contaService = new my_app.db.services.ContaAreceberService()) {
+            try (var contaService = new ContaAreceberService()) {
                 parcelas = contaService.buscarPorVenda(pedido.getId());
             }
         }

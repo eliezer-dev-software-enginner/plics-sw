@@ -1,6 +1,7 @@
 package my_app.db.repositories;
 
-import my_app.db.models.ClienteModel;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.repositories.ClienteRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

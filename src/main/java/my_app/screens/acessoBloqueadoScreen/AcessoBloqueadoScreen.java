@@ -12,7 +12,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.props.ButtonProps;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.TextProps;
-import my_app.domain.Data;
+import my_app.core.Data;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
 

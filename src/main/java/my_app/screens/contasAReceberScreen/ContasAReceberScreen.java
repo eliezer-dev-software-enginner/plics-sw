@@ -15,14 +15,14 @@ import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models.ContaAreceberModel;
-import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.ScreenContract;
+import my_app.core.db.models.ContaAreceberModel;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
-public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3<ContaAreceberModel> {
+public class ContasAReceberScreen implements ScreenComponent, ScreenContract<ContaAreceberModel> {
     private final ContasAReceberScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
@@ -39,7 +39,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
 
     @Override
     public void onDestroy() {
-        ContratoTelaCrudV3.super.onDestroy();
+        ScreenContract.super.onDestroy();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ContasAReceberScreen implements ScreenComponent, ContratoTelaCrudV3
     public Component form() {
         ComputedState<Boolean> naoEhRecebimento = ComputedState.of(() -> !vm.modoRecebimento.get(), vm.modoRecebimento);
 
-        // mainView() (ContratoTelaCrudV3) só chama form()/table() — não tem mais slot
+        // mainView() (ScreenContract) só chama form()/table() — não tem mais slot
         // próprio pra summarySection()/paymentSection() desde que render() passou a
         // devolver mainView() direto, então as duas entram aqui, em volta do Card do
         // formulário, pra continuar aparecendo na tela.

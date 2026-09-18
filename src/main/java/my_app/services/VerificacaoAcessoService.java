@@ -1,6 +1,6 @@
 package my_app.services;
 
-import my_app.security.CryptoManager;
+import my_app.core.CryptoManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

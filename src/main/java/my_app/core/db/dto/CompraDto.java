@@ -1,0 +1,20 @@
+package my_app.core.db.dto;
+
+import java.math.BigDecimal;
+
+public record CompraDto(
+        String produtoCod,
+        BigDecimal precoCompra,
+        Integer fornecedorId,
+        BigDecimal quantidade,
+        BigDecimal descontoEmReais,
+        String tipoPagamento,
+        String observacao,
+        long dataCompra,
+        String numeroNota,
+        Long dataValidade,
+        String refletirEstoque,
+        BigDecimal totalLiquido
+//        long dataCriacao
+) {
+}

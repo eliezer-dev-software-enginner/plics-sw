@@ -1,13 +1,13 @@
 package my_app.services;
 
-import my_app.db.DB;
-import my_app.db.models.PedidoModel;
-import my_app.db.models.PedidoItemModel;
-import my_app.db.repositories.PedidoItemRepository;
-import my_app.db.services.ContaAreceberService;
-import my_app.db.services.PedidoService;
-import my_app.db.services.ProdutoService;
-import my_app.domain.Parcela;
+import my_app.core.db.DB;
+import my_app.core.db.models.PedidoModel;
+import my_app.core.db.models.PedidoItemModel;
+import my_app.core.db.repositories.PedidoItemRepository;
+import my_app.core.db.services.ContaAreceberService;
+import my_app.core.db.services.PedidoService;
+import my_app.core.db.services.ProdutoService;
+import my_app.core.Parcela;
 import my_app.screens.pdvScreen.ItemVenda;
 import net.sf.persism.Session;
 import org.slf4j.Logger;

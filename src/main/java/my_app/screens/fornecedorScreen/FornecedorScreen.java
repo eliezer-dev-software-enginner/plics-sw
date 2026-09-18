@@ -14,15 +14,15 @@ import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models.FornecedorModel;
-import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.Data;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.FornecedorModel;
+import my_app.core.ScreenContract;
+import my_app.core.Data;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import pack.utilities.DatePack;
 import pack.utilities.FormatterPack;
 
-public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<FornecedorModel> {
+public class FornecedorScreen implements ScreenComponent, ScreenContract<FornecedorModel> {
     private final FornecedorScreenViewModel vm;
     private final ScreenContext ctx;
 
@@ -37,7 +37,7 @@ public class FornecedorScreen implements ScreenComponent, ContratoTelaCrudV3<For
 
     @Override
     public void onDestroy() {
-        ContratoTelaCrudV3.super.onDestroy();
+        ScreenContract.super.onDestroy();
     }
 
     public Component render() {

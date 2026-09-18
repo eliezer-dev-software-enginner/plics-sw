@@ -1,7 +1,9 @@
 package my_app.db.repositories;
 
-import my_app.db.models.PedidoItemModel;
-import my_app.db.models.PedidoModel;
+import my_app.core.db.models.PedidoItemModel;
+import my_app.core.db.models.PedidoModel;
+import my_app.core.db.repositories.PedidoItemRepository;
+import my_app.core.db.repositories.PedidoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

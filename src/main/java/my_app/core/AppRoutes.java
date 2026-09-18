@@ -5,33 +5,32 @@ import megalodonte.router.v4.Router;
 import my_app.Main;
 import my_app.SplashScreen;
 import my_app.screens.acessoBloqueadoScreen.AcessoBloqueadoScreen;
-import my_app.screens.ler_planilha_ia.LerPlanilhaScreen;
-import my_app.screens.termoUsoScreen.TermoUsoScreen;
-import my_app.screens.welcomeScreen.WelcomeScreen;
-import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
-import my_app.screens.feedbackScreen.RelatarErroScreen;
-import my_app.screens.feedbackScreen.SugerirMelhoriaScreen;
 import my_app.screens.authScreen.AuthScreen;
-import my_app.screens.ordemServicoScreen.OrdemServicoScreen;
-import my_app.screens.preferenciasScreen.PreferenciasScreen;
 import my_app.screens.categoriaScreen.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
+import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.comprasScreen.ComprasScreen;
+import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
 import my_app.screens.empresaScreen.CadastroEmpresaScreen;
+import my_app.screens.feedbackScreen.RelatarErroScreen;
+import my_app.screens.feedbackScreen.SugerirMelhoriaScreen;
 import my_app.screens.fornecedorScreen.FornecedorScreen;
 import my_app.screens.homeScreen.HomeScreen;
+import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
 import my_app.screens.logsScreen.LogsScreen;
+import my_app.screens.ordemServicoScreen.OrdemServicoScreen;
 import my_app.screens.pdvScreen.PDVScreen;
-import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
-import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
 import my_app.screens.pedidosScreen.PedidosScreen;
 import my_app.screens.pedidosScreen.details.PedidoDetails;
+import my_app.screens.preferenciasScreen.PreferenciasScreen;
+import my_app.screens.produtoScreen.AddOrEditProduto;
 import my_app.screens.produtoScreen.ProdutoScreen;
 import my_app.screens.relatoriosScreen.RelatoriosScreen;
 import my_app.screens.tecnicoScreen.TecnicoScreen;
+import my_app.screens.termoUsoScreen.TermoUsoScreen;
 import my_app.screens.vendaScreen.VendaMercadoriaScreen;
+import my_app.screens.welcomeScreen.WelcomeScreen;
 
-import java.sql.SQLException;
 import java.util.Set;
 
 public class AppRoutes {
@@ -62,6 +61,8 @@ public class AppRoutes {
         ACESSO_BLOQUEADO,
         PEDIDO_DETAILS,
         TERMOS_DE_USO,
+        ADD_OR_EDIT_PRODUTO,
+        ADD_OR_EDIT_CLIENTE,
     }
 
     final int MIN_WIDTH = 600;
@@ -112,7 +113,8 @@ public class AppRoutes {
                 new Router.Route(Screens.PEDIDO_DETAILS.name() + "/${id}", PedidoDetails::new, new RouteProps(MEDIUM_WIDTH, MAX_HEIGHT, "Detalhes do pedido", true)),
                 new Router.Route(Screens.ACESSO_BLOQUEADO.name(), ctx -> new AcessoBloqueadoScreen(),
                         new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Acesso bloqueado", false)),
-                new Router.Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false))
+                new Router.Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false)),
+                new Router.Route(Screens.ADD_OR_EDIT_PRODUTO.name()+"/${id}/${type}", AddOrEditProduto::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar produto", true))
         );
     }
 }

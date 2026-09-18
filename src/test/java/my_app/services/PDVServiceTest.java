@@ -1,8 +1,8 @@
 package my_app.services;
 
-import my_app.db.models.ProdutoModel;
-import my_app.db.services.PedidoService;
-import my_app.db.services.ProdutoService;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.db.services.PedidoService;
+import my_app.core.db.services.ProdutoService;
 import my_app.screens.pdvScreen.ItemVenda;
 import my_app.db.services.BaseServiceTest;
 import org.junit.jupiter.api.Test;

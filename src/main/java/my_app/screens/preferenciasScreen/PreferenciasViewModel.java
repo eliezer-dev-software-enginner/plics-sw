@@ -9,10 +9,10 @@ import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
-import my_app.db.models.PreferenciasModel;
-import my_app.db.services.PreferenciasService;
-import my_app.domain.components.Components;
-import my_app.domain.ViewModelScreenContract;
+import my_app.core.db.models.PreferenciasModel;
+import my_app.core.db.services.PreferenciasService;
+import my_app.core.components.Components;
+import my_app.core.ViewModelScreenContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

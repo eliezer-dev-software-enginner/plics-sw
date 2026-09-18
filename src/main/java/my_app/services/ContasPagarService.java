@@ -1,10 +1,10 @@
 package my_app.services;
 
-import my_app.db.models.CompraModel;
-import my_app.db.models.ContasPagarModel;
-import my_app.db.services.CompraService;
-import my_app.db.services.FornecedorService;
-import my_app.domain.Parcela;
+import my_app.core.db.models.CompraModel;
+import my_app.core.db.models.ContasPagarModel;
+import my_app.core.db.services.CompraService;
+import my_app.core.db.services.FornecedorService;
+import my_app.core.Parcela;
 import net.sf.persism.Session;
 
 import java.math.BigDecimal;
@@ -12,17 +12,17 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ContasPagarService {
-    private final my_app.db.services.ContasPagarService repo;
+    private final my_app.core.db.services.ContasPagarService repo;
 
     public ContasPagarService() throws SQLException {
-        this.repo = new my_app.db.services.ContasPagarService();
+        this.repo = new my_app.core.db.services.ContasPagarService();
         CompraService compraService = new CompraService();
         FornecedorService fornecedorService = new FornecedorService();
     }
 
     // testes
     public ContasPagarService(Session session) {
-        this.repo = new my_app.db.services.ContasPagarService(session);
+        this.repo = new my_app.core.db.services.ContasPagarService(session);
     }
 
     public void salvar(ContasPagarModel conta) throws SQLException {

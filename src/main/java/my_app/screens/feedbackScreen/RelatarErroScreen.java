@@ -8,7 +8,7 @@ import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.domain.components.Components;
+import my_app.core.components.Components;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.RowProps;
 

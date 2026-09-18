@@ -9,18 +9,18 @@ import megalodonte.v2.ListState;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.db.dto.CompraDto;
-import my_app.db.models.CompraModel;
-import my_app.db.models.FornecedorModel;
-import my_app.db.models.ProdutoModel;
-import my_app.db.services.CompraService;
-import my_app.db.services.FornecedorService;
-import my_app.db.services.ProdutoService;
-import my_app.domain.Data;
-import my_app.domain.Parcela;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
-import my_app.domain.states.TotaisState;
+import my_app.core.db.dto.CompraDto;
+import my_app.core.db.models.CompraModel;
+import my_app.core.db.models.FornecedorModel;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.db.services.CompraService;
+import my_app.core.db.services.FornecedorService;
+import my_app.core.db.services.ProdutoService;
+import my_app.core.Data;
+import my_app.core.Parcela;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
+import my_app.core.states.TotaisState;
 import my_app.services.ContasPagarService;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
@@ -255,7 +255,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     @Override
     public void handleAddOrUpdate() {
         var model = populateModelFromFields();
-        // Capturado aqui, síncrono (thread da UI) — ContratoTelaCrudV3.handleAddOrUpdate()
+        // Capturado aqui, síncrono (thread da UI) — ScreenContract.handleAddOrUpdate()
         // reseta modoEdicao logo depois de disparar essa chamada, então ler
         // modoEdicao.get() só depois de já estar rodando na thread virtual do
         // Async.Run abaixo quase sempre lia o valor já resetado, transformando

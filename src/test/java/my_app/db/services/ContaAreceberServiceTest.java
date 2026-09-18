@@ -1,6 +1,7 @@
 package my_app.db.services;
 
-import my_app.db.models.ContaAreceberModel;
+import my_app.core.db.models.ContaAreceberModel;
+import my_app.core.db.services.ContaAreceberService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

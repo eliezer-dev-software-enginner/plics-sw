@@ -5,14 +5,13 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.EmpresaModel;
-import my_app.db.services.EmpresaService;
-import my_app.domain.components.Components;
+import my_app.core.db.models.EmpresaModel;
+import my_app.core.db.services.EmpresaService;
+import my_app.core.components.Components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.sql.SQLException;
 
 public class EmpresaViewModel {
     private static final Logger log = LoggerFactory.getLogger(EmpresaViewModel.class);

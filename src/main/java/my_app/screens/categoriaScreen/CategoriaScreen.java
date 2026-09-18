@@ -8,13 +8,13 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.CategoriaModel;
-import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.ScreenContract;
+import my_app.core.db.models.CategoriaModel;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import pack.utilities.DatePack;
 
-public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3<CategoriaModel> {
+public class CategoriaScreen implements ScreenComponent, ScreenContract<CategoriaModel> {
     private final CategoriaScreenViewModel vm;
 
     public CategoriaScreen(ScreenContext ctx) {this.vm = new CategoriaScreenViewModel(ctx);}
@@ -23,7 +23,7 @@ public class CategoriaScreen implements ScreenComponent, ContratoTelaCrudV3<Cate
 
     @Override
     public void onDestroy() {
-        ContratoTelaCrudV3.super.onDestroy();
+        ScreenContract.super.onDestroy();
     }
 
     public Component render() {

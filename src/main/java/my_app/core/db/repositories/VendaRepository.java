@@ -1,0 +1,69 @@
+package my_app.core.db.repositories;
+
+import my_app.core.db.models.VendaModel;
+import net.sf.persism.Session;
+import pack.utilities.DatePack;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.time.LocalDate;
+
+import static net.sf.persism.Parameters.params;
+import static net.sf.persism.SQL.sql;
+
+public class VendaRepository extends BaseRepository<VendaModel> {
+
+    public VendaRepository(Session session) {
+        super(session);
+    }
+
+    @Override
+    protected Class<VendaModel> modelClass() {
+        return VendaModel.class;
+    }
+
+    public java.util.List<VendaModel> buscarPorCliente(Integer clienteId) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM vendas WHERE cliente_id = ? ORDER BY dataCriacao DESC"),
+                params(clienteId)
+        );
+    }
+
+    public java.util.List<VendaModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM vendas WHERE dataCriacao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
+
+    // Filtra por data_devolucao (quando a devolução aconteceu), não por dataCriacao —
+    // uma venda antiga devolvida hoje pertence ao relatório do mês atual.
+    public java.util.List<VendaModel> listarDevolvidasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM vendas WHERE devolvida = 1 AND data_devolucao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
+
+    public BigDecimal somarVendasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        var vendas = session().query(
+                modelClass(),
+                sql("SELECT * FROM vendas WHERE dataCriacao BETWEEN ? AND ? AND tipo_pagamento != 'A PRAZO'"),
+                params(dataInicio, dataFim)
+        );
+        return vendas.stream()
+                .filter(venda -> !Boolean.TRUE.equals(venda.getDevolvida()))
+                .map(VendaModel::getTotalLiquido)
+                .filter(java.util.Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal somarVendasHoje() throws SQLException {
+        long inicioHoje = DatePack.localDateParaMillis(LocalDate.now());
+        long fimHoje = inicioHoje + (24 * 60 * 60 * 1000L) - 1;
+        return somarVendasPorPeriodo(inicioHoje, fimHoje);
+    }
+}

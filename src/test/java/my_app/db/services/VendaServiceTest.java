@@ -1,7 +1,11 @@
 package my_app.db.services;
 
-import my_app.db.models.ProdutoModel;
-import my_app.db.models.VendaModel;
+import my_app.core.Parcela;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.db.models.VendaModel;
+import my_app.core.db.services.ContaAreceberService;
+import my_app.core.db.services.ProdutoService;
+import my_app.core.db.services.VendaService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -167,7 +171,7 @@ class VendaServiceTest extends BaseServiceTest {
         v.setTipoPagamento("A PRAZO");
         var salvo = vendaService.salvar(v, false);
 
-        var parcelas = my_app.domain.Parcela.gerarParcelas(java.time.LocalDate.now(), 1, 10.0);
+        var parcelas = Parcela.gerarParcelas(java.time.LocalDate.now(), 1, 10.0);
         contaService.gerarContasDeVenda(salvo.getId(), 1, parcelas);
         var contas = contaService.buscarPorVenda(salvo.getId());
         contaService.registrarRecebimento(contas.getFirst().getId(), BigDecimal.TEN);

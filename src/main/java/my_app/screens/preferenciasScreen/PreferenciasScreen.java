@@ -17,8 +17,8 @@ import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.domain.Data;
-import my_app.domain.components.Components;
+import my_app.core.Data;
+import my_app.core.components.Components;
 
 public class PreferenciasScreen implements ScreenComponent {
 

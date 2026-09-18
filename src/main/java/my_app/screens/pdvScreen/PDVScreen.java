@@ -12,9 +12,9 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models.ClienteModel;
-import my_app.domain.Data;
-import my_app.domain.components.Components;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.Data;
+import my_app.core.components.Components;
 
 import java.math.BigDecimal;
 

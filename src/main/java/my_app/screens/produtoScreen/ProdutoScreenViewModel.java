@@ -5,18 +5,19 @@ import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
+import my_app.core.AppRoutes;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.db.models.CategoriaModel;
-import my_app.db.models.CorModel;
-import my_app.db.models.FornecedorModel;
-import my_app.db.models.ProdutoModel;
-import my_app.db.services.CategoriaService;
-import my_app.db.services.CorService;
-import my_app.db.services.FornecedorService;
-import my_app.db.services.ProdutoService;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.CategoriaModel;
+import my_app.core.db.models.CorModel;
+import my_app.core.db.models.FornecedorModel;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.db.services.CategoriaService;
+import my_app.core.db.services.CorService;
+import my_app.core.db.services.FornecedorService;
+import my_app.core.db.services.ProdutoService;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     public final State<LocalDate> validade = State.of(null);
 
     public final State<String> imagem = new State<>("/assets/produto-generico.png");
-    public final State<ProdutoModel> produtoSelected = new State<>(null);
     public final State<String> perecivelSelected = new State<>("Não");
 
     public final State<String> frete = new State<>("0");
@@ -78,6 +78,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         this.fornecedorService = createOrReport(FornecedorService::new);
         this.categoriaService = createOrReport(CategoriaService::new);
         this.corService = createOrReport(CorService::new);
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_PRODUTO.name();
         EventBus.getInstance().subscribe(event -> {
             if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
                 refreshFornecedores();
@@ -152,7 +153,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     @Override
     public void handleClickMenuDelete() {
 
-        ProdutoModel produtoModel = produtoSelected.get();
+        ProdutoModel produtoModel = selected.get();
         if (produtoModel == null) return;
 
         var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?"
@@ -190,10 +191,10 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         }
 
         // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
-        // modoEdicao.get() internamente pra decidir se reaproveita produtoSelected ou
+        // modoEdicao.get() internamente pra decidir se reaproveita selected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
-        // ContratoTelaCrudV3.handleAddOrUpdate() (que reseta logo depois de disparar
+        // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
         // essa chamada), fazendo toda edição tentar dar update num model novo sem id
         // (mesmo bug corrigido em outras telas).
         boolean editando = modoEdicao.get();
@@ -271,8 +272,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
 
     @Override
     public ProdutoModel populateModelFromFields() {
-        var model = modoEdicao.get() && produtoSelected.get() != null
-                ? produtoSelected.get()
+        var model = modoEdicao.get() && selected.get() != null
+                ? selected.get()
                 : new ProdutoModel();
 
         model.setCodigoBarras(codigoBarras.get());
@@ -329,8 +330,8 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
 
     @Override
     public void populateFieldsFromModel() {
-        if (produtoSelected.get() == null) return;
-        final var model = produtoSelected.get();
+        if (selected.get() == null) return;
+        final var model = selected.get();
 
         codigoBarras.set(model.getCodigoBarras());
         descricao.set(model.getDescricao());

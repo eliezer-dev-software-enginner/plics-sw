@@ -1,7 +1,8 @@
 package my_app.db.services;
 
-import my_app.db.dto.CompraDto;
-import my_app.db.models.CompraModel;
+import my_app.core.db.dto.CompraDto;
+import my_app.core.db.models.CompraModel;
+import my_app.core.db.services.CompraService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

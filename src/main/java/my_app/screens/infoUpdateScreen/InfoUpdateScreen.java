@@ -7,7 +7,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.domain.components.Components;
+import my_app.core.components.Components;
 import my_app.screens.infoUpdateScreen.InfoUpdateScreenViewModel.NotaAtualizacao;
 
 public class InfoUpdateScreen implements ScreenComponent {

@@ -3,12 +3,11 @@ package my_app.screens.termoUsoScreen;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
-import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.domain.Data;
-import my_app.domain.components.Components;
+import my_app.core.Data;
+import my_app.core.components.Components;
 
 public class TermoUsoScreen implements ScreenComponent {
 

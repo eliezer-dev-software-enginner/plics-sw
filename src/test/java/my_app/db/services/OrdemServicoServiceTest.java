@@ -1,6 +1,7 @@
 package my_app.db.services;
 
-import my_app.db.models.OrdemServicoModel;
+import my_app.core.db.models.OrdemServicoModel;
+import my_app.core.db.services.OrdemServicoService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

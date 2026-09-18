@@ -5,14 +5,14 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.ClienteModel;
-import my_app.db.services.ClienteService;
-import my_app.domain.Data;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.services.ClienteService;
+import my_app.core.Data;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
-import my_app.domain.states.EnderecoState;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
+import my_app.core.states.EnderecoState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pack.utilities.DatePack;
@@ -178,7 +178,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         if (modoEdicao.get() && clienteSelecionado.get() == null) return;
 
         // editando/model capturados aqui, síncronos (thread da UI) — não dentro do
-        // Async.Run abaixo. ContratoTelaCrudV3.handleAddOrUpdate() chama
+        // Async.Run abaixo. ScreenContract.handleAddOrUpdate() chama
         // modoEdicaoState().set(false) logo depois de disparar essa chamada, então
         // ler modoEdicao.get() só depois de já estar rodando na thread virtual do
         // Async.Run quase sempre lê o valor já resetado — toda edição virava

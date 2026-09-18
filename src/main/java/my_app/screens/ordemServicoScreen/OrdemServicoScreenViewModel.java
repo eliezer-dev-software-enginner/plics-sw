@@ -8,14 +8,14 @@ import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.db.models.ClienteModel;
-import my_app.db.models.OrdemServicoModel;
-import my_app.db.models.TecnicoModel;
-import my_app.db.services.ClienteService;
-import my_app.db.services.OrdemServicoService;
-import my_app.db.services.TecnicoService;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.models.OrdemServicoModel;
+import my_app.core.db.models.TecnicoModel;
+import my_app.core.db.services.ClienteService;
+import my_app.core.db.services.OrdemServicoService;
+import my_app.core.db.services.TecnicoService;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +164,7 @@ public class OrdemServicoScreenViewModel extends ViewModelScreenContract<OrdemSe
         // asyncSalvar/asyncAtualizar. populateModelFromFields() lê modoEdicao.get()
         // internamente pra decidir se reaproveita osSelected ou cria um OrdemServicoModel
         // novo; chamado de dentro do Async.Run isso quase sempre lia modoEdicao já
-        // resetado por ContratoTelaCrudV3.handleAddOrUpdate() (que reseta logo depois
+        // resetado por ScreenContract.handleAddOrUpdate() (que reseta logo depois
         // de disparar essa chamada), fazendo toda edição tentar dar update num model
         // novo sem id (mesmo bug corrigido em outras telas).
         boolean editando = modoEdicao.get();

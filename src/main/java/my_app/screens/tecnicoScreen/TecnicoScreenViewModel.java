@@ -4,16 +4,14 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.TecnicoModel;
-import my_app.db.services.TecnicoService;
-import my_app.domain.components.Components;
+import my_app.core.db.models.TecnicoModel;
+import my_app.core.db.services.TecnicoService;
+import my_app.core.components.Components;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.domain.ViewModelScreenContract;
+import my_app.core.ViewModelScreenContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.SQLException;
 
 public class TecnicoScreenViewModel extends ViewModelScreenContract<TecnicoModel> {
     private static final Logger log = LoggerFactory.getLogger(TecnicoScreenViewModel.class);

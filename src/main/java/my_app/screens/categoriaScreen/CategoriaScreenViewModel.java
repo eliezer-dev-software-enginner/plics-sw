@@ -4,14 +4,12 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.CategoriaModel;
-import my_app.db.services.CategoriaService;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.CategoriaModel;
+import my_app.core.db.services.CategoriaService;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.SQLException;
 
 public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaModel> {
     private static final Logger log = LoggerFactory.getLogger(CategoriaScreenViewModel.class);

@@ -1,6 +1,7 @@
 package my_app.db.services;
 
-import my_app.db.models.CategoriaModel;
+import my_app.core.db.models.CategoriaModel;
+import my_app.core.db.services.CategoriaService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

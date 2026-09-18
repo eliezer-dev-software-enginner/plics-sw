@@ -5,12 +5,12 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.ContasPagarModel;
-import my_app.db.models.FornecedorModel;
-import my_app.db.services.ContasPagarService;
-import my_app.db.services.FornecedorService;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.ContasPagarModel;
+import my_app.core.db.models.FornecedorModel;
+import my_app.core.db.services.ContasPagarService;
+import my_app.core.db.services.FornecedorService;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,7 +189,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         // modoEdicao.get() internamente pra decidir se reaproveita contaSelected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
-        // ContratoTelaCrudV3.handleAddOrUpdate() (que reseta logo depois de disparar
+        // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
         // essa chamada), fazendo toda edição tentar dar update num model novo sem id
         // (mesmo bug corrigido em outras telas).
         boolean editando = modoEdicao.get();

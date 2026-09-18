@@ -1,0 +1,60 @@
+package my_app.core.db.repositories;
+
+import my_app.core.db.models.PedidoModel;
+import net.sf.persism.Session;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
+
+import static net.sf.persism.Parameters.params;
+import static net.sf.persism.SQL.sql;
+import static pack.utilities.DatePack.localDateParaMillis;
+
+public class PedidoRepository extends BaseRepository<PedidoModel> {
+
+    public PedidoRepository(Session session) {
+        super(session);
+    }
+
+    @Override
+    protected Class<PedidoModel> modelClass() {
+        return PedidoModel.class;
+    }
+
+    public BigDecimal somarPedidosHoje() throws SQLException {
+        long inicioHoje = localDateParaMillis(LocalDate.now());
+        long fimHoje = inicioHoje + (24 * 60 * 60 * 1000L) - 1;
+        return somarPedidosPorPeriodo(inicioHoje, fimHoje);
+    }
+
+    // Vendas devolvidas não contam como receita — o estoque voltou e a cobrança
+    // foi estornada; o pedido só permanece no banco pelo histórico do caixa.
+    public BigDecimal somarPedidosPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        var pedidos = listarPorPeriodo(dataInicio, dataFim);
+        return pedidos.stream()
+                .filter(pedido -> !Boolean.TRUE.equals(pedido.getDevolvida()))
+                .map(PedidoModel::getTotalLiquido)
+                .filter(java.util.Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public List<PedidoModel> listarPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM pedidos WHERE dataCriacao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
+
+    // Filtra por data_devolucao (quando a devolução aconteceu), não por dataCriacao —
+    // uma venda antiga devolvida hoje pertence ao relatório do mês atual.
+    public List<PedidoModel> listarDevolvidasPorPeriodo(Long dataInicio, Long dataFim) throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM pedidos WHERE devolvida = 1 AND data_devolucao BETWEEN ? AND ?"),
+                params(dataInicio, dataFim)
+        );
+    }
+}

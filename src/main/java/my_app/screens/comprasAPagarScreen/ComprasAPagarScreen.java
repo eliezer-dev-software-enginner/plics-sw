@@ -13,14 +13,14 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models.ContasPagarModel;
-import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.ScreenContract;
+import my_app.core.db.models.ContasPagarModel;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
-public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3<ContasPagarModel> {
+public class ComprasAPagarScreen implements ScreenComponent, ScreenContract<ContasPagarModel> {
     private final ComprasAPagarScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
@@ -37,7 +37,7 @@ public class ComprasAPagarScreen implements ScreenComponent, ContratoTelaCrudV3<
 
     @Override
     public void onDestroy() {
-        ContratoTelaCrudV3.super.onDestroy();
+        ScreenContract.super.onDestroy();
     }
 
     @Override

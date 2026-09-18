@@ -1,8 +1,8 @@
 package my_app.services;
 
-import my_app.db.models.CompraModel;
+import my_app.core.db.models.CompraModel;
 import my_app.db.services.BaseServiceTest;
-import my_app.domain.Parcela;
+import my_app.core.Parcela;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

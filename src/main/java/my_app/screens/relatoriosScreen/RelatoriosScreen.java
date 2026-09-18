@@ -19,7 +19,7 @@ import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
-import my_app.domain.components.Components;
+import my_app.core.components.Components;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;

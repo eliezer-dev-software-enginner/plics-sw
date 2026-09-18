@@ -1,6 +1,6 @@
 package my_app.services;
 
-import my_app.db.models.EmpresaModel;
+import my_app.core.db.models.EmpresaModel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;

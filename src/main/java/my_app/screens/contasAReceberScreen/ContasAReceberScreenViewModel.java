@@ -8,15 +8,15 @@ import megalodonte.router.v4.ScreenContext;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.db.models.ClienteModel;
-import my_app.db.models.ContaAreceberModel;
-import my_app.db.models.VendaModel;
-import my_app.db.services.ClienteService;
-import my_app.db.services.ContaAreceberService;
-import my_app.db.services.ProdutoService;
-import my_app.db.services.VendaService;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.models.ContaAreceberModel;
+import my_app.core.db.models.VendaModel;
+import my_app.core.db.services.ClienteService;
+import my_app.core.db.services.ContaAreceberService;
+import my_app.core.db.services.ProdutoService;
+import my_app.core.db.services.VendaService;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,7 +181,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         // modoEdicao.get() internamente pra decidir se reaproveita contaSelected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
-        // ContratoTelaCrudV3.handleAddOrUpdate() (que reseta logo depois de disparar
+        // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
         // essa chamada), fazendo toda edição tentar dar update num model novo sem id
         // (mesmo bug corrigido em outras telas).
         boolean editando = modoEdicao.get();

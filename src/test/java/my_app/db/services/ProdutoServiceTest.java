@@ -1,6 +1,7 @@
 package my_app.db.services;
 
-import my_app.db.models.ProdutoModel;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.db.services.ProdutoService;
 import org.junit.jupiter.api.Test;
 import pack.utilities.DatePack;
 

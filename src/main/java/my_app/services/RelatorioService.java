@@ -1,18 +1,18 @@
 package my_app.services;
 
-import my_app.db.DB;
-import my_app.db.models.PedidoItemModel;
-import my_app.db.models.ProdutoModel;
-import my_app.db.models.VendaModel;
-import my_app.db.services.ClienteService;
-import my_app.db.services.CompraService;
-import my_app.db.services.ContaAreceberService;
-import my_app.db.services.ContasPagarService;
-import my_app.db.services.FornecedorService;
-import my_app.db.services.PedidoItemService;
-import my_app.db.services.PedidoService;
-import my_app.db.services.ProdutoService;
-import my_app.db.services.VendaService;
+import my_app.core.db.DB;
+import my_app.core.db.models.PedidoItemModel;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.db.models.VendaModel;
+import my_app.core.db.services.ClienteService;
+import my_app.core.db.services.CompraService;
+import my_app.core.db.services.ContaAreceberService;
+import my_app.core.db.services.ContasPagarService;
+import my_app.core.db.services.FornecedorService;
+import my_app.core.db.services.PedidoItemService;
+import my_app.core.db.services.PedidoService;
+import my_app.core.db.services.ProdutoService;
+import my_app.core.db.services.VendaService;
 import net.sf.persism.Session;
 
 import java.math.BigDecimal;

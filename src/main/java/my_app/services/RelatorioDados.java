@@ -1,7 +1,7 @@
 package my_app.services;
 
-import my_app.db.models.ClienteModel;
-import my_app.db.models.FornecedorModel;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.models.FornecedorModel;
 
 import java.math.BigDecimal;
 import java.util.List;

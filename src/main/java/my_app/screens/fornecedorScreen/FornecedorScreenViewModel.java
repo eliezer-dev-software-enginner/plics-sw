@@ -5,18 +5,16 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.FornecedorModel;
-import my_app.db.services.FornecedorService;
-import my_app.domain.Data;
+import my_app.core.db.models.FornecedorModel;
+import my_app.core.db.services.FornecedorService;
+import my_app.core.Data;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
-import my_app.domain.states.EnderecoState;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
+import my_app.core.states.EnderecoState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.SQLException;
 
 public class FornecedorScreenViewModel extends ViewModelScreenContract<FornecedorModel> {
     private static final Logger log = LoggerFactory.getLogger(FornecedorScreenViewModel.class);

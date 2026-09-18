@@ -17,7 +17,7 @@ import megalodonte.props.ContainerProps;
 import megalodonte.props.ImageProps;
 import megalodonte.props.RowProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.domain.components.Components;
+import my_app.core.components.Components;
 
 public class CadastroEmpresaScreen implements ScreenComponent {
     private final EmpresaViewModel vm;

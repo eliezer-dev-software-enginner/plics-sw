@@ -1,6 +1,7 @@
 package my_app.db.repositories;
 
-import my_app.db.models.PreferenciasModel;
+import my_app.core.db.models.PreferenciasModel;
+import my_app.core.db.repositories.PreferenciasRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

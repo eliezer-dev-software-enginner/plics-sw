@@ -18,21 +18,21 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models.CategoriaModel;
-import my_app.db.models.CorModel;
-import my_app.db.models.FornecedorModel;
-import my_app.db.models.ProdutoModel;
-import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.Data;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.CategoriaModel;
+import my_app.core.db.models.CorModel;
+import my_app.core.db.models.FornecedorModel;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.ScreenContract;
+import my_app.core.Data;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import my_app.utils.Utils;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
 import java.util.List;
 
-public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<ProdutoModel> {
+public class ProdutoScreen implements ScreenComponent, ScreenContract<ProdutoModel> {
     private final ProdutoScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
 
@@ -47,7 +47,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
 
     @Override
     public void onDestroy() {
-        ContratoTelaCrudV3.super.onDestroy();
+        ScreenContract.super.onDestroy();
     }
 
     public Component render() {
@@ -116,7 +116,7 @@ public class ProdutoScreen implements ScreenComponent, ContratoTelaCrudV3<Produt
                 .column("Categoria", it -> it.getCategoria() != null ? it.getCategoria().getNome() : "")
                 .column("Data de criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
-                .onItemSelectChange(vm.produtoSelected::set)
+                .onItemSelectChange(vm.selected::set)
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), vm.getCtx(), 600));
 

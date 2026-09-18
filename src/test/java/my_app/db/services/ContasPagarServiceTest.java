@@ -1,6 +1,7 @@
 package my_app.db.services;
 
-import my_app.db.models.ContasPagarModel;
+import my_app.core.db.models.ContasPagarModel;
+import my_app.core.db.services.ContasPagarService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

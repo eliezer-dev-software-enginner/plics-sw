@@ -1,6 +1,6 @@
 package my_app.services;
 
-import my_app.db.models.VendaModel;
+import my_app.core.db.models.VendaModel;
 
 public interface ComprovanteBuilder {
     void imprimir(VendaModel vendaModel);

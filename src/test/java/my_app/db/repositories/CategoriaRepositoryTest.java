@@ -1,6 +1,7 @@
 package my_app.db.repositories;
 
-import my_app.db.models.CategoriaModel;
+import my_app.core.db.models.CategoriaModel;
+import my_app.core.db.repositories.CategoriaRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

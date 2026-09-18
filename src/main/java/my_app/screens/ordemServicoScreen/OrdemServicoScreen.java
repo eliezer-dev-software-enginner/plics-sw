@@ -14,14 +14,14 @@ import megalodonte.props.ContainerProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
-import my_app.db.models.OrdemServicoModel;
-import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.ScreenContract;
+import my_app.core.db.models.OrdemServicoModel;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
-public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<OrdemServicoModel> {
+public class OrdemServicoScreen implements ScreenComponent, ScreenContract<OrdemServicoModel> {
     private final OrdemServicoScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
     private final ScreenContext ctx;
@@ -38,7 +38,7 @@ public class OrdemServicoScreen implements ScreenComponent, ContratoTelaCrudV3<O
 
     @Override
     public void onDestroy() {
-        ContratoTelaCrudV3.super.onDestroy();
+        ScreenContract.super.onDestroy();
     }
 
     @Override

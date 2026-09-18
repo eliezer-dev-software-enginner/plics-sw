@@ -12,18 +12,18 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.db.models.ClienteModel;
-import my_app.db.models.VendaModel;
-import my_app.domain.ContratoTelaCrudV3;
-import my_app.domain.Data;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.models.VendaModel;
+import my_app.core.ScreenContract;
+import my_app.core.Data;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
 import org.kordamp.ikonli.javafx.FontIcon;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
-public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV3<VendaModel> {
+public class VendaMercadoriaScreen implements ScreenComponent, ScreenContract<VendaModel> {
     private final VendaMercadoriaScreenViewModel vm;
     private final ScreenContext screenContext;
 
@@ -37,7 +37,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ContratoTelaCrudV
 
     @Override
     public void onDestroy() {
-        ContratoTelaCrudV3.super.onDestroy();
+        ScreenContract.super.onDestroy();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package my_app.db.services;
 
-import my_app.db.models.TecnicoModel;
+import my_app.core.db.models.TecnicoModel;
+import my_app.core.db.services.TecnicoService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

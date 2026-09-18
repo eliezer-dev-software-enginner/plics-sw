@@ -6,16 +6,16 @@ import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.ListState;
+import my_app.core.db.models.*;
+import my_app.core.db.services.*;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
-import my_app.db.models.*;
-import my_app.db.services.*;
-import my_app.domain.Data;
-import my_app.domain.Parcela;
-import my_app.domain.ViewModelScreenContract;
-import my_app.domain.components.Components;
-import my_app.domain.states.TotaisState;
+import my_app.core.Data;
+import my_app.core.Parcela;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
+import my_app.core.states.TotaisState;
 import my_app.services.EscPosPrinter;
 import my_app.services.WinRawPrinter;
 import my_app.utils.Utils;
@@ -320,7 +320,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             }
         }
 
-        // Captura modoEdicao ANTES de entrar no Async.Run: ContratoTelaCrudV3.handleAddOrUpdate()
+        // Captura modoEdicao ANTES de entrar no Async.Run: ScreenContract.handleAddOrUpdate()
         // chama viewModel().modoEdicaoState().set(false) logo em seguida, de forma síncrona,
         // e essa chamada corre em paralelo com a task assíncrona abaixo. Sem essa captura,
         // o modoEdicao.get() lá dentro quase sempre já lê false, e a edição vira um cadastro novo
