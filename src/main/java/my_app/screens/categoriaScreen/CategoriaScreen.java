@@ -3,7 +3,7 @@ package my_app.screens.categoriaScreen;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.SimpleTable;
-import megalodonte.router.v4.ScreenContext;
+import megalodonte.router.v5.ScreenContext;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.db.models.CategoriaModel;

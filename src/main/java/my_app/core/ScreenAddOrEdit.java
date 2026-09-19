@@ -1,33 +1,45 @@
-package my_app.screens.categoriaScreen;
+package my_app.core;
 
 import megalodonte.application.ErrorReporter;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.state.State;
-import megalodonte.components.Card;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import megalodonte.base.theme.ThemeInterface;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.router.v5.ScreenContext;
 import megalodonte.utils.ThrowingSupplier;
 import my_app.core.components.Components;
-import my_app.core.db.services.CategoriaService;
+import my_app.core.db.services.BaseService;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class AddOrEditCategorias implements ScreenComponent {
-    Long id;
-    CategoriaScreenViewModel viewModel;
-    Logger log = LoggerFactory.getLogger(AddOrEditCategorias.class);
-    CategoriaService service;
+import java.sql.SQLException;
+
+
+public abstract class ScreenAddOrEdit<Model, VM extends ViewModelScreenContract<Model>> implements ScreenComponent {
+    protected VM viewModel;
+
+    private  BaseService<Model> service;
+    private  ScreenContext screenContext;
+
+    protected Long id;
 
     State<String> titleState = new State<>("");
+    ThemeInterface theme = ThemeManager.theme();
 
-    public AddOrEditCategorias(ScreenContext screenContext) {
-        viewModel = new CategoriaScreenViewModel(screenContext);
-        service = createOrReport(CategoriaService::new);
+    protected Logger log;
+
+    protected abstract VM getViewModel(ScreenContext screenContext);
+    protected abstract BaseService<Model> getService() throws SQLException;
+    protected abstract String getTitle();
+    protected abstract Logger getLogger();
+
+
+    public ScreenAddOrEdit(ScreenContext screenContext) {
+        log = getLogger();
+
+        viewModel =  getViewModel(screenContext);
+        service = createOrReport(this::getService);
         String type = screenContext.getParams().get("type");
         String idParam = screenContext.getParams().get("id");
 
@@ -36,8 +48,7 @@ public class AddOrEditCategorias implements ScreenComponent {
         } catch (RuntimeException e) {
             log.error("Parâmetro 'id' inválido na rota de edição/inclusão: {}", idParam, e);
             try {
-                viewModel.onDestroy();
-                service.close();
+                onDestroy();
             } catch (Exception cleanup) {
                 log.warn("Erro ao limpar recursos após rota inválida", cleanup);
             }
@@ -49,14 +60,14 @@ public class AddOrEditCategorias implements ScreenComponent {
             var model = service.buscarById(id);
             UI.runOnUi(()-> {
                 viewModel.selected.set(model);
-                titleState.set("Incluir categoria");
-                screenContext.selfStage().setTitle("Inclusão de categoria");
+                titleState.set("Incluir " + getTitle());
+                screenContext.selfStage().setTitle("Inclusão de " +getTitle());
 
                 if(type.equals("edit")){
                     viewModel.modoEdicaoState().set(true);
                     viewModel.populateFieldsFromModel();
-                    titleState.set("Editar categoria com Id: " + id);
-                    screenContext.selfStage().setTitle("Edição de categoria");
+                    titleState.set("Editar produto com Id: " + id);
+                    screenContext.selfStage().setTitle("Edição de " + getTitle());
                 }
             });
         });
@@ -72,34 +83,16 @@ public class AddOrEditCategorias implements ScreenComponent {
     }
 
     @Override
-    public Component render() {
-        return new Card(new Column(new ColumnProps().spacingOf(20))
-                .children(
-                        Components.FormSubtitle("Dados da categoria"),
-                        new Row(new RowProps().bottomVertically().spacingOf(10))
-                                .r_child(
-                                        disgust.io.Pack.InputColumn("Nome *", viewModel.nome, "Ex: Eletrônicos")),
-                        Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)
-                )
-        );
-    }
-
-    @Override
-    public void onMount() {
-        ScreenComponent.super.onMount();
-    }
-
-    @Override
     public void onDestroy() {
         try {
             viewModel.onDestroy();
             service.close();
         } catch (Exception e) {
-            log.warn("Erro ao destruir AddOrEditCategoriasScreen", e);
+            log.warn("Erro ao destruir {}", "ScreenAddOrEdit_"+getTitle(), e);
         }
     }
 
-    void handleAddOrUpdate() {
+    protected void handleAddOrUpdate() {
         try {
             viewModel.handleAddOrUpdate();
             viewModel.modoEdicaoState().set(false);
@@ -108,4 +101,5 @@ public class AddOrEditCategorias implements ScreenComponent {
             UI.runOnUi(() -> Components.ShowAlertError("Não foi possível salvar. Tente novamente."));
         }
     }
+
 }

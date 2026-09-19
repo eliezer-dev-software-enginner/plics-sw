@@ -14,7 +14,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v4.ScreenContext;
+import megalodonte.router.v5.ScreenContext;
 import my_app.core.AppRoutes;
 
 public class WelcomeScreen implements ScreenComponent {

@@ -4,7 +4,8 @@ import megalodonte.ComputedState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v4.ScreenContext;
+import megalodonte.router.v5.ScreenContext;
+import my_app.core.AppRoutes;
 import my_app.core.db.models.ClienteModel;
 import my_app.core.db.services.ClienteService;
 import my_app.core.Data;
@@ -24,8 +25,6 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
     private static final Logger log = LoggerFactory.getLogger(ClienteViewModel.class);
 
     private final ClienteService clienteService;
-
-    final State<ClienteModel> clienteSelecionado = State.of(null);
 
     final State<String> nome = new State<>("");
     final State<String> cnpjCpf = new State<>("");
@@ -52,6 +51,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     public ClienteViewModel(ScreenContext ctx) {
         super(ctx);
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_CLIENTE.name();
         this.clienteService = createOrReport(ClienteService::new);
         tipoPessoaSelected.subscribe(_ -> cnpjCpf.set(""));
     }
@@ -70,7 +70,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public void populateFieldsFromModel() {
-        final var data = clienteSelecionado.get();
+        final var data = selected.get();
         if (data == null) return;
         tipoPessoaSelected.set(
                 ValidatorPack.isValidCpf(data.getCpfCnpj())
@@ -103,8 +103,8 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public ClienteModel populateModelFromFields() {
-        var model = modoEdicao.get() && clienteSelecionado.get() != null
-                ? clienteSelecionado.get()
+        var model = modoEdicao.get() && selected.get() != null
+                ? selected.get()
                 : new ClienteModel();
 
         String nomeValue    = nome.get().trim();
@@ -155,7 +155,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public void handleClickMenuDelete() {
-        final var model = clienteSelecionado.get();
+        final var model = selected.get();
         if (model == null) return;
 
         Components.ShowAlertAdvice("Deseja excluir cliente " + model.getNome(), () -> Async.Run(() -> {
@@ -175,7 +175,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public void handleAddOrUpdate() {
-        if (modoEdicao.get() && clienteSelecionado.get() == null) return;
+        if (modoEdicao.get() && selected.get() == null) return;
 
         // editando/model capturados aqui, síncronos (thread da UI) — não dentro do
         // Async.Run abaixo. ScreenContract.handleAddOrUpdate() chama

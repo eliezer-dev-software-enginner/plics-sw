@@ -1,23 +1,21 @@
 package my_app.screens.clienteScreen;
 
-import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.*;
+import megalodonte.components.SimpleTable;
+import megalodonte.components.SpacerVertical;
+import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.FlowRow;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.FlowRowProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v4.ScreenContext;
+import megalodonte.router.v5.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
-import my_app.core.db.models.ClienteModel;
-import my_app.core.Data;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
+import my_app.core.db.models.ClienteModel;
 import pack.utilities.DatePack;
 import pack.utilities.FormatterPack;
 
@@ -46,38 +44,7 @@ public class ClienteScreen implements ScreenComponent, ScreenContract<ClienteMod
     }
 
     @Override
-    public Component form() {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(20))
-                        .c_child(Components.FormSubtitle("Cadastrar cliente"))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(new FlowRow(new FlowRowProps().spacingOf(10))
-                                .children(
-                                        disgust.io.Pack.InputColumn("Nome *", vm.nome, "Ex: João"),
-                                        Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it),
-                                        Show.when(vm.tipoPessoaEhFisica,
-                                                () -> Pack.InputColumnCpf("CPF", vm.cnpjCpf),
-                                                () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
-                                        ),
-                                        Pack.InputColumnPhone("Celular", vm.celular),
-                                        disgust.io.Pack.InputColumn("Email", vm.email, "Ex: email@teste.com"),
-                                        Components.DatePickerColumn(vm.dataNascimento,"Data de nascimento"),
-                                        Components.SelectColumn("É gestante?", Data.simNaoList, vm.isGestante, it -> it),
-                                        Show.when(vm.isGestanteComputed,()->Components.DatePickerColumn(vm.dataNascimentoBebe,"Data de nascimento do bebê") )
-                                )
-                        )
-                        .c_child(new SpacerVertical(10))
-                        .c_child(Components.enderecoComponent(vm.enderecoState.get()))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(new LineHorizontal())
-                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre o cliente?", 60, 160))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate))
-        );
-    }
-
-    @Override
-    public ViewModelScreenContract viewModel() {
+    public ViewModelScreenContract<ClienteModel> viewModel() {
         return vm;
     }
 
@@ -97,7 +64,7 @@ public class ClienteScreen implements ScreenComponent, ScreenContract<ClienteMod
                 .column("Data de criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemSelectChange(vm.clienteSelecionado::set)
+                .onItemSelectChange(vm.selected::set)
                 .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), this.screenContext, 400));
 
         return simpleTable;

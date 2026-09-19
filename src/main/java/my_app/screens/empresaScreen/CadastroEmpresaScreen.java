@@ -16,7 +16,7 @@ import megalodonte.props.ButtonVariant;
 import megalodonte.props.ContainerProps;
 import megalodonte.props.ImageProps;
 import megalodonte.props.RowProps;
-import megalodonte.router.v4.ScreenContext;
+import megalodonte.router.v5.ScreenContext;
 import my_app.core.components.Components;
 
 public class CadastroEmpresaScreen implements ScreenComponent {
