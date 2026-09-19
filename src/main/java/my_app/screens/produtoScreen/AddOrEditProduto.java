@@ -4,14 +4,9 @@ import disgust.io.br.Pack;
 import javafx.stage.FileChooser;
 import megalodonte.ComputedState;
 import megalodonte.ForEachState;
-import megalodonte.application.ErrorReporter;
-import megalodonte.base.UI;
-import megalodonte.base.async.Async;
 import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
-import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.state.State;
-import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Card;
 import megalodonte.components.Checkbox;
@@ -23,74 +18,26 @@ import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
 import megalodonte.router.v5.ScreenContext;
-import megalodonte.utils.ThrowingSupplier;
 import megalodonte.v2.Show;
 import my_app.core.Data;
+import my_app.core.ScreenAddOrEdit;
 import my_app.core.components.Components;
 import my_app.core.db.models.CategoriaModel;
 import my_app.core.db.models.CorModel;
 import my_app.core.db.models.FornecedorModel;
-import my_app.core.db.services.ProdutoService;
+import my_app.core.db.models.ProdutoModel;
+import my_app.core.db.services.BaseService;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.List;
 
-public class AddOrEditProduto implements ScreenComponent {
-    Long id;
-    ProdutoScreenViewModel viewModel;
-    Logger log = LoggerFactory.getLogger(AddOrEditProduto.class);
-    ProdutoService produtoService;
-
-    State<String> titleState = new State<>("");
-
-    ThemeInterface theme = ThemeManager.theme();
+public class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel,ProdutoScreenViewModel> {
 
     public AddOrEditProduto(ScreenContext screenContext) {
-        viewModel = new ProdutoScreenViewModel(screenContext);
-        produtoService = createOrReport(ProdutoService::new);
-        String type = screenContext.getParams().get("type");
-        String idParam = screenContext.getParams().get("id");
-
-        try {
-            id = Long.parseLong(idParam);
-        } catch (RuntimeException e) {
-            log.error("Parâmetro 'id' inválido na rota de edição/inclusão: {}", idParam, e);
-            try {
-                viewModel.onDestroy();
-                produtoService.close();
-            } catch (Exception cleanup) {
-                log.warn("Erro ao limpar recursos após rota inválida", cleanup);
-            }
-            UI.runOnUi(() -> Components.ShowAlertError("ID inválido na rota de edição/inclusão."));
-            return;
-        }
-
-        Async.Run(()->{
-            var model = produtoService.buscarById(id);
-            UI.runOnUi(()-> {
-                viewModel.selected.set(model);
-                titleState.set("Incluir produto");
-                screenContext.selfStage().setTitle("Inclusão de produto");
-
-                if(type.equals("edit")){
-                    viewModel.modoEdicaoState().set(true);
-                    viewModel.populateFieldsFromModel();
-                    titleState.set("Editar produto com Id: " + id);
-                    screenContext.selfStage().setTitle("Edição de produto");
-                }
-            });
-        });
-    }
-
-    protected <T> T createOrReport(ThrowingSupplier<T> supplier) {
-        try {
-            return supplier.get();
-        } catch (Exception e) {
-            ErrorReporter.handle(e);
-            throw new IllegalStateException(e); // interrompe a construção da tela de forma previsível
-        }
+      super(screenContext);
     }
 
     @Override
@@ -197,27 +144,23 @@ public class AddOrEditProduto implements ScreenComponent {
     };
 
     @Override
-    public void onMount() {
-        ScreenComponent.super.onMount();
+    protected ProdutoScreenViewModel getViewModel(ScreenContext screenContext) {
+        return new ProdutoScreenViewModel(screenContext);
     }
 
     @Override
-    public void onDestroy() {
-        try {
-            viewModel.onDestroy();
-            produtoService.close();
-        } catch (Exception e) {
-            log.warn("Erro ao destruir AddOrEditProdutoScreen", e);
-        }
+    protected BaseService<ProdutoModel> getService() throws SQLException {
+        return null;
     }
 
-    void handleAddOrUpdate() {
-        try {
-            viewModel.handleAddOrUpdate();
-            viewModel.modoEdicaoState().set(false);
-        } catch (Exception e) {
-            log.error("Erro em handleAddOrUpdate", e);
-            UI.runOnUi(() -> Components.ShowAlertError("Não foi possível salvar. Tente novamente."));
-        }
+    @Override
+    protected String getTitle() {
+        return "produto";
     }
+
+    @Override
+    protected Logger getLogger() {
+        return LoggerFactory.getLogger(AddOrEditProduto.class);
+    }
+
 }

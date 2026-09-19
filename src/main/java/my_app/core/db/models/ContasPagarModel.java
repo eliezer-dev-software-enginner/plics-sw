@@ -2,6 +2,7 @@ package my_app.core.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import my_app.core.Identifier;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
@@ -11,11 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Table("contas_pagar")
-public class ContasPagarModel {
-
-    @Column(primary = true)
-    private Integer id;
-
+public class ContasPagarModel extends Identifier {
     private String descricao;
 
     @Column(name = "valor_original")

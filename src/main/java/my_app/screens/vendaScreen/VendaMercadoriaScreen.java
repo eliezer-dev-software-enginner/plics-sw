@@ -1,25 +1,21 @@
 package my_app.screens.vendaScreen;
 
-import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
-import megalodonte.base.components.IconInterface;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.ImageProps;
+import megalodonte.props.RowProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v5.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.core.db.models.ClienteModel;
-import my_app.core.db.models.VendaModel;
 import my_app.core.ScreenContract;
-import my_app.core.Data;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
-import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
-import org.kordamp.ikonli.javafx.FontIcon;
+import my_app.core.db.models.VendaModel;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
@@ -44,49 +40,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ScreenContract<Ve
     public Component render() { return mainView(vm.focusState); }
 
     @Override
-    public Component form() {
-        return new Card(
-                new Column(new ColumnProps().spacingOf(10)).children(
-                        Components.FormSubtitle("Cadastrar Nova Venda"),
-                        new SpacerVertical(20),
-                        formFirstRow(),
-                        Components.displayOperationsRow(vm.totais),
-                        Components.TextWithValue("Total com frete:", vm.totalComFrete.map(CurrencyPack::toBRLCurrency)),
-                        Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoIsAPrazo, vm.totalComFrete),
-                        Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
-        )
-        );
-    }
-
-    private FlowRow formFirstRow() {
-        return new FlowRow(new FlowRowProps().spacingOf(ThemeManager.theme().spacing().sm())).children(
-                Components.SelectDropDownSearch("Nome/código do produto", vm.codigo, "xxxxxxxx",
-                        vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
-                Components.DatePickerColumn(vm.dataVenda, "Data de venda",
-                        IconInterface.of(FontIcon.of(AntDesignIconsOutlined.CALENDAR))),
-                Components.SelectColumn("Cliente", vm.clientes, vm.clienteSelected, ClienteModel::getNome, true),
-                disgust.io.Pack.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
-                Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 2",vm.quantidadeRef),
-                Pack.InputColumnCurrency("Pc. de venda", vm.pcVenda),
-                Pack.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro),
-                Pack.InputColumnCurrency("Frete", vm.frete),
-                Components.SelectColumn("Tipo de pagamento",
-                        Data.tiposPagamentoList, vm.tipoPagamentoSelecionado, it -> it),
-                Components.SelectColumn("Refletir no estoque?",
-                        Data.simNaoList, vm.opcaoEstoqueSelected, it -> it),
-                Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta venda?"),
-                new Row(
-                    new RowProps().spacingOf(ThemeManager.theme().spacing().sm())
-                ).children(
-                        Components.TextWithValue("Estoque anterior:", vm.estoqueAnterior),
-                        Components.TextWithValue("Estoque após venda:", vm.estoqueAtual)
-                )
-
-        );
-    }
-
-    @Override
-    public SimpleTable table() {
+    public SimpleTable<VendaModel> table() {
         return new SimpleTable<VendaModel>()
                 .fromData(vm.filteredList)
                 .header()
@@ -142,5 +96,5 @@ public class VendaMercadoriaScreen implements ScreenComponent, ScreenContract<Ve
     }
 
     @Override
-    public ViewModelScreenContract viewModel() { return vm; }
+    public ViewModelScreenContract<VendaModel> viewModel() { return vm; }
 }

@@ -1,7 +1,7 @@
 package my_app.core;
 
 import megalodonte.base.route.RouteProps;
-import megalodonte.router.v4.Router;
+import megalodonte.router.v5.Router;
 import my_app.Main;
 import my_app.SplashScreen;
 import my_app.screens.acessoBloqueadoScreen.AcessoBloqueadoScreen;
@@ -10,7 +10,9 @@ import my_app.screens.categoriaScreen.AddOrEditCategorias;
 import my_app.screens.categoriaScreen.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
+import my_app.screens.comprasAPagarScreen.ScreenAddOrEditComprasAPagar;
 import my_app.screens.comprasScreen.ComprasScreen;
+import my_app.screens.comprasScreen.ScreenAddOrEditCompras;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
 import my_app.screens.empresaScreen.CadastroEmpresaScreen;
 import my_app.screens.feedbackScreen.RelatarErroScreen;
@@ -19,7 +21,6 @@ import my_app.screens.fornecedorScreen.FornecedorScreen;
 import my_app.screens.homeScreen.HomeScreen;
 import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
 import my_app.screens.logsScreen.LogsScreen;
-import my_app.screens.ordemServicoScreen.OrdemServicoScreen;
 import my_app.screens.pdvScreen.PDVScreen;
 import my_app.screens.pedidosScreen.PedidosScreen;
 import my_app.screens.pedidosScreen.details.PedidoDetails;
@@ -28,6 +29,7 @@ import my_app.screens.produtoScreen.AddOrEditProduto;
 import my_app.screens.produtoScreen.ProdutoScreen;
 import my_app.screens.relatoriosScreen.RelatoriosScreen;
 import my_app.screens.termoUsoScreen.TermoUsoScreen;
+import my_app.screens.vendaScreen.ScreenAddOrEditVenda;
 import my_app.screens.vendaScreen.VendaMercadoriaScreen;
 import my_app.screens.welcomeScreen.WelcomeScreen;
 
@@ -64,6 +66,8 @@ public class AppRoutes {
         ADD_OR_EDIT_CLIENTE,
         ADD_OR_EDIT_CATEGORIAS,
         ADD_OR_EDIT_COMPRAS,
+        ADD_OR_EDIT_COMPRAS_A_PAGAR,
+        ADD_OR_EDIT_VENDA_MERCADORIA,
     }
 
     final int MIN_WIDTH = 600;
@@ -98,8 +102,6 @@ public class AppRoutes {
                 new Router.Route(Screens.CLIENTES.name(), ClienteScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de clientes", true)),
                 //ok
                 new Router.Route(Screens.COMPRAS_A_PAGAR.name(), ComprasAPagarScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de contas a pagar", true)),
-                //ok
-                new Router.Route(Screens.ORDEM_SERVICO.name(), OrdemServicoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de ordens de serviço", true)),
                 new Router.Route(Screens.RELATAR_ERRO.name(), RelatarErroScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Relatar erros", true)),
                 new Router.Route(Screens.SUGERIR_MELHORIA.name(), SugerirMelhoriaScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
                 new Router.Route(Screens.PDV.name(), PDVScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Seu caixa está aberto", true)),
@@ -116,7 +118,11 @@ public class AppRoutes {
                 new Router.Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false)),
                 new Router.Route(Screens.ADD_OR_EDIT_PRODUTO.name()+"/${id}/${type}", AddOrEditProduto::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar produto", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_CATEGORIAS.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar categoria", true)),
-                new Router.Route(Screens.ADD_OR_EDIT_CLIENTE.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar clientes", true))
+                new Router.Route(Screens.ADD_OR_EDIT_CLIENTE.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar clientes", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_COMPRAS_A_PAGAR.name()+"/${id}/${type}", ScreenAddOrEditComprasAPagar::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar compras a pagar", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_COMPRAS.name()+"/${id}/${type}", ScreenAddOrEditCompras::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar compra de mercadoria", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_VENDA_MERCADORIA.name()+"/${id}/${type}", ScreenAddOrEditVenda::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar venda de mercadoria", true))
+
         );
     }
 }

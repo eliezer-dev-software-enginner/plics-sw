@@ -64,9 +64,6 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     final ListState<FornecedorModel> fornecedores = ListState.ofEmpty();
     final State<FornecedorModel> fornecedorSelected = State.of(null);
 
-    // --- Seleção na tabela ---
-    final State<CompraModel> compraSelected = State.of(null);
-
     // --- Controle de estoque ---
     final State<String> opcaoEstoqueSelected = State.of(Data.simNaoList.getFirst());
     final State<String> estoqueAnterior = State.of("0");
@@ -192,7 +189,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
     @Override
     public void populateFieldsFromModel() {
-        final var data = compraSelected.get();
+        final var data = selected.get();
         if (data == null) return;
 
         modoEdicao.set(false);
@@ -264,7 +261,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
         Async.Run(() -> {
             if (editando) {
-                final var selecionado = compraSelected.get();
+                final var selecionado = selected.get();
                 if (selecionado == null) return;
 
                 try {
@@ -340,8 +337,8 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
                 new BigDecimal(totais.totalLiquido.get())
         );
 
-        if (modoEdicao.get() && compraSelected.get() != null) {
-            var selecionado = compraSelected.get();
+        if (modoEdicao.get() && selected.get() != null) {
+            var selecionado = selected.get();
             return compraService.toModel(dto, selecionado.getId(), selecionado.getDataCriacaoMillis());
         }
         return compraService.toModel(dto);
@@ -362,7 +359,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     public void handleClickMenuDelete() {
         modoEdicao.set(false);
 
-        final var data = compraSelected.get();
+        final var data = selected.get();
         if (data != null) {
             Async.Run(() -> {
                 try {

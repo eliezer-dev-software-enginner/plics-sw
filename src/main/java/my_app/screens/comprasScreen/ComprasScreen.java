@@ -1,6 +1,5 @@
 package my_app.screens.comprasScreen;
 
-import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
@@ -8,20 +7,14 @@ import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.FlowRow;
-import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.FlowRowProps;
-import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v5.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
-import my_app.core.db.models.CompraModel;
-import my_app.core.db.models.FornecedorModel;
-import my_app.core.Data;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
+import my_app.core.db.models.CompraModel;
 import my_app.utils.Utils;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
@@ -51,22 +44,6 @@ public class ComprasScreen implements ScreenComponent, ScreenContract<CompraMode
     }
 
     @Override
-    public Component form() {
-        return new Column(new ColumnProps().spacingOf(10)).children(
-                Components.FormTitle("Cadastrar Nova Compra"),
-                new SpacerVertical(ThemeManager.theme().spacing().lg()),
-                formFirstRow(),
-                formSecondRow(),
-                new Row(new RowProps().spacingOf(15))
-                        .r_child(Components.TextWithValue("Estoque anterior:", vm.estoqueAnterior))
-                        .r_child(Components.TextWithValue("Estoque após compra:", vm.estoqueAtual)),
-                Components.displayOperationsRow(vm.totais),
-                Components.aPrazoForm(vm.parcelas, vm.tipoPagamentoSelectedIsAPrazo, vm.totais.totalLiquido),
-                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
-        );
-    }
-
-    @Override
     public Component itemDetails(CompraModel model) {
         return new Column(new ColumnProps().paddingAll(20))
                 .c_child(new Text("Detalhes da compra", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
@@ -88,31 +65,8 @@ public class ComprasScreen implements ScreenComponent, ScreenContract<CompraMode
                 .c_child(Components.TextWithDetails("Observação: ", model.getObservacao(), true));
     }
 
-    private Component formFirstRow() {
-        return new FlowRow(new FlowRowProps().spacingOf(10)).children(
-                Components.DatePickerColumn(vm.dataCompra, "Data de compra"),
-                Components.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome, true),
-                disgust.io.Pack.InputColumn("N NF/Pedido compra", vm.numeroNota, "Ex: 12345678920"),
-                Components.InputColumnComDynamicSearch("Código do produto", vm.codigo, "xxxxxxxx",
-                        vm.sugestoesProduto, vm.produtoEncontrado, vm.sugestoesProdutoVisible),
-                disgust.io.Pack.InputColumn("Descrição do produto", vm.produtoEncontrado.map(p -> p != null ? p.getDescricao() : ""), "Ex: Paraiso",true),
-                Pack.InputColumnCurrency("Pc. de compra", vm.pcCompra)
-        );
-    }
-
-    private Row formSecondRow() {
-        Component quantidadeInput = Components.InputColumnDecimal("Quantidade", vm.qtd, "Ex: 1,500",vm.quantidadeRef);
-
-        return new Row(new RowProps().bottomVertically().spacingOf(10))
-                .r_child(quantidadeInput)
-                .r_child(Pack.InputColumnCurrency("Desconto em R$", vm.descontoEmDinheiro))
-                .r_child(Components.SelectColumn("Tipo de pagamento",Data.tiposPagamentoList, vm.tipoPagamentoSelected, it -> it))
-                .r_child(Components.SelectColumn("Refletir no estoque?",Data.simNaoList, vm.opcaoEstoqueSelected, it -> it))
-                .r_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre esta compra?"));
-    }
-
     @Override
-    public SimpleTable table() {
+    public SimpleTable<CompraModel> table() {
         return new SimpleTable<CompraModel>()
                 .fromData(vm.filteredList)
                 .header()
@@ -126,12 +80,12 @@ public class ComprasScreen implements ScreenComponent, ScreenContract<CompraMode
                 .column("Data de criação", it -> DatePack.millisToBrazilianDateTime(it.getDataCriacaoMillis()))
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemSelectChange(vm.compraSelected::set)
+                .onItemSelectChange(vm.selected::set)
                 .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), ctx, 600));
     }
 
     @Override
-    public ViewModelScreenContract viewModel() {
+    public ViewModelScreenContract<CompraModel> viewModel() {
         return vm;
     }
 }

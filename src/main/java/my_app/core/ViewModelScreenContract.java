@@ -7,7 +7,7 @@ import megalodonte.router.v5.ScreenContext;
 import megalodonte.utils.ThrowingSupplier;
 import megalodonte.v2.ListState;
 
-public abstract class ViewModelScreenContract<Model> {
+public abstract class ViewModelScreenContract<Model extends Identifier> {
     public String screenNameSpawn = "";
     protected final ScreenContext ctx;
     protected final State<Boolean> modoEdicao = State.of(false);

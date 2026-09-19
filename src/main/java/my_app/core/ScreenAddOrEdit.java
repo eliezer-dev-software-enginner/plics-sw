@@ -19,13 +19,13 @@ import java.sql.SQLException;
 public abstract class ScreenAddOrEdit<Model, VM extends ViewModelScreenContract<Model>> implements ScreenComponent {
     protected VM viewModel;
 
-    private  BaseService<Model> service;
-    private  ScreenContext screenContext;
+    private final BaseService<Model> service;
+    protected final ScreenContext screenContext;
 
     protected Long id;
 
     State<String> titleState = new State<>("");
-    ThemeInterface theme = ThemeManager.theme();
+    protected ThemeInterface theme = ThemeManager.theme();
 
     protected Logger log;
 
@@ -36,6 +36,8 @@ public abstract class ScreenAddOrEdit<Model, VM extends ViewModelScreenContract<
 
 
     public ScreenAddOrEdit(ScreenContext screenContext) {
+        this.screenContext = screenContext;
+
         log = getLogger();
 
         viewModel =  getViewModel(screenContext);

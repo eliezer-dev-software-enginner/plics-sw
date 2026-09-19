@@ -2,6 +2,7 @@ package my_app.core.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import my_app.core.Identifier;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
@@ -12,9 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 @Table("compras")
-public class CompraModel {
-    @Column(primary = true)
-    private long id;
+public class CompraModel extends Identifier {
 
     @Column(name = "dataCriacao")
     private long dataCriacaoMillis;

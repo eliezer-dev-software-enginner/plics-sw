@@ -1,4 +1,4 @@
-package my_app.screens.categoriaScreen;
+package my_app.screens.fornecedorScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.components.Card;
@@ -12,14 +12,15 @@ import my_app.core.components.Components;
 import my_app.core.db.models.CategoriaModel;
 import my_app.core.db.services.BaseService;
 import my_app.core.db.services.CategoriaService;
+import my_app.screens.categoriaScreen.CategoriaScreenViewModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
-public class AddOrEditCategorias extends ScreenAddOrEdit<CategoriaModel, CategoriaScreenViewModel> {
+public class ScreenAddOrEditFornecedor extends ScreenAddOrEdit<CategoriaModel, CategoriaScreenViewModel> {
 
-    public AddOrEditCategorias(ScreenContext screenContext) {
+    public ScreenAddOrEditFornecedor(ScreenContext screenContext) {
         super(screenContext);
     }
 
@@ -53,6 +54,6 @@ public class AddOrEditCategorias extends ScreenAddOrEdit<CategoriaModel, Categor
 
     @Override
     protected Logger getLogger() {
-        return LoggerFactory.getLogger(AddOrEditCategorias.class);
+        return LoggerFactory.getLogger(ScreenAddOrEditFornecedor.class);
     }
 }

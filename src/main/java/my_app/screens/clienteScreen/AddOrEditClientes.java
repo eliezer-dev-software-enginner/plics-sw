@@ -18,6 +18,7 @@ import my_app.core.db.models.ClienteModel;
 import my_app.core.db.services.BaseService;
 import my_app.core.db.services.ClienteService;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 
@@ -75,6 +76,6 @@ public class AddOrEditClientes extends ScreenAddOrEdit<ClienteModel, ClienteView
 
     @Override
     protected Logger getLogger() {
-        return null;
+        return LoggerFactory.getLogger(AddOrEditClientes.class);
     }
 }

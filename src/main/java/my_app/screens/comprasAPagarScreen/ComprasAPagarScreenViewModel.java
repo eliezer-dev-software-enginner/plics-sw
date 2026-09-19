@@ -41,19 +41,14 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
     public final State<List<FornecedorModel>> fornecedores = State.of(List.of());
     public final State<FornecedorModel> fornecedorSelected = State.of(null);
-    public final State<ContasPagarModel> contaSelected = State.of(null);
 
     public final State<Boolean> modoPagamento = State.of(false);
 
     public final List<String> statusOptions = List.of("TODOS", "PENDENTE", "PAGO", "PARCIAL", "ATRASADO", "CANCELADO");
     public final List<String> tipoDocumentoOptions = List.of("DUPLICATA", "BOLETO", "NOTA FISCAL", "CHEQUE", "OUTRO");
-    public final State<String> statusOptionSelected = State.of(statusOptions.getFirst());
 
     public final ComputedState<String> btnPagamentoText = ComputedState.of(() ->
             modoPagamento.get() ? "Registrar Pagamento" : "Pagar", modoPagamento);
-
-    public final ComputedState<Boolean> pagamentoValido = ComputedState.of(() ->
-            contaSelected.get() != null, contaSelected);
 
     public ComprasAPagarScreenViewModel(ScreenContext ctx) {
         super(ctx);
@@ -103,48 +98,10 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         });
     }
 
-    public void loadPorStatus(String statusFiltro) {
-        Async.Run(() -> {
-            try {
-                List<ContasPagarModel> contasFiltradas;
-                if ("TODOS".equals(statusFiltro)) {
-                    contasFiltradas = contaService.listar();
-                } else {
-                    contasFiltradas = contaService.buscarPorStatus(statusFiltro);
-                }
-
-                attachFornecedores(contasFiltradas);
-
-                UI.runOnUi(() -> {
-                    allDataList.set(contasFiltradas);
-                });
-            } catch (Exception e) {
-                log.error("Erro ao buscar contas a pagar por status={}", statusFiltro, e);
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            }
-        });
-    }
-
-    public void loadVencidas() {
-        Async.Run(() -> {
-            try {
-                var contasVencidas = contaService.buscarVencidas();
-                attachFornecedores(contasVencidas);
-
-                UI.runOnUi(() -> {
-                    allDataList.set(contasVencidas);
-                });
-            } catch (Exception e) {
-                log.error("Erro ao buscar contas a pagar vencidas", e);
-                UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-            }
-        });
-    }
-
     @Override
     public void populateFieldsFromModel() {
-        if (contaSelected.get() == null) return;
-        var conta = contaSelected.get();
+        if (selected.get() == null) return;
+        var conta = selected.get();
 
         descricao.set(conta.getDescricao());
         valorOriginal.set(Utils.deRealParaCentavos(conta.getValorOriginal()));
@@ -175,7 +132,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         observacao.set("");
         modoPagamento.set(false);
         valorPagamento.set("0");
-        contaSelected.set(null);
+        selected.set(null);
         if (!fornecedores.get().isEmpty()) {
             fornecedorSelected.set(fornecedores.get().getFirst());
         }
@@ -183,10 +140,10 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
     @Override
     public void handleAddOrUpdate() {
-        if (modoEdicao.get() && contaSelected.get() == null) return;
+        if (modoEdicao.get() && selected.get() == null) return;
 
         // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
-        // modoEdicao.get() internamente pra decidir se reaproveita contaSelected ou
+        // modoEdicao.get() internamente pra decidir se reaproveita selected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
         // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
@@ -204,26 +161,24 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
     @Override
     public void handleClickMenuDelete() {
-        var selected = contaSelected.get();
         if (selected == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> Async.Run(() -> {
+        Components.ShowAlertAdvice("Deseja excluir \"" + selected.get().getDescricao() + "\"?", () -> Async.Run(() -> {
             try {
-                contaService.excluir(selected.getId());
+                contaService.excluir(selected.get().getId());
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(c -> c.getId().equals(selected.getId()));
+                    allDataList.removeIf(c -> c.getId().equals(selected.get().getId()));
                     Components.ShowPopup(ctx, "Conta excluída com sucesso!");
                     clearForm();
                 });
             } catch (Exception e) {
-                log.error("Erro ao excluir conta a pagar id={}", selected.getId(), e);
+                log.error("Erro ao excluir conta a pagar id={}", selected.get().getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
         }));
     }
 
     public void registrarPagamento(ScreenContext ctx) {
-        var selected = contaSelected.get();
         if (selected == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar pagamento"));
             return;
@@ -233,8 +188,8 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
         Async.Run(() -> {
             try {
-                contaService.registrarPagamento(selected.getId(), valorPagamentoBig);
-                var updated = contaService.buscarById(selected.getId());
+                contaService.registrarPagamento(selected.get().getId(), valorPagamentoBig);
+                var updated = contaService.buscarById(selected.get().getId());
 
                 if (updated.getFornecedorId() != null) {
                     fornecedores.get().stream()
@@ -244,20 +199,19 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                 }
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.get().getId()), c -> updated);
                     Components.ShowPopup(ctx, "Pagamento registrado com sucesso!");
                     valorPagamento.set("0");
                     modoPagamento.set(false);
                 });
             } catch (Exception e) {
-                log.error("Erro ao registrar pagamento id={}", selected.getId(), e);
+                log.error("Erro ao registrar pagamento id={}", selected.get().getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar pagamento: " + e.getMessage()));
             }
         });
     }
 
     public void quitarConta(ScreenContext ctx) {
-        var selected = contaSelected.get();
         if (selected == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
             return;
@@ -265,8 +219,8 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
         Async.Run(() -> {
             try {
-                contaService.registrarPagamento(selected.getId(), selected.getValorRestante());
-                var updated = contaService.buscarById(selected.getId());
+                contaService.registrarPagamento(selected.get().getId(), selected.get().getValorRestante());
+                var updated = contaService.buscarById(selected.get().getId());
 
                 if (updated.getFornecedorId() != null) {
                     fornecedores.get().stream()
@@ -276,11 +230,11 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
                 }
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.get().getId()), c -> updated);
                     Components.ShowPopup(ctx, "Conta quitada com sucesso!");
                 });
             } catch (Exception e) {
-                log.error("Erro ao quitar conta a pagar id={}", selected.getId(), e);
+                log.error("Erro ao quitar conta a pagar id={}", selected.get().getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
             }
         });
@@ -324,8 +278,8 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
     @Override
     public ContasPagarModel populateModelFromFields() {
-        boolean isNew = !(modoEdicao.get() && contaSelected.get() != null);
-        var model = isNew ? new ContasPagarModel() : contaSelected.get();
+        boolean isNew = !(modoEdicao.get() && selected.get() != null);
+        var model = isNew ? new ContasPagarModel() : selected.get();
 
         model.setDescricao(descricao.get());
         model.setValorOriginal(CurrencyPack.deCentavosParaReal(valorOriginal.get()));
