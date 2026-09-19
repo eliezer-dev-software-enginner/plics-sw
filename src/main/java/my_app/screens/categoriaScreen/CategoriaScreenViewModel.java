@@ -4,6 +4,7 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v4.ScreenContext;
+import my_app.core.AppRoutes;
 import my_app.core.db.models.CategoriaModel;
 import my_app.core.db.services.CategoriaService;
 import my_app.core.ViewModelScreenContract;
@@ -16,13 +17,12 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
 
     private final CategoriaService categoriaService;
 
-    final State<CategoriaModel> categoriaSelecionada = State.of(null);
     final State<String> nome = new State<>("");
 
     public CategoriaScreenViewModel(ScreenContext ctx) {
         super(ctx);
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_CATEGORIAS.name();
         this.categoriaService = createOrReport(CategoriaService::new);
-        this.onInit();
     }
 
     @Override
@@ -49,14 +49,14 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
 
     @Override
     public void populateFieldsFromModel() {
-        var data = categoriaSelecionada.get();
+        var data = selected.get();
         if (data != null) nome.set(data.getNome());
     }
 
     @Override
     public CategoriaModel populateModelFromFields() {
-        var model = modoEdicao.get() && categoriaSelecionada.get() != null
-                ? categoriaSelecionada.get()
+        var model = modoEdicao.get() && selected.get() != null
+                ? selected.get()
                 : new CategoriaModel();
         model.setNome(nome.get().trim());
         return model;
@@ -64,7 +64,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
 
     @Override
     public void handleClickMenuDelete() {
-        var model = categoriaSelecionada.get();
+        var model = selected.get();
         if (model == null) return;
 
         Components.ShowAlertAdvice("Deseja excluir categoria " + model.getNome(), () ->

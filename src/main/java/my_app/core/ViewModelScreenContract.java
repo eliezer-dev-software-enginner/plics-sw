@@ -23,6 +23,7 @@ public abstract class ViewModelScreenContract<Model> {
 
     public ViewModelScreenContract(ScreenContext ctx) {
         this.ctx = ctx;
+
         searchState.subscribe(_ -> applyFilter());
         allDataList.subscribe(_ -> applyFilter());
     }
@@ -40,7 +41,6 @@ public abstract class ViewModelScreenContract<Model> {
 
     protected abstract boolean matchesSearch(Model model, String query);
 
-    protected void onInit() {}
     public void onDestroy() throws Exception {
         // no-op por padrão, subclasses sobrescrevem se precisar
     }

@@ -6,6 +6,7 @@ import my_app.Main;
 import my_app.SplashScreen;
 import my_app.screens.acessoBloqueadoScreen.AcessoBloqueadoScreen;
 import my_app.screens.authScreen.AuthScreen;
+import my_app.screens.categoriaScreen.AddOrEditCategorias;
 import my_app.screens.categoriaScreen.CategoriaScreen;
 import my_app.screens.clienteScreen.ClienteScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
@@ -61,6 +62,8 @@ public class AppRoutes {
         TERMOS_DE_USO,
         ADD_OR_EDIT_PRODUTO,
         ADD_OR_EDIT_CLIENTE,
+        ADD_OR_EDIT_CATEGORIAS,
+        ADD_OR_EDIT_COMPRAS,
     }
 
     final int MIN_WIDTH = 600;
@@ -111,7 +114,9 @@ public class AppRoutes {
                 new Router.Route(Screens.ACESSO_BLOQUEADO.name(), ctx -> new AcessoBloqueadoScreen(),
                         new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Acesso bloqueado", false)),
                 new Router.Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false)),
-                new Router.Route(Screens.ADD_OR_EDIT_PRODUTO.name()+"/${id}/${type}", AddOrEditProduto::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar produto", true))
+                new Router.Route(Screens.ADD_OR_EDIT_PRODUTO.name()+"/${id}/${type}", AddOrEditProduto::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar produto", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_CATEGORIAS.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar categoria", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_CLIENTE.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar clientes", true))
         );
     }
 }
