@@ -3,14 +3,17 @@ package my_app.screens.comprasAPagarScreen;
 import disgust.io.br.Pack;
 import megalodonte.ComputedState;
 import megalodonte.base.components.Component;
+import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Button;
 import megalodonte.components.Card;
 import megalodonte.components.SpacerVertical;
+import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ButtonProps;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v5.ScreenContext;
 import megalodonte.v2.Show;
 import my_app.core.ScreenAddOrEdit;
@@ -35,7 +38,8 @@ public class ScreenAddOrEditComprasAPagar extends ScreenAddOrEdit<ContasPagarMod
 
         return new Card(
                 new Column(new ColumnProps().paddingAll(20).spacingOf(15))
-                        .c_child(Components.FormTitle(viewModel.btnText.get()))
+                        .c_child(new Text("Dados da conta a pagar",
+                                new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
                         .c_child(new SpacerVertical(20))
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())

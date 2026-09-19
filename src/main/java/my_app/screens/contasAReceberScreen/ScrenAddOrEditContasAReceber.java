@@ -41,11 +41,13 @@ public class ScrenAddOrEditContasAReceber extends ScreenAddOrEdit<ContaAreceberM
         // próprio pra summarySection()/paymentSection() desde que render() passou a
         // devolver mainView() direto, então as duas entram aqui, em volta do Card do
         // formulário, pra continuar aparecendo na tela.
-        return new Column(new ColumnProps().spacingOf(20)).children(
-                summarySection(),
-                formCard(naoEhRecebimento),
-                paymentSection()
-        );
+        return Components.ScrollPaneDefault(
+                new Column(new ColumnProps().spacingOf(20)).children(
+                        summarySection(),
+                        formCard(naoEhRecebimento),
+                        paymentSection()
+                )
+        ) ;
     }
     
     private Component summarySection() {
@@ -74,12 +76,11 @@ public class ScrenAddOrEditContasAReceber extends ScreenAddOrEdit<ContaAreceberM
         );
     }
 
-
-
     private Component formCard(ComputedState<Boolean> naoEhRecebimento) {
         return new Card(
                 new Column(new ColumnProps().paddingAll(20).spacingOf(15))
-                        .c_child(Components.FormTitle(viewModel.btnText.get()))
+                        .c_child(new Text("Dados da conta a receber",
+                                new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
                         .c_child(new SpacerVertical(20))
                         .c_child(
                                 new Row(new RowProps().spacingOf(10).bottomVertically())

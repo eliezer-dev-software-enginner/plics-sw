@@ -55,7 +55,7 @@ public class VendaMercadoriaScreen implements ScreenComponent, ScreenContract<Ve
                 .column("Status", it -> Boolean.TRUE.equals(it.getDevolvida()) ? "Devolvida" : "-")
                 .build()
                 .onChangeFocus(vm::handleFocusChange)
-                .onItemSelectChange(vm.vendaSelected::set)
+                .onItemSelectChange(vm.selected::set)
                 .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), this.screenContext, 550));
     }
 

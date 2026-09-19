@@ -6,6 +6,7 @@ import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.router.v5.ScreenContext;
 import megalodonte.v2.ListState;
+import my_app.core.AppRoutes;
 import my_app.core.db.models.*;
 import my_app.core.db.services.*;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
@@ -59,8 +60,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     final ListState<ClienteModel> clientes = ListState.ofEmpty();
     final State<ClienteModel> clienteSelected = State.of(null);
 
-    final State<VendaModel> vendaSelected = State.of(null);
-
     final List<String> opcoesEstoque = List.of("Sim", "Não");
     final State<String> opcaoEstoqueSelected = State.of(opcoesEstoque.getFirst());
     final State<String> estoqueAnterior = State.of("0");
@@ -107,6 +106,8 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         EmpresaService empresaService = createOrReport(EmpresaService::new);
         this.escPosPrinter = new EscPosPrinter(empresaService, carregarPortaImpressora());
 
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_VENDA_MERCADORIA.name();
+
         this.onInit();
     }
 
@@ -144,7 +145,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         produtoEncontrado.subscribe(this::selecionarProduto);
 
         modoEdicao.subscribe(editando -> {
-            var data = editando ? vendaSelected.get() : null;
+            var data = editando ? selected.get() : null;
             quantidadeOriginal = data != null && data.getQuantidade() != null ? data.getQuantidade() : BigDecimal.ZERO;
             produtoCodOriginal = data != null ? data.getProdutoCod() : null;
             afetavaEstoqueOriginal = data != null && Boolean.TRUE.equals(data.getAfetaEstoque());
@@ -194,7 +195,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
     @Override
     public void populateFieldsFromModel() {
-        final var data = vendaSelected.get();
+        final var data = selected.get();
         if (data == null) return;
 
         modoEdicao.set(false);
@@ -330,7 +331,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         // (mesmo bug documentado e corrigido em CategoriaScreenViewModel, ver docs/DECISIONS.md).
         //
         // populateModelFromFields() TAMBÉM lê modoEdicao.get() internamente (pra decidir se
-        // copia id/dataCriacao de vendaSelected) — chamá-la de dentro do Async.Run sofria do
+        // copia id/dataCriacao de selected) — chamá-la de dentro do Async.Run sofria do
         // MESMO race mesmo com "editando" já capturado aqui, então o model também precisa ser
         // montado aqui, síncrono, quando estamos editando.
         final boolean editando = modoEdicao.get();
@@ -338,7 +339,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
         Async.Run(() -> {
             if (editando) {
-                final var original = vendaSelected.get();
+                final var original = selected.get();
                 if (original == null) return;
 
                 // Não reaproveita/muta "original": ele é a MESMA referência que já está
@@ -423,7 +424,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
     @Override
     public void handleClickMenuDelete() {
-        final var data = vendaSelected.get();
+        final var data = selected.get();
         if (data == null) return;
 
         Async.Run(() -> {
@@ -511,15 +512,15 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         estoqueAtual.set("0");
     }
 
-    // Sempre retorna um VendaModel NOVO (nunca reaproveita vendaSelected), mesmo editando:
+    // Sempre retorna um VendaModel NOVO (nunca reaproveita selected), mesmo editando:
     // allDataList.updateIf() compara por referência, então mutar e devolver o mesmo objeto
     // que já está na lista faz o ListState achar que nada mudou e não redesenha a linha.
     @Override
     public VendaModel populateModelFromFields() {
         var model = new VendaModel();
 
-        if (modoEdicao.get() && vendaSelected.get() != null) {
-            var original = vendaSelected.get();
+        if (modoEdicao.get() && selected.get() != null) {
+            var original = selected.get();
             model.setId(original.getId());
             model.setDataCriacao(original.getDataCriacao());
         }

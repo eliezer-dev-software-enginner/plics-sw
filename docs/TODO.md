@@ -1,5 +1,8 @@
 # TODO
 
+- [] : Erro ao clicar em Clonar na tela de vendas: Error: Cannot invoke "megalodonte.components.inputs.Input.requestFocus()" because "this.inputRef" is null 
+- [] : E inclusive o clique em Clonar não faz nada em lugar nenhum, deveria spawnar a tela de AddOrEdit específica com o type: "clone" na rota em ScreenContract e em ScreenAddOrEdit se o type for "clone" é só popular os dados nos inputs e tal como é feito quando em modo de edição.
+
 ## Concluído (Ids de Integer para Long — 2026-09-19)
 - [x] **Enumerar todas as tabelas/ids**: tabelas usadas pelo app convertidas — `categorias`, `fornecedores`, `clientes`, `empresas`, `cores`, `preferencias`, `produtos`, `compras`, `vendas`, `pedidos`, `contas_a_receber`, `contas_pagar`, `pedido_itens`. Legadas sem uso (`licensas`, `usuarios`) ficam intactas; `tecnicos` e `ordens_de_servico` (removidas do app em `3b8c5dc`/`8d002c9`) são dropadas no V37 (decisão do usuário).
 - [x] **Verificar API do Persism para scalar (MAX(id)) e conexão**: `fetch(Class, SQL, Parameters)` retorna tipos primitivos/boxed; expressões tipo `MAX(id)` voltam como `Integer` (cola quebra o cast pra `Long`) → geração de id usa `SELECT id ... ORDER BY id DESC LIMIT 1` (coluna `id BIGINT` → sempre `Long`; vazia → `null`). Validado contra o Persism 2.3 real.

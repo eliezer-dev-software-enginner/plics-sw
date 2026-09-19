@@ -38,7 +38,7 @@ public class ScreenAddOrEditVenda extends ScreenAddOrEdit<VendaModel, VendaMerca
     public Component render() {
         return new Card(
                 new Column(new ColumnProps().spacingOf(10)).children(
-                        Components.FormSubtitle("Cadastrar Nova Venda"),
+                        Components.FormSubtitle("Dados da Venda"),
                         new SpacerVertical(20),
                         formFirstRow(),
                         Components.displayOperationsRow(viewModel.totais),

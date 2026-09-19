@@ -31,31 +31,33 @@ public class AddOrEditClientes extends ScreenAddOrEdit<ClienteModel, ClienteView
     @Override
     public Component render() {
         return new Card(
-                new Column(new ColumnProps().paddingAll(20))
-                        .c_child(Components.FormSubtitle("Cadastrar cliente"))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(new FlowRow(new FlowRowProps().spacingOf(10))
-                                .children(
-                                        disgust.io.Pack.InputColumn("Nome *", viewModel.nome, "Ex: João"),
-                                        Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, viewModel.tipoPessoaSelected, it -> it),
-                                        Show.when(viewModel.tipoPessoaEhFisica,
-                                                () -> Pack.InputColumnCpf("CPF", viewModel.cnpjCpf),
-                                                () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", viewModel.cnpjCpf)
-                                        ),
-                                        Pack.InputColumnPhone("Celular", viewModel.celular),
-                                        disgust.io.Pack.InputColumn("Email", viewModel.email, "Ex: email@teste.com"),
-                                        Components.DatePickerColumn(viewModel.dataNascimento,"Data de nascimento"),
-                                        Components.SelectColumn("É gestante?", Data.simNaoList, viewModel.isGestante, it -> it),
-                                        Show.when(viewModel.isGestanteComputed,()->Components.DatePickerColumn(viewModel.dataNascimentoBebe,"Data de nascimento do bebê") )
+                Components.ScrollPaneDefault(
+                        new Column(new ColumnProps().paddingAll(20))
+                                .c_child(Components.FormSubtitle("Dados do Cliente"))
+                                .c_child(new SpacerVertical(20))
+                                .c_child(new FlowRow(new FlowRowProps().spacingOf(10))
+                                        .children(
+                                                disgust.io.Pack.InputColumn("Nome *", viewModel.nome, "Ex: João"),
+                                                Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, viewModel.tipoPessoaSelected, it -> it),
+                                                Show.when(viewModel.tipoPessoaEhFisica,
+                                                        () -> Pack.InputColumnCpf("CPF", viewModel.cnpjCpf),
+                                                        () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", viewModel.cnpjCpf)
+                                                ),
+                                                Pack.InputColumnPhone("Celular", viewModel.celular),
+                                                disgust.io.Pack.InputColumn("Email", viewModel.email, "Ex: email@teste.com"),
+                                                Components.DatePickerColumn(viewModel.dataNascimento,"Data de nascimento"),
+                                                Components.SelectColumn("É gestante?", Data.simNaoList, viewModel.isGestante, it -> it),
+                                                Show.when(viewModel.isGestanteComputed,()->Components.DatePickerColumn(viewModel.dataNascimentoBebe,"Data de nascimento do bebê") )
+                                        )
                                 )
-                        )
-                        .c_child(new SpacerVertical(10))
-                        .c_child(Components.enderecoComponent(viewModel.enderecoState.get()))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(new LineHorizontal())
-                        .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre o cliente?", 60, 160))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate))
+                                .c_child(new SpacerVertical(10))
+                                .c_child(Components.enderecoComponent(viewModel.enderecoState.get()))
+                                .c_child(new SpacerVertical(20))
+                                .c_child(new LineHorizontal())
+                                .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre o cliente?", 60, 160))
+                                .c_child(new SpacerVertical(20))
+                                .c_child(Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate))
+                )
         );
     }
 
