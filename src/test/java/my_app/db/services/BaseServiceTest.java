@@ -53,13 +53,11 @@ public abstract class BaseServiceTest {
         stmt.execute("DELETE FROM compras");
         stmt.execute("DELETE FROM pedido_itens");
         stmt.execute("DELETE FROM pedidos");
-        stmt.execute("DELETE FROM ordens_de_servico");
         stmt.execute("DELETE FROM preferencias");
         stmt.execute("DELETE FROM empresas");
         stmt.execute("DELETE FROM fornecedores");
         stmt.execute("DELETE FROM categorias");
         stmt.execute("DELETE FROM clientes");
-        stmt.execute("DELETE FROM tecnicos");
         stmt.execute("DELETE FROM usuarios");
     }
 

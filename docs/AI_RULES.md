@@ -15,7 +15,7 @@
 - se a ViewModel correspondente ficar muito extensa, fragmente-a em uma service
 - sempre faça teste da repositorie cuja Screen tiver sido refatorada
 - alterações nas models devem refletir nas migrations dentro de /resources/flyway_migrations
-- dataCriacao nas models deve ser do tipo localDateTime e id deve ser do tipo Integer
+- dataCriacao nas models deve ser do tipo localDateTime e id deve ser do tipo Long
 - erros do persism que não conseguir resolver consultar a api deles no site oficial: https://sproket.github.io/Persism/manual2.html
 - para Objetos hierárquicos dentro da model pode-se utilizar a annotation @NotColumn
 

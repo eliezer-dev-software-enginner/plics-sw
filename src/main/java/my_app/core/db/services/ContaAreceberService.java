@@ -101,7 +101,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
         log.info("Recebimento cancelado (revertido pra PENDENTE): id={}", id);
     }
 
-    public List<ContaAreceberModel> buscarPorCliente(Integer clienteId) throws SQLException {
+    public List<ContaAreceberModel> buscarPorCliente(Long clienteId) throws SQLException {
         return contasAReceberRepository.buscarPorCliente(clienteId);
     }
 

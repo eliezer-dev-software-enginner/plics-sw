@@ -26,6 +26,24 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-19: IDs migrados de INT para BIGINT (PKs/FKs) + geração de id no app
+- **`V37__ids_long.sql`** reescrito: todas as tabelas usadas pelo app (`categorias`, `fornecedores`,
+  `clientes`, `empresas`, `cores`, `preferencias`, `produtos`, `compras`, `vendas`, `pedidos`,
+  `contas_a_receber`, `contas_pagar`, `pedido_itens`) reconstruídas com `id BIGINT PRIMARY KEY` e FKs
+  `BIGINT`, preservando os dados (`INSERT INTO ... SELECT * FROM ..._old`). **Drop** de `tecnicos` e
+  `ordens_de_servico` (decisão do usuário — features removidas do app). Índices únicos parciais de
+  CPF/CNPJ (V18/V19) recriados.
+- **Causa raiz**: Xerial retorna `Integer` para colunas `INTEGER PRIMARY KEY` (rowid) mesmo com
+  valores pequenos; o Persism 2.3 não converte `Integer`→`Long` (`argument type mismatch`). Com
+  `BIGINT`, `Reader.readColumn` usa `getLong` → sempre `Long`. Detalhes em `docs/DECISIONS.md`.
+- **`BaseRepository.salvar`** agora gera o id quando `model.getId() == null`:
+  `SELECT id FROM <tabela> ORDER BY id DESC LIMIT 1` → `(null) ? 1 : max+1`. Agregação `MAX(id)` não
+  era usável (retorna `Integer`).
+- **Fix de compilação pré-existente**: `BaseService` com bound `M extends Identifier`.
+- **Testes**: removidos DELETEs das tabelas dropadas em `BaseServiceTest` e `clean_db.sql`;
+  `CompraServiceTest` corrigido (`Integer` → `Long` no assert do `getFornecedorId`).
+- **Testes**: `./gradlew test` — 215/215, BUILD SUCCESSFUL.
+
 ### 2026-09-06: Utilitários migrados pro pacote `pack-utilities`; testes ajustados
 - **Migração**: métodos utilitários genéricos (moeda, CPF/CNPJ/CEP/telefone/e-mail, máscaras, datas)
   agora vêm do pacote externo `pack-utilities` (`pack.utilities.{DatePack, ValidatorPack, CurrencyPack,

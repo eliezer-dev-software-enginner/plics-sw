@@ -89,7 +89,7 @@ public class EmpresaViewModel {
 
     public void handleSave(){
         var model = new EmpresaModel();
-        model.setId(1);
+        model.setId(1L);
         model.setNome(nome.get());
         model.setLogoMarca(logoMarca.get());
         model.setCep(cep.get());

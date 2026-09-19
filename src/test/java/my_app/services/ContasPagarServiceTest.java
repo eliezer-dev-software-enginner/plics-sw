@@ -22,7 +22,7 @@ class ContasPagarServiceTest extends BaseServiceTest {
     private CompraModel compraValida() {
         var compra = new CompraModel();
         compra.setId(1L);
-        compra.setFornecedorId(1);
+        compra.setFornecedorId(1L);
         return compra;
     }
 

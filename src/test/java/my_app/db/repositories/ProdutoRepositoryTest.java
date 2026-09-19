@@ -43,8 +43,8 @@ class ProdutoRepositoryTest extends BaseRepositoryTest {
         model.setTotalLiquido(BigDecimal.valueOf(15.50));
         model.setUnidade("UN");
         model.setMarca("Marca Teste");
-        model.setCategoriaId(1);
-        model.setFornecedorId(1);
+        model.setCategoriaId(1L);
+        model.setFornecedorId(1L);
         model.setEstoque(BigDecimal.valueOf(100));
         model.setObservacoes("Observacao");
         model.setImagem("/assets/produto-generico.png");

@@ -1,5 +1,41 @@
 # Decisões Arquiteturais
 
+## 2026-09-19: IDs de `Integer` para `Long` — tabelas com PK/FK `BIGINT` e geração de id no app
+
+**Contexto:** os ids de todas as models eram `Long` em Java, mas as colunas do banco eram
+`INTEGER`. No driver Xerial (sqlite-jdbc `3.45.1.0`), colunas `INTEGER PRIMARY KEY` são tratadas
+como rowid: o driver retorna `Integer` (mesmo com valores pequenos) e o Persism 2.3 não converte
+`Integer` → `Long` — todas as leituras de id falhavam com `IllegalArgumentException: argument
+type mismatch`.
+
+**Verificação empírica (Persism 2.3 real):**
+- `session().fetch(Long.class, sql("SELECT id FROM <tabela> ORDER BY id DESC LIMIT 1"), params())`
+  retorna `Long` quando a coluna é `BIGINT` (`getColumnType() == -5`, lido via `getLong`); retorna
+  `null` se a tabela está vazia. É o caminho usado pra gerar ids novos.
+- Expressões de agregação (ex.: `COALESCE(MAX(id),0)+1`) retornam `Integer` → **não usar** pra
+  geração de id (quebraria o cast pra `Long`).
+
+**Decisão:**
+1. **`V37__ids_long.sql`** reconstrói as tabelas usadas pelo app com `id BIGINT PRIMARY KEY`
+   (FKs também `BIGINT`): `categorias`, `fornecedores`, `clientes`, `empresas`, `cores`,
+   `preferencias`, `produtos`, `compras`, `vendas`, `pedidos`, `contas_a_receber`, `contas_pagar`,
+   `pedido_itens`. **Sem `AUTOINCREMENT`** — o SQLite só auto-incrementa `INTEGER PRIMARY KEY`
+   (rowid); com `BIGINT PRIMARY KEY` o id precisa ser informado na inserção. Histórico de colunas
+   tirado das migrations V1–V36; `INSERT INTO <tabela> SELECT * FROM <tabela>_old` preserva os dados
+   (ordem exata das colunas). `V18`/`V19` (índices únicos parciais de CPF/CNPJ) são recriados, pois
+   a recriação das tabelas os apaga.
+2. **`drop` de `tecnicos` e `ordens_de_servico`** no V37 (decisão explícita do usuário) — features
+   já removidas do app (commits `3b8c5dc`/`8d002c9`). Testes e `clean_db.sql` deixam de referenciá-las.
+   Tabelas legadas sem uso no app (`licensas` V3, `usuarios` V5) ficam intocadas.
+3. **Geração de id no app** (`BaseRepository.salvar`): se `model.getId() == null`,
+   `id = MAX(id)+1` obtido via `SELECT id ... ORDER BY id DESC LIMIT 1` (nunca `MAX(id)` como
+   expressão), antes do `insert`. O Persism preserva e retorna o id informado em PK `BIGINT` não
+   auto-incrementada.
+
+**Verificação:** `./gradlew test` — 215/215, BUILD SUCCESSFUL.
+
+---
+
 ## 2026-09-06: Migração de utilitários pro `pack-utilities` — testes ajustados
 
 **Contexto:** os métodos utilitários genéricos (formatação de moeda, validação de CPF/CNPJ/CEP/telefone/

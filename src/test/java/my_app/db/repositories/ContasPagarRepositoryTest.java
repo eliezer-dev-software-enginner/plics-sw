@@ -144,15 +144,15 @@ class ContasPagarRepositoryTest extends BaseRepositoryTest {
     void buscarPorFornecedor() throws SQLException {
         var c1 = novaConta("Fornec 1", new BigDecimal("100.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
-        c1.setFornecedorId(1);
+        c1.setFornecedorId(1L);
         repository.salvar(c1);
 
         var c2 = novaConta("Fornec 2", new BigDecimal("200.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
-        c2.setFornecedorId(2);
+        c2.setFornecedorId(2L);
         repository.salvar(c2);
 
-        var resultado = repository.buscarPorFornecedor(1);
+        var resultado = repository.buscarPorFornecedor(1L);
 
         assertEquals(1, resultado.size());
         assertEquals("Fornec 1", resultado.getFirst().getDescricao());
@@ -176,14 +176,14 @@ class ContasPagarRepositoryTest extends BaseRepositoryTest {
     void buscarPorCompra() throws SQLException {
         var c1 = novaConta("Compra 1", new BigDecimal("100.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
-        c1.setCompraId(10);
+        c1.setCompraId(10L);
         repository.salvar(c1);
 
         var c2 = novaConta("Sem compra", new BigDecimal("200.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
         repository.salvar(c2);
 
-        var resultado = repository.buscarPorCompra(10);
+        var resultado = repository.buscarPorCompra(10L);
 
         assertEquals(1, resultado.size());
         assertEquals("Compra 1", resultado.getFirst().getDescricao());

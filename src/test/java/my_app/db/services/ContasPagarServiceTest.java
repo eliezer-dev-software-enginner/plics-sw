@@ -169,8 +169,8 @@ class ContasPagarServiceTest extends BaseServiceTest {
     @Test
     void deveBuscarPorFornecedor() throws Exception {
         var salvo = contasPagarService.salvar(contaValida());
-        salvo.setFornecedorId(1);
+        salvo.setFornecedorId(1L);
         contasPagarService.atualizar(salvo);
-        assertFalse(contasPagarService.buscarPorFornecedor(1).isEmpty());
+        assertFalse(contasPagarService.buscarPorFornecedor(1L).isEmpty());
     }
 }

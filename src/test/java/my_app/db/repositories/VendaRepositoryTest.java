@@ -36,7 +36,7 @@ class VendaRepositoryTest extends BaseRepositoryTest {
     private VendaModel novaVenda(String produtoCod, BigDecimal quantidade, BigDecimal totalLiquido) {
         var model = new VendaModel();
         model.setProdutoCod(produtoCod);
-        model.setClienteId(1);
+        model.setClienteId(1L);
         model.setQuantidade(quantidade);
         model.setPrecoUnitario(new BigDecimal("10.00"));
         model.setTotalLiquido(totalLiquido);
@@ -112,14 +112,14 @@ class VendaRepositoryTest extends BaseRepositoryTest {
     @Test
     void buscarPorCliente() throws SQLException {
         var v1 = novaVenda("COD001", new BigDecimal("2"), new BigDecimal("20.00"));
-        v1.setClienteId(1);
+        v1.setClienteId(1L);
         repository.salvar(v1);
 
         var v2 = novaVenda("COD002", new BigDecimal("3"), new BigDecimal("30.00"));
-        v2.setClienteId(2);
+        v2.setClienteId(2L);
         repository.salvar(v2);
 
-        var resultado = repository.buscarPorCliente(1);
+        var resultado = repository.buscarPorCliente(1L);
 
         assertEquals(1, resultado.size());
         assertEquals("COD001", resultado.getFirst().getProdutoCod());

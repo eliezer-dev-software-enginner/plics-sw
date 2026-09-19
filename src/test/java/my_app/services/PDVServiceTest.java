@@ -36,7 +36,7 @@ class PDVServiceTest extends BaseServiceTest {
         p.setUnidade("UN");
         p.setPrecoVenda(BigDecimal.TEN);
         p.setTotalLiquido(BigDecimal.TEN);
-        p.setFornecedorId(1);
+        p.setFornecedorId(1L);
         p.setEstoque(BigDecimal.TEN);
         return p;
     }
@@ -61,10 +61,10 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveFinalizarVendaComClientePadrao() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1L, false, 1);
 
         assertNotNull(pedido.getId());
-        assertEquals(1, pedido.getClienteId());
+        assertEquals(1L, pedido.getClienteId());
         assertNotNull(pedido.getDataCriacao());
         assertBigDecimalEquals(BigDecimal.TEN, pedido.getTotalLiquido());
 
@@ -81,7 +81,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveFinalizarVendaFiadaComCliente() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 3);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1L, true, 3);
 
         assertNotNull(pedido.getId());
         assertEquals(1, pedido.getFiado());
@@ -91,14 +91,14 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void naoDeveGerarContasQuandoNaoFiado() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1L, false, 1);
 
         assertEquals(0, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
     }
 
     @Test
     void deveAplicarDescontoNoTotalLiquido() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1, BigDecimal.valueOf(3));
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1L, false, 1, BigDecimal.valueOf(3));
 
         assertBigDecimalEquals(BigDecimal.valueOf(3), pedido.getDesconto());
         assertBigDecimalEquals(BigDecimal.valueOf(7), pedido.getTotalLiquido());
@@ -106,14 +106,14 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void naoDevePermitirTotalLiquidoNegativoComDescontoMaiorQueOTotal() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1, BigDecimal.valueOf(999));
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1L, false, 1, BigDecimal.valueOf(999));
 
         assertBigDecimalEquals(BigDecimal.ZERO, pedido.getTotalLiquido());
     }
 
     @Test
     void deveGerarParcelasComValorLiquidoDescontado() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 2, BigDecimal.valueOf(2));
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1L, true, 2, BigDecimal.valueOf(2));
 
         // total bruto 10, desconto 2 -> liquido 8, dividido em 2 parcelas de 4
         assertEquals(2, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
@@ -131,7 +131,7 @@ class PDVServiceTest extends BaseServiceTest {
     void deveExcluirVendaERestaurarEstoque() throws Exception {
         var itens = itensValidos();
         var codigoBarras = itens.getFirst().produto.getCodigoBarras();
-        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1L, false, 1);
 
         assertBigDecimalEquals(BigDecimal.valueOf(9), produtoService.buscarPorCodigoBarras(codigoBarras).getEstoque());
 
@@ -144,7 +144,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveExcluirContasAReceberAoExcluirVendaFiada() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 3);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1L, true, 3);
         assertEquals(3, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
 
         pdvService.excluirVenda(pedido.getId());
@@ -154,7 +154,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void naoDeveMexerEmContasDeOutraVendaAoExcluir() throws Exception {
-        var pedidoParaExcluir = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 2);
+        var pedidoParaExcluir = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1L, true, 2);
 
         var produto2 = new ProdutoModel();
         produto2.setCodigoBarras("790");
@@ -162,12 +162,12 @@ class PDVServiceTest extends BaseServiceTest {
         produto2.setUnidade("UN");
         produto2.setPrecoVenda(BigDecimal.TEN);
         produto2.setTotalLiquido(BigDecimal.TEN);
-        produto2.setFornecedorId(1);
+        produto2.setFornecedorId(1L);
         produto2.setEstoque(BigDecimal.TEN);
         produtoService.salvar(produto2);
         var item2 = new ItemVenda(produto2);
         item2.quantidade = BigDecimal.ONE;
-        var pedidoParaManter = pdvService.finalizarVenda(List.of(item2), "CREDIARIO", 1, true, 2);
+        var pedidoParaManter = pdvService.finalizarVenda(List.of(item2), "CREDIARIO", 1L, true, 2);
 
         pdvService.excluirVenda(pedidoParaExcluir.getId());
 
@@ -179,13 +179,13 @@ class PDVServiceTest extends BaseServiceTest {
     void deveLancarExcecaoAoExcluirVendaInexistente() {
         // withTransaction() envolve a IllegalArgumentException original numa
         // PersismException, mas preserva a mensagem — é isso que a ViewModel exibe.
-        var erro = assertThrows(Exception.class, () -> pdvService.excluirVenda(9999));
+        var erro = assertThrows(Exception.class, () -> pdvService.excluirVenda(9999L));
         assertEquals("Venda não encontrada", erro.getMessage());
     }
 
     @Test
     void deveSomarFreteNoTotalLiquido() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1,
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1L, false, 1,
                 BigDecimal.valueOf(2), BigDecimal.valueOf(5));
 
         assertBigDecimalEquals(BigDecimal.valueOf(5), pedido.getFrete());
@@ -197,7 +197,7 @@ class PDVServiceTest extends BaseServiceTest {
     void deveDevolverVendaERestaurarEstoqueSemApagarRegistro() throws Exception {
         var itens = itensValidos();
         var codigoBarras = itens.getFirst().produto.getCodigoBarras();
-        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1L, false, 1);
 
         assertBigDecimalEquals(BigDecimal.valueOf(9), produtoService.buscarPorCodigoBarras(codigoBarras).getEstoque());
 
@@ -209,7 +209,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveCancelarEExcluirContasAoDevolverVendaFiada() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1, true, 1);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "CREDIARIO", 1L, true, 1);
         assertEquals(1, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
 
         pdvService.devolverVenda(pedido.getId());
@@ -224,7 +224,7 @@ class PDVServiceTest extends BaseServiceTest {
         produtoService.salvar(produto);
         var item = new ItemVenda(produto);
         item.quantidade = BigDecimal.ONE;
-        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1L, false, 1);
 
         var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(pedido.getId()));
         assertTrue(erro.getMessage().contains("Devolução bloqueada"));
@@ -245,7 +245,7 @@ class PDVServiceTest extends BaseServiceTest {
         produtoService.salvar(produto);
         var item = new ItemVenda(produto);
         item.quantidade = BigDecimal.ONE;
-        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1L, false, 1);
 
         pdvService.excluirVenda(pedido.getId());
 
@@ -256,7 +256,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void naoDevePermitirDevolverVendaJaDevolvida() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1L, false, 1);
         pdvService.devolverVenda(pedido.getId());
 
         var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(pedido.getId()));
@@ -265,7 +265,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void deveLancarExcecaoAoDevolverVendaInexistente() {
-        var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(9999));
+        var erro = assertThrows(Exception.class, () -> pdvService.devolverVenda(9999L));
         assertEquals("Venda não encontrada", erro.getMessage());
     }
 
@@ -278,7 +278,7 @@ class PDVServiceTest extends BaseServiceTest {
         produtoService.salvar(produtoNovo);
 
         var itemOriginal = new ItemVenda(produtoOriginal);
-        var pedido = pdvService.finalizarVenda(List.of(itemOriginal), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(List.of(itemOriginal), "À VISTA", 1L, false, 1);
         assertBigDecimalEquals(BigDecimal.valueOf(9),
                 produtoService.buscarPorCodigoBarras(produtoOriginal.getCodigoBarras()).getEstoque());
 
@@ -305,7 +305,7 @@ class PDVServiceTest extends BaseServiceTest {
     @Test
     void trocaDeveExcluirContasFiadoDaOriginalENaoGerarNaNova() throws Exception {
         var itens = itensValidos();
-        var pedido = pdvService.finalizarVenda(itens, "CREDIARIO", 1, true, 3);
+        var pedido = pdvService.finalizarVenda(itens, "CREDIARIO", 1L, true, 3);
         assertEquals(3, contarLinhas("contas_a_receber", "venda_id = ?", pedido.getId()));
 
         var novoPedido = pdvService.trocarVenda(pedido.getId(), itens, "DINHEIRO");
@@ -318,12 +318,12 @@ class PDVServiceTest extends BaseServiceTest {
     @Test
     void trocaDeveHerdarClienteDaVendaOriginal() throws Exception {
         var itens = itensValidos();
-        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 5, false, 1);
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 5L, false, 1);
 
         var novoPedido = pdvService.trocarVenda(pedido.getId(),
                 List.of(new ItemVenda(itens.getFirst().produto)), "PIX");
 
-        assertEquals(Integer.valueOf(5), novoPedido.getClienteId());
+        assertEquals(5L, novoPedido.getClienteId());
     }
 
     @Test
@@ -332,7 +332,7 @@ class PDVServiceTest extends BaseServiceTest {
         produto.setAceitaDevolucao(false);
         produtoService.salvar(produto);
         var item = new ItemVenda(produto);
-        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(List.of(item), "À VISTA", 1L, false, 1);
 
         var erro = assertThrows(Exception.class,
                 () -> pdvService.trocarVenda(pedido.getId(), itensValidos(), "À VISTA"));
@@ -348,7 +348,7 @@ class PDVServiceTest extends BaseServiceTest {
     @Test
     void naoDevePermitirTrocarVendaJaDevolvida() throws Exception {
         var itens = itensValidos();
-        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(itens, "À VISTA", 1L, false, 1);
         pdvService.devolverVenda(pedido.getId());
 
         var erro = assertThrows(Exception.class,
@@ -358,7 +358,7 @@ class PDVServiceTest extends BaseServiceTest {
 
     @Test
     void naoDevePermitirTrocaSemItensNovos() throws Exception {
-        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1, false, 1);
+        var pedido = pdvService.finalizarVenda(itensValidos(), "À VISTA", 1L, false, 1);
 
         var erro = assertThrows(Exception.class,
                 () -> pdvService.trocarVenda(pedido.getId(), List.of(), "À VISTA"));

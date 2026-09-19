@@ -142,15 +142,15 @@ class ContaAreceberRepositoryTest extends BaseRepositoryTest {
     void buscarPorCliente() throws SQLException {
         var c1 = novaConta("Cliente 1", new BigDecimal("100.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
-        c1.setClienteId(1);
+        c1.setClienteId(1L);
         repository.salvar(c1);
 
         var c2 = novaConta("Cliente 2", new BigDecimal("200.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
-        c2.setClienteId(2);
+        c2.setClienteId(2L);
         repository.salvar(c2);
 
-        var resultado = repository.buscarPorCliente(1);
+        var resultado = repository.buscarPorCliente(1L);
 
         assertEquals(1, resultado.size());
         assertEquals("Cliente 1", resultado.getFirst().getDescricao());
@@ -174,14 +174,14 @@ class ContaAreceberRepositoryTest extends BaseRepositoryTest {
     void buscarPorVenda() throws SQLException {
         var c1 = novaConta("Venda 1", new BigDecimal("100.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
-        c1.setVendaId(10);
+        c1.setVendaId(10L);
         repository.salvar(c1);
 
         var c2 = novaConta("Sem venda", new BigDecimal("200.00"),
                 System.currentTimeMillis() + 86400000L, "PENDENTE");
         repository.salvar(c2);
 
-        var resultado = repository.buscarPorVenda(10);
+        var resultado = repository.buscarPorVenda(10L);
 
         assertEquals(1, resultado.size());
         assertEquals("Venda 1", resultado.getFirst().getDescricao());

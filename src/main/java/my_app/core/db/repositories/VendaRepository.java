@@ -22,7 +22,7 @@ public class VendaRepository extends BaseRepository<VendaModel> {
         return VendaModel.class;
     }
 
-    public java.util.List<VendaModel> buscarPorCliente(Integer clienteId) throws SQLException {
+    public java.util.List<VendaModel> buscarPorCliente(Long clienteId) throws SQLException {
         return session().query(
                 modelClass(),
                 sql("SELECT * FROM vendas WHERE cliente_id = ? ORDER BY dataCriacao DESC"),

@@ -37,7 +37,7 @@ public class ContasAReceberRepository extends BaseRepository<ContaAreceberModel>
         );
     }
 
-    public List<ContaAreceberModel> buscarPorCliente(Integer clienteId) throws SQLException {
+    public List<ContaAreceberModel> buscarPorCliente(Long clienteId) throws SQLException {
         return session().query(
                 modelClass(),
                 sql("SELECT * FROM contas_a_receber WHERE cliente_id = ? ORDER BY data_vencimento ASC"),

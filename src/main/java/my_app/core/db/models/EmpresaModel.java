@@ -2,6 +2,7 @@ package my_app.core.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import my_app.core.Identifier;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
@@ -10,10 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Table("empresas")
-public class EmpresaModel {
-
-    @Column(primary = true)
-    private Integer id;
+public class EmpresaModel extends Identifier {
 
     private String nome;
     private String cpfCnpj;

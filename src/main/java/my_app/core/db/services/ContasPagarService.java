@@ -106,7 +106,7 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
         log.info("Pagamento cancelado (revertido pra PENDENTE): id={}", id);
     }
 
-    public List<ContasPagarModel> buscarPorFornecedor(Integer fornecedorId) throws SQLException {
+    public List<ContasPagarModel> buscarPorFornecedor(Long fornecedorId) throws SQLException {
         return contasPagarRepository.buscarPorFornecedor(fornecedorId);
     }
 
@@ -124,11 +124,11 @@ public class ContasPagarService extends BaseService<ContasPagarModel> {
         return contasPagarRepository.buscarPorPeriodo(dataInicio, dataFim);
     }
 
-    public List<ContasPagarModel> buscarPorCompra(Integer compraId) throws SQLException {
+    public List<ContasPagarModel> buscarPorCompra(Long compraId) throws SQLException {
         return contasPagarRepository.buscarPorCompra(compraId);
     }
 
-    public void excluirPorCompraId(Integer compraId) throws SQLException {
+    public void excluirPorCompraId(Long compraId) throws SQLException {
         contasPagarRepository.excluirPorCompraId(compraId);
     }
 

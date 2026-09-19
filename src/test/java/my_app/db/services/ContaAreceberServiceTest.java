@@ -136,13 +136,13 @@ class ContaAreceberServiceTest extends BaseServiceTest {
     @Test
     void deveLancarExcecaoAoGerarContasComVendaNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> contaService.gerarContasDeVenda(null, 1, List.of()));
+                () -> contaService.gerarContasDeVenda(null, 1L, List.of()));
     }
 
     @Test
     void deveLancarExcecaoAoGerarContasComParcelasVazias() {
         assertThrows(IllegalArgumentException.class,
-                () -> contaService.gerarContasDeVenda(1, 1, List.of()));
+                () -> contaService.gerarContasDeVenda(1L, 1L, List.of()));
     }
 
     @Test
@@ -154,9 +154,9 @@ class ContaAreceberServiceTest extends BaseServiceTest {
     @Test
     void deveExcluirPorVendaId() throws Exception {
         var salvo = contaService.salvar(contaValida());
-        salvo.setVendaId(1);
+        salvo.setVendaId(1L);
         contaService.atualizar(salvo);
-        contaService.excluirPorVendaId(1);
+        contaService.excluirPorVendaId(1L);
         assertEquals(0, contaService.listar().size());
     }
 

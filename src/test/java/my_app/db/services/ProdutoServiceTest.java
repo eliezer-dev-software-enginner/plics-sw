@@ -25,7 +25,7 @@ class ProdutoServiceTest extends BaseServiceTest {
         p.setUnidade("UN");
         p.setPrecoVenda(BigDecimal.TEN);
         p.setTotalLiquido(BigDecimal.TEN);
-        p.setFornecedorId(1);
+        p.setFornecedorId(1L);
         p.setCor("Azul");
         p.setTamanho("M");
         p.setModelo("Esportivo");

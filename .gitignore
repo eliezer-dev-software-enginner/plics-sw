@@ -80,7 +80,6 @@ Generate*.java
 EncryptTokens.java
 
 criptografando-dados-sensiveis.png
-docs/PROMT.md
 temp
 dist
 /scripts/__pycache__

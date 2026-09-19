@@ -23,7 +23,7 @@ Não inicie nenhuma tarefa sem ter lido esses arquivos primeiro.
 - Explique brevemente o plano da tarefa antes de executar qualquer mudança.
 
 ## 4. Tarefa
-Como altere
+Continue a sessão registrada no TODO.md
 
 
 ## 5. Ao final da tarefa

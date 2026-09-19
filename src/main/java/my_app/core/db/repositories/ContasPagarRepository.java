@@ -37,7 +37,7 @@ public class ContasPagarRepository extends BaseRepository<ContasPagarModel> {
         );
     }
 
-    public List<ContasPagarModel> buscarPorFornecedor(Integer fornecedorId) throws SQLException {
+    public List<ContasPagarModel> buscarPorFornecedor(Long fornecedorId) throws SQLException {
         return session().query(
                 modelClass(),
                 sql("SELECT * FROM contas_pagar WHERE fornecedor_id = ? ORDER BY data_vencimento ASC"),
@@ -53,7 +53,7 @@ public class ContasPagarRepository extends BaseRepository<ContasPagarModel> {
         );
     }
 
-    public List<ContasPagarModel> buscarPorCompra(Integer compraId) throws SQLException {
+    public List<ContasPagarModel> buscarPorCompra(Long compraId) throws SQLException {
         return session().query(
                 modelClass(),
                 sql("SELECT * FROM contas_pagar WHERE compra_id = ? ORDER BY data_vencimento ASC"),
@@ -61,7 +61,7 @@ public class ContasPagarRepository extends BaseRepository<ContasPagarModel> {
         );
     }
 
-    public void excluirPorCompraId(Integer compraId) throws SQLException {
+    public void excluirPorCompraId(Long compraId) throws SQLException {
         var contas = buscarPorCompra(compraId);
         for (var conta : contas) {
             session().delete(conta);

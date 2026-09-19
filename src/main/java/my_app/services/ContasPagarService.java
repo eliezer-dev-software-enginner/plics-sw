@@ -54,7 +54,7 @@ public class ContasPagarService {
     }
 
     public List<ContasPagarModel> buscarPorFornecedor(Long fornecedorId) throws SQLException {
-        return repo.buscarPorFornecedor(fornecedorId != null ? fornecedorId.intValue() : null);
+        return repo.buscarPorFornecedor(fornecedorId);
     }
 
     public List<ContasPagarModel> buscarPorStatus(String status) throws SQLException {
@@ -70,7 +70,7 @@ public class ContasPagarService {
     }
 
     public List<ContasPagarModel> buscarPorCompra(Long compraId) throws SQLException {
-        return repo.buscarPorCompra(compraId != null ? compraId.intValue() : null);
+        return repo.buscarPorCompra(compraId);
     }
 
     public void gerarContasDeCompra(CompraModel compra, List<Parcela> parcelas) throws SQLException {
@@ -112,6 +112,6 @@ public class ContasPagarService {
     }
 
     public void excluirPorCompraId(Long compraId) throws SQLException {
-        repo.excluirPorCompraId(compraId != null ? compraId.intValue() : null);
+        repo.excluirPorCompraId(compraId);
     }
 }

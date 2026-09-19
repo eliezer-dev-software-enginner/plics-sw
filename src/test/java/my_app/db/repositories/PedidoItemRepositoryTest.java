@@ -49,7 +49,7 @@ class PedidoItemRepositoryTest extends BaseRepositoryTest {
         return pedidoRepository.salvar(pedido);
     }
 
-    private PedidoItemModel novoItem(Integer pedidoId) {
+    private PedidoItemModel novoItem(Long pedidoId) {
         var model = new PedidoItemModel();
         model.setPedidoId(pedidoId);
         model.setProdutoCod("1234567890123");
@@ -90,7 +90,7 @@ class PedidoItemRepositoryTest extends BaseRepositoryTest {
 
     @Test
     void listarPorPedidoVazio() throws SQLException {
-        var itens = repository.listarPorPedido(999);
+        var itens = repository.listarPorPedido(999L);
 
         assertNotNull(itens);
         assertTrue(itens.isEmpty());

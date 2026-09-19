@@ -20,7 +20,7 @@ class CompraServiceTest extends BaseServiceTest {
 
     private CompraDto dtoValido() {
         return new CompraDto(
-                "789", BigDecimal.TEN, 1, BigDecimal.ONE,
+                "789", BigDecimal.TEN, 1L, BigDecimal.ONE,
                 BigDecimal.ZERO, "DINHEIRO", "obs",
                 System.currentTimeMillis(), "12345", null, "SIM", BigDecimal.TEN
         );
@@ -31,7 +31,7 @@ class CompraServiceTest extends BaseServiceTest {
         var dto = dtoValido();
         CompraModel model = compraService.toModel(dto);
         assertEquals("789", model.getProdutoCod());
-        assertEquals(Integer.valueOf(1), model.getFornecedorId());
+        assertEquals(Long.valueOf(1), model.getFornecedorId());
         assertEquals(BigDecimal.ONE, model.getQuantidade());
     }
 

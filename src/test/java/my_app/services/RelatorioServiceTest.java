@@ -91,7 +91,7 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         var vendaPix = new VendaModel();
         vendaPix.setProdutoCod("111");
-        vendaPix.setClienteId(1);
+        vendaPix.setClienteId(1L);
         vendaPix.setQuantidade(BigDecimal.ONE);
         vendaPix.setPrecoUnitario(BigDecimal.valueOf(70));
         vendaPix.setTotalLiquido(BigDecimal.valueOf(70));
@@ -100,7 +100,7 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         var vendaAPrazo = new VendaModel();
         vendaAPrazo.setProdutoCod("222");
-        vendaAPrazo.setClienteId(1);
+        vendaAPrazo.setClienteId(1L);
         vendaAPrazo.setQuantidade(BigDecimal.ONE);
         vendaAPrazo.setPrecoUnitario(BigDecimal.valueOf(999));
         vendaAPrazo.setTotalLiquido(BigDecimal.valueOf(999));
@@ -109,7 +109,7 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         var pedidoService = new PedidoService(session);
         var pedidoPix = new PedidoModel();
-        pedidoPix.setClienteId(1);
+        pedidoPix.setClienteId(1L);
         pedidoPix.setFormaPagamento("PIX");
         pedidoPix.setTotalLiquido(BigDecimal.valueOf(30));
         pedidoPix.setDesconto(BigDecimal.ZERO);
@@ -117,7 +117,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         pedidoService.salvar(pedidoPix);
 
         var pedidoDebito = new PedidoModel();
-        pedidoDebito.setClienteId(1);
+        pedidoDebito.setClienteId(1L);
         pedidoDebito.setFormaPagamento("DÉBITO");
         pedidoDebito.setTotalLiquido(BigDecimal.valueOf(20));
         pedidoDebito.setDesconto(BigDecimal.ZERO);
@@ -141,7 +141,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         var vendaService = new VendaService(session);
         var venda = new VendaModel();
         venda.setProdutoCod("789");
-        venda.setClienteId(1);
+        venda.setClienteId(1L);
         venda.setQuantidade(BigDecimal.ONE);
         venda.setPrecoUnitario(BigDecimal.valueOf(100));
         venda.setTotalLiquido(BigDecimal.valueOf(100));
@@ -150,7 +150,7 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         var pedidoService = new PedidoService(session);
         var pedido = new PedidoModel();
-        pedido.setClienteId(1);
+        pedido.setClienteId(1L);
         pedido.setFormaPagamento("À VISTA");
         pedido.setTotalLiquido(BigDecimal.TEN);
         pedido.setDesconto(BigDecimal.ZERO);
@@ -166,12 +166,12 @@ class RelatorioServiceTest extends BaseServiceTest {
         contaReceber.setDataVencimento(System.currentTimeMillis());
         contaReceber.setDataRecebimento(System.currentTimeMillis());
         contaReceber.setStatus("PAGO");
-        contaReceber.setClienteId(1);
+        contaReceber.setClienteId(1L);
         contaAreceberService.salvar(contaReceber);
 
         var compraService = new CompraService(session);
         var compraDto = new CompraDto(
-                "789", BigDecimal.valueOf(50), 1, BigDecimal.ONE,
+                "789", BigDecimal.valueOf(50), 1L, BigDecimal.ONE,
                 BigDecimal.ZERO, "DINHEIRO", "obs",
                 System.currentTimeMillis(), "NF-1", null, "NAO", BigDecimal.valueOf(50)
         );
@@ -186,7 +186,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         contaPagar.setDataVencimento(System.currentTimeMillis());
         contaPagar.setDataPagamento(System.currentTimeMillis());
         contaPagar.setStatus("PAGO");
-        contaPagar.setFornecedorId(1);
+        contaPagar.setFornecedorId(1L);
         contasPagarService.salvar(contaPagar);
 
         var dados = relatorioService.gerar(INICIO, fim());
@@ -227,7 +227,7 @@ class RelatorioServiceTest extends BaseServiceTest {
 
         var pedidoService = new PedidoService(session);
         var pedido = new PedidoModel();
-        pedido.setClienteId(1);
+        pedido.setClienteId(1L);
         pedido.setFormaPagamento("À VISTA");
         pedido.setTotalLiquido(BigDecimal.valueOf(50));
         pedido.setDesconto(BigDecimal.ZERO);
@@ -368,7 +368,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         // PDV devolvido: 2 Camisetas + 1 Meia
         var pedidoService = new PedidoService(session);
         var pedido = new PedidoModel();
-        pedido.setClienteId(1);
+        pedido.setClienteId(1L);
         pedido.setFormaPagamento("À VISTA");
         pedido.setTotalLiquido(BigDecimal.valueOf(30));
         pedido.setDesconto(BigDecimal.ZERO);
@@ -442,7 +442,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         produto.setCodigoBarras(codigo);
         produto.setDescricao(descricao);
         produto.setUnidade(unidade);
-        produto.setFornecedorId(1);
+        produto.setFornecedorId(1L);
         produto.setPrecoVenda(BigDecimal.TEN);
         produto.setTotalLiquido(BigDecimal.TEN);
         produto.setEstoque(BigDecimal.ZERO);
@@ -452,7 +452,7 @@ class RelatorioServiceTest extends BaseServiceTest {
     private VendaModel venda(String codigo, int quantidade) {
         var venda = new VendaModel();
         venda.setProdutoCod(codigo);
-        venda.setClienteId(1);
+        venda.setClienteId(1L);
         venda.setQuantidade(BigDecimal.valueOf(quantidade));
         venda.setPrecoUnitario(BigDecimal.TEN);
         venda.setTotalLiquido(BigDecimal.TEN.multiply(BigDecimal.valueOf(quantidade)));
@@ -461,7 +461,7 @@ class RelatorioServiceTest extends BaseServiceTest {
         return venda;
     }
 
-    private PedidoItemModel item(Integer pedidoId, String codigo, int quantidade) {
+    private PedidoItemModel item(Long pedidoId, String codigo, int quantidade) {
         var item = new PedidoItemModel();
         item.setPedidoId(pedidoId);
         item.setProdutoCod(codigo);

@@ -39,14 +39,14 @@ class VendaServiceTest extends BaseServiceTest {
         p.setUnidade("UN");
         p.setPrecoVenda(BigDecimal.TEN);
         p.setTotalLiquido(BigDecimal.TEN);
-        p.setFornecedorId(1);
+        p.setFornecedorId(1L);
         return p;
     }
 
     private VendaModel criarVendaValida(String produtoCod) {
         var v = new VendaModel();
         v.setProdutoCod(produtoCod);
-        v.setClienteId(1);
+        v.setClienteId(1L);
         v.setQuantidade(BigDecimal.ONE);
         v.setPrecoUnitario(BigDecimal.TEN);
         v.setTotalLiquido(BigDecimal.TEN);
@@ -131,7 +131,7 @@ class VendaServiceTest extends BaseServiceTest {
         criarProduto();
         var v = criarVendaValida("789");
         vendaService.salvar(v, false);
-        List<VendaModel> vendas = vendaService.buscarPorCliente(1);
+        List<VendaModel> vendas = vendaService.buscarPorCliente(1L);
         assertEquals(1, vendas.size());
     }
 
@@ -172,7 +172,7 @@ class VendaServiceTest extends BaseServiceTest {
         var salvo = vendaService.salvar(v, false);
 
         var parcelas = Parcela.gerarParcelas(java.time.LocalDate.now(), 1, 10.0);
-        contaService.gerarContasDeVenda(salvo.getId(), 1, parcelas);
+        contaService.gerarContasDeVenda(salvo.getId(), 1L, parcelas);
         var contas = contaService.buscarPorVenda(salvo.getId());
         contaService.registrarRecebimento(contas.getFirst().getId(), BigDecimal.TEN);
 

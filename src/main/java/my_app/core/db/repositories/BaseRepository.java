@@ -1,5 +1,6 @@
 package my_app.core.db.repositories;
 
+import my_app.core.Identifier;
 import my_app.core.db.DB;
 import net.sf.persism.Session;
 import net.sf.persism.annotations.Table;
@@ -10,7 +11,7 @@ import java.util.List;
 import static net.sf.persism.Parameters.params;
 import static net.sf.persism.SQL.sql;
 
-public abstract class BaseRepository<M> {
+public abstract class BaseRepository<M extends Identifier> {
 
     private Session session;
 
@@ -25,8 +26,21 @@ public abstract class BaseRepository<M> {
     protected abstract Class<M> modelClass();
 
     public M salvar(M model) throws SQLException {
-       var result = session().insert(model);
+        if (model.getId() == null) {
+            model.setId(proximoId());
+        }
+        var result = session().insert(model);
         return result.dataObject();
+    }
+
+    private Long proximoId() throws SQLException {
+        String tableName = modelClass().getAnnotation(Table.class).value();
+        Long max = session().fetch(
+                Long.class,
+                sql("SELECT id FROM " + tableName + " ORDER BY id DESC LIMIT 1"),
+                params()
+        );
+        return (max == null) ? 1L : max + 1;
     }
 
     public List<M> listar() throws SQLException {

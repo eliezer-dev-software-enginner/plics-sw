@@ -35,7 +35,7 @@ class ComprasRepositoryTest extends BaseRepositoryTest {
     private CompraModel novaCompra(String produtoCod, BigDecimal totalLiquido, long dataCriacaoMillis) {
         var model = new CompraModel();
         model.setProdutoCod(produtoCod);
-        model.setFornecedorId(1);
+        model.setFornecedorId(1L);
         model.setQuantidade(BigDecimal.ONE);
         model.setPrecoDeCompra(BigDecimal.TEN);
         model.setDescontoEmReais(BigDecimal.ZERO);

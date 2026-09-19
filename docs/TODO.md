@@ -1,5 +1,16 @@
 # TODO
 
+## Concluído (Ids de Integer para Long — 2026-09-19)
+- [x] **Enumerar todas as tabelas/ids**: tabelas usadas pelo app convertidas — `categorias`, `fornecedores`, `clientes`, `empresas`, `cores`, `preferencias`, `produtos`, `compras`, `vendas`, `pedidos`, `contas_a_receber`, `contas_pagar`, `pedido_itens`. Legadas sem uso (`licensas`, `usuarios`) ficam intactas; `tecnicos` e `ordens_de_servico` (removidas do app em `3b8c5dc`/`8d002c9`) são dropadas no V37 (decisão do usuário).
+- [x] **Verificar API do Persism para scalar (MAX(id)) e conexão**: `fetch(Class, SQL, Parameters)` retorna tipos primitivos/boxed; expressões tipo `MAX(id)` voltam como `Integer` (cola quebra o cast pra `Long`) → geração de id usa `SELECT id ... ORDER BY id DESC LIMIT 1` (coluna `id BIGINT` → sempre `Long`; vazia → `null`). Validado contra o Persism 2.3 real.
+- [x] **Reescrever V37__ids_long.sql**: PKs e FKs de todas as tabelas como `BIGINT` (PKs `BIGINT PRIMARY KEY`, sem AUTOINCREMENT — SQLite só auto-incrementa `INTEGER PRIMARY KEY`); únicos índices parciais de CPF/CNPJ (V18/V19) recriados; `DROP` de `tecnicos`/`ordens_de_servico`.
+- [x] **Implementar geração de id no app**: `BaseRepository.salvar` seta `id = MAX(id)+1` (via `SELECT id ... ORDER BY id DESC LIMIT 1`) quando `model.getId() == null`, antes do `insert`.
+- [x] **Rodar `./gradlew test` e iterar até verde**: fix de compilação pré-existente em `BaseService.java` (bound `M extends Identifier`); removidos DELETEs das tabelas dropadas em `BaseServiceTest.java` e `clean_db.sql`; `CompraServiceTest` corrigido (`Integer` → `Long` no assert). BUILD SUCCESSFUL.
+- [x] **Atualizar docs**: DECISIONS.md, AI_RULES.md (linha 18 — id Long), CONTEXT.md, TODO.md.
+
+## Pendências novas
+- [ ] **Causa raiz documentada**: Xerial retorna `Integer` (não `Long`) para colunas `INTEGER PRIMARY KEY` (rowid) — por isso a conversão pra `BIGINT` era necessária. `BIGINT PRIMARY KEY` não regenera id; ver DECISIONS.md 2026-09-19.
+
 ## Concluído (testes ajustados à migração pro pack-utilities — 2026-09-06)
 - [x] **`UtilsTest`**: `Utils.isValidCnpj` → `pack.utilities.ValidatorPack.isValidCnpj` (método removido do `Utils`)
 - [x] **`ProdutoServiceTest`**: `DateUtils.localDateParaMillis` → `pack.utilities.DatePack.localDateParaMillis` (classe removida)

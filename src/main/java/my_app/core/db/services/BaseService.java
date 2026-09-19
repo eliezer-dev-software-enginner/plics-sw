@@ -2,11 +2,12 @@ package my_app.core.db.services;
 
 import java.sql.SQLException;
 import java.util.List;
+import my_app.core.Identifier;
 import my_app.core.db.repositories.BaseRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class BaseService<M> implements AutoCloseable {
+public abstract class BaseService<M extends Identifier> implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(BaseService.class);
 
