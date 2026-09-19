@@ -32,6 +32,7 @@ import pack.utilities.DatePack;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel> {
 
@@ -40,6 +41,8 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
     private final ContasPagarService contasPagarService;
+
+    private final Consumer<Object> eventListener = this::onEntityEvent;
 
     // --- Form states ---
     final State<String> numeroNota = State.of("");
@@ -111,11 +114,13 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
         produtoEncontrado.subscribe(this::selecionarProduto);
 
-        EventBus.getInstance().subscribe(event -> {
-            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
-                refreshFornecedores();
-            }
-        });
+        EventBus.getInstance().subscribe(eventListener);
+    }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
+            refreshFornecedores();
+        }
     }
 
     private void atualizarEstoqueVisual() {
@@ -426,6 +431,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
     @Override
     public void onDestroy() throws Exception {
+        EventBus.getInstance().unsubscribe(eventListener);
         this.compraService.close();
         this.produtoService.close();
         this.fornecedorService.close();

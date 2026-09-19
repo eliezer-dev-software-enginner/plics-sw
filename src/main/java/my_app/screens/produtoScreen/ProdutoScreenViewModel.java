@@ -27,6 +27,7 @@ import pack.utilities.DatePack;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel> {
     private static final Logger log = LoggerFactory.getLogger(ProdutoScreenViewModel.class);
@@ -35,6 +36,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     private final FornecedorService fornecedorService;
     private final CategoriaService categoriaService;
     private final CorService corService;
+    private final Consumer<Object> eventListener = this::onEntityEvent;
 
     public final ListState<CorModel> cores = ListState.ofEmpty();
 
@@ -79,11 +81,13 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         this.categoriaService = createOrReport(CategoriaService::new);
         this.corService = createOrReport(CorService::new);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_PRODUTO.name();
-        EventBus.getInstance().subscribe(event -> {
-            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
-                refreshFornecedores();
-            }
-        });
+        EventBus.getInstance().subscribe(eventListener);
+    }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
+            refreshFornecedores();
+        }
     }
 
     @Override
@@ -364,6 +368,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
 
     @Override
     public void onDestroy() throws Exception {
+        EventBus.getInstance().unsubscribe(eventListener);
         this.produtoService.close();
         this.categoriaService.close();
         this.corService.close();

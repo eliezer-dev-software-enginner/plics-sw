@@ -27,6 +27,7 @@ import pack.utilities.DatePack;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ContasAReceberScreenViewModel extends ViewModelScreenContract<ContaAreceberModel> {
     private static final Logger log = LoggerFactory.getLogger(ContasAReceberScreenViewModel.class);
@@ -35,6 +36,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     private final ClienteService clienteService;
     private final VendaService vendaService;
     private final ProdutoService produtoService;
+    private final Consumer<Object> eventListener = this::onEntityEvent;
 
     public final State<String> descricao = State.of("");
     public final State<String> valorOriginal = State.of("0");
@@ -70,11 +72,13 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         this.clienteService = createOrReport(ClienteService::new);
         this.vendaService = createOrReport(VendaService::new);
         this.produtoService = createOrReport(ProdutoService::new);
-        EventBus.getInstance().subscribe(event -> {
-            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
-                loadClientes();
-            }
-        });
+        EventBus.getInstance().subscribe(eventListener);
+    }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
+            loadClientes();
+        }
     }
 
     @Override
@@ -387,6 +391,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public void onDestroy() throws Exception {
+        EventBus.getInstance().unsubscribe(eventListener);
         this.clienteService.close();
         this.contaService.close();
         this.vendaService.close();

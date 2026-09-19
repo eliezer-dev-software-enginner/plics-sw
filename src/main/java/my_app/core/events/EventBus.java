@@ -17,6 +17,10 @@ public class EventBus {
         listeners.add(listener);
     }
 
+    public void unsubscribe(Consumer<Object> listener) {
+        listeners.remove(listener);
+    }
+
     public void publish(Object event) {
         for (Consumer<Object> listener : listeners) {
             listener.accept(event);

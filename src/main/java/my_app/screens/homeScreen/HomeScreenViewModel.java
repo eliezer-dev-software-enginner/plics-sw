@@ -24,6 +24,7 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class HomeScreenViewModel {
 
@@ -49,6 +50,7 @@ public class HomeScreenViewModel {
     private final ScreenContext screenContext;
     public final State<String> currentGif = new State<>(null);
     private final Random random = new Random();
+    private final Consumer<Object> eventListener = this::onEntityEvent;
 
     final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -89,11 +91,7 @@ public class HomeScreenViewModel {
 
     private void onInit() {
         calcularFinanceiroMesAtual();
-        EventBus.getInstance().subscribe(event -> {
-            if (event instanceof DadosFinanceirosAtualizadosEvent) {
-                calcularFinanceiroMesAtual();
-            }
-        });
+        EventBus.getInstance().subscribe(eventListener);
 
         Async.Run(()->{
             try{
@@ -110,6 +108,12 @@ public class HomeScreenViewModel {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof DadosFinanceirosAtualizadosEvent) {
+            calcularFinanceiroMesAtual();
+        }
     }
 
     public void calcularFinanceiroMesAtual() {
@@ -188,6 +192,7 @@ public class HomeScreenViewModel {
     }
 
     public void onDestroy() throws Exception {
+        EventBus.getInstance().unsubscribe(eventListener);
         // executor nunca era desligado — cada navegação pra Home criava uma thread nova
         // (Executors.newSingleThreadScheduledExecutor() não é daemon) que ficava viva pra
         // sempre, mesmo depois da tela destruída. shutdownNow() também cancela o

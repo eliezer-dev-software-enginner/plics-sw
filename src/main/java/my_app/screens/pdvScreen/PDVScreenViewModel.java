@@ -27,6 +27,7 @@ import pack.utilities.CurrencyPack;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class PDVScreenViewModel {
 
@@ -81,6 +82,8 @@ public class PDVScreenViewModel {
 
     final State<Boolean> isPrintNotaVendaVisible = State.of(false);
 
+    private final Consumer<Object> eventListener = this::onEntityEvent;
+
     private PedidoModel lastPedido;
     private final PedidoItemService pedidoItemService;
     private final EmpresaService empresaService;
@@ -134,15 +137,17 @@ public class PDVScreenViewModel {
         desconto.subscribe(d -> recalcularTotais());
         frete.subscribe(f -> recalcularTotais());
 
-        EventBus.getInstance().subscribe(event -> {
-            if(event instanceof EntityEvent<?> ee && ee.is(EntityEvent.EventType.CRIADO) && ee.entity() instanceof ClienteModel cm){
-                clientes.add(cm);
-            }
-        });
+        EventBus.getInstance().subscribe(eventListener);
 
         produtoEncontrado.subscribe(this::selecionarProduto);
         codigoBarrasInput.subscribe(this::filtrarProdutos);
 
+    }
+
+    private void onEntityEvent(Object event) {
+        if(event instanceof EntityEvent<?> ee && ee.is(EntityEvent.EventType.CRIADO) && ee.entity() instanceof ClienteModel cm){
+            clientes.add(cm);
+        }
     }
 
     private BigDecimal calcularTotalLiquido() {
@@ -520,6 +525,7 @@ public class PDVScreenViewModel {
     }
 
     public void onDestroy() throws Exception {
+        EventBus.getInstance().unsubscribe(eventListener);
         this.clienteService.close();
         this.empresaService.close();
         this.produtoService.close();

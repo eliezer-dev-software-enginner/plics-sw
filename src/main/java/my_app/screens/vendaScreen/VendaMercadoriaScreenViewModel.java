@@ -27,6 +27,7 @@ import pack.utilities.DatePack;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<VendaModel> {
     private static final Logger log = LoggerFactory.getLogger(VendaMercadoriaScreenViewModel.class);
@@ -34,6 +35,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
     private final ContaAreceberService contaService;
+    private final Consumer<Object> eventListener = this::onEntityEvent;
     private final EscPosPrinter escPosPrinter;
 
     final State<LocalDate> dataVenda = State.of(LocalDate.now());
@@ -149,11 +151,13 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             atualizarEstoqueVisual();
         });
 
-        EventBus.getInstance().subscribe(event -> {
-            if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
-                refreshClientes();
-            }
-        });
+        EventBus.getInstance().subscribe(eventListener);
+    }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
+            refreshClientes();
+        }
     }
 
     void filtrarProdutos(String termo) {
@@ -633,6 +637,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
     @Override
     public void onDestroy() throws Exception {
+        EventBus.getInstance().unsubscribe(eventListener);
         this.vendaService.close();
         this.clienteService.close();
         this.produtoService.close();
