@@ -27,6 +27,7 @@ import my_app.core.db.models.CorModel;
 import my_app.core.db.models.FornecedorModel;
 import my_app.core.db.models.ProdutoModel;
 import my_app.core.db.services.BaseService;
+import my_app.core.db.services.ProdutoService;
 import my_app.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,25 +44,26 @@ public class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel,ProdutoScreen
     @Override
     public Component render() {
         return new Card(
-                //new Container(new ContainerProps().paddingAll(5).bgColor("green"))
-                new Container(new ContainerProps().paddingAll(5))
-                        .children(
-                                new Text("Dados do Produto",
-                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()),
-                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm()))
-                                        .children(
-                                                ContainerLeft(viewModel),
-                                                Components.CardImageSelector(viewModel.imagem, handleChangeImage)
-                                        ),
-                                new SpacerVertical(ThemeManager.theme().spacing().md()),
-                                Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)
-                        ),
+                Components.ScrollPaneDefault( new Container(new ContainerProps().paddingAll(5))
+                                .children(
+                                        new Text("Dados do Produto",
+                                                new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()),
+                                        new SpacerVertical(ThemeManager.theme().spacing().sm()),
+                                        new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm()))
+                                                .children(
+                                                        ContainerLeft(viewModel),
+                                                        Components.CardImageSelector(viewModel.imagem, handleChangeImage)
+                                                ),
+                                        new SpacerVertical(ThemeManager.theme().spacing().md()),
+                                        Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)
+                                )),
                 new CardProps()
                         .paddingAll(10)
                         .borderRadius(12)
 //                        .bgColor("red")
                         .fillWidth()
+                //new Container(new ContainerProps().paddingAll(5).bgColor("green"))
+
         );
     }
 
@@ -150,7 +152,7 @@ public class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel,ProdutoScreen
 
     @Override
     protected BaseService<ProdutoModel> getService() throws SQLException {
-        return null;
+        return new ProdutoService();
     }
 
     @Override

@@ -174,7 +174,6 @@ public class HomeScreen implements ScreenComponent {
     record CardItem(String img, String title, String desc, String destination){}
     final List<CardItem> cardItemList = List.of(
             new CardItem("/assets/venda.png", "Venda","Tela de vendas",AppRoutes.Screens.VENDAS.name()),
-            new CardItem("/assets/ordem_servico.png", "Ordem de serviço","Tela de ordem de serviço",AppRoutes.Screens.ORDEM_SERVICO.name()),
             new CardItem("/assets/produtos.png", "Produtos","Gerencie seus produtos",AppRoutes.Screens.PRODUTOS.name()),
             new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes",AppRoutes.Screens.CLIENTES.name()),
             new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber",AppRoutes.Screens.COMPRAS_A_RECEBER.name()),
