@@ -47,7 +47,11 @@ public interface ScreenContract<T> {
     }
 
     SimpleTable<T> table();
-    Component form();
+
+    @Deprecated(forRemoval = true)
+    default Component form(){
+        return new Container();
+    }
     Component itemDetails(T model);
 
     default Component mainView(State<Boolean> focusState) {

@@ -1,36 +1,25 @@
 package my_app.screens.produtoScreen;
 
-import disgust.io.br.Pack;
-import javafx.stage.FileChooser;
-import megalodonte.ComputedState;
-import megalodonte.ForEachState;
-import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.state.State;
 import megalodonte.base.theme.ThemeInterface;
 import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.*;
+import megalodonte.components.Image;
+import megalodonte.components.SimpleTable;
+import megalodonte.components.SpacerVertical;
+import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.FlowRow;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
+import megalodonte.props.ColumnProps;
+import megalodonte.props.ImageProps;
+import megalodonte.props.TextProps;
 import megalodonte.router.v4.ScreenContext;
 import megalodonte.v2.Show;
-import my_app.core.db.models.CategoriaModel;
-import my_app.core.db.models.CorModel;
-import my_app.core.db.models.FornecedorModel;
-import my_app.core.db.models.ProdutoModel;
 import my_app.core.ScreenContract;
-import my_app.core.Data;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
-import my_app.utils.Utils;
+import my_app.core.db.models.ProdutoModel;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
-
-import java.util.List;
 
 public class ProdutoScreen implements ScreenComponent, ScreenContract<ProdutoModel> {
     private final ProdutoScreenViewModel vm;
@@ -52,49 +41,6 @@ public class ProdutoScreen implements ScreenComponent, ScreenContract<ProdutoMod
 
     public Component render() {
         return mainView(vm.focusState);
-    }
-
-    @Override
-    public Component form() {
-        RunnableThrowing handleChangeImage = () -> {
-            var stage = vm.getCtx().selfStage();
-
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Escolha a imagem");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("imagens",
-                    "*.png", "*.jpg", "*.jpeg"));
-            var file = fileChooser.showOpenDialog(stage);
-
-            if (file != null) {
-                IO.print("caminho: " + file.toPath().toUri());
-                vm.imagem.set(file.toPath().toUri().toString());
-            }
-        };
-
-//        var leftColumn = new Column().children(ContainerLeft(vm));
-//        javafx.scene.layout.HBox.setHgrow(leftColumn.getNode(), javafx.scene.layout.Priority.ALWAYS);
-
-        return new Card(
-                //new Container(new ContainerProps().paddingAll(5).bgColor("green"))
-                new Container(new ContainerProps().paddingAll(5))
-                        .children(
-                                new Text("Dados do Produto",
-                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()),
-                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm()))
-                                        .children(
-                                               ContainerLeft(vm),
-                                                Components.CardImageSelector(vm.imagem, handleChangeImage)
-                                        ),
-                                new SpacerVertical(ThemeManager.theme().spacing().md()),
-                                Components.actionButtons(vm.btnText, this::handleAddOrUpdate)
-                        ),
-                new CardProps()
-                        .paddingAll(10)
-                        .borderRadius(12)
-//                        .bgColor("red")
-                        .fillWidth()
-        );
     }
 
     @Override
@@ -121,69 +67,6 @@ public class ProdutoScreen implements ScreenComponent, ScreenContract<ProdutoMod
                 .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), vm.getCtx(), 600));
 
         return simpleTable;
-    }
-
-    private Component coresCheckboxes() {
-        var checkboxesPorCor = ForEachState.of(vm.cores, this::corCheckbox);
-
-        return new Column(new ColumnProps().spacingOf(3))
-                .c_child(new Text("Cores", new TextProps().fontSize(theme.typography().small())))
-                .c_child(new FlowRow(new FlowRowProps().spacingOf(8).width(620)).items(checkboxesPorCor));
-    }
-
-    private Checkbox corCheckbox(CorModel cor) {
-        var selecionado = new State<>(vm.coresSelecionadas.get().contains(cor.getNome()));
-
-        // checkbox -> coresSelecionadas
-        selecionado.subscribe(isSelected -> {
-            var current = new java.util.ArrayList<>(vm.coresSelecionadas.get());
-            boolean jaSelecionado = current.contains(cor.getNome());
-            if (isSelected && !jaSelecionado) {
-                current.add(cor.getNome());
-                vm.coresSelecionadas.set(current);
-            } else if (!isSelected && jaSelecionado) {
-                current.remove(cor.getNome());
-                vm.coresSelecionadas.set(current);
-            }
-        });
-
-        // coresSelecionadas -> checkbox
-        vm.coresSelecionadas.subscribe(selecionadas -> selecionado.set(selecionadas.contains(cor.getNome())));
-
-        return new Checkbox(cor.getNome(), selecionado, new CheckboxProps().fontSize(theme.typography().small()));
-    }
-
-    public Component ContainerLeft(ProdutoScreenViewModel vm) {
-        RunnableThrowing handleGerarCodigoBarras = () -> {
-            final var codigo = Utils.gerarCodigoBarrasEAN13();
-            vm.codigoBarras.set(codigo);
-        };
-
-        var showValidadePicker = ComputedState.of(() -> vm.perecivelSelected.get().equals("Sim"), vm.perecivelSelected);
-
-        //return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()).bgColor("yellow"))
-        return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()))
-                .children(
-                        disgust.io.Pack.InputWithButtonRow("SKU(Código de barras) *", "Ex: 7891234567895", "Gerar", vm.codigoBarras, handleGerarCodigoBarras),
-                        disgust.io.Pack.InputColumn("Nome *", vm.descricao, "Ex: Camiseta Polo M",150),
-                        Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, vm.unidadeSelected, it -> it),
-                        disgust.io.Pack.InputColumn("Marca", vm.marca, "Ex: Nike",150),
-                        coresCheckboxes(),
-                        disgust.io.Pack.InputColumn("Tamanho", vm.tamanhoSelected, "Ex: M",90),
-                        disgust.io.Pack.InputColumn("Modelo", vm.modelo, "Ex: Slim Fit",150),
-                        Pack.InputColumnCurrency("Preço de compra", vm.precoCompra),
-                        Pack.InputColumnCurrency("Frete", vm.frete),
-                        Pack.InputColumnCurrency("Preço de venda", vm.precoVenda),
-                        disgust.io.Pack.SelectColumn("Categoria", vm.categorias, vm.categoriaSelected, CategoriaModel::getNome),
-                        disgust.io.Pack.SelectColumn("Fornecedor", vm.fornecedores, vm.fornecedorSelected, FornecedorModel::getNome),
-                        Components.SelectColumn("É perecível?", List.of("Sim", "Não"), vm.perecivelSelected, it -> it),
-                        Show.when(showValidadePicker, () -> Components.DatePickerColumn(vm.validade, "Validade")),
-                        disgust.io.Pack.InputColumn("Garantia", vm.garantia, "Ex: 12 meses",150),
-                        Components.SelectColumn("Aceita devolução/troca?", Data.simNaoList, vm.aceitaDevolucao, it -> it),
-                        Components.TextAreaColumn("Observações", vm.observacoes, "Ex: Produto frágil, manusear com cuidado", 60, 160),
-                        Components.InputColumnNumeric("Estoque", vm.estoque, "Ex: 100"),
-                        Components.InputColumnNumeric("Estoque Mínimo", vm.estoqueMinimo, "Ex: 10")
-                );
     }
 
      public Component itemDetails(ProdutoModel model) {
