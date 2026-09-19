@@ -26,7 +26,6 @@ import my_app.screens.preferenciasScreen.PreferenciasScreen;
 import my_app.screens.produtoScreen.AddOrEditProduto;
 import my_app.screens.produtoScreen.ProdutoScreen;
 import my_app.screens.relatoriosScreen.RelatoriosScreen;
-import my_app.screens.tecnicoScreen.TecnicoScreen;
 import my_app.screens.termoUsoScreen.TermoUsoScreen;
 import my_app.screens.vendaScreen.VendaMercadoriaScreen;
 import my_app.screens.welcomeScreen.WelcomeScreen;
@@ -47,7 +46,6 @@ public class AppRoutes {
         CLIENTES,
         COMPRAS_A_PAGAR,
         COMPRAS_A_RECEBER,
-        TECNICOS,
         ORDEM_SERVICO,
         RELATAR_ERRO,
         SUGERIR_MELHORIA,
@@ -98,7 +96,6 @@ public class AppRoutes {
                 //ok
                 new Router.Route(Screens.COMPRAS_A_PAGAR.name(), ComprasAPagarScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de contas a pagar", true)),
                 //ok
-                new Router.Route(Screens.TECNICOS.name(), TecnicoScreen::new, new RouteProps(MIN_WIDTH, MAX_HEIGHT, "Gerenciamento de Técnicos para ordem de serviço", true)),
                 new Router.Route(Screens.ORDEM_SERVICO.name(), OrdemServicoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de ordens de serviço", true)),
                 new Router.Route(Screens.RELATAR_ERRO.name(), RelatarErroScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Relatar erros", true)),
                 new Router.Route(Screens.SUGERIR_MELHORIA.name(), SugerirMelhoriaScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
