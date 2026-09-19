@@ -29,8 +29,10 @@ public interface ScreenContract<T extends Identifier> {
     }
 
     default void handleClickMenuClone() {
-        populateFieldsFromModel();
-        viewModel().modoEdicaoState().set(false);
+        if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
+
+        long id = viewModel().selected.get().getId();
+        viewModel().ctx.router().spawnWindow(viewModel().screenNameSpawn+"/"+id+"/clone/");
     }
 
     default void handleClickMenuEdit() {

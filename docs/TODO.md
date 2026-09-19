@@ -1,6 +1,6 @@
 # TODO
 
-- [] : Erro ao clicar em Clonar na tela de vendas: Error: Cannot invoke "megalodonte.components.inputs.Input.requestFocus()" because "this.inputRef" is null 
+- [] : Erro ao clicar em Clonar na tela de vendas: Error: Cannot invoke "megalodonte.components.inputs.Input.requestFocus()" because "this.inputRef" is null. Aqui na verdade nem era mais pra precisar disso também. Já que a ideia é spawnar uma tela nova e não precisamos focar em nada. Esse input ref pode ser removido
 - [] : E inclusive o clique em Clonar não faz nada em lugar nenhum, deveria spawnar a tela de AddOrEdit específica com o type: "clone" na rota em ScreenContract e em ScreenAddOrEdit se o type for "clone" é só popular os dados nos inputs e tal como é feito quando em modo de edição.
 
 ## Concluído (Ids de Integer para Long — 2026-09-19)
