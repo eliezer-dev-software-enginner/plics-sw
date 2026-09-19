@@ -33,10 +33,10 @@ public class ContasPagarModel extends Identifier {
     private String status;
 
     @Column(name = "fornecedor_id")
-    private Integer fornecedorId;
+    private Long fornecedorId;
 
     @Column(name = "compra_id")
-    private Integer compraId;
+    private Long compraId;
 
     @Column(name = "numero_documento")
     private String numeroDocumento;

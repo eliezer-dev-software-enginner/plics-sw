@@ -6,6 +6,7 @@ import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.router.v5.ScreenContext;
 import megalodonte.v2.ListState;
+import my_app.core.AppRoutes;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
@@ -82,6 +83,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
     public ComprasScreenViewModel(ScreenContext ctx) {
         super(ctx);
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_COMPRAS.name();
         this.compraService = createOrReport(CompraService::new);
         this.fornecedorService = createOrReport(FornecedorService::new);
         this.produtoService = createOrReport(ProdutoService::new);
@@ -100,7 +102,6 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
         return field != null && field.toLowerCase().contains(query);
     }
 
-    @Override
     protected void onInit() {
         qtd.subscribe(v -> atualizarEstoqueVisual());
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());

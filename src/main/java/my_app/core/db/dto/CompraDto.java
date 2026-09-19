@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public record CompraDto(
         String produtoCod,
         BigDecimal precoCompra,
-        Integer fornecedorId,
+        Long fornecedorId,
         BigDecimal quantidade,
         BigDecimal descontoEmReais,
         String tipoPagamento,

@@ -338,7 +338,7 @@ public class PDVScreenViewModel {
         }
 
         boolean fiado = tipoPagamentoIsAPrazo.get();
-        Integer clienteId = clienteSelected.get() != null ? clienteSelected.get().getId() : null;
+        var clienteId = clienteSelected.get() != null ? clienteSelected.get().getId() : null;
 
         if (fiado && clienteId == null) {
             Components.ShowAlertError("Selecione um cliente para venda a prazo.");
@@ -346,7 +346,7 @@ public class PDVScreenViewModel {
         }
 
         if (clienteId == null) {
-            clienteId = 1; // CLIENTE PADRÃO (inserido pela migration V16)
+            clienteId = 1L; // CLIENTE PADRÃO (inserido pela migration V16)
         }
 
         BigDecimal totalLiquido = calcularTotalLiquido();
@@ -366,7 +366,7 @@ public class PDVScreenViewModel {
             }
         }
 
-        final Integer finalClienteId = clienteId;
+        final var finalClienteId = clienteId;
         final int qtdParcelas = fiado ? Math.max(1, Integer.parseInt(numeroParcelas.get())) : 1;
         final String formaPagamento = formaPagamentoSelecionado.get();
         final BigDecimal descontoValue;

@@ -5,6 +5,7 @@ import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.router.v5.ScreenContext;
+import my_app.core.AppRoutes;
 import my_app.core.db.models.FornecedorModel;
 import my_app.core.db.services.FornecedorService;
 import my_app.core.Data;
@@ -40,8 +41,8 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
 
     public FornecedorScreenViewModel(ScreenContext ctx) {
         super(ctx);
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_FORNECEDOR.name();
         this.fornecedorService = createOrReport(FornecedorService::new);
-        this.onInit();
     }
 
     @Override

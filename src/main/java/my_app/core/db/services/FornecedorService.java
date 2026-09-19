@@ -48,7 +48,7 @@ public class FornecedorService extends BaseService<FornecedorModel> {
         log.info("Fornecedor atualizado: id={} nome={}", model.getId(), model.getNome());
     }
 
-    private void validar(FornecedorModel model, Integer idAtual) throws SQLException {
+    private void validar(FornecedorModel model, Long idAtual) throws SQLException {
         String nome = model.getNome();
         if (nome == null || nome.isBlank())
             throw new IllegalArgumentException("Nome é obrigatório");

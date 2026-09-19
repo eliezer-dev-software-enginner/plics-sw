@@ -11,7 +11,7 @@ import my_app.core.components.Components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface ScreenContract<T> {
+public interface ScreenContract<T extends Identifier> {
 
     Logger log = LoggerFactory.getLogger(ScreenContract.class);
 
@@ -22,6 +22,8 @@ public interface ScreenContract<T> {
     }
 
     default void handleClickMenuDelete() {
+        if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
+
         viewModel().modoEdicaoState().set(false);
         viewModel().handleClickMenuDelete();
     }
@@ -32,8 +34,10 @@ public interface ScreenContract<T> {
     }
 
     default void handleClickMenuEdit() {
-        populateFieldsFromModel();
-        viewModel().modoEdicaoState().set(true);
+        if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
+
+        long id = viewModel().selected.get().getId();
+        viewModel().ctx.router().spawnWindow(viewModel().screenNameSpawn+"/"+id+"/edit/");
     }
 
     default Component commonCustomMenus(State<Boolean> focusState) {

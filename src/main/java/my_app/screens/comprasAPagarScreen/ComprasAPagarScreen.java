@@ -124,9 +124,8 @@ public class ComprasAPagarScreen implements ScreenComponent, ScreenContract<Cont
                 .column("Vencimento", it -> it.getDataVencimento() != null ? DatePack.millisToBrazilianDateTime(it.getDataVencimento()) : "")
                 .column("Status", it -> formatStatus(it.getStatus()))
                 .build()
-                .onItemSelectChange(vm.contaSelected::set)
-                .onChangeFocus(vm::handleFocusChange)
-                .onClickOutside(() -> vm.contaSelected.set(null));
+                .onItemSelectChange(vm.selected::set)
+                .onChangeFocus(vm::handleFocusChange);
 
         return simpleTable;
     }

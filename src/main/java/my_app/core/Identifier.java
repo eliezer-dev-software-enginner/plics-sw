@@ -8,5 +8,5 @@ import net.sf.persism.annotations.Column;
 @Setter
 public abstract class Identifier {
     @Column(primary = true)
-    private Integer id;
+    private Long id;
 }

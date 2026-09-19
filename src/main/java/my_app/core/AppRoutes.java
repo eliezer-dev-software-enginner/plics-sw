@@ -14,10 +14,12 @@ import my_app.screens.comprasAPagarScreen.ScreenAddOrEditComprasAPagar;
 import my_app.screens.comprasScreen.ComprasScreen;
 import my_app.screens.comprasScreen.ScreenAddOrEditCompras;
 import my_app.screens.contasAReceberScreen.ContasAReceberScreen;
+import my_app.screens.contasAReceberScreen.ScrenAddOrEditContasAReceber;
 import my_app.screens.empresaScreen.CadastroEmpresaScreen;
 import my_app.screens.feedbackScreen.RelatarErroScreen;
 import my_app.screens.feedbackScreen.SugerirMelhoriaScreen;
 import my_app.screens.fornecedorScreen.FornecedorScreen;
+import my_app.screens.fornecedorScreen.ScreenAddOrEditFornecedor;
 import my_app.screens.homeScreen.HomeScreen;
 import my_app.screens.infoUpdateScreen.InfoUpdateScreen;
 import my_app.screens.logsScreen.LogsScreen;
@@ -67,7 +69,9 @@ public class AppRoutes {
         ADD_OR_EDIT_CATEGORIAS,
         ADD_OR_EDIT_COMPRAS,
         ADD_OR_EDIT_COMPRAS_A_PAGAR,
+        ADD_OR_EDIT_COMPRAS_A_RECEBER,
         ADD_OR_EDIT_VENDA_MERCADORIA,
+        ADD_OR_EDIT_FORNECEDOR,
     }
 
     final int MIN_WIDTH = 600;
@@ -121,6 +125,8 @@ public class AppRoutes {
                 new Router.Route(Screens.ADD_OR_EDIT_CLIENTE.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar clientes", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_COMPRAS_A_PAGAR.name()+"/${id}/${type}", ScreenAddOrEditComprasAPagar::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar compras a pagar", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_COMPRAS.name()+"/${id}/${type}", ScreenAddOrEditCompras::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar compra de mercadoria", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_COMPRAS_A_RECEBER.name()+"/${id}/${type}", ScrenAddOrEditContasAReceber::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar conta a receber", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_FORNECEDOR.name()+"/${id}/${type}", ScreenAddOrEditFornecedor::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar fornecedor", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_VENDA_MERCADORIA.name()+"/${id}/${type}", ScreenAddOrEditVenda::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar venda de mercadoria", true))
 
         );

@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import java.sql.SQLException;
 
 
-public abstract class ScreenAddOrEdit<Model, VM extends ViewModelScreenContract<Model>> implements ScreenComponent {
+public abstract class ScreenAddOrEdit<Model extends Identifier, VM extends ViewModelScreenContract<Model>> implements ScreenComponent {
     protected VM viewModel;
 
     private final BaseService<Model> service;

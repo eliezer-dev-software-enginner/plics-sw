@@ -20,7 +20,7 @@ public class PedidoItemRepository extends BaseRepository<PedidoItemModel> {
         return PedidoItemModel.class;
     }
 
-    public List<PedidoItemModel> listarPorPedido(Integer pedidoId) throws SQLException {
+    public List<PedidoItemModel> listarPorPedido(Long pedidoId) throws SQLException {
         return session().query(
                 modelClass(),
                 sql("SELECT * FROM pedido_itens WHERE pedido_id = ? ORDER BY dataCriacao ASC"),
@@ -36,7 +36,7 @@ public class PedidoItemRepository extends BaseRepository<PedidoItemModel> {
         );
     }
 
-    public void excluirPorPedidoId(Integer pedidoId) throws SQLException {
+    public void excluirPorPedidoId(Long pedidoId) throws SQLException {
         for (var item : listarPorPedido(pedidoId)) {
             session().delete(item);
         }

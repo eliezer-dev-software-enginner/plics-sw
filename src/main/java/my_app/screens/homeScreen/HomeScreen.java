@@ -158,7 +158,6 @@ public class HomeScreen implements ScreenComponent {
                         .item("Clientes", ()-> ctx.router().spawnWindow(AppRoutes.Screens.CLIENTES.name(),e->{}))
                         .item("Categorias", ()-> ctx.router().spawnWindow(AppRoutes.Screens.CATEGORIAS.name(),e->{}))
                         .item("Produtos", ()-> ctx.router().spawnWindow(AppRoutes.Screens.PRODUTOS.name(),e->{}))
-                        .item("Técnicos", ()-> ctx.router().spawnWindow(AppRoutes.Screens.TECNICOS.name(),e->{}))
                 )
                 .menu(new Menu("Suporte")
                         .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))

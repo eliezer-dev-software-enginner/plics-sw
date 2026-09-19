@@ -2,16 +2,14 @@ package my_app.core.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import my_app.core.Identifier;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
 @Setter
 @Getter
 @Table("preferencias")
-public class PreferenciasModel {
-
-    @Column(primary = true)
-    private Integer id;
+public class PreferenciasModel extends Identifier {
 
     @Column(name = "dataCriacao")
     private long dataCriacaoMillis;

@@ -27,7 +27,7 @@ public class CategoriaService extends BaseService<CategoriaModel> {
     @Override
     public CategoriaModel salvar(CategoriaModel model) throws SQLException {
         validarCampos(model);
-        validarNome(model.getNome(), -1);
+        validarNome(model.getNome(), (long) -1);
         model.setDataCriacao(LocalDateTime.now());
         var salvo = repository.salvar(model);
         log.info("Categoria salva: id={} nome={}", salvo.getId(), salvo.getNome());
@@ -42,7 +42,7 @@ public class CategoriaService extends BaseService<CategoriaModel> {
         log.info("Categoria atualizada: id={} nome={}", model.getId(), model.getNome());
     }
 
-    private void validarNome(String nome, Integer idAtual) throws SQLException {
+    private void validarNome(String nome, Long idAtual) throws SQLException {
         boolean duplicado = repository.listar().stream()
                 .filter(c -> !c.getId().equals(idAtual))
                 .anyMatch(c -> c.getNome().equalsIgnoreCase(nome.trim()));

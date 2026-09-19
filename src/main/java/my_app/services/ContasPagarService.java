@@ -91,7 +91,7 @@ public class ContasPagarService {
             model.setDataVencimento(parcela.dataVencimento());
             model.setStatus("PENDENTE");
             model.setFornecedorId(compra.getFornecedorId());
-            model.setCompraId((int) compra.getId());
+            model.setCompraId(compra.getId());
             model.setNumeroDocumento("PARC/" + parcela.numero());
             model.setTipoDocumento("DUPLICATA");
             model.setObservacao("Gerado automaticamente da compra #" + compra.getId());

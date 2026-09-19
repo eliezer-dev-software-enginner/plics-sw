@@ -10,7 +10,7 @@ import megalodonte.application.MegalodonteApplication;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.theme.ThemeManager;
-import megalodonte.router.v4.Router;
+import megalodonte.router.v5.Router;
 import my_app.core.AppRoutes;
 import my_app.core.InitialRouteResolver;
 import my_app.core.Themes;

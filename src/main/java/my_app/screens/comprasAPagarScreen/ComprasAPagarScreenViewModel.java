@@ -5,6 +5,7 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.router.v5.ScreenContext;
+import my_app.core.AppRoutes;
 import my_app.core.db.models.ContasPagarModel;
 import my_app.core.db.models.FornecedorModel;
 import my_app.core.db.services.ContasPagarService;
@@ -53,6 +54,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
     public ComprasAPagarScreenViewModel(ScreenContext ctx) {
         super(ctx);
         this.contaService = createOrReport(ContasPagarService::new);
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_COMPRAS_A_PAGAR.name();
         this.fornecedorService = createOrReport(FornecedorService::new);
     }
 

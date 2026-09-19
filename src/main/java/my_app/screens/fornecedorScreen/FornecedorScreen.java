@@ -1,24 +1,19 @@
 package my_app.screens.fornecedorScreen;
 
-import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.*;
+import megalodonte.components.SimpleTable;
+import megalodonte.components.SpacerVertical;
+import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.FlowRow;
-import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
-import megalodonte.props.FlowRowProps;
-import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
 import megalodonte.router.v5.ScreenContext;
-import megalodonte.v2.Show;
-import my_app.core.db.models.FornecedorModel;
 import my_app.core.ScreenContract;
-import my_app.core.Data;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
+import my_app.core.db.models.FornecedorModel;
 import pack.utilities.DatePack;
 import pack.utilities.FormatterPack;
 
@@ -45,42 +40,12 @@ public class FornecedorScreen implements ScreenComponent, ScreenContract<Fornece
     }
 
     @Override
-    public Component form() {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(20))
-                        .c_child(new Row(new RowProps().centerHorizontally())
-                                .r_child(new Text("Cadastro de Fornecedor", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(informacoesPessoais())
-                        .c_child(new SpacerVertical(20))
-                        .c_child(Components.enderecoComponent(vm.enderecoState.get()))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(new LineHorizontal())
-                        .c_child(Components.TextAreaColumn("Observação", vm.observacao, "Alguma observação sobre o fornecedor?"))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(vm.btnText, this::handleAddOrUpdate)));
-    }
-
-    private Component informacoesPessoais() {
-        return new FlowRow(new FlowRowProps().spacingOf(10))
-                .r_child(disgust.io.Pack.InputColumn("Nome Fantasia *", vm.nome, "Ex: Empresa 123"))
-                .r_child(Components.SelectColumn("Tipo de pessoa", Data.tiposPessoaList, vm.tipoPessoaSelected, it -> it))
-                .r_child(Show.when(vm.tipoPessoaEhFisica,
-                        () -> Pack.InputColumnCpf("CPF", vm.cnpjCpf),
-                        () -> Pack.InputColumnCnpjAlfanumerico("CNPJ", vm.cnpjCpf)
-                ))
-                .r_child(Pack.InputColumnPhone("Celular", vm.celular))
-                .r_child(disgust.io.Pack.InputColumn("Inscrição estadual", vm.inscricaoEstadual, "Ex: 123.456.789.123"))
-                .r_child(disgust.io.Pack.InputColumn("Email", vm.email, "Ex: email@teste.com"));
-    }
-
-    @Override
-    public ViewModelScreenContract viewModel() {
+    public ViewModelScreenContract<FornecedorModel> viewModel() {
         return vm;
     }
 
     @Override
-    public SimpleTable table() {
+    public SimpleTable<FornecedorModel> table() {
         return new SimpleTable<FornecedorModel>()
                 .fromData(vm.filteredList)
                 .header().columns()

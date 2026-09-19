@@ -36,7 +36,7 @@ public class PedidoItemService extends BaseService<PedidoItemModel> {
         return salvo;
     }
 
-    public List<PedidoItemModel> listarPorPedido(Integer pedidoId) throws SQLException {
+    public List<PedidoItemModel> listarPorPedido(Long pedidoId) throws SQLException {
         return pedidoItemRepository.listarPorPedido(pedidoId);
     }
 
@@ -44,7 +44,7 @@ public class PedidoItemService extends BaseService<PedidoItemModel> {
         return pedidoItemRepository.listarPorPeriodo(dataInicio, dataFim);
     }
 
-    public void excluirPorPedidoId(Integer pedidoId) throws SQLException {
+    public void excluirPorPedidoId(Long pedidoId) throws SQLException {
         pedidoItemRepository.excluirPorPedidoId(pedidoId);
     }
 }

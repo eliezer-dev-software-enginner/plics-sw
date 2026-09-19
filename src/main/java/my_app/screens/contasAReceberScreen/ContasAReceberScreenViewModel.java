@@ -5,6 +5,7 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
 import megalodonte.router.v5.ScreenContext;
+import my_app.core.AppRoutes;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EntityEvent;
 import my_app.core.events.EventBus;
@@ -49,7 +50,6 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     public final State<List<ClienteModel>> clientes = State.of(List.of());
     public final State<ClienteModel> clienteSelected = State.of(null);
-    public final State<ContaAreceberModel> contaSelected = State.of(null);
 
     // Cache das vendas (com produto já resolvido) pra anexar em cada conta sem
     // precisar consultar o banco de novo a cada filtro de status/vencidas.
@@ -59,13 +59,13 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     public final List<String> statusOptions = List.of("TODOS", "PENDENTE", "PAGO", "PARCIAL", "ATRASADO", "CANCELADO");
     public final List<String> tipoDocumentoOptions = List.of("DUPLICATA", "BOLETO", "NOTA FISCAL", "CHEQUE", "OUTRO");
-    public final State<String> statusOptionSelected = State.of(statusOptions.getFirst());
 
     public final ComputedState<String> btnRecebimentoText = ComputedState.of(() ->
             modoRecebimento.get() ? "Registrar Recebimento" : "Receber", modoRecebimento);
 
     public ContasAReceberScreenViewModel(ScreenContext ctx) {
         super(ctx);
+        screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_COMPRAS_A_RECEBER.name();
         this.contaService = createOrReport(ContaAreceberService::new);
         this.clienteService = createOrReport(ClienteService::new);
         this.vendaService = createOrReport(VendaService::new);
@@ -135,8 +135,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public void populateFieldsFromModel() {
-        if (contaSelected.get() == null) return;
-        var conta = contaSelected.get();
+        if (selected.get() == null) return;
+        var conta = selected.get();
 
         descricao.set(conta.getDescricao());
         valorOriginal.set(Utils.deRealParaCentavos(conta.getValorOriginal()));
@@ -167,7 +167,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         observacao.set("");
         modoRecebimento.set(false);
         valorRecebimento.set("0");
-        contaSelected.set(null);
+        selected.set(null);
         if (!clientes.get().isEmpty()) {
             clienteSelected.set(clientes.get().getFirst());
         }
@@ -175,10 +175,10 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public void handleAddOrUpdate() {
-        if (modoEdicao.get() && contaSelected.get() == null) return;
+        if (modoEdicao.get() && selected.get() == null) return;
 
         // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
-        // modoEdicao.get() internamente pra decidir se reaproveita contaSelected ou
+        // modoEdicao.get() internamente pra decidir se reaproveita selected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
         // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
@@ -196,28 +196,26 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public void handleClickMenuDelete() {
-        var selected = contaSelected.get();
-        if (selected == null) return;
+        if (selected.get() == null) return;
 
-        Components.ShowAlertAdvice("Deseja excluir \"" + selected.getDescricao() + "\"?", () -> Async.Run(() -> {
+        Components.ShowAlertAdvice("Deseja excluir \"" +selected.get().getDescricao() + "\"?", () -> Async.Run(() -> {
             try {
-                contaService.excluir(selected.getId());
+                contaService.excluir(selected.get().getId());
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(c -> c.getId().equals(selected.getId()));
+                    allDataList.removeIf(c -> c.getId().equals(selected.get().getId()));
                     Components.ShowPopup(ctx, "Conta excluída com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
-                log.error("Erro ao excluir conta a receber id={}", selected.getId(), e);
+                log.error("Erro ao excluir conta a receber id={}",selected.get().getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
         }));
     }
 
     public void registrarRecebimento(ScreenContext ctx) {
-        var selected = contaSelected.get();
-        if (selected == null) {
+        if (selected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar recebimento"));
             return;
         }
@@ -226,8 +224,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
         Async.Run(() -> {
             try {
-                contaService.registrarRecebimento(selected.getId(), valorRecebimentoBig);
-                var updated = contaService.buscarById(selected.getId());
+                contaService.registrarRecebimento(selected.get().getId(), valorRecebimentoBig);
+                var updated = contaService.buscarById(selected.get().getId());
 
                 if (updated.getClienteId() != null) {
                     clientes.get().stream()
@@ -237,30 +235,29 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                 }
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.get().getId()), c -> updated);
                     Components.ShowPopup(ctx, "Recebimento registrado com sucesso!");
                     valorRecebimento.set("0");
                     modoRecebimento.set(false);
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
-                log.error("Erro ao registrar recebimento id={}", selected.getId(), e);
+                log.error("Erro ao registrar recebimento id={}",selected.get().getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao registrar recebimento: " + e.getMessage()));
             }
         });
     }
 
     public void quitarConta(ScreenContext ctx) {
-        var selected = contaSelected.get();
-        if (selected == null) {
+        if (selected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
             return;
         }
 
         Async.Run(() -> {
             try {
-                contaService.registrarRecebimento(selected.getId(), selected.getValorRestante());
-                var updated = contaService.buscarById(selected.getId());
+                contaService.registrarRecebimento(selected.get().getId(),selected.get().getValorRestante());
+                var updated = contaService.buscarById(selected.get().getId());
 
                 if (updated.getClienteId() != null) {
                     clientes.get().stream()
@@ -270,12 +267,12 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                 }
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(c -> c.getId().equals(selected.getId()), c -> updated);
+                    allDataList.updateIf(c -> c.getId().equals(selected.get().getId()), c -> updated);
                     Components.ShowPopup(ctx, "Conta quitada com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {
-                log.error("Erro ao quitar conta a receber id={}", selected.getId(), e);
+                log.error("Erro ao quitar conta a receber id={}",selected.get().getId(), e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao quitar conta: " + e.getMessage()));
             }
         });
@@ -320,8 +317,8 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public ContaAreceberModel populateModelFromFields() {
-        boolean isNew = !(modoEdicao.get() && contaSelected.get() != null);
-        var model = isNew ? new ContaAreceberModel() : contaSelected.get();
+        boolean isNew = !(modoEdicao.get() && selected.get() != null);
+        var model = isNew ? new ContaAreceberModel() : selected.get();
 
         model.setDescricao(descricao.get());
         model.setValorOriginal(CurrencyPack.deCentavosParaReal(valorOriginal.get()));

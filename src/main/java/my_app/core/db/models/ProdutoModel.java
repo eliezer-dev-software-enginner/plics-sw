@@ -2,6 +2,7 @@ package my_app.core.db.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import my_app.core.Identifier;
 import net.sf.persism.annotations.Column;
 import net.sf.persism.annotations.Table;
 
@@ -11,10 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Table("produtos")
-public class ProdutoModel {
-
-    @Column(primary = true)
-    private Integer id;
+public class ProdutoModel extends Identifier {
 
     @Column(name = "codigo_barras")
     private String codigoBarras;
@@ -34,10 +32,10 @@ public class ProdutoModel {
     private String marca;
 
     @Column(name = "categoria_id")
-    private Integer categoriaId;
+    private Long categoriaId;
 
     @Column(name = "fornecedor_id")
-    private Integer fornecedorId;
+    private Long fornecedorId;
 
     private BigDecimal estoque;
 

@@ -119,7 +119,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
         return contasAReceberRepository.buscarPorPeriodo(dataInicio, dataFim);
     }
 
-    public List<ContaAreceberModel> buscarPorVenda(Integer vendaId) throws SQLException {
+    public List<ContaAreceberModel> buscarPorVenda(Long vendaId) throws SQLException {
         return contasAReceberRepository.buscarPorVenda(vendaId);
     }
 
@@ -130,7 +130,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void gerarContasDeVenda(Integer vendaId, Integer clienteId, java.util.List<Parcela> parcelas) throws SQLException {
+    public void gerarContasDeVenda(Long vendaId, Long clienteId, java.util.List<Parcela> parcelas) throws SQLException {
         if (vendaId == null) throw new IllegalArgumentException("Venda inválida");
         if (parcelas == null || parcelas.isEmpty()) throw new IllegalArgumentException("Parcelas não informadas");
 
@@ -159,7 +159,7 @@ public class ContaAreceberService extends BaseService<ContaAreceberModel> {
         return contasAReceberRepository.somarReceitasPorPeriodo(dataInicio, dataFim);
     }
 
-    public void excluirPorVendaId(Integer vendaId) throws SQLException {
+    public void excluirPorVendaId(Long vendaId) throws SQLException {
         contasAReceberRepository.excluirPorVendaId(vendaId);
     }
 

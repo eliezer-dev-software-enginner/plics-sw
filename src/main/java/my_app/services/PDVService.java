@@ -36,7 +36,7 @@ public final class PDVService {
     public PedidoModel finalizarVenda(
             List<ItemVenda> itens,
             String formaPagamento,
-            Integer clienteId,
+            Long clienteId,
             boolean isFiado,
             int numeroParcelas
     ) throws SQLException {
@@ -46,7 +46,7 @@ public final class PDVService {
     public PedidoModel finalizarVenda(
             List<ItemVenda> itens,
             String formaPagamento,
-            Integer clienteId,
+            Long clienteId,
             boolean isFiado,
             int numeroParcelas,
             BigDecimal desconto
@@ -57,7 +57,7 @@ public final class PDVService {
     public PedidoModel finalizarVenda(
             List<ItemVenda> itens,
             String formaPagamento,
-            Integer clienteId,
+            Long clienteId,
             boolean isFiado,
             int numeroParcelas,
             BigDecimal desconto,
@@ -93,7 +93,7 @@ public final class PDVService {
             Session sess,
             List<ItemVenda> itens,
             String formaPagamento,
-            Integer clienteId,
+            Long clienteId,
             boolean isFiado,
             BigDecimal desconto,
             BigDecimal frete,
@@ -146,7 +146,7 @@ public final class PDVService {
 
     // Reverso de finalizarVenda(): devolve o estoque de cada item, apaga os itens e
     // as contas a receber vinculadas (se a venda era fiada) e por fim o pedido.
-    public void excluirVenda(int pedidoId) throws SQLException {
+    public void excluirVenda(Long pedidoId) throws SQLException {
         var sess = session != null ? session : DB.getPersismSession();
         var thrown = new SQLException[1];
 
@@ -185,7 +185,7 @@ public final class PDVService {
 
     // Igual a excluirVenda() na devolução de estoque e contas, mas preserva o pedido
     // (marca devolvida=true em vez de apagar), mantendo o histórico do caixa.
-    public void devolverVenda(int pedidoId) throws SQLException {
+    public void devolverVenda(Long pedidoId) throws SQLException {
         var sess = session != null ? session : DB.getPersismSession();
         var thrown = new SQLException[1];
 
@@ -253,7 +253,7 @@ public final class PDVService {
     // cria um pedido novo com os itens trocados. A original fica devolvida=true pelo valor
     // antigo; o pedido novo sai pelo valor dos itens novos — a diferença fica registrada
     // entre os dois. O novo nunca é fiado: a troca quita no balcão, não recria dívida.
-    public PedidoModel trocarVenda(int pedidoId, List<ItemVenda> itensNovos, String formaPagamento) throws SQLException {
+    public PedidoModel trocarVenda(Long pedidoId, List<ItemVenda> itensNovos, String formaPagamento) throws SQLException {
         if (itensNovos == null || itensNovos.isEmpty())
             throw new IllegalArgumentException("Informe pelo menos um produto para a troca");
 

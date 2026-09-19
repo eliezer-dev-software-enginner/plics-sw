@@ -20,7 +20,7 @@ public class VendaModel extends Identifier {
     private String produtoCod;
 
     @Column(name = "cliente_id")
-    private Integer clienteId;
+    private Long clienteId;
 
     private BigDecimal quantidade;
 

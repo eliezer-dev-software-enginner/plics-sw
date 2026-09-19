@@ -60,7 +60,7 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
         onInit();
     }
 
-    @Override
+
     protected void onInit() {
         trocaBuscaInput.subscribe(this::filtrarProdutosTroca);
 
@@ -125,7 +125,7 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
         return false;
     }
 
-    public void preparar(Integer pedidoId) {
+    public void preparar(Long pedidoId) {
         Async.Run(() -> {
             try {
                 var pedido = pedidoService.buscarById(pedidoId);

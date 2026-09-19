@@ -133,7 +133,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         return field != null && field.toLowerCase().contains(query);
     }
 
-    @Override
     protected void onInit() {
         qtd.subscribe(v -> atualizarEstoqueVisual());
         opcaoEstoqueSelected.subscribe(v -> atualizarEstoqueVisual());
@@ -425,7 +424,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
         Async.Run(() -> {
             try {
-                Integer vendaId = data.getId();
+                Long vendaId = data.getId();
                 // excluir() primeiro: ele pode falhar (ex: produto da venda não existe mais
                 // no catálogo e não dá pra devolver estoque). Se excluirPorVendaId rodasse
                 // antes e excluir() falhasse depois, as contas a receber já teriam sido
@@ -464,7 +463,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
                 "Confirma a devolução desta venda? O estoque será restituído e o pagamento vinculado será estornado.",
                 () -> Async.Run(() -> {
                     try {
-                        Integer vendaId = data.getId();
+                        Long vendaId = data.getId();
                         vendaService.devolver(vendaId);
                         reloadProdutos();
 
@@ -525,7 +524,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         model.setProdutoCod(produtoEncontrado.get() != null ? produtoEncontrado.get().getCodigoBarras() : null);
 
         var cliente = clienteSelected.get();
-        Integer clienteId = cliente != null ? cliente.getId() : null;
+        Long clienteId = cliente != null ? cliente.getId() : null;
         model.setClienteId(clienteId);
         model.setCliente(clienteId != null
                 ? clientes.get().stream().filter(c -> c.getId().equals(clienteId)).findFirst().orElse(cliente)

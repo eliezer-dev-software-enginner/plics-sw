@@ -21,12 +21,12 @@ public class PedidoDetails implements ScreenComponent {
 
     private final ScreenContext ctx;
     private final PedidoTrocaViewModel vm;
-    private final Integer pedidoId;
+    private final Long pedidoId;
 
     public PedidoDetails(ScreenContext ctx) {
         this.ctx = ctx;
         this.vm = new PedidoTrocaViewModel(ctx);
-        this.pedidoId = Integer.parseInt(ctx.getParams().get("id"));
+        this.pedidoId = Long.parseLong(ctx.getParams().get("id"));
     }
 
     @Override

@@ -48,7 +48,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
             pedidoSelecionado);
 
     // Cache id -> nome, só pra exibir na tabela (evita N chamadas ao clicar em cada linha)
-    private final Map<Integer, String> nomesClientes = new HashMap<>();
+    private final Map<Long, String> nomesClientes = new HashMap<>();
 
     public PedidosScreenViewModel(ScreenContext ctx) {
         super(ctx);
@@ -90,7 +90,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         return nomesClientes.getOrDefault(pedido.getClienteId(), "Cliente #" + pedido.getClienteId());
     }
 
-    @Override
+
     protected void onInit() {
         pedidoSelecionado.subscribe(pedido -> {
             if (pedido == null) {
@@ -243,7 +243,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         });
     }
 
-    private void loadItensDoPedido(Integer pedidoId) {
+    private void loadItensDoPedido(Long pedidoId) {
         Async.Run(() -> {
             try {
                 var itens = pedidoItemService.listarPorPedido(pedidoId);

@@ -53,7 +53,7 @@ public class ContasAReceberRepository extends BaseRepository<ContaAreceberModel>
         );
     }
 
-    public List<ContaAreceberModel> buscarPorVenda(Integer vendaId) throws SQLException {
+    public List<ContaAreceberModel> buscarPorVenda(Long vendaId) throws SQLException {
         return session().query(
                 modelClass(),
                 sql("SELECT * FROM contas_a_receber WHERE venda_id = ? ORDER BY data_vencimento ASC"),
@@ -61,7 +61,7 @@ public class ContasAReceberRepository extends BaseRepository<ContaAreceberModel>
         );
     }
 
-    public void excluirPorVendaId(Integer vendaId) throws SQLException {
+    public void excluirPorVendaId(Long vendaId) throws SQLException {
         var contas = buscarPorVenda(vendaId);
         for (var conta : contas) {
             session().delete(conta);
