@@ -8,6 +8,7 @@ import my_app.screens.acessoBloqueadoScreen.AcessoBloqueadoScreen;
 import my_app.screens.authScreen.AuthScreen;
 import my_app.screens.categoriaScreen.AddOrEditCategorias;
 import my_app.screens.categoriaScreen.CategoriaScreen;
+import my_app.screens.clienteScreen.AddOrEditClientes;
 import my_app.screens.clienteScreen.ClienteScreen;
 import my_app.screens.comprasAPagarScreen.ComprasAPagarScreen;
 import my_app.screens.comprasAPagarScreen.ScreenAddOrEditComprasAPagar;
@@ -122,7 +123,7 @@ public class AppRoutes {
                 new Router.Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false)),
                 new Router.Route(Screens.ADD_OR_EDIT_PRODUTO.name()+"/${id}/${type}", AddOrEditProduto::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar produto", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_CATEGORIAS.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar categoria", true)),
-                new Router.Route(Screens.ADD_OR_EDIT_CLIENTE.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar clientes", true)),
+                new Router.Route(Screens.ADD_OR_EDIT_CLIENTE.name()+"/${id}/${type}", AddOrEditClientes::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar clientes", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_COMPRAS_A_PAGAR.name()+"/${id}/${type}", ScreenAddOrEditComprasAPagar::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar compras a pagar", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_COMPRAS.name()+"/${id}/${type}", ScreenAddOrEditCompras::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar compra de mercadoria", true)),
                 new Router.Route(Screens.ADD_OR_EDIT_COMPRAS_A_RECEBER.name()+"/${id}/${type}", ScrenAddOrEditContasAReceber::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar conta a receber", true)),
