@@ -665,11 +665,11 @@ public class Components {
 
         return new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md()))
                 .children(
-                        MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", () -> executar(onClickNew::run)),
+                        MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", onClickNew::run),
                         Show.when(focusState, ()-> new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md())).children(
-                                MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)),
-                                MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)),
-                                MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run))
+                                MenuItem("Editar", Entypo.EDIT, "blue", onEdit::run),
+                                MenuItem("Excluir", Entypo.TRASH, "red", onDelete::run),
+                                MenuItem("Clonar", Entypo.COPY, "black", onClone::run)
                         )).withTransition(Animations::fadeSlide)
                 );
     }
@@ -677,10 +677,10 @@ public class Components {
     @Deprecated
     public static Row commonCustomMenus(Runnable onClickNew, Runnable onEdit, Runnable onDelete, Runnable onClone) {
         return new Row(new RowProps().spacingOf(20))
-                .r_child(MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", () -> executar(onClickNew::run)))
-                .r_child(MenuItem("Editar", Entypo.EDIT, "blue", () -> executar(onEdit::run)))
-                .r_child(MenuItem("Excluir", Entypo.TRASH, "red", () -> executar(onDelete::run)))
-                .r_child(MenuItem("Clonar", Entypo.COPY, "black", () -> executar(onClone::run)))
+                .r_child(MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", onClickNew::run))
+                .r_child(MenuItem("Editar", Entypo.EDIT, "blue", onEdit::run))
+                .r_child(MenuItem("Excluir", Entypo.TRASH, "red", onDelete::run))
+                .r_child(MenuItem("Clonar", Entypo.COPY, "black", onClone::run))
                 .r_child(new SpacerHorizontal().fill())
                 //.r_child(MenuItem("Sair", Entypo.REPLY, "red", () -> router.closeSpawn("cad-produtos/"+id)));
                 ;
@@ -710,17 +710,5 @@ public class Components {
         return new megalodonte.components.inputs.Input(stateInput,getInputProps(placeholder).width(300))
                 .left(icon);
     }
-
-    private static void executar(Action action) {
-        try {
-            action.run();
-        } catch (Exception e) {
-            IO.println("Error: " + e.getMessage());
-        }
-    }
-
-    @FunctionalInterface
-    interface Action {
-        void run() throws Exception;
-    }
+    
 }
