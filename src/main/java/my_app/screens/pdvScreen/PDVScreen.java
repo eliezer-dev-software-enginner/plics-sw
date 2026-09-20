@@ -10,7 +10,7 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.db.models.ClienteModel;
 import my_app.core.Data;
@@ -22,7 +22,7 @@ public class PDVScreen implements ScreenComponent {
 
     private final PDVScreenViewModel vm;
 
-    public PDVScreen(ScreenContext ctx) {
+    public PDVScreen(ScreenContextInterface ctx) {
         this.vm = new PDVScreenViewModel(ctx);
     }
 

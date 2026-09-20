@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.ContasPagarModel;
 import my_app.core.db.models.FornecedorModel;
@@ -51,7 +51,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
     public final ComputedState<String> btnPagamentoText = ComputedState.of(() ->
             modoPagamento.get() ? "Registrar Pagamento" : "Pagar", modoPagamento);
 
-    public ComprasAPagarScreenViewModel(ScreenContext ctx) {
+    public ComprasAPagarScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         this.contaService = createOrReport(ContasPagarService::new);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_COMPRAS_A_PAGAR.name();
@@ -142,16 +142,16 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
     @Override
     public void handleAddOrUpdate() {
-        if (modoEdicao.get() && selected.get() == null) return;
+        if (isEditing && selected.get() == null) return;
 
         // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
-        // modoEdicao.get() internamente pra decidir se reaproveita selected ou
+        // isEditing internamente pra decidir se reaproveita selected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
         // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
         // essa chamada), fazendo toda edição tentar dar update num model novo sem id
         // (mesmo bug corrigido em outras telas).
-        boolean editando = modoEdicao.get();
+        boolean editando = isEditing;
         var model = populateModelFromFields();
 
         if (editando) {
@@ -180,7 +180,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         }));
     }
 
-    public void registrarPagamento(ScreenContext ctx) {
+    public void registrarPagamento(ScreenContextInterface ctx) {
         if (selected == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar pagamento"));
             return;
@@ -213,7 +213,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
         });
     }
 
-    public void quitarConta(ScreenContext ctx) {
+    public void quitarConta(ScreenContextInterface ctx) {
         if (selected == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
             return;
@@ -280,7 +280,7 @@ public class ComprasAPagarScreenViewModel extends ViewModelScreenContract<Contas
 
     @Override
     public ContasPagarModel populateModelFromFields() {
-        boolean isNew = !(modoEdicao.get() && selected.get() != null);
+        boolean isNew = !(isEditing && selected.get() != null);
         var model = isNew ? new ContasPagarModel() : selected.get();
 
         model.setDescricao(descricao.get());

@@ -9,7 +9,7 @@ import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
@@ -19,9 +19,9 @@ import pack.utilities.FormatterPack;
 
 public class FornecedorScreen implements ScreenComponent, ScreenContract<FornecedorModel> {
     private final FornecedorScreenViewModel vm;
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
 
-    public FornecedorScreen(ScreenContext ctx) {
+    public FornecedorScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new FornecedorScreenViewModel(ctx);
     }

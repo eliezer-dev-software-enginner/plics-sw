@@ -18,7 +18,7 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.components.Components;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
@@ -28,7 +28,7 @@ public class RelatoriosScreen implements ScreenComponent {
 
     private final RelatoriosScreenViewModel vm;
 
-    public RelatoriosScreen(ScreenContext ctx) {
+    public RelatoriosScreen(ScreenContextInterface ctx) {
         this.vm = new RelatoriosScreenViewModel(ctx);
     }
 

@@ -14,14 +14,14 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.AppRoutes;
 
 public class WelcomeScreen implements ScreenComponent {
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final Ref<Image> logoRef = new Ref<>();
 
-    public WelcomeScreen(ScreenContext ctx) {
+    public WelcomeScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
     }
 

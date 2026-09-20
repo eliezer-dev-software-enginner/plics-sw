@@ -6,7 +6,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.ScreenAddOrEdit;
 import my_app.core.components.Components;
 import my_app.core.db.models.CategoriaModel;
@@ -19,7 +19,7 @@ import java.sql.SQLException;
 
 public class AddOrEditCategorias extends ScreenAddOrEdit<CategoriaModel, CategoriaScreenViewModel> {
 
-    public AddOrEditCategorias(ScreenContext screenContext) {
+    public AddOrEditCategorias(ScreenContextInterface screenContext) {
         super(screenContext);
     }
 
@@ -31,13 +31,13 @@ public class AddOrEditCategorias extends ScreenAddOrEdit<CategoriaModel, Categor
                         new Row(new RowProps().bottomVertically().spacingOf(10))
                                 .r_child(
                                         disgust.io.Pack.InputColumn("Nome *", viewModel.nome, "Ex: Eletrônicos")),
-                        Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)
+                        Components.actionButton(getBtnActionText(), this::handleAddOrUpdate)
                 )
         );
     }
 
     @Override
-    protected CategoriaScreenViewModel getViewModel(ScreenContext screenContext) {
+    protected CategoriaScreenViewModel getViewModel(ScreenContextInterface screenContext) {
         return new CategoriaScreenViewModel(screenContext);
     }
 

@@ -12,12 +12,12 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 
 public class LogsScreen implements ScreenComponent {
     private final LogsScreenViewModel vm;
 
-    public LogsScreen(ScreenContext ctx) {
+    public LogsScreen(ScreenContextInterface ctx) {
         this.vm = new LogsScreenViewModel();
     }
 

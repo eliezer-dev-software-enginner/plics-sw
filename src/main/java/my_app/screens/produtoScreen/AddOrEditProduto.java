@@ -17,7 +17,7 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.Data;
 import my_app.core.ScreenAddOrEdit;
@@ -37,7 +37,7 @@ import java.util.List;
 
 public class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel,ProdutoScreenViewModel> {
 
-    public AddOrEditProduto(ScreenContext screenContext) {
+    public AddOrEditProduto(ScreenContextInterface screenContext) {
       super(screenContext);
     }
 
@@ -55,7 +55,7 @@ public class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel,ProdutoScreen
                                                         Components.CardImageSelector(viewModel.imagem, handleChangeImage)
                                                 ),
                                         new SpacerVertical(ThemeManager.theme().spacing().md()),
-                                        Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)
+                                        Components.actionButton(getBtnActionText(), this::handleAddOrUpdate)
                                 )),
                 new CardProps()
                         .paddingAll(10)
@@ -146,7 +146,7 @@ public class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel,ProdutoScreen
     };
 
     @Override
-    protected ProdutoScreenViewModel getViewModel(ScreenContext screenContext) {
+    protected ProdutoScreenViewModel getViewModel(ScreenContextInterface screenContext) {
         return new ProdutoScreenViewModel(screenContext);
     }
 

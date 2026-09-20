@@ -4,7 +4,7 @@ import javafx.stage.FileChooser;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.db.models.EmpresaModel;
 import my_app.core.db.services.EmpresaService;
 import my_app.core.components.Components;
@@ -16,7 +16,7 @@ import java.io.File;
 public class EmpresaViewModel {
     private static final Logger log = LoggerFactory.getLogger(EmpresaViewModel.class);
 
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final EmpresaService empresaService;
 
     final State<String> nome = State.of("");
@@ -31,7 +31,7 @@ public class EmpresaViewModel {
     final State<String> localPagamento = State.of("");
     final State<String> textoResponsabilidade = State.of("");
 
-    public EmpresaViewModel(ScreenContext ctx) {
+    public EmpresaViewModel(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.empresaService = createOrReport(EmpresaService::new);
     }

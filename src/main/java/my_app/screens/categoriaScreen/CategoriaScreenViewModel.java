@@ -3,7 +3,7 @@ package my_app.screens.categoriaScreen;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.CategoriaModel;
 import my_app.core.db.services.CategoriaService;
@@ -19,7 +19,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
 
     final State<String> nome = new State<>("");
 
-    public CategoriaScreenViewModel(ScreenContext ctx) {
+    public CategoriaScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_CATEGORIAS.name();
         this.categoriaService = createOrReport(CategoriaService::new);
@@ -55,7 +55,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
 
     @Override
     public CategoriaModel populateModelFromFields() {
-        var model = modoEdicao.get() && selected.get() != null
+        var model = isEditing && selected.get() != null
                 ? selected.get()
                 : new CategoriaModel();
         model.setNome(nome.get().trim());
@@ -85,11 +85,10 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
 
     @Override
     public void handleAddOrUpdate() {
-        boolean editando = modoEdicao.get();
         var model = populateModelFromFields();
         Async.Run(() -> {
             try {
-                if (editando) {
+                if (isEditing) {
                     if (model == null) return;
                     categoriaService.atualizar(model);
                     CategoriaModel atualizada = new CategoriaModel();
@@ -121,7 +120,6 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
     @Override
     public void clearForm() {
         nome.set("");
-        modoEdicao.set(false);
     }
 
     @Override

@@ -16,13 +16,13 @@ import megalodonte.props.ButtonVariant;
 import megalodonte.props.ContainerProps;
 import megalodonte.props.ImageProps;
 import megalodonte.props.RowProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.components.Components;
 
 public class CadastroEmpresaScreen implements ScreenComponent {
     private final EmpresaViewModel vm;
 
-    public CadastroEmpresaScreen(ScreenContext ctx) {
+    public CadastroEmpresaScreen(ScreenContextInterface ctx) {
        vm =  new EmpresaViewModel(ctx);
     }
 

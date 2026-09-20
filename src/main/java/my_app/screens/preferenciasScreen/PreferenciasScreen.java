@@ -15,7 +15,7 @@ import megalodonte.props.ButtonVariant;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.Data;
 import my_app.core.components.Components;
@@ -24,7 +24,7 @@ public class PreferenciasScreen implements ScreenComponent {
 
     private final PreferenciasViewModel vm;
 
-    public PreferenciasScreen(ScreenContext ctx) {
+    public PreferenciasScreen(ScreenContextInterface ctx) {
         this.vm = new PreferenciasViewModel(ctx);
     }
 

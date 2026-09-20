@@ -7,16 +7,16 @@ import megalodonte.components.Card;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.components.Components;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.RowProps;
 
 public class RelatarErroScreen implements ScreenComponent {
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final FeedbackViewModel vm;
 
-    public RelatarErroScreen(ScreenContext ctx) {
+    public RelatarErroScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new FeedbackViewModel();
     }

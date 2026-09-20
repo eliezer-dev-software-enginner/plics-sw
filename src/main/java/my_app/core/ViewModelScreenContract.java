@@ -1,27 +1,25 @@
 package my_app.core;
 
-import megalodonte.ComputedState;
 import megalodonte.application.ErrorReporter;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.utils.ThrowingSupplier;
 import megalodonte.v2.ListState;
 
 public abstract class ViewModelScreenContract<Model extends Identifier> {
     public String screenNameSpawn = "";
-    protected final ScreenContext ctx;
-    protected final State<Boolean> modoEdicao = State.of(false);
+    protected final ScreenContextInterface ctx;
 
     public final State<Boolean> focusState = new State<>(false);
-
-    public final ComputedState<String> btnText = ComputedState.of(() -> modoEdicao.get() ? "Atualizar" : "+ Adicionar", modoEdicao);
 
     public final State<String> searchState = new State<>("");
     public final ListState<Model> allDataList = ListState.ofEmpty();
     public final ListState<Model> filteredList = ListState.ofEmpty();
     public final State<Model> selected = State.of(null);
 
-    public ViewModelScreenContract(ScreenContext ctx) {
+    protected boolean isEditing = false;
+
+    public ViewModelScreenContract(ScreenContextInterface ctx) {
         this.ctx = ctx;
 
         searchState.subscribe(_ -> applyFilter());
@@ -58,10 +56,6 @@ public abstract class ViewModelScreenContract<Model extends Identifier> {
     //filteredList é o que vai preencher a tabela
     public abstract void fetchListData();
 
-    public State<Boolean> modoEdicaoState(){
-        return modoEdicao;
-    }
-
     public void handleFocusChange(boolean focus) {
         focusState.set(focus);
     }
@@ -73,5 +67,11 @@ public abstract class ViewModelScreenContract<Model extends Identifier> {
             ErrorReporter.handle(e);
             throw new IllegalStateException(e); // interrompe a construção da tela de forma previsível
         }
+    }
+
+    public void isEditing() {
+        isEditing = true;
+    }public void finishEditing() {
+        isEditing = false;
     }
 }

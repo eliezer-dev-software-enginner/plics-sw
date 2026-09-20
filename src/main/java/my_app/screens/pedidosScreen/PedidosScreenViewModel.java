@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.db.models.ContaAreceberModel;
 import my_app.core.db.models.EmpresaModel;
 import my_app.core.db.services.ContaAreceberService;
@@ -50,7 +50,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     // Cache id -> nome, só pra exibir na tabela (evita N chamadas ao clicar em cada linha)
     private final Map<Long, String> nomesClientes = new HashMap<>();
 
-    public PedidosScreenViewModel(ScreenContext ctx) {
+    public PedidosScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         this.pedidoService = createOrReport(PedidoService::new);
         this.pedidoItemService = createOrReport(PedidoItemService::new);

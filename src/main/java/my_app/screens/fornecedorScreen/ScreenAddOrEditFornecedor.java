@@ -14,7 +14,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.FlowRowProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.Data;
 import my_app.core.ScreenAddOrEdit;
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 
 public class ScreenAddOrEditFornecedor extends ScreenAddOrEdit<FornecedorModel, FornecedorScreenViewModel> {
 
-    public ScreenAddOrEditFornecedor(ScreenContext screenContext) {
+    public ScreenAddOrEditFornecedor(ScreenContextInterface screenContext) {
         super(screenContext);
     }
 
@@ -47,7 +47,7 @@ public class ScreenAddOrEditFornecedor extends ScreenAddOrEdit<FornecedorModel, 
                         .c_child(new LineHorizontal())
                         .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre o fornecedor?"))
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)));
+                        .c_child(Components.actionButton(getBtnActionText(), this::handleAddOrUpdate)));
     }
 
     private Component informacoesPessoais() {
@@ -64,7 +64,7 @@ public class ScreenAddOrEditFornecedor extends ScreenAddOrEdit<FornecedorModel, 
     }
 
     @Override
-    protected FornecedorScreenViewModel getViewModel(ScreenContext screenContext) {
+    protected FornecedorScreenViewModel getViewModel(ScreenContextInterface screenContext) {
         return new FornecedorScreenViewModel(screenContext);
     }
 

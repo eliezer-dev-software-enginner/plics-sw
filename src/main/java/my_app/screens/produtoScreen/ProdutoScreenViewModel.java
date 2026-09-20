@@ -3,7 +3,7 @@ package my_app.screens.produtoScreen;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
 import my_app.core.events.EntityEvent;
@@ -74,7 +74,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     public final State<String> frete = new State<>("0");
     public final State<String> aceitaDevolucao = new State<>("Não");
 
-    public ProdutoScreenViewModel(ScreenContext ctx) {
+    public ProdutoScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         this.produtoService = createOrReport(ProdutoService::new);
         this.fornecedorService = createOrReport(FornecedorService::new);
@@ -195,13 +195,13 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         }
 
         // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
-        // modoEdicao.get() internamente pra decidir se reaproveita selected ou
+        // isEditing internamente pra decidir se reaproveita selected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
         // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
         // essa chamada), fazendo toda edição tentar dar update num model novo sem id
         // (mesmo bug corrigido em outras telas).
-        boolean editando = modoEdicao.get();
+        boolean editando = isEditing;
         var model = populateModelFromFields();
 
         if (editando) {
@@ -276,7 +276,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
 
     @Override
     public ProdutoModel populateModelFromFields() {
-        var model = modoEdicao.get() && selected.get() != null
+        var model = isEditing && selected.get() != null
                 ? selected.get()
                 : new ProdutoModel();
 
@@ -362,7 +362,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         aceitaDevolucao.set(Boolean.TRUE.equals(model.getAceitaDevolucao()) ? "Sim" : "Não");
     }
 
-    public ScreenContext getCtx() {
+    public ScreenContextInterface getCtx() {
         return ctx;
     }
 

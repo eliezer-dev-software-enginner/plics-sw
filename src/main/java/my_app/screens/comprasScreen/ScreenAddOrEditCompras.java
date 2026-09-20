@@ -10,7 +10,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.FlowRowProps;
 import megalodonte.props.RowProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.Data;
 import my_app.core.ScreenAddOrEdit;
 import my_app.core.components.Components;
@@ -25,7 +25,7 @@ import java.sql.SQLException;
 
 public class ScreenAddOrEditCompras extends ScreenAddOrEdit<CompraModel, ComprasScreenViewModel> {
 
-    public ScreenAddOrEditCompras(ScreenContext screenContext) {
+    public ScreenAddOrEditCompras(ScreenContextInterface screenContext) {
         super(screenContext);
     }
 
@@ -41,7 +41,7 @@ public class ScreenAddOrEditCompras extends ScreenAddOrEdit<CompraModel, Compras
                         .r_child(Components.TextWithValue("Estoque após compra:", viewModel.estoqueAtual)),
                 Components.displayOperationsRow(viewModel.totais),
                 Components.aPrazoForm(viewModel.parcelas, viewModel.tipoPagamentoSelectedIsAPrazo, viewModel.totais.totalLiquido),
-                Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)
+                Components.actionButton(getBtnActionText(), this::handleAddOrUpdate)
         );
     }
 
@@ -69,7 +69,7 @@ public class ScreenAddOrEditCompras extends ScreenAddOrEdit<CompraModel, Compras
     }
 
     @Override
-    protected ComprasScreenViewModel getViewModel(ScreenContext screenContext) {
+    protected ComprasScreenViewModel getViewModel(ScreenContextInterface screenContext) {
         return new ComprasScreenViewModel(screenContext);
     }
 

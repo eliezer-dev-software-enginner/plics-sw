@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.ClienteModel;
 import my_app.core.db.services.ClienteService;
@@ -49,7 +49,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     final State<EnderecoState> enderecoState = new State<>(new EnderecoState());
 
-    public ClienteViewModel(ScreenContext ctx) {
+    public ClienteViewModel(ScreenContextInterface ctx) {
         super(ctx);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_CLIENTE.name();
         this.clienteService = createOrReport(ClienteService::new);
@@ -103,7 +103,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public ClienteModel populateModelFromFields() {
-        var model = modoEdicao.get() && selected.get() != null
+        var model = isEditing && selected.get() != null
                 ? selected.get()
                 : new ClienteModel();
 
@@ -175,16 +175,16 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public void handleAddOrUpdate() {
-        if (modoEdicao.get() && selected.get() == null) return;
+        if (isEditing && selected.get() == null) return;
 
         // editando/model capturados aqui, síncronos (thread da UI) — não dentro do
         // Async.Run abaixo. ScreenContract.handleAddOrUpdate() chama
         // modoEdicaoState().set(false) logo depois de disparar essa chamada, então
-        // ler modoEdicao.get() só depois de já estar rodando na thread virtual do
+        // ler isEditing só depois de já estar rodando na thread virtual do
         // Async.Run quase sempre lê o valor já resetado — toda edição virava
         // cadastro novo. Mesmo bug já corrigido antes em CategoriaScreenViewModel/
         // VendaMercadoriaScreenViewModel; aqui ainda não tinha sido.
-        boolean editando = modoEdicao.get();
+        boolean editando = isEditing;
         var model = populateModelFromFields();
 
         Async.Run(() -> {

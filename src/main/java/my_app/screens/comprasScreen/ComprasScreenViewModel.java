@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
@@ -84,7 +84,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
     public final Components.InputRef quantidadeRef = new Components.InputRef();
 
-    public ComprasScreenViewModel(ScreenContext ctx) {
+    public ComprasScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_COMPRAS.name();
         this.compraService = createOrReport(CompraService::new);
@@ -198,20 +198,48 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
         final var data = selected.get();
         if (data == null) return;
 
-        modoEdicao.set(false);
-        dataCompra.set(DatePack.millisParaLocalDate(data.getDataCompra()));
-        numeroNota.set(data.getNumeroNota());
-        codigo.set(data.getProdutoCod());
-        produtoEncontrado.set(null);
-        qtd.set(Utils.quantidadeTratada(data.getQuantidade()));
-        observacao.set(data.getObservacao());
-        tipoPagamentoSelected.set(data.getTipoPagamento());
-        pcCompra.set(Utils.deRealParaCentavos(data.getPrecoDeCompra()));
-        descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDescontoEmReais()));
-        fornecedorSelected.set(data.getFornecedor());
-        dataValidade.set(data.getDataValidade() != null
-                ? DatePack.millisParaLocalDate(data.getDataValidade())
-                : null);
+        // A edição/clone carrega a compra por ID (ScreenAddOrEdit.buscarById), e esse
+        // repository não hidrata as relações: fornecedor/produto vêm null (só os IDs).
+        // Resolve os dois no banco fora da FX thread — senão produtoEncontrado fica null
+        // (o codigo.set mais embaixo dispara filtrarProdutos() que não teria produto pra
+        // setar) e fornecedorSelected fica null, apagando o fornecedor no salvar de uma
+        // edição. É a mesma hidratação que fetchListData() já faz na listagem.
+        Async.Run(() -> {
+            FornecedorModel fornecedor = data.getFornecedor();
+            ProdutoModel produto = data.getProdutoModel();
+            try {
+                if (produto == null && data.getProdutoCod() != null) {
+                    produto = produtoService.buscarPorCodigoBarras(data.getProdutoCod());
+                }
+                if (fornecedor == null && data.getFornecedorId() != null) {
+                    fornecedor = fornecedorService.buscarById(data.getFornecedorId());
+                }
+            } catch (Exception e) {
+                log.error("Erro ao hidratar produto/fornecedor da compra id={}", data.getId(), e);
+            }
+            final var fornecedorResolvido = fornecedor;
+            final var produtoResolvido = produto;
+
+            UI.runOnUi(() -> {
+                // produtoEncontrado.set() dispara selecionarProduto(), que já seta o
+                // codigo/pcCompra — os sets explícitos logo abaixo sobrescrevem com os
+                // valores de fato salvos nesta compra.
+                produtoEncontrado.set(produtoResolvido);
+                fornecedorSelected.set(fornecedorResolvido);
+                codigo.set(produtoResolvido != null ? produtoResolvido.getCodigoBarras() : data.getProdutoCod());
+
+                dataCompra.set(DatePack.millisParaLocalDate(data.getDataCompra()));
+                numeroNota.set(data.getNumeroNota());
+                qtd.set(Utils.quantidadeTratada(data.getQuantidade()));
+                observacao.set(data.getObservacao());
+                tipoPagamentoSelected.set(data.getTipoPagamento());
+                pcCompra.set(Utils.deRealParaCentavos(data.getPrecoDeCompra()));
+                descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDescontoEmReais()));
+                dataValidade.set(data.getDataValidade() != null
+                        ? DatePack.millisParaLocalDate(data.getDataValidade())
+                        : null);
+            });
+        });
     }
 
     @Override
@@ -260,10 +288,10 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
         var model = populateModelFromFields();
         // Capturado aqui, síncrono (thread da UI) — ScreenContract.handleAddOrUpdate()
         // reseta modoEdicao logo depois de disparar essa chamada, então ler
-        // modoEdicao.get() só depois de já estar rodando na thread virtual do
+        // isEditing só depois de já estar rodando na thread virtual do
         // Async.Run abaixo quase sempre lia o valor já resetado, transformando
         // toda edição em cadastro novo (mesmo bug corrigido em outras telas).
-        boolean editando = modoEdicao.get();
+        boolean editando = isEditing;
 
         Async.Run(() -> {
             if (editando) {
@@ -343,7 +371,7 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
                 new BigDecimal(totais.totalLiquido.get())
         );
 
-        if (modoEdicao.get() && selected.get() != null) {
+        if (isEditing && selected.get() != null) {
             var selecionado = selected.get();
             return compraService.toModel(dto, selecionado.getId(), selecionado.getDataCriacaoMillis());
         }
@@ -363,8 +391,6 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
 
     @Override
     public void handleClickMenuDelete() {
-        modoEdicao.set(false);
-
         final var data = selected.get();
         if (data != null) {
             Async.Run(() -> {
@@ -394,7 +420,6 @@ public class ComprasScreenViewModel extends ViewModelScreenContract<CompraModel>
     public void clearForm() {
         dataCompra.set(LocalDate.now());
         numeroNota.set("");
-        modoEdicao.set(false);
         codigo.set("");
         produtoEncontrado.set(null);
         qtd.set("0");

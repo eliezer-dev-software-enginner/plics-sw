@@ -14,7 +14,7 @@ import megalodonte.props.ButtonProps;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenAddOrEdit;
 import my_app.core.components.Components;
@@ -28,7 +28,7 @@ import java.sql.SQLException;
 
 public class ScreenAddOrEditComprasAPagar extends ScreenAddOrEdit<ContasPagarModel, ComprasAPagarScreenViewModel> {
     
-    public ScreenAddOrEditComprasAPagar(ScreenContext screenContext) {
+    public ScreenAddOrEditComprasAPagar(ScreenContextInterface screenContext) {
         super(screenContext);
     }
     
@@ -58,7 +58,7 @@ public class ScreenAddOrEditComprasAPagar extends ScreenAddOrEdit<ContasPagarMod
                         )
                         .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre esta conta?"))
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate))
+                        .c_child(Components.actionButton(getBtnActionText(), this::handleAddOrUpdate))
                         .c_child(new Row(new RowProps().spacingOf(8))
                                 .r_child(
                                         Show.when(naoEhPagamento, () -> new Button(
@@ -90,7 +90,7 @@ public class ScreenAddOrEditComprasAPagar extends ScreenAddOrEdit<ContasPagarMod
     }
 
     @Override
-    protected ComprasAPagarScreenViewModel getViewModel(ScreenContext screenContext) {
+    protected ComprasAPagarScreenViewModel getViewModel(ScreenContextInterface screenContext) {
         return new ComprasAPagarScreenViewModel(screenContext);
     }
 

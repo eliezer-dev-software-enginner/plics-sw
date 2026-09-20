@@ -9,7 +9,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.FlowRow;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.FlowRowProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.Data;
 import my_app.core.ScreenAddOrEdit;
@@ -24,7 +24,7 @@ import java.sql.SQLException;
 
 public class AddOrEditClientes extends ScreenAddOrEdit<ClienteModel, ClienteViewModel> {
 
-    public AddOrEditClientes(ScreenContext screenContext) {
+    public AddOrEditClientes(ScreenContextInterface screenContext) {
         super(screenContext);
     }
 
@@ -56,13 +56,13 @@ public class AddOrEditClientes extends ScreenAddOrEdit<ClienteModel, ClienteView
                                 .c_child(new LineHorizontal())
                                 .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre o cliente?", 60, 160))
                                 .c_child(new SpacerVertical(20))
-                                .c_child(Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate))
+                                .c_child(Components.actionButton(getBtnActionText(), this::handleAddOrUpdate))
                 )
         );
     }
 
     @Override
-    protected ClienteViewModel getViewModel(ScreenContext screenContext) {
+    protected ClienteViewModel getViewModel(ScreenContextInterface screenContext) {
         return new ClienteViewModel(screenContext);
     }
 

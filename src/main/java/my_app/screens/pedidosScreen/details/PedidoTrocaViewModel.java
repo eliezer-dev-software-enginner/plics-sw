@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EventBus;
 import my_app.core.db.models.PedidoModel;
@@ -51,7 +51,7 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
     final State<String> trocaFormaPagamento = State.of(Data.tiposPagamentoList.getFirst());
     private final Set<String> trocaOriginaisCodigos = new HashSet<>();
 
-    public PedidoTrocaViewModel(ScreenContext ctx) {
+    public PedidoTrocaViewModel(ScreenContextInterface ctx) {
         super(ctx);
         this.pedidoService = createOrReport(PedidoService::new);
         this.pedidoItemService = createOrReport(PedidoItemService::new);

@@ -9,7 +9,7 @@ import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
@@ -21,9 +21,9 @@ import pack.utilities.DatePack;
 
 public class ComprasScreen implements ScreenComponent, ScreenContract<CompraModel> {
     private final ComprasScreenViewModel vm;
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
 
-    public ComprasScreen(ScreenContext ctx) {
+    public ComprasScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new ComprasScreenViewModel(ctx);
     }

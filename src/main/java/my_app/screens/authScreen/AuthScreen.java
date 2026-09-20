@@ -11,17 +11,17 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.Main;
 import my_app.core.Data;
 import my_app.core.components.Components;
 
 public class AuthScreen implements ScreenComponent {
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final AuthScreenViewModel vm;
 
-    public AuthScreen(ScreenContext ctx) {
+    public AuthScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new AuthScreenViewModel();
     }

@@ -26,6 +26,17 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-20: Editar/Clonar venda — problema em aberto (marcado como problemático)
+- `VendaRepository.buscarById` não hidrata produto/cliente (só IDs); a janela de edição/clone
+  começava com catálogos vazios e `produtoEncontrado=null`. Fix **parcial** aplicado em
+  `VendaMercadoriaScreenViewModel.java`: `populateFieldsFromModel` carrega catálogos (clientes e
+  produtos) e hidrata produto+cliente; `handleAddOrUpdate` ganhou fallback assíncrono (resolve por
+  código ou descrição) pra fechar o race de salvar antes da hidratação. Compilou (BUILD SUCCESSFUL).
+- **Ainda problemático**: digitação no campo de produto reseta `produtoEncontrado` (exige clicar na
+  sugestão antes de salvar); venda de produto excluído depois da venda continua bloqueada. SEM
+  automação de UI — comportamento até aqui validado só por análise de código + log. Testar ao vivo
+  (editar sem tocar no campo produto) antes de considerar resolvido. Ver `docs/TODO.md`.
+
 ### 2026-09-19: IDs migrados de INT para BIGINT (PKs/FKs) + geração de id no app
 - **`V37__ids_long.sql`** reescrito: todas as tabelas usadas pelo app (`categorias`, `fornecedores`,
   `clientes`, `empresas`, `cores`, `preferencias`, `produtos`, `compras`, `vendas`, `pedidos`,

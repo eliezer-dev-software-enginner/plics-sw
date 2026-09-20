@@ -3,7 +3,7 @@ package my_app.screens.authScreen;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.PreferenciasModel;
 import my_app.core.db.services.PreferenciasService;
@@ -75,7 +75,7 @@ public class AuthScreenViewModel {
         return license == null || !LICENCAS_PRODUCAO.contains(license);
     }
 
-    void entrar(ScreenContext ctx) {
+    void entrar(ScreenContextInterface ctx) {
         var licenseValue = licensaState.get().trim();
 
         if (showLicensaState.get()) {

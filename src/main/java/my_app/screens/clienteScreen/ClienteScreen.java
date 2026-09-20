@@ -10,7 +10,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
@@ -21,9 +21,9 @@ import pack.utilities.FormatterPack;
 
 public class ClienteScreen implements ScreenComponent, ScreenContract<ClienteModel> {
     private final ClienteViewModel vm;
-    private final ScreenContext screenContext;
+    private final ScreenContextInterface screenContext;
 
-    public ClienteScreen(ScreenContext ctx) {
+    public ClienteScreen(ScreenContextInterface ctx) {
         this.screenContext = ctx;
         this.vm = new ClienteViewModel(ctx);
     }

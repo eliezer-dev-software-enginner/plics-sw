@@ -11,7 +11,7 @@ import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ColumnProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.db.models.CategoriaModel;
 import my_app.core.db.models.FornecedorModel;
 import my_app.core.db.models.ProdutoModel;
@@ -32,14 +32,14 @@ import java.time.LocalDateTime;
 public class LerPlanilhaScreen implements ScreenComponent {
     private static final Logger log = LoggerFactory.getLogger(LerPlanilhaScreen.class);
 
-    private final ScreenContext screenContext;
+    private final ScreenContextInterface screenContext;
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
     private final CategoriaService categoriaService;
     final State<String> status = new State<>("");
     final State<CategoriaModel> categoria = new State<>(null);
 
-    public LerPlanilhaScreen(ScreenContext screenContext) {
+    public LerPlanilhaScreen(ScreenContextInterface screenContext) {
         this.screenContext = screenContext;
         this.fornecedorService = createFornecedorService();
         this.produtoService = createProdutoService();

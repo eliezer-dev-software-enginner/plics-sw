@@ -10,7 +10,7 @@ import megalodonte.props.ColumnProps;
 import megalodonte.props.ImageProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
@@ -21,9 +21,9 @@ import pack.utilities.DatePack;
 
 public class VendaMercadoriaScreen implements ScreenComponent, ScreenContract<VendaModel> {
     private final VendaMercadoriaScreenViewModel vm;
-    private final ScreenContext screenContext;
+    private final ScreenContextInterface screenContext;
 
-    public VendaMercadoriaScreen(ScreenContext ctx) {
+    public VendaMercadoriaScreen(ScreenContextInterface ctx) {
         this.vm = new VendaMercadoriaScreenViewModel(ctx);
         this.screenContext = ctx;
     }

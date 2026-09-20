@@ -14,7 +14,7 @@ import megalodonte.props.ButtonProps;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.RowProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenAddOrEdit;
 import my_app.core.components.Components;
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 
 public class ScrenAddOrEditContasAReceber extends ScreenAddOrEdit<ContaAreceberModel, ContasAReceberScreenViewModel> {
 
-    public ScrenAddOrEditContasAReceber(ScreenContext screenContext) {
+    public ScrenAddOrEditContasAReceber(ScreenContextInterface screenContext) {
         super(screenContext);
     }
 
@@ -99,8 +99,8 @@ public class ScrenAddOrEditContasAReceber extends ScreenAddOrEdit<ContaAreceberM
                         )
                         .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre esta conta?"))
                         .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate))
-                        .c_child(Show.when(viewModel.modoEdicaoState(), () -> new Row(new RowProps().spacingOf(8))
+                        .c_child(Components.actionButton(this.getBtnActionText(), this::handleAddOrUpdate))
+                        .c_child(Show.when(isEdit(), () -> new Row(new RowProps().spacingOf(8))
                                 .r_child(
                                         Show.when(naoEhRecebimento, () -> new Button(
                                                 viewModel.btnRecebimentoText,
@@ -172,7 +172,7 @@ public class ScrenAddOrEditContasAReceber extends ScreenAddOrEdit<ContaAreceberM
     }
 
     @Override
-    protected ContasAReceberScreenViewModel getViewModel(ScreenContext screenContext) {
+    protected ContasAReceberScreenViewModel getViewModel(ScreenContextInterface screenContext) {
         return new ContasAReceberScreenViewModel(screenContext);
     }
 

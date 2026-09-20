@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.FornecedorModel;
 import my_app.core.db.services.FornecedorService;
@@ -39,7 +39,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
             tipoPessoaSelected
     );
 
-    public FornecedorScreenViewModel(ScreenContext ctx) {
+    public FornecedorScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_FORNECEDOR.name();
         this.fornecedorService = createOrReport(FornecedorService::new);
@@ -92,7 +92,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
 
     @Override
     public FornecedorModel populateModelFromFields() {
-        var model = modoEdicao.get() && fornecedorSelected.get() != null
+        var model = isEditing && fornecedorSelected.get() != null
                 ? fornecedorSelected.get()
                 : new FornecedorModel();
 
@@ -115,11 +115,11 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
 
     @Override
     public void handleAddOrUpdate() {
-        if (modoEdicao.get() && fornecedorSelected.get() == null) return;
+        if (isEditing && fornecedorSelected.get() == null) return;
 
         var model = populateModelFromFields();
 
-        if (modoEdicao.get()) {
+        if (isEditing) {
             asyncAtualizar(model);
         } else {
             asyncSalvar(model);

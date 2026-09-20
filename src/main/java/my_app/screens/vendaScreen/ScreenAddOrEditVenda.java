@@ -12,7 +12,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.FlowRowProps;
 import megalodonte.props.RowProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.Data;
 import my_app.core.ScreenAddOrEdit;
 import my_app.core.components.Components;
@@ -30,7 +30,7 @@ import java.sql.SQLException;
 
 public class ScreenAddOrEditVenda extends ScreenAddOrEdit<VendaModel, VendaMercadoriaScreenViewModel> {
 
-    public ScreenAddOrEditVenda(ScreenContext screenContext) {
+    public ScreenAddOrEditVenda(ScreenContextInterface screenContext) {
         super(screenContext);
     }
 
@@ -44,7 +44,7 @@ public class ScreenAddOrEditVenda extends ScreenAddOrEdit<VendaModel, VendaMerca
                         Components.displayOperationsRow(viewModel.totais),
                         Components.TextWithValue("Total com frete:", viewModel.totalComFrete.map(CurrencyPack::toBRLCurrency)),
                         Components.aPrazoForm(viewModel.parcelas, viewModel.tipoPagamentoIsAPrazo, viewModel.totalComFrete),
-                        Components.actionButtons(viewModel.btnText, this::handleAddOrUpdate)
+                        Components.actionButton(getBtnActionText(), this::handleAddOrUpdate)
                 )
         );
     }
@@ -58,7 +58,7 @@ public class ScreenAddOrEditVenda extends ScreenAddOrEdit<VendaModel, VendaMerca
                         IconInterface.of(FontIcon.of(AntDesignIconsOutlined.CALENDAR))),
                 Components.SelectColumn("Cliente", viewModel.clientes, viewModel.clienteSelected, ClienteModel::getNome, true),
                 disgust.io.Pack.InputColumn("N NF/Pedido compra", viewModel.numeroNota, "Ex: 12345678920"),
-                Components.InputColumnDecimal("Quantidade", viewModel.qtd, "Ex: 2",viewModel.quantidadeRef),
+                Components.InputColumnDecimal("Quantidade", viewModel.qtd, "Ex: 2"),
                 Pack.InputColumnCurrency("Pc. de venda", viewModel.pcVenda),
                 Pack.InputColumnCurrency("Desconto em R$", viewModel.descontoEmDinheiro),
                 Pack.InputColumnCurrency("Frete", viewModel.frete),
@@ -79,7 +79,7 @@ public class ScreenAddOrEditVenda extends ScreenAddOrEdit<VendaModel, VendaMerca
 
 
     @Override
-    protected VendaMercadoriaScreenViewModel getViewModel(ScreenContext screenContext) {
+    protected VendaMercadoriaScreenViewModel getViewModel(ScreenContextInterface screenContext) {
         return new VendaMercadoriaScreenViewModel(screenContext);
     }
 

@@ -17,7 +17,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.components.layout_components.Stack;
 import megalodonte.ForEachState;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.Main;
 import my_app.core.AppRoutes;
@@ -33,11 +33,11 @@ public class HomeScreen implements ScreenComponent {
 
     private final HomeScreenViewModel viewModel;
 
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
 
     private final Ref<Image> bannerRef = new Ref<>();
 
-    public HomeScreen(ScreenContext ctx) {
+    public HomeScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.viewModel = new HomeScreenViewModel(ctx);
     }
@@ -150,20 +150,20 @@ public class HomeScreen implements ScreenComponent {
 
     private Component menuBar(){
         return new MenuBar()
-                .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.router().spawnWindow(AppRoutes.Screens.PREFERENCIAS.name(),e->{})))
+                .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.spawnWindow(AppRoutes.Screens.PREFERENCIAS.name(),e->{})))
                 .menu(new Menu("Gerencial")
-                        .item("Empresa", ()-> ctx.router().spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
-                        .item("Relatórios", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATORIOS.name(),e->{}))
-                        .item("Fornecedores", ()-> ctx.router().spawnWindow(AppRoutes.Screens.FORNECEDORES.name(), e->{}))
-                        .item("Categorias", ()-> ctx.router().spawnWindow(AppRoutes.Screens.CATEGORIAS.name(),e->{}))
+                        .item("Empresa", ()-> ctx.spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
+                        .item("Relatórios", ()-> ctx.spawnWindow(AppRoutes.Screens.RELATORIOS.name(),e->{}))
+                        .item("Fornecedores", ()-> ctx.spawnWindow(AppRoutes.Screens.FORNECEDORES.name(), e->{}))
+                        .item("Categorias", ()-> ctx.spawnWindow(AppRoutes.Screens.CATEGORIAS.name(),e->{}))
                 )
                 .menu(new Menu("Suporte")
-                        .item("Relatar erro", ()-> ctx.router().spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
-                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.router().spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
-                        .item("Novidades dessa atualização", ()-> ctx.router().spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
-                        .item("Ver logs da aplicação", ()-> ctx.router().spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}))
+                        .item("Relatar erro", ()-> ctx.spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
+                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
+                        .item("Novidades dessa atualização", ()-> ctx.spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
+                        .item("Ver logs da aplicação", ()-> ctx.spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}))
                         .itemIf(!Main.isMicrosoftStore, "Buscar atualização", this::buscarAtualizacao)
-                        .item("Termos de uso", ()-> ctx.router().spawnWindow(AppRoutes.Screens.TERMOS_DE_USO.name(),e->{}))
+                        .item("Termos de uso", ()-> ctx.spawnWindow(AppRoutes.Screens.TERMOS_DE_USO.name(),e->{}))
                 );
     }
 
@@ -189,7 +189,7 @@ public class HomeScreen implements ScreenComponent {
                         .c_child(new Text(cardItem.title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
                         .c_child(new Text(cardItem.desc,  new TextProps().fontSize(ThemeManager.theme().typography().small()))),
                        new CardProps().paddingAll(0).height(170).width(230).borderRadius(20)),
-               ()-> ctx.router().spawnWindow(cardItem.destination,e->{})
+               ()-> ctx.spawnWindow(cardItem.destination,e->{})
        );
     }
 }

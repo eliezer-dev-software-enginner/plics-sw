@@ -10,7 +10,7 @@ import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
@@ -22,9 +22,9 @@ import pack.utilities.DatePack;
 public class ContasAReceberScreen implements ScreenComponent, ScreenContract<ContaAreceberModel> {
     private final ContasAReceberScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
 
-    public ContasAReceberScreen(ScreenContext ctx) {
+    public ContasAReceberScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new ContasAReceberScreenViewModel(ctx);
     }

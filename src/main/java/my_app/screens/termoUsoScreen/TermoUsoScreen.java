@@ -5,13 +5,13 @@ import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
 import megalodonte.components.layout_components.Container;
 import megalodonte.props.ContainerProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.Data;
 import my_app.core.components.Components;
 
 public class TermoUsoScreen implements ScreenComponent {
 
-    public TermoUsoScreen(ScreenContext ctx) {}
+    public TermoUsoScreen(ScreenContextInterface ctx) {}
 
     public Component render() {
         return new Scroll(new Container(new ContainerProps().paddingAll(10)).children(

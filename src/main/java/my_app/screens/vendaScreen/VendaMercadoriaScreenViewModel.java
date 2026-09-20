@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.*;
@@ -95,9 +95,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         return liquido.add(freteValue).toString();
     }, totais.totalLiquido, frete);
 
-    public final Components.InputRef quantidadeRef = new Components.InputRef();
-
-    public VendaMercadoriaScreenViewModel(ScreenContext ctx) {
+    public VendaMercadoriaScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         this.vendaService = createOrReport(VendaService::new);
         this.produtoService = createOrReport(ProdutoService::new);
@@ -144,13 +142,13 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
         produtoEncontrado.subscribe(this::selecionarProduto);
 
-        modoEdicao.subscribe(editando -> {
-            var data = editando ? selected.get() : null;
+        if(isEditing){
+            var data = selected.get();
             quantidadeOriginal = data != null && data.getQuantidade() != null ? data.getQuantidade() : BigDecimal.ZERO;
             produtoCodOriginal = data != null ? data.getProdutoCod() : null;
             afetavaEstoqueOriginal = data != null && Boolean.TRUE.equals(data.getAfetaEstoque());
             atualizarEstoqueVisual();
-        });
+        }
 
         EventBus.getInstance().subscribe(eventListener);
     }
@@ -189,7 +187,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             var estoque = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
             estoqueAnterior.set(estoque.toString());
             sugestoesProduto.clear();
-            quantidadeRef.requestFocus();
         }
     }
 
@@ -198,36 +195,78 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         final var data = selected.get();
         if (data == null) return;
 
-        modoEdicao.set(false);
+        // A edição/clone carrega a venda por ID (ScreenAddOrEdit.buscarById), e esse
+        // repository não hidrata as relações: produto/cliente vêm null (só os IDs).
+        // Resolve os dois no banco fora da FX thread antes de popular os campos —
+        // senão produtoEncontrado fica null e "Atualizar"/"Cadastrar" cai direto no
+        // "Produto não encontrado!" (e depois no "Selecione um cliente!"). É a mesma
+        // hidratação que fetchListData() já faz na listagem (venda.setProduto/setCliente).
+        Async.Run(() -> {
+            ProdutoModel produto = data.getProduto();
+            ClienteModel cliente = data.getCliente();
+            // Catálogos também ficam vazios na janela de edição/clone (ela não passa pela
+            // fetchListData da listagem): sem clientes carregados o dropdown fica vazio e o
+            // "Selecione um cliente!" dispara logo depois do produto; sem o catálogo de
+            // produtos, as sugestões de busca não aparecem.
+            List<ClienteModel> clienteList = null;
+            List<ProdutoModel> produtoList = null;
+            try {
+                if (produto == null && data.getProdutoCod() != null) {
+                    produto = produtoService.buscarPorCodigoBarras(data.getProdutoCod());
+                }
+                clienteList = clienteService.listar();
+                if (cliente == null && data.getClienteId() != null) {
+                    cliente = clienteList.stream()
+                            .filter(c -> c.getId().equals(data.getClienteId()))
+                            .findFirst()
+                            .orElse(null);
+                }
+                produtoList = produtoService.listar();
+            } catch (Exception e) {
+                log.error("Erro ao hidratar produto/cliente/catálogos da venda id={}", data.getId(), e);
+            }
+            final var produtoResolvido = produto;
+            final var clienteResolvido = cliente;
+            final var clienteListFinal = clienteList;
+            final var produtoListFinal = produtoList;
 
-        // Precisa vir antes dos campos abaixo: produtoEncontrado.set() dispara
-        // selecionarProduto(), que também mexe em codigo/pcVenda/estoqueAnterior —
-        // mas com valores do CATÁLOGO atual. Os sets explícitos logo depois
-        // sobrescrevem isso com os valores de fato salvos nesta venda.
-        //
-        // Antes disso não existia: o codigo.set(data.getProdutoCod()) mais embaixo
-        // disparava filtrarProdutos(), que via produtoEncontrado ainda null/stale e
-        // resetava ele sozinho pra null de novo — então "Atualizar" caía direto no
-        // "Produto não encontrado!", mesmo com o produto certo aparecendo no campo.
-        produtoEncontrado.set(data.getProduto());
-        if (data.getProduto() == null) {
-            // Produto original não existe mais no catálogo (foi excluído depois da
-            // venda) — mostra o código registrado mesmo assim; o usuário vai precisar
-            // escolher um produto válido pra conseguir salvar.
-            codigo.set(data.getProdutoCod());
-        }
+            UI.runOnUi(() -> {
+                // Precisa vir antes dos campos abaixo: produtoEncontrado.set() dispara
+                // selecionarProduto(), que também mexe em codigo/pcVenda/estoqueAnterior —
+                // mas com valores do CATÁLOGO atual. Os sets explícitos logo depois
+                // sobrescrevem isso com os valores de fato salvos nesta venda.
+                //
+                // Antes dessa hidratação não existia: o codigo.set(data.getProdutoCod())
+                // disparava filtrarProdutos(), que via produtoEncontrado ainda null/stale e
+                // resetava ele sozinho pra null de novo — então "Atualizar" caía direto no
+                // "Produto não encontrado!", mesmo com o produto certo aparecendo no campo.
+                if (produtoListFinal != null) produtoModelListState.set(produtoListFinal);
+                if (clienteListFinal != null) {
+                    clientes.clear();
+                    clientes.addAll(clienteListFinal);
+                }
+                produtoEncontrado.set(produtoResolvido);
+                clienteSelected.set(clienteResolvido);
+                if (produtoResolvido == null) {
+                    // Produto original não existe mais no catálogo (foi excluído depois da
+                    // venda) — mostra o código registrado mesmo assim; o usuário vai precisar
+                    // escolher um produto válido pra conseguir salvar.
+                    codigo.set(data.getProdutoCod());
+                }
 
-        dataVenda.set(DatePack.millisParaLocalDate(data.getDataVenda()));
-        numeroNota.set(data.getNumeroNota());
-        qtd.set(Utils.quantidadeTratada(data.getQuantidade()));
-        observacao.set(data.getObservacao());
-        tipoPagamentoSelecionado.set(data.getTipoPagamento());
-        pcVenda.set(Utils.deRealParaCentavos(data.getPrecoUnitario()));
-        descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDesconto()));
-        frete.set(Utils.deRealParaCentavos(data.getFrete()));
-        dataValidade.set(data.getDataValidade() != null
-                ? DatePack.millisParaLocalDate(data.getDataValidade())
-                : null);
+                dataVenda.set(DatePack.millisParaLocalDate(data.getDataVenda()));
+                numeroNota.set(data.getNumeroNota());
+                qtd.set(Utils.quantidadeTratada(data.getQuantidade()));
+                observacao.set(data.getObservacao());
+                tipoPagamentoSelecionado.set(data.getTipoPagamento());
+                pcVenda.set(Utils.deRealParaCentavos(data.getPrecoUnitario()));
+                descontoEmDinheiro.set(Utils.deRealParaCentavos(data.getDesconto()));
+                frete.set(Utils.deRealParaCentavos(data.getFrete()));
+                dataValidade.set(data.getDataValidade() != null
+                        ? DatePack.millisParaLocalDate(data.getDataValidade())
+                        : null);
+            });
+        });
     }
 
     void reloadProdutos() {
@@ -290,13 +329,61 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
     @Override
     public void handleAddOrUpdate() {
-        if (produtoEncontrado.get() == null) {
-            Components.ShowAlertError("Produto não encontrado!");
-            return;
-        }
+        final var produtoAtual = produtoEncontrado.get();
+        final var clienteAtual = clienteSelected.get();
 
-        if (clienteSelected.get() == null) {
-            Components.ShowAlertError("Selecione um cliente!");
+        if (produtoAtual == null || clienteAtual == null) {
+            // A população dos campos é assíncrona (populateFieldsFromModel); se o usuário
+            // clicar em salvar antes dela terminar, produto/cliente ainda estão null e a
+            // edição/clone cai no "Produto não encontrado!". Resolve fora da FX thread e
+            // re-dispara o salvamento. Também cobre produto excluído depois da venda: o
+            // campo mostra o código salvo e ele é re-buscado por código OU descrição.
+            final var codigoForm = codigo.get();
+            final var vendaOriginal = selected.get();
+            final var produtoCodDaVenda = vendaOriginal != null ? vendaOriginal.getProdutoCod() : null;
+            final var clienteIdDaVenda = clienteAtual != null ? clienteAtual.getId()
+                    : (vendaOriginal != null ? vendaOriginal.getClienteId() : null);
+
+            Async.Run(() -> {
+                ProdutoModel produto = produtoAtual;
+                ClienteModel cliente = clienteAtual;
+                try {
+                    if (produto == null && (produtoCodDaVenda != null || (codigoForm != null && !codigoForm.isBlank()))) {
+                        String termo = (codigoForm != null && !codigoForm.isBlank()) ? codigoForm.trim() : produtoCodDaVenda;
+                        produto = produtoService.buscarPorCodigoBarras(termo);
+                        if (produto == null) {
+                            produto = produtoService.listar().stream()
+                                    .filter(p -> p.getCodigoBarras().equals(termo)
+                                            || p.getDescricao().equalsIgnoreCase(termo))
+                                    .findFirst()
+                                    .orElse(null);
+                        }
+                    }
+                    if (cliente == null && clienteIdDaVenda != null) {
+                        cliente = clienteService.listar().stream()
+                                .filter(c -> c.getId().equals(clienteIdDaVenda))
+                                .findFirst()
+                                .orElse(null);
+                    }
+                } catch (Exception e) {
+                    log.error("Erro ao resolver produto/cliente antes de salvar", e);
+                }
+                final var produtoResolvido = produto;
+                final var clienteResolvido = cliente;
+                UI.runOnUi(() -> {
+                    if (produtoResolvido == null) {
+                        Components.ShowAlertError("Produto não encontrado!");
+                        return;
+                    }
+                    if (clienteResolvido == null) {
+                        Components.ShowAlertError("Selecione um cliente!");
+                        return;
+                    }
+                    produtoEncontrado.set(produtoResolvido);
+                    clienteSelected.set(clienteResolvido);
+                    handleAddOrUpdate();
+                });
+            });
             return;
         }
 
@@ -308,7 +395,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
             return;
         }
 
-        if (!modoEdicao.get() && "Sim".equalsIgnoreCase(opcaoEstoqueSelected.get())) {
+        if (!isEditing && "Sim".equalsIgnoreCase(opcaoEstoqueSelected.get())) {
             var produto = produtoEncontrado.get();
             var estoqueBase = produto.getEstoque() != null ? produto.getEstoque() : BigDecimal.ZERO;
             var estoqueMinimo = produto.getEstoqueMinimo() != null ? produto.getEstoqueMinimo() : BigDecimal.ZERO;
@@ -334,7 +421,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         // copia id/dataCriacao de selected) — chamá-la de dentro do Async.Run sofria do
         // MESMO race mesmo com "editando" já capturado aqui, então o model também precisa ser
         // montado aqui, síncrono, quando estamos editando.
-        final boolean editando = modoEdicao.get();
+        final boolean editando = isEditing;
         final VendaModel modeloEditado = editando ? populateModelFromFields() : null;
 
         Async.Run(() -> {
@@ -495,7 +582,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     public void clearForm() {
         dataVenda.set(LocalDate.now());
         numeroNota.set("");
-        modoEdicao.set(false);
         codigo.set("");
         produtoEncontrado.set(null);
         qtd.set("");
@@ -519,7 +605,7 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
     public VendaModel populateModelFromFields() {
         var model = new VendaModel();
 
-        if (modoEdicao.get() && selected.get() != null) {
+        if (isEditing && selected.get() != null) {
             var original = selected.get();
             model.setId(original.getId());
             model.setDataCriacao(original.getDataCriacao());

@@ -8,7 +8,7 @@ import javafx.stage.FileChooser;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.db.services.EmpresaService;
 import my_app.core.components.Components;
 import my_app.services.*;
@@ -27,7 +27,7 @@ public class RelatoriosScreenViewModel {
     private static final Logger log = LoggerFactory.getLogger(RelatoriosScreenViewModel.class);
     private static final long UM_DIA_MENOS_1MS = 86_399_999L;
 
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final RelatorioService relatorioService;
     private final EmpresaService empresaService;
     private final RelatorioPdfExporter pdfExporter = new RelatorioPdfExporter();
@@ -80,7 +80,7 @@ public class RelatoriosScreenViewModel {
     final XYChart.Data<String, Number> lucroBarra = new XYChart.Data<>("Lucro líquido", 0);
     final XYChart.Series<String, Number> comparativoSeries = new XYChart.Series<>();
 
-    public RelatoriosScreenViewModel(ScreenContext ctx) {
+    public RelatoriosScreenViewModel(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.relatorioService = createOrReport(RelatorioService::new);
         this.empresaService = createOrReport(EmpresaService::new);

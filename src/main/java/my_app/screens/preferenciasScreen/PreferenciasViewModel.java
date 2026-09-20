@@ -6,7 +6,7 @@ import javax.print.PrintServiceLookup;
 import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.PreferenciasModel;
@@ -33,7 +33,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
 
     private PreferenciasModel prefLoaded;
 
-    public PreferenciasViewModel(ScreenContext ctx) {
+    public PreferenciasViewModel(ScreenContextInterface ctx) {
         super(ctx);
         this.preferenciasService = createOrReport(PreferenciasService::new);
     }

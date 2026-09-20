@@ -6,7 +6,7 @@ import megalodonte.base.async.Async;
 import megalodonte.base.components.Ref;
 import megalodonte.base.state.State;
 import megalodonte.components.v2.Input;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.*;
@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 public class PDVScreenViewModel {
 
     private static final Logger log = LoggerFactory.getLogger(PDVScreenViewModel.class);
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final ProdutoService produtoService;
     private final ClienteService clienteService;
     private final PDVService pdvService;
@@ -89,7 +89,7 @@ public class PDVScreenViewModel {
     private final EmpresaService empresaService;
     private final EscPosPrinter escPosPrinter;
 
-    public PDVScreenViewModel(ScreenContext ctx) {
+    public PDVScreenViewModel(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.produtoService = createOrReport(ProdutoService::new);
         this.clienteService = createOrReport(ClienteService::new);
@@ -521,7 +521,7 @@ public class PDVScreenViewModel {
     }
 
     void handleCriarCliente(){
-        ctx.router().spawnWindow(AppRoutes.Screens.CLIENTES.name(), e->{});
+        ctx.spawnWindow(AppRoutes.Screens.CLIENTES.name(), e->{});
     }
 
     public void onDestroy() throws Exception {

@@ -4,7 +4,7 @@ import megalodonte.ComputedState;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.AppRoutes;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
 import my_app.core.events.EntityEvent;
@@ -65,7 +65,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     public final ComputedState<String> btnRecebimentoText = ComputedState.of(() ->
             modoRecebimento.get() ? "Registrar Recebimento" : "Receber", modoRecebimento);
 
-    public ContasAReceberScreenViewModel(ScreenContext ctx) {
+    public ContasAReceberScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_COMPRAS_A_RECEBER.name();
         this.contaService = createOrReport(ContaAreceberService::new);
@@ -179,16 +179,16 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public void handleAddOrUpdate() {
-        if (modoEdicao.get() && selected.get() == null) return;
+        if (isEditing && selected.get() == null) return;
 
         // model montado aqui, síncrono (thread da UI) — populateModelFromFields() lê
-        // modoEdicao.get() internamente pra decidir se reaproveita selected ou
+        // isEditing internamente pra decidir se reaproveita selected ou
         // cria um model novo; chamado de dentro do Async.Run de asyncSalvar/
         // asyncAtualizar isso quase sempre lia modoEdicao já resetado por
         // ScreenContract.handleAddOrUpdate() (que reseta logo depois de disparar
         // essa chamada), fazendo toda edição tentar dar update num model novo sem id
         // (mesmo bug corrigido em outras telas).
-        boolean editando = modoEdicao.get();
+        boolean editando = isEditing;
         var model = populateModelFromFields();
 
         if (editando) {
@@ -218,7 +218,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         }));
     }
 
-    public void registrarRecebimento(ScreenContext ctx) {
+    public void registrarRecebimento(ScreenContextInterface ctx) {
         if (selected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para registrar recebimento"));
             return;
@@ -252,7 +252,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         });
     }
 
-    public void quitarConta(ScreenContext ctx) {
+    public void quitarConta(ScreenContextInterface ctx) {
         if (selected.get() == null) {
             UI.runOnUi(() -> Components.ShowAlertError("Selecione uma conta para quitar"));
             return;
@@ -321,7 +321,7 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public ContaAreceberModel populateModelFromFields() {
-        boolean isNew = !(modoEdicao.get() && selected.get() != null);
+        boolean isNew = !(isEditing && selected.get() != null);
         var model = isNew ? new ContaAreceberModel() : selected.get();
 
         model.setDescricao(descricao.get());

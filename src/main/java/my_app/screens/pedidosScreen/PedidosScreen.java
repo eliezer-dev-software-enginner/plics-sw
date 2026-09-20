@@ -14,7 +14,7 @@ import megalodonte.props.ButtonVariant;
 import megalodonte.props.ContainerProps;
 import megalodonte.props.FlowRowProps;
 import megalodonte.props.RowProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.AppRoutes;
 import my_app.core.db.models.PedidoItemModel;
@@ -27,10 +27,10 @@ import pack.utilities.DatePack;
 
 public class PedidosScreen implements ScreenComponent {
 
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final PedidosScreenViewModel vm;
 
-    public PedidosScreen(ScreenContext ctx) {
+    public PedidosScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new PedidosScreenViewModel(ctx);
     }
@@ -111,6 +111,6 @@ public class PedidosScreen implements ScreenComponent {
     void handleClickMenuTroca() {
         var pedido = vm.pedidoSelecionado.get();
         if (pedido == null) return;
-        ctx.router().spawnWindow(AppRoutes.Screens.PEDIDO_DETAILS.name() + "/" + pedido.getId(), e -> {});
+        ctx.spawnWindow(AppRoutes.Screens.PEDIDO_DETAILS.name() + "/" + pedido.getId(), e -> {});
     }
 }

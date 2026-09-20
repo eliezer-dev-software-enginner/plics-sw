@@ -1,6 +1,5 @@
 package my_app.core;
 
-import megalodonte.base.UI;
 import megalodonte.base.components.Component;
 import megalodonte.base.state.State;
 import megalodonte.components.SimpleTable;
@@ -18,13 +17,11 @@ public interface ScreenContract<T extends Identifier> {
     ViewModelScreenContract<T> viewModel();
 
     default void handleClickNew() {
-        viewModel().ctx.router().spawnWindow(viewModel().screenNameSpawn+"/-1/add/");
+        viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/-1/add/");
     }
 
     default void handleClickMenuDelete() {
         if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
-
-        viewModel().modoEdicaoState().set(false);
         viewModel().handleClickMenuDelete();
     }
 
@@ -32,14 +29,14 @@ public interface ScreenContract<T extends Identifier> {
         if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
 
         long id = viewModel().selected.get().getId();
-        viewModel().ctx.router().spawnWindow(viewModel().screenNameSpawn+"/"+id+"/clone/");
+        viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/"+id+"/clone/");
     }
 
     default void handleClickMenuEdit() {
         if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
 
         long id = viewModel().selected.get().getId();
-        viewModel().ctx.router().spawnWindow(viewModel().screenNameSpawn+"/"+id+"/edit/");
+        viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/"+id+"/edit/");
     }
 
     default Component commonCustomMenus(State<Boolean> focusState) {
@@ -81,17 +78,6 @@ public interface ScreenContract<T extends Identifier> {
 
     default void clearForm() {
         viewModel().clearForm();
-    }
-
-    default void handleAddOrUpdate() {
-        try {
-            viewModel().handleAddOrUpdate();
-            viewModel().modoEdicaoState().set(false);
-        } catch (Exception e) {
-            log.error("Erro em handleAddOrUpdate", e);
-            UI.runOnUi(() -> Components.ShowAlertError(e.getMessage()));
-        }
-
     }
 
     default void onDestroy() {

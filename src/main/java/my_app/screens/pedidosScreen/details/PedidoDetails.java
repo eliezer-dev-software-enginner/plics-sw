@@ -9,7 +9,7 @@ import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.components.layout_components.Stack;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.Data;
 import my_app.core.components.Components;
@@ -19,11 +19,11 @@ import pack.utilities.CurrencyPack;
 
 public class PedidoDetails implements ScreenComponent {
 
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
     private final PedidoTrocaViewModel vm;
     private final Long pedidoId;
 
-    public PedidoDetails(ScreenContext ctx) {
+    public PedidoDetails(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new PedidoTrocaViewModel(ctx);
         this.pedidoId = Long.parseLong(ctx.getParams().get("id"));

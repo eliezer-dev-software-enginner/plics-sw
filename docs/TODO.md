@@ -1,7 +1,7 @@
 # TODO
 
-- [] : Erro ao clicar em Clonar na tela de vendas: Error: Cannot invoke "megalodonte.components.inputs.Input.requestFocus()" because "this.inputRef" is null. Aqui na verdade nem era mais pra precisar disso também. Já que a ideia é spawnar uma tela nova e não precisamos focar em nada. Esse input ref pode ser removido
-- [] : E inclusive o clique em Clonar não faz nada em lugar nenhum, deveria spawnar a tela de AddOrEdit específica com o type: "clone" na rota em ScreenContract e em ScreenAddOrEdit se o type for "clone" é só popular os dados nos inputs e tal como é feito quando em modo de edição.
+- [x] : Erro ao clicar em Clonar na tela de vendas: Error: Cannot invoke "megalodonte.components.inputs.Input.requestFocus()" because "this.inputRef" is null. Aqui na verdade nem era mais pra precisar disso também. Já que a ideia é spawnar uma tela nova e não precisamos focar em nada. Esse input ref pode ser removido
+- [x] : E inclusive o clique em Clonar não faz nada em lugar nenhum, deveria spawnar a tela de AddOrEdit específica com o type: "clone" na rota em ScreenContract e em ScreenAddOrEdit se o type for "clone" é só popular os dados nos inputs e tal como é feito quando em modo de edição.
 
 ## Concluído (Ids de Integer para Long — 2026-09-19)
 - [x] **Enumerar todas as tabelas/ids**: tabelas usadas pelo app convertidas — `categorias`, `fornecedores`, `clientes`, `empresas`, `cores`, `preferencias`, `produtos`, `compras`, `vendas`, `pedidos`, `contas_a_receber`, `contas_pagar`, `pedido_itens`. Legadas sem uso (`licensas`, `usuarios`) ficam intactas; `tecnicos` e `ordens_de_servico` (removidas do app em `3b8c5dc`/`8d002c9`) são dropadas no V37 (decisão do usuário).
@@ -12,6 +12,10 @@
 - [x] **Atualizar docs**: DECISIONS.md, AI_RULES.md (linha 18 — id Long), CONTEXT.md, TODO.md.
 
 ## Pendências novas
+- [ ] **Editar e Clonar venda (VendaMercadoriaScreen) — PROBLEMÁTICO (2026-09-20, em aberto)**: os fluxos `type=edit` e `type=clone` de venda continuam marcados como problemáticos. Situação atual:
+  - O `VendaRepository.buscarById` não hidrata produto/cliente (vêm null, só os IDs); a janela de edição/clone começa com catálogos vazios (dropdown de cliente e sugestões de produto).
+  - Fix parcial aplicado em `VendaMercadoriaScreenViewModel`: `populateFieldsFromModel()` agora carrega catálogos e hidrata produto+cliente fora da FX thread; `handleAddOrUpdate()` ganhou fallback assíncrono de resolução (código OU descrição) pra fechar o race de clique antes da hidratação.
+  - **Ainda problemático**: o `filtrarProdutos` reseta `produtoEncontrado` sempre que o termo do campo não bate com o produto selecionado — qualquer digitação no campo exige clicar na sugestão antes de salvar, senão cai em "Produto não encontrado!". Venda de produto EXCLUÍDO depois da venda continua bloqueada (código não bate com catálogo). Sem automação de UI, o comportamento só foi verificado por análise de código + log (`resetado para null` em digitação); testar ao vivo com o campo intocado antes de considerar resolvido.
 - [ ] **Causa raiz documentada**: Xerial retorna `Integer` (não `Long`) para colunas `INTEGER PRIMARY KEY` (rowid) — por isso a conversão pra `BIGINT` era necessária. `BIGINT PRIMARY KEY` não regenera id; ver DECISIONS.md 2026-09-19.
 
 ## Concluído (testes ajustados à migração pro pack-utilities — 2026-09-06)

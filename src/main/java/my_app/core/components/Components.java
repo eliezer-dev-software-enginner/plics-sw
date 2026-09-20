@@ -34,7 +34,7 @@ import megalodonte.components.layout_components.Row;
 import megalodonte.components.v2.Input;
 import megalodonte.props.*;
 import megalodonte.props.v2.InputProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.ListState;
 import megalodonte.v2.Show;
 import my_app.core.db.models.ProdutoModel;
@@ -150,11 +150,14 @@ public class Components {
                 .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
     }
 
+    public static Component actionButton(String btnText, RunnableThrowing onClick) {
+        return ButtonsPack.ContainedButton(btnText, ButtonVariant.PRIMARY, onClick);
+    }
+
     public static Component actionButtons(ComputedState<String> btnText, RunnableThrowing onClick) {
         return new Button(btnText,
                 new ButtonProps()
                         .fillWidth()
-                        
                         .fontSize(16)
                         .textColor("white").bgColor("#10b981")
         ).onClick(onClick);
@@ -182,7 +185,7 @@ public class Components {
     }
 
     public static void ShowPopupWithButton(
-            ScreenContext screenContext, String message, String btnTitle, RunnableThrowing callback) {
+            ScreenContextInterface screenContext, String message, String btnTitle, RunnableThrowing callback) {
         Popup popup = new Popup();
         popup.setAutoHide(false);
 
@@ -212,7 +215,7 @@ public class Components {
         popup.show(screenContext.selfStage());
     }
 
-    public static void ShowPopup(ScreenContext context, String message) {
+    public static void ShowPopup(ScreenContextInterface context, String message) {
         Popup popup = new Popup();
 
         Label label = new Label(message);
@@ -228,7 +231,7 @@ public class Components {
         popup.show(context.selfStage());
     }
 
-    public static Stage ShowModal(Component ui, ScreenContext context, int height) {
+    public static Stage ShowModal(Component ui, ScreenContextInterface context, int height) {
         Stage stage = new Stage();
 
         Scroll scroll = new Scroll(ui);
@@ -247,7 +250,7 @@ public class Components {
         return stage;
     }
 
-    public static void ShowModal(Component ui, ScreenContext context) {
+    public static void ShowModal(Component ui, ScreenContextInterface context) {
         ShowModal(ui, context, 500);
     }
 
@@ -473,6 +476,9 @@ public class Components {
         }
     }
 
+    public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder) {
+        return InputColumnDecimal(label,inputState,placeholder,null);
+    }
     public static Component InputColumnDecimal(String label, State<String> inputState, String placeholder, InputRef inputRef) {
         var inputProps = getInputProps(placeholder).width(140);
 

@@ -10,7 +10,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.*;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
@@ -22,9 +22,9 @@ import pack.utilities.DatePack;
 public class ComprasAPagarScreen implements ScreenComponent, ScreenContract<ContasPagarModel> {
     private final ComprasAPagarScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
-    private final ScreenContext ctx;
+    private final ScreenContextInterface ctx;
 
-    public ComprasAPagarScreen(ScreenContext ctx) {
+    public ComprasAPagarScreen(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.vm = new ComprasAPagarScreenViewModel(ctx);
     }

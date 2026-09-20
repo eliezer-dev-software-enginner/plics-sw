@@ -4,7 +4,7 @@ import megalodonte.base.Redirect;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.Main;
 import my_app.core.db.services.*;
 import my_app.core.events.DadosFinanceirosAtualizadosEvent;
@@ -47,7 +47,7 @@ public class HomeScreenViewModel {
     public final State<Boolean> mostrarPromoInstagram = State.of(false);
     private static final long DELAY_PROMO_INSTAGRAM_MS = 2500;
 
-    private final ScreenContext screenContext;
+    private final ScreenContextInterface screenContext;
     public final State<String> currentGif = new State<>(null);
     private final Random random = new Random();
     private final Consumer<Object> eventListener = this::onEntityEvent;
@@ -69,7 +69,7 @@ public class HomeScreenViewModel {
             "assets/gifs/gjirlfriend.gif","assets/gifs/mr-bean-waiting.gif","assets/gifs/waiting.gif"
     );
 
-    public HomeScreenViewModel(ScreenContext screenContext) {
+    public HomeScreenViewModel(ScreenContextInterface screenContext) {
         this.screenContext = screenContext;
         this.preferenciasService = createOrReport(PreferenciasService::new);
         this.receitasService = createOrReport(ContaAreceberService::new);

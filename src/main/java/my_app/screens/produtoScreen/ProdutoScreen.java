@@ -12,7 +12,7 @@ import megalodonte.components.layout_components.Column;
 import megalodonte.props.ColumnProps;
 import megalodonte.props.ImageProps;
 import megalodonte.props.TextProps;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.Show;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
@@ -25,7 +25,7 @@ public class ProdutoScreen implements ScreenComponent, ScreenContract<ProdutoMod
     private final ProdutoScreenViewModel vm;
     private final ThemeInterface theme = ThemeManager.theme();
 
-    public ProdutoScreen(ScreenContext ctx) {
+    public ProdutoScreen(ScreenContextInterface ctx) {
         this.vm = new ProdutoScreenViewModel(ctx);
     }
 

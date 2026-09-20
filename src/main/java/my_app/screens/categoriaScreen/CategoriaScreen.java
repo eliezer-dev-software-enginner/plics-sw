@@ -3,7 +3,7 @@ package my_app.screens.categoriaScreen;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.SimpleTable;
-import megalodonte.router.v5.ScreenContext;
+import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.ScreenContract;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.db.models.CategoriaModel;
@@ -12,7 +12,7 @@ import pack.utilities.DatePack;
 public class CategoriaScreen implements ScreenComponent, ScreenContract<CategoriaModel> {
     private final CategoriaScreenViewModel vm;
 
-    public CategoriaScreen(ScreenContext ctx) {this.vm = new CategoriaScreenViewModel(ctx);}
+    public CategoriaScreen(ScreenContextInterface ctx) {this.vm = new CategoriaScreenViewModel(ctx);}
 
     public void onMount() {vm.fetchListData();}
 
