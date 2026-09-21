@@ -45,16 +45,6 @@
 
 ---
 
-## ComprasScreen
-
-| # | Cenário | Fornecedor | Produto | Qtd | Unid. | Preço unit. | Pagamento | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|---------|-----|-------|------------|-----------|-----------------|------|---|
-| 61 | Compra de carne em kg | Frigorífico Paraná | Picanha | 30 | KG | R$ 45,00 | A PRAZO | Compra registrada. Estoque 50 -> 80 kg. Gera contas a pagar. | | |
-| 62 | Compra de produto em gramas | Frigorífico Paraná | Bacon fatiado | 5000 | g | R$ 18,00 | A VISTA | Compra registrada em gramas. Estoque 30 -> 5030 g. | | |
-| 109 | Compra de kg em gramas | Frigorífico Paraná | Picanha | 15000 | g | R$ 45,00/kg | A VISTA | Compra registrada. Deve converter 15000g para 15 kg. Estoque 80 -> 95 kg. | | |
-
----
-
 ## PDVScreen
 
 | # | Cenário | Produto | Qtd | Unid. | Total | Recebido | Troco | Efeito Esperado | Erro | Resultado |
@@ -76,19 +66,16 @@
 
 ## Testes de Fluxo Completo
 
-### Fluxo 3 — Açougue: OS + Venda
+### Fluxo 3 — Açougue: Venda
 
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
-| 1 | Técnico | Criar "João Mecânico" | Nome: João Mecânico | OK | | |
-| 2 | Cliente | Reaproveitar cadastro de "José Moura" (dados de teste — Clientes, testes-gerais.md) | CPF: 555.666.777-88 | OK | | |
-| 3 | Produto | Reaproveitar cadastro de "Picanha kg" (caso #25, ProdutoScreen) | CAR001, R$ 45,00/R$ 79,90, KG, Est: 50 | OK | | |
-| 4 | Produto | Reaproveitar cadastro de "Bacon fatiado g" (caso #27, ProdutoScreen) | CAR003, R$ 18,00/R$ 35,00, g, Est: 5000 | OK. Unidade "g" selecionada e salva. | | |
-| 5 | Ordem Serviço | Abrir OS | José Moura, João Mecânico, "Serra fita", R$ 200/R$ 100 | OS Aberta, Total R$ 300 | | |
-| 6 | Ordem Serviço | Finalizar OS | Status: Finalizado | OS finalizada | | |
-| 7 | PDV | Vender Picanha | 2kg, R$ 79,90/kg, Total R$ 159,80 | Estoque: 48 kg | | |
-| 8 | PDV | Vender Bacon em gramas | 300g Bacon, R$ 0,07/g, Total R$ 21,00 | Estoque: 5000 g -> 4700 g. | | |
-| 9 | PDV | Vender Picanha em gramas (kg→g) | 300g Picanha (R$ 79,90/kg = R$ 0,0799/g), Total R$ 23,97 | Sistema converte 300g para 0,300 kg automaticamente. Estoque: 79,7 kg -> 79,4 kg. | | |
+| 1 | Cliente | Reaproveitar cadastro de "José Moura" (dados de teste — Clientes, testes-gerais.md) | CPF: 555.666.777-88 | OK | | |
+| 2 | Produto | Reaproveitar cadastro de "Picanha kg" (caso #25, ProdutoScreen) | CAR001, R$ 45,00/R$ 79,90, KG, Est: 50 | OK | | |
+| 3 | Produto | Reaproveitar cadastro de "Bacon fatiado g" (caso #27, ProdutoScreen) | CAR003, R$ 18,00/R$ 35,00, g, Est: 5000 | OK. Unidade "g" selecionada e salva. | | |
+| 4 | PDV | Vender Picanha | 2kg, R$ 79,90/kg, Total R$ 159,80 | Estoque: 48 kg | | |
+| 5 | PDV | Vender Bacon em gramas | 300g Bacon, R$ 0,07/g, Total R$ 21,00 | Estoque: 5000 g -> 4700 g. | | |
+| 6 | PDV | Vender Picanha em gramas (kg→g) | 300g Picanha (R$ 79,90/kg = R$ 0,0799/g), Total R$ 23,97 | Sistema converte 300g para 0,300 kg automaticamente. Estoque: 79,7 kg -> 79,4 kg. | | |
 
 ---
 

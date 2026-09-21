@@ -59,32 +59,6 @@
 
 ---
 
-## ComprasScreen
-
-| # | Cenário | Data | Fornecedor | NF | Produto | Qtd | Preço | Desc. | Pagamento | Estoque | Obs | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------|----|---------|-----|-------|-------|-----------|---------|-----|-----------------|-|-----------|
-| 58 | Compra à vista | 14/06/2026 | Malharia Silva | NF-COM-001 | Camiseta M | 50 | R$ 15,00 | R$ 0 | A VISTA | Sim | - | Estoque 100 -> 150. Custo registrado. | | ok        |
-| 59 | Compra com desconto | 14/06/2026 | Tecidos ABC | NF-COM-002 | Vestido | 20 | R$ 35,00 | R$ 50,00 | A PRAZO | Sim | - | Compra registrada. Gera contas a pagar. | ~~Não cliquei em "Gerar parcelas" e cliquei normalmente em "Adicionar", e então a compra foi registrada normalmente, deveria exibir um alert: "Você não gerou nenhuma parcela para vendas a prazo."~~ Corrigido | ok        |
-| 155 | Compra a prazo sem gerar parcelas | 14/06/2026 | Tecidos ABC | NF-COM-003 | Vestido | 20 | R$ 35,00 | R$ 50,00 | A PRAZO | Sim | "Não cliquei em Gerar parcelas" | Alerta: "Parcelas não informadas". Compra não gera contas a pagar. | | |
-| 60 | Não refletir no estoque | 14/06/2026 | Avan Calçados | - | Jaqueta | 10 | R$ 80,00 | R$ 0 | A VISTA | Nao | Item frágil, conferir embalagem | Compra registrada. Estoque não alterado. | | ok        |
-| 156 | Compra a prazo com data da 1ª parcela e nº de parcelas variáveis | 14/06/2026 | Tecidos ABC | NF-COM-004 | Vestido | 10 | R$ 35,00 | R$ 0 | A PRAZO | Sim | - | Data 1ª parcela: 15/07/2026, Qtd parcelas: 5. Clicar "Gerar parcelas" gera 5 parcelas mensais a partir de 15/07/2026. Compra registrada, gera 5 contas a pagar. | | |
-
----
-
-## ComprasAPagarScreen
-
-| # | Cenário | Descrição | Valor Original | Fornecedor | Status | Vencimento | Tipo Doc | Nº Doc | Data Pagamento | Observação | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|--------------|-----------|--------|------------|----------|--------|----------------|------------|-----------------|------|-----------|
-| 63 | Cadastro manual de conta | Compra Tecidos ABC | R$ 700,00 | Tecidos ABC | PENDENTE | 15/07/2026 | DUPLICATA | NF-COM-002 | - | - | Salvo com sucesso. | | ok         |
-| 64 | Pagamento parcial | (conta existente) | - | - | PARCIAL | - | - | - | 20/07/2026 | - | Pagamento parcial registrado. Status atualizado. | |           |
-| 65 | Pagamento total | (conta existente) | - | - | PAGO | - | - | - | 25/07/2026 | - | Status alterado para PAGO. | |           |
-| 66 | Descrição vazia | (vazio) | R$ 100,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Descrição é obrigatória". | |           |
-| 67 | Valor zerado | Conta teste | R$ 0,00 | Fornecedor X | PENDENTE | 15/07/2026 | - | - | - | - | Alerta: "Valor deve ser maior que zero". | |           |
-| 157 | Pagamento maior que restante | (conta R$ 100) | Pagamento: R$ 200 | - | - | - | - | - | - | - | Alerta: "Valor do pagamento excede o restante". | |           |
-| 121 | Conta com N° Doc e observação | Compra Avan Calçados | R$ 2.400,00 | Avan Calçados | PENDENTE | 01/08/2026 | BOLETO | BOL-7890 | - | Compra de jaquetas para revenda | Salvo com sucesso. N° Doc e observação registrados. | |           |
-
----
-
 ## ContasAReceberScreen
 
 | # | Cenário | Descrição | Valor Original | Cliente | Status | Vencimento | Tipo Doc | N° Doc | Data Recebimento | Observação | Efeito Esperado | Erro | Resultado |
@@ -94,19 +68,6 @@
 | 72 | Recebimento total | (conta existente) | Restante integral | - | RECEBIDO | - | - | - | 25/07/2026 | Quitado | Status alterado para RECEBIDO. | | |
 | 73 | Descrição vazia | (vazio) | R$ 200,00 | Maria Souza | PENDENTE | 15/08/2026 | - | - | - | - | Alerta: "Descrição é obrigatória". | | |
 | 120 | Conta com N° Doc e observação | Venda João Pedro (Camisetas) | R$ 119,70 | João Pedro | PENDENTE | 20/07/2026 | NOTA FISCAL | NF-0042 | - | Cliente fiado recorrente | Salvo com sucesso. N° Doc e observação registrados. | | |
-
----
-
-## OrdemServicoScreen
-
-Nota: o formulário de cadastro/edição de OS não tem um controle de Status — toda OS nova é salva com status "Aberto" fixo (não há como escolher/alterar o status pela tela; "Status" só aparece como coluna somente-leitura na tabela e no modal de detalhes).
-
-| # | Cenário | Data | Cliente | Técnico | Equipamento | Mão de Obra | Peças | Pagamento | Checklist | Efeito Esperado | Erro | Resultado |
-|---|---------|------|---------|---------|-------------|-------------|-------|-----------|-----------|-----------------|------|---|
-| 75 | OS completa | 15/06/2026 | Maria Souza | (técnico) | Máquina Costura Industrial | R$ 150,00 | R$ 80,00 | A VISTA | "Trocar motor, lubrificar" | Salva com total R$ 230,00, status "Aberto". | | |
-| 76 | Editar OS existente | 16/06/2026 | João Pedro | (técnico) | Prensa estamparia | R$ 200,00 | R$ 50,00 | PIX | "Reparo concluído" | Dados atualizados com sucesso (status permanece "Aberto", tela não permite alterá-lo). | | |
-| 77 | Cliente não selecionado | 15/06/2026 | (vazio) | (técnico) | Equipamento | R$ 100,00 | R$ 0 | A VISTA | - | Alerta: "Cliente é obrigatório". | | |
-| 78 | Valor zerado total | 15/06/2026 | Maria Souza | (técnico) | Equipamento | R$ 0 | R$ 0 | - | - | Alerta: "Informe valor de mão de obra ou peças". | | |
 
 ---
 
@@ -139,7 +100,7 @@ Nota: o formulário de cadastro/edição de OS não tem um controle de Status �
 
 ## Testes de Fluxo Completo
 
-### Fluxo 1 — Loja de Roupas: Compra -> Venda -> Financeiro
+### Fluxo 1 — Loja de Roupas: Venda -> Financeiro
 
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
@@ -147,10 +108,9 @@ Nota: o formulário de cadastro/edição de OS não tem um controle de Status �
 | 2 | Fornecedor | Reaproveitar cadastro de "Malharia Silva" (caso #39, testes-gerais.md) | CNPJ: 11.111.111/0001-91, SP | OK | | |
 | 3 | Produto | Reaproveitar cadastro de "Camiseta M" (caso #13, ProdutoScreen) | SKU001, R$ 15,00/R$ 39,90, UN, Est: 100 | OK | | |
 | 4 | Cliente | Reaproveitar cadastro de "Maria Souza" (caso #1, testes-gerais.md) | CPF: 123.456.789-09 | OK | | |
-| 5 | Compras | Comprar 50 Camisetas | Malharia Silva, R$ 15,00, A VISTA, refletir estoque | Estoque: 150 | | |
-| 6 | Vendas | Vender 3 Camisetas | Maria Souza, R$ 39,90, PIX, refletir estoque | Estoque: 147 | | |
-| 7 | PDV | Vender 2 Camisetas | Avulsa, R$ 79,80, R$ 100 recebido | Troco: R$ 20,20. Estoque: 145 | | |
-| 8 | Contas a Receber | Verificar | Nenhuma pendente (vendas à vista) | Vazio | | |
+| 5 | Vendas | Vender 3 Camisetas | Maria Souza, R$ 39,90, PIX, refletir estoque | Estoque: 147 | | |
+| 6 | PDV | Vender 2 Camisetas | Avulsa, R$ 79,80, R$ 100 recebido | Troco: R$ 20,20. Estoque: 145 | | |
+| 7 | Contas a Receber | Verificar | Nenhuma pendente (vendas à vista) | Vazio | | |
 
 ---
 

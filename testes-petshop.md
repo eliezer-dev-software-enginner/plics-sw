@@ -54,40 +54,6 @@
 
 ---
 
-## ComprasScreen
-
-| # | Cenário | Data | Fornecedor | NF | Produto | Qtd | Preço | Desc. | Pagamento | Estoque | Obs | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------|----|---------|-----|-------|-------|-----------|---------|-----|-----------------|------|---|
-| 126 | Compra ração cães | 14/06/2026 | Purina Pet | NF-COM-PET-001 | Ração Cães 15kg (RAC-C-001) | 10 | R$ 45,00 | R$ 0 | A VISTA | Sim | - | Estoque 20 -> 30. Custo registrado. | | |
-| 127 | Compra ração gatos a prazo | 14/06/2026 | Royal Canin | NF-COM-PET-002 | Ração Gatos 10kg (RAC-G-001) | 8 | R$ 55,00 | R$ 0 | A PRAZO | Sim | Parcelas geradas: 15/07, 15/08, 15/09 | Compra registrada. Estoque 15 -> 23. Gera 3 contas a pagar de R$ 146,67 (total R$ 440,00). | | |
-| 128 | Compra areia sanitária | 14/06/2026 | PetBrasil | NF-COM-PET-003 | Areia Sanitária 4kg (ARE-001) | 20 | R$ 12,00 | R$ 20,00 | A VISTA | Sim | - | Compra registrada com desconto. Estoque 30 -> 50. | | |
-| 129 | Compra brinquedos sem refletir estoque | 14/06/2026 | PetBrasil | - | Brinquedo Osso Borracha (BRI-001) | 25 | R$ 3,50 | R$ 0 | A VISTA | Nao | Estoque baixo, repor rápido | Compra registrada. Estoque permanece 50. | | |
-
----
-
-## OrdemServicoScreen
-
-Nota: não há controle de Status no formulário — toda OS nova é salva com status "Aberto" fixo.
-
-| # | Cenário | Data | Cliente | Técnico | Equipamento/Serviço | Mão de Obra | Peças | Pagamento | Checklist | Efeito Esperado | Erro | Resultado |
-|---|---------|------|---------|---------|---------------------|-------------|-------|-----------|-----------|-----------------|------|---|
-| 130 | Banho simples | 15/06/2026 | Ana Beatriz | (tosador) | Banho cães pequeno porte | R$ 35,00 | R$ 0 | A VISTA | "Banho, secagem" | Salva com total R$ 35,00, status "Aberto". | | |
-| 131 | Editar OS existente | 16/06/2026 | Carlos Mendes | (tosador) | Banho + Tosa cães médio porte | R$ 55,00 | R$ 0 | PIX | "Tosa higiênica, banho, corte unhas" | Dados atualizados com sucesso. | | |
-| 132 | Cliente não selecionado | 15/06/2026 | (vazio) | (tosador) | Banho | R$ 35,00 | R$ 0 | A VISTA | - | Alerta: "Cliente é obrigatório". | | |
-| 133 | Técnico não selecionado | 15/06/2026 | Sofia Rocha | (vazio) | Tosa | R$ 45,00 | R$ 0 | - | - | Alerta: "Técnico é obrigatório". | | |
-
----
-
-## TecnicoScreen
-
-| # | Cenário | Nome | Efeito Esperado | Erro | Resultado |
-|---|---------|------|-----------------|------|---|
-| 134 | Cadastro tosador | Carlos Tosador | Salvo com sucesso. | | |
-| 135 | Cadastro banhista | Juliana Banhista | Salvo com sucesso. | | |
-| 136 | Nome duplicado | Carlos Tosador | Alerta: "Técnico já cadastrado". | | |
-
----
-
 ## PDVScreen
 
 | # | Cenário | Produto | Qtd | Total | Recebido | Fiado | Cliente (fiado) | Nº Parcelas | Efeito Esperado | Erro | Resultado |
@@ -112,15 +78,6 @@ Nota: não há controle de Status no formulário — toda OS nova é salva com s
 
 ---
 
-## ComprasAPagarScreen
-
-| # | Cenário | Descrição | Valor | Fornecedor | Vencimento | N° Doc | Data Pagamento | Observação | Efeito Esperado | Erro | Resultado |
-|---|---------|-----------|-------|-----------|------------|--------|----------------|------------|-----------------|------|---|
-| 69 | Conta gerada por compra | Compra Purina Pet | R$ 1.500,00 | Purina Pet | 15/08/2026 | - | - | - | Gerada automaticamente pela compra a prazo. | | |
-| 166 | Conta com N° Doc e pagamento | Compra Royal Canin | R$ 440,00 | Royal Canin | 01/08/2026 | NF-COM-PET-002 | 05/08/2026 | Ração gatos a prazo | Pagamento registrado. Status: PAGO. | | |
-
----
-
 ## CadastroEmpresaScreen
 
 | # | Cenário | Nome | Cidade | Efeito Esperado | Erro | Resultado |
@@ -131,7 +88,7 @@ Nota: não há controle de Status no formulário — toda OS nova é salva com s
 
 ## Testes de Fluxo Completo
 
-### Fluxo 4 — PetShop: Compra -> Venda -> OS (Banho)
+#### Fluxo 4 — PetShop: Venda
 
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
@@ -140,11 +97,8 @@ Nota: não há controle de Status no formulário — toda OS nova é salva com s
 | 3 | Cliente | Reaproveitar cadastro de "Ana Beatriz" (dados de teste — Clientes, testes-gerais.md) | CPF: 222.333.444-55 | OK | | |
 | 4 | Produto | Reaproveitar cadastro de "Ração Cães 15kg" (caso #113, ProdutoScreen) | RAC-C-001, R$ 45,00/R$ 79,90, KG, Est: 20, perecível 15/12/2026 | OK | | |
 | 5 | Produto | Reaproveitar cadastro de "Brinquedo Osso" (caso #116, ProdutoScreen) | BRI-001, R$ 3,50/R$ 9,90, UN, Est: 50 | OK | | |
-| 6 | Técnico | Reaproveitar cadastro de "Carlos Tosador" (caso #134, TecnicoScreen) | Nome: Carlos Tosador | OK | | |
-| 7 | Compras | Comprar 10 Rações | Purina Pet, A VISTA, refletir estoque | Estoque: 30 | | |
-| 8 | Vendas | Vender 1 Ração + 2 Brinquedos | NF-PET-010, Ana Beatriz, PIX | Estoque: ração 29, brinquedos 48 | | |
-| 9 | OS | Abrir OS Banho | Ana Beatriz, Carlos Tosador, "Banho + Tosa", R$ 55,00 | OS Aberta (status "Aberto" fixo — tela não tem controle para alterar status) | | |
-| 10 | PDV | Vender 1 Ração avulsa | R$ 79,80 recebido R$ 100,00 | Troco: R$ 20,20. Estoque ração: 28 | | |
+| 6 | Vendas | Vender 1 Ração + 2 Brinquedos | NF-PET-010, Ana Beatriz, PIX | Estoque: ração 29, brinquedos 48 | | |
+| 7 | PDV | Vender 1 Ração avulsa | R$ 79,80 recebido R$ 100,00 | Troco: R$ 20,20. Estoque ração: 28 | | |
 
 ---
 

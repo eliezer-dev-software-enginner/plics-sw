@@ -55,16 +55,13 @@
 
 ## Testes de Fluxo Completo
 
-### Fluxo 2 — Mercado: Compra a Prazo -> Pagamento
+### Fluxo 2 — Mercado: Cadastros base
 
 | Passo | Tela | Ação | Dados | Efeito Esperado | Erro | Resultado |
 |-------|------|------|-------|-----------------|------|---|
 | 1 | Categoria | Reaproveitar cadastro de "Alimentos" (dados de teste — Categorias, testes-gerais.md) | Nome: Alimentos | OK | | |
 | 2 | Fornecedor | Reaproveitar cadastro de "Alimentos Brasil" (dados de teste — Fornecedores, testes-gerais.md) | CNPJ: 66.666.666/0001-91, DF | OK | | |
 | 3 | Produto | Reaproveitar cadastro de "Arroz 5kg" (caso #145, ProdutoScreen) | SKU-ARROZ, R$ 8,00/R$ 12,00, UN, Est: 200 | OK | | |
-| 4 | Compras | Comprar 100 Arroz a prazo | Alimentos Brasil, R$ 8,00, A PRAZO (3x) | Estoque: 300. Gera 3 contas a pagar. | | |
-| 5 | Contas a Pagar | Verificar | 3 parcelas geradas automaticamente | OK | | |
-| 6 | Contas a Pagar | Pagar 1ª parcela | Pagamento total da 1ª | Status: PARCIAL | | |
 
 ---
 
