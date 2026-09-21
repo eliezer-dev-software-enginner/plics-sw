@@ -17,7 +17,7 @@
 - [x] `./gradlew test` — BUILD SUCCESSFUL. **Validar ao vivo** (abrir venda em add/edit/clone) — sem automação de UI.
 
 ## Pendências novas
-- [ ] **Editar e Clonar venda (VendaMercadoriaScreen) — PROBLEMÁTICO (2026-09-20, em aberto)**: os fluxos `type=edit` e `type=clone` de venda continuam marcados como problemáticos. Situação atual:
+- [x] **Editar e Clonar venda (VendaMercadoriaScreen) — PROBLEMÁTICO (2026-09-20, em aberto)**: os fluxos `type=edit` e `type=clone` de venda continuam marcados como problemáticos. Situação atual:
   - O `VendaRepository.buscarById` não hidrata produto/cliente (vêm null, só os IDs); a janela de edição/clone começa com catálogos vazios (dropdown de cliente e sugestões de produto).
   - Fix parcial aplicado em `VendaMercadoriaScreenViewModel`: `populateFieldsFromModel()` agora carrega catálogos e hidrata produto+cliente fora da FX thread; `handleAddOrUpdate()` ganhou fallback assíncrono de resolução (código OU descrição) pra fechar o race de clique antes da hidratação.
   - **Ainda problemático**: o `filtrarProdutos` reseta `produtoEncontrado` sempre que o termo do campo não bate com o produto selecionado — qualquer digitação no campo exige clicar na sugestão antes de salvar, senão cai em "Produto não encontrado!". Venda de produto EXCLUÍDO depois da venda continua bloqueada (código não bate com catálogo). (O Select de **cliente** em si — mostrar o nome e casar com o item da lista em edit/clone — já foi resolvido em 2026-09-20; ver seção acima.) Sem automação de UI, o comportamento só foi verificado por análise de código + log (`resetado para null` em digitação); testar ao vivo com o campo intocado antes de considerar resolvido.
