@@ -23,7 +23,7 @@ Não inicie nenhuma tarefa sem ter lido esses arquivos primeiro.
 - Explique brevemente o plano da tarefa antes de executar qualquer mudança.
 
 ## 4. Tarefa
-Continue a sessão registrada no TODO.md
+O Select da tela de venda ao ser aberta, não está sendo preenchido com "CLIENTE PADRAO". E quando aberta após clique em Editar ou Clone, o select aparece com nome java qualidifcado : "@ClienteMdel...", veja o que está causando isso.
 
 
 ## 5. Ao final da tarefa
