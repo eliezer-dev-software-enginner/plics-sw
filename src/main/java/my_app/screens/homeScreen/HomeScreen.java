@@ -173,8 +173,8 @@ public class HomeScreen implements ScreenComponent {
             new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes",AppRoutes.Screens.CLIENTES.name()),
             new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber",AppRoutes.Screens.COMPRAS_A_RECEBER.name()),
             new CardItem("/assets/pdv.png", "PDV","Abrir caixa",AppRoutes.Screens.PDV.name()),
-            new CardItem("/assets/despesas.png", "Categorias","Tela de categorias",AppRoutes.Screens.CATEGORIAS.name()),
-            new CardItem("/assets/compras.png", "Fornecedores","Tela de fornecedores",AppRoutes.Screens.FORNECEDORES.name()),
+            new CardItem("/assets/categoria.png", "Categorias","Tela de categorias",AppRoutes.Screens.CATEGORIAS.name()),
+            new CardItem("/assets/fornecedores.png", "Fornecedores","Tela de fornecedores",AppRoutes.Screens.FORNECEDORES.name()),
             new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa",AppRoutes.Screens.PEDIDOS.name())
            // new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
     );
