@@ -39,6 +39,7 @@ import megalodonte.v2.ListState;
 import megalodonte.v2.Show;
 import my_app.core.db.models.ProdutoModel;
 import my_app.core.Data;
+import my_app.core.Identifier;
 import my_app.core.Parcela;
 import my_app.core.states.EnderecoState;
 import my_app.core.states.TotaisState;
@@ -367,6 +368,22 @@ public class Components {
             .minWidth(100);
 
 
+    /**
+     * Comparador por id que enxerga o campo herdado da superclasse. Os models
+     * guardam o id em Identifier (superclasse), então o compareById() do Select
+     * (que usa getDeclaredField, só campos da própria classe) nunca acerta —
+     * o valor selecionado via buscarById() ficava como referência "estranha"
+     * fora da lista e o select pintava o toString() do objeto na tela.
+     */
+    private static <T> boolean sameId(T a, T b) {
+        if (a == b) return true;
+        if (a == null || b == null) return false;
+        if (a instanceof Identifier ai && b instanceof Identifier bi) {
+            return ai.getId() != null && ai.getId().equals(bi.getId());
+        }
+        return a.equals(b);
+    }
+
     public static <T> Component SelectColumn(String label, List<T> list, State<T> stateSelected, Function<T, String> display) {
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
@@ -380,12 +397,13 @@ public class Components {
     public static <T> Component SelectColumn(String label, State<List<T>> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
         var select = new Select<T>(selectProps)
                 .items(list)
-                .value(stateSelected)
                 .displayText(display);
 
         if (compareById) {
-            select.compareById();
+            select.itemComparator(Components::sameId);
         }
+
+        select.value(stateSelected);
 
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))
@@ -396,13 +414,13 @@ public class Components {
                                              boolean compareById, ReadableState<Boolean> expandAutomatically) {
         var select = new Select<T>(selectProps)
                 .items(list)
-                .displayText(display)
-                .value(stateSelected);
-
+                .displayText(display);
 
         if (compareById) {
-            select.compareById();
+            select.itemComparator(Components::sameId);
         }
+
+        select.value(stateSelected);
 
         if(expandAutomatically != null) {
             select.expandWhen(expandAutomatically);
@@ -431,12 +449,13 @@ public class Components {
     public static <T> Component SelectColumn(String label, ListState<T> list, State<T> stateSelected, Function<T, String> display, boolean compareById) {
         var select = new Select<T>(selectProps)
                 .items(list)
-                .value(stateSelected)
                 .displayText(display);
 
         if (compareById) {
-            select.compareById();
+            select.itemComparator(Components::sameId);
         }
+
+        select.value(stateSelected);
 
         return new Column()
                 .c_child(new Text(label, new TextProps().fontSize(ThemeManager.theme().typography().small())))

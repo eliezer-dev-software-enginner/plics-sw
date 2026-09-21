@@ -36,6 +36,46 @@ type mismatch`.
 
 ---
 
+## 2026-09-20: Select de Cliente da venda — comparador de igualdade do app (não usar `Select.compareById()` do framework)
+
+**Contexto:** a janela de venda (`ScreenAddOrEditVenda`) exibia o **nome Java qualificado**
+(`my_app.core.db.models.ClienteModel@...`, o `toString()` default) no Select ao abrir em edição/clone.
+Diagnóstico na investigação:
+- `Select.compareById()` do `megalodonte-components` usa `getDeclaredField("id")` para comparar o
+  valor atual com os items da lista. As models do plics-sw declaram `id` na superclasse
+  `my_app.core.Identifier` — não **declared** na própria classe — então `getDeclaredField("id")`
+  lança `NoSuchFieldException` e o comparador cai para `false` permanentemente (`findMatchingItem`
+  nunca casa, o Select mantém a referência "estranha" vinda de `clienteService.buscarById`).
+- Além disso, o overload de `SelectColumn` de 5 args aplicava `.value(state)` ANTES de
+  `.displayText(...)`/comparador; a célula padrão do `Select` é `toString`, então no instante do
+  subscribe imediato o valor "estranho" era renderizado como `ClienteModel@...` até o displayText ser
+  setado (overload de 6 args já tinha a ordem correta, `displayText` antes `value`).
+
+**Decisão (usuário — corrigir só em plics-sw, sem rebuild das libs):**
+1. **Não alterar `Select.compareById()`** no `megalodonte-ecossystem` (limitação de framework) —
+   o fix fica app-side.
+2. **`Components.sameId(T, T)`** (novo helper privado em `Components.java`): `==` → null-safe →
+   `instanceof Identifier` compara `getId()` (lê o `id` herdado via getter, sem reflection) →
+   fallback `equals`. Mesmo esquema de igualdade que o `compareById()` pretendia, mas que enxerga o
+   id da superclasse.
+3. **Nos 3 overloads de `SelectColumn` com `compareById`**: aplicar `displayText` e
+   `select.itemComparator(Components::sameId)` ANTES de `.value(...)` — quando o subscribe imediato
+   do `value()` dispara, a célula é a de texto customizado (nome do cliente) e o comparador já pula
+   o `getDeclaredField`. Overload de 4 args (lista, sem `State`) não usa `compareById` — intocado.
+4. **Default "CLIENTE PADRÃO" só no modo `add`**: `ScreenAddOrEditVenda` passou de
+   `fetchListData(false)` fixo (regressão do commit `3614291`) para
+   `fetchListData("add".equals(type))`.
+
+**Consequência:** a "pré-seleção via instância nova do `buscarById`" funciona porque o
+`itemComparator` reconhece igualdade por id; edição/clone mostram o nome do cliente e passam o
+cliente correto ao salvar. Sem mudança no framework nem nas libs.
+
+**Arquivos:** `Components.java` (helper `sameId` + ordem das cadeias), `ScreenAddOrEditVenda.java`.
+**Verificação:** `./gradlew test` — BUILD SUCCESSFUL. Validar ao vivo (add/edit/clone) — sem
+automação de UI.
+
+---
+
 ## 2026-09-06: Migração de utilitários pro `pack-utilities` — testes ajustados
 
 **Contexto:** os métodos utilitários genéricos (formatação de moeda, validação de CPF/CNPJ/CEP/telefone/

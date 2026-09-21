@@ -26,6 +26,28 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-20 (tarde): Select de Cliente da venda — default "CLIENTE PADRÃO" + fix do nome Java qualificado em edição/clone
+- **Bug 1 — venda nova abria com Select de Cliente vazio** (regressão do commit `3614291`, que
+  parametrizou `fetchListData(boolean)`): `ScreenAddOrEditVenda` passava `isClientSelectedDefault=false`
+  fixo, mas a pré-seleção do "CLIENTE PADRÃO" (id == 1L) só roda com o flag `true` (usado pela listagem).
+  Fix: ctor agora chama `viewModel.fetchListData("add".equals(type))` — pré-seleciona CLIENTE PADRÃO
+  só em inclusão; edição/clone continuam vindo do `populateFieldsFromModel`.
+- **Bug 2 — edição/clone exibia `my_app.core.db.models.ClienteModel@...` (toString) no Select**, duas
+  causas encadeadas em `Components.SelectColumn` (overload de 5 args, linha 431):
+  1. **Ordem errada na cadeia**: `.items(list).value(...).displayText(...)` + `compareById()` depois —
+     `.value()` dispara na hora (subscriber notifica com o valor atual), quando a célula ainda é a
+     padrão `toString` do `Select`. O overload de 6 args (`:395`) já usava a ordem certa (`displayText`
+     antes de `value`) — evidência de que a de 5 args estava invertida.
+  2. **`Select.compareById()` (megalodonte-components) nunca casa**: usa `getDeclaredField("id")`, que
+     não enxerga o `id` declarado na superclasse `Identifier` → `NoSuchFieldException` → comparator
+     sempre `false` → `findMatchingItem` devolve a referência "estranha" (`clienteService.buscarById`
+     cria instância nova, fora da lista de items).
+- **Fix (app-side, sem rebuild das libs)**: nos 3 overloads de `SelectColumn` com `compareById`,
+  `displayText` e o comparador `Components::sameId` (compara via `Identifier.getId()`, nulo-safe)
+  agora são aplicados ANTES do `.value()`. `Select.compareById()` do framework não foi alterado.
+- **Testes**: `./gradlew test` — BUILD SUCCESSFUL (sem teste automatizado de ViewModel/UI; validar ao
+  vivo abrindo a venda em add/edit/clone). `VendaMercadoriaScreen` (listagem) inalterada.
+
 ### 2026-09-20: Editar/Clonar venda — problema em aberto (marcado como problemático)
 - `VendaRepository.buscarById` não hidrata produto/cliente (só IDs); a janela de edição/clone
   começava com catálogos vazios e `produtoEncontrado=null`. Fix **parcial** aplicado em
