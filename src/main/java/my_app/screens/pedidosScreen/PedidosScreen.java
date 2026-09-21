@@ -64,9 +64,14 @@ public class PedidosScreen implements ScreenComponent {
                 .column("Total",        it -> CurrencyPack.toBRLCurrency(it.getTotalLiquido()))
                 .column("Pagamento", PedidoModel::getFormaPagamento)
                 .column("Fiado?",       it -> it.getFiado() != null && it.getFiado() == 1 ? "Sim" : "Não")
+                .column("Desconto",     it -> CurrencyPack.toBRLCurrency(it.getDesconto()))
+                .column("Frete",        it -> CurrencyPack.toBRLCurrency(it.getFrete()))
+                .column("Observação",   PedidoModel::getObservacao)
                 .column("Data",         it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .column("Status",       it -> Boolean.TRUE.equals(it.getDevolvida()) ? "Devolvida" : "-")
+                .column("Devolvida em", it -> Boolean.TRUE.equals(it.getDevolvida()) && it.getDataDevolucao() != null ? DatePack.millisToBrazilianDateTime(it.getDataDevolucao()) : "-")
                 .build()
+                .horizontalScroll()
                 .onItemSelectChange(vm.pedidoSelecionado::set);
     }
 
@@ -101,8 +106,11 @@ public class PedidosScreen implements ScreenComponent {
                         .column("Produto", PedidoItemModel::getProdutoCod)
                         .column("Qtd.", PedidoItemModel::getQuantidade)
                         .column("Vl. Unit.", it -> CurrencyPack.toBRLCurrency(it.getPrecoUnitario()))
+                        .column("Desconto",  it -> CurrencyPack.toBRLCurrency(it.getDesconto()))
                         .column("Total",     it -> CurrencyPack.toBRLCurrency(it.getTotalItem()))
-                        .build(),
+                        .column("Data",      it -> it.getDataCriacao() != null ? DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()) : "")
+                        .build()
+                        .horizontalScroll(),
                 new SpacerVertical(15)
 
         ));

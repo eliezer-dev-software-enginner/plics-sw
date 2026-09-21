@@ -67,7 +67,7 @@ public interface ScreenContract<T extends Identifier> {
                                         new Container(new ContainerProps().paddingLeft(20)
                                                 .paddingRight(20).fillHeight().spacingOf(15))
                                                 .children(Components.searchInput(viewModel().searchState, "Pesquisar"),
-                                                        table())
+                                                        table().horizontalScroll())
                                 )
                 );
     }

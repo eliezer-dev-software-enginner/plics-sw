@@ -41,7 +41,7 @@ public class CategoriaScreen implements ScreenComponent, ScreenContract<Categori
         simpleTable.fromData(vm.filteredList)
                 .header()
                 .columns()
-                .column("ID", CategoriaModel::getId, 70.0)
+                .column("ID", CategoriaModel::getId)
                 .column("Nome", CategoriaModel::getNome)
                 .column("Data de criação", it-> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .build()

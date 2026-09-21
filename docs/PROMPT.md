@@ -23,7 +23,7 @@ Não inicie nenhuma tarefa sem ter lido esses arquivos primeiro.
 - Explique brevemente o plano da tarefa antes de executar qualquer mudança.
 
 ## 4. Tarefa
-O Select da tela de venda ao ser aberta, não está sendo preenchido com "CLIENTE PADRAO". E quando aberta após clique em Editar ou Clone, o select aparece com nome java qualidifcado : "@ClienteMdel...", veja o que está causando isso.
+Como eu fiz em ProdutosScreen removendo a width de sua SimpleTable, quero que você remova a width das outras SimpleTable na aplicação. E inclusive adicione todos os campos às colunas, geralmente aparece mais dados em itemDetails do que em SimpleTable eu quero igualar os dados. 
 
 
 ## 5. Ao final da tarefa
