@@ -23,6 +23,17 @@ public class PedidoRepository extends BaseRepository<PedidoModel> {
         return PedidoModel.class;
     }
 
+    // Histórico do caixa/PDV: vendas mais recentes primeiro. No SQLite NULLs são
+    // menores que qualquer valor, então em DESC ficam por último — dataCriacao é
+    // sempre preenchida pelo PedidoService.salvar(), mas a ordenação permanece estável.
+    @Override
+    public List<PedidoModel> listar() throws SQLException {
+        return session().query(
+                modelClass(),
+                sql("SELECT * FROM pedidos ORDER BY dataCriacao DESC, id DESC")
+        );
+    }
+
     public BigDecimal somarPedidosHoje() throws SQLException {
         long inicioHoje = localDateParaMillis(LocalDate.now());
         long fimHoje = inicioHoje + (24 * 60 * 60 * 1000L) - 1;
