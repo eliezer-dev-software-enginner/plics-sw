@@ -58,6 +58,32 @@ Moderna, intuitiva e responsiva com navegação estruturada e componentes otimiz
 ./gradlew run
 ```
 
+### Teste de desempenho — 20 mil produtos
+
+O projeto tem dois scripts Python que inserem e depois apagam **20 mil produtos no banco real**
+(`%APPDATA%\plics-sw\erp.db` no Windows, `~/.plics-sw/erp.db` nos demais) pra você medir como o
+app se comporta com muitos registros. Não passam pelo Gradle e não têm dependência externa (só
+`sqlite3`).
+
+```powershell
+# 1) Criar os 20 mil produtos (idempotente: apaga os "PERFTEST%" antigos antes de inserir)
+python scripts/criar_produtos_teste.py
+
+# 2) Testar o app com os 20 mil no banco
+.\gradlew.bat run
+
+# 3) Depois, apagar os produtos de teste
+python scripts/apagar_produtos_teste.py
+```
+
+- Os scripts validam a contagem (20 mil após criar, zero após apagar) e imprimem o tempo gasto.
+- Os produtos de teste têm `codigo_barras = PERFTEST...` — dá pra apagá-los de outro jeito (ex.:
+  tela de Produtos), se preferir; o marcador garante identificação inequívoca.
+- Os scripts gravam/apagam no mesmo formato do app (id sequencial, `dataCriacao` epoch millis,
+  `total_liquido` preenchido) e avisam se o banco estiver numa migration atrás do código.
+- `python scripts/criar_produtos_teste.py --total N` limita a quantidade (útil pra um teste rápido
+  antes de fazer os 20 mil).
+
 ### Verificação de atualização
 
 O Plics SW não baixa/instala nem verifica versão sozinho. O menu "Suporte" > "Buscar

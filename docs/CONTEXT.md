@@ -26,6 +26,26 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-21: Ferramenta de teste de desempenho — 20 mil produtos no banco real (script Python)
+- **Pedido do usuário**: script prático pra criar 20 mil registros de produtos e medir a eficiência
+  do app com muitos registros, com função de apagar de volta. **Sem passe pelo Gradle** — o usuário
+  pediu explicitamente um **script Python** (mais rápido/simples que test runner JUnit).
+- **Dois scripts Python** (novos, `sqlite3` puro — sem dependência externa), um pra cada ação:
+  - `python scripts/criar_produtos_teste.py` — **idempotente** (apaga `PERFTEST%` existentes
+    antes), insere 20 mil produtos (ou `--total`) no banco de produção real numa **transação
+    única** via `executemany`, com assert de contagem e log do tempo;
+  - `python scripts/apagar_produtos_teste.py` — `DELETE ... WHERE codigo_barras LIKE 'PERFTEST%'`
+    (com `commit` explícito), com assert de zero restantes; ambos conferem numa única ação;
+  - banco resolvido igual ao app (`DB.resolveDbPath`): `%APPDATA%\plics-sw\erp.db` no Windows,
+    `~/.plics-sw/erp.db` nos demais; avisa (não bloqueia) se a migration do banco estiver atrás do
+    código.
+- **Formato gravado idêntico ao do app**: `id` numérico (Próximo id = `MAX(id)` atual + 1, mesmo
+  esquema do `BaseRepository`), `dataCriacao` como **epoch millis inteiro** (mesmo armazenamento que
+  o Persism usa — conferido contra um produto real do banco), `total_liquido NOT NULL`.
+- **Medição real na máquina do usuário**: 20.000 inseridos em ~474 ms (0,02 ms/produto) e apagados
+  em <1s. Suíte `./gradlew test` inalterada e limpa (teste Java de desempenho anterior removido a
+  pedido do usuário; `build.gradle.kts` revertido).
+
 ### 2026-09-20 (tarde): Select de Cliente da venda — default "CLIENTE PADRÃO" + fix do nome Java qualificado em edição/clone
 - **Bug 1 — venda nova abria com Select de Cliente vazio** (regressão do commit `3614291`, que
   parametrizou `fetchListData(boolean)`): `ScreenAddOrEditVenda` passava `isClientSelectedDefault=false`

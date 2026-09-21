@@ -3,6 +3,21 @@
 - [x] : Erro ao clicar em Clonar na tela de vendas: Error: Cannot invoke "megalodonte.components.inputs.Input.requestFocus()" because "this.inputRef" is null. Aqui na verdade nem era mais pra precisar disso também. Já que a ideia é spawnar uma tela nova e não precisamos focar em nada. Esse input ref pode ser removido
 - [x] : E inclusive o clique em Clonar não faz nada em lugar nenhum, deveria spawnar a tela de AddOrEdit específica com o type: "clone" na rota em ScreenContract e em ScreenAddOrEdit se o type for "clone" é só popular os dados nos inputs e tal como é feito quando em modo de edição.
 
+## Concluído (ferramenta de desempenho — 20 mil produtos no banco real — 2026-09-21)
+- [x] **Dois scripts Python** criados (`sqlite3` puro, sem dependência):
+      `scripts/criar_produtos_teste.py` insere 20 mil produtos `PERFTEST` no banco de **produção
+      real** numa transação única (idempotente, assert de contagem + log do tempo);
+      `scripts/apagar_produtos_teste.py` remove `PERFTEST%` (commit explícito, assert de zero).
+      Formato idêntico ao do app (id na sequência do `MAX(id)`, `dataCriacao` epoch millis,
+      `total_liquido` preenchido), aviso se a migration estiver atrás.
+- [x] **Teste JUnit anterior descartado a pedido do usuário**: `PerformanceProductDataTest.java`
+      removido e alteração em `build.gradle.kts` revertida — Python é mais rápido/simples e insere
+      direto no banco real.
+- [x] **Medido na máquina do usuário**: 20 mil em ~474 ms (0,02 ms/produto); apagar em <1s.
+- [ ] **Ação do usuário**: rodar `python scripts/criar_produtos_teste.py`, abrir o app com
+      `./gradlew run` e avaliar o desempenho com 20 mil produtos; depois
+      `python scripts/apagar_produtos_teste.py`.
+
 ## Concluído (Ids de Integer para Long — 2026-09-19)
 - [x] **Enumerar todas as tabelas/ids**: tabelas usadas pelo app convertidas — `categorias`, `fornecedores`, `clientes`, `empresas`, `cores`, `preferencias`, `produtos`, `compras`, `vendas`, `pedidos`, `contas_a_receber`, `contas_pagar`, `pedido_itens`. Legadas sem uso (`licensas`, `usuarios`) ficam intactas; `tecnicos` e `ordens_de_servico` (removidas do app em `3b8c5dc`/`8d002c9`) são dropadas no V37 (decisão do usuário).
 - [x] **Verificar API do Persism para scalar (MAX(id)) e conexão**: `fetch(Class, SQL, Parameters)` retorna tipos primitivos/boxed; expressões tipo `MAX(id)` voltam como `Integer` (cola quebra o cast pra `Long`) → geração de id usa `SELECT id ... ORDER BY id DESC LIMIT 1` (coluna `id BIGINT` → sempre `Long`; vazia → `null`). Validado contra o Persism 2.3 real.

@@ -1,5 +1,40 @@
 # Decisões Arquiteturais
 
+## 2026-09-21: Teste de desempenho com 20 mil produtos — script Python (sqlite3) que escreve no banco de produção
+
+**Contexto:** o usuário quer medir a eficiência do app com muitos registros. Para o app real
+(`./gradlew run`) enxergar os dados, é preciso escrever no **banco de produção**
+(`DB.resolveDbPath()` → `%APPDATA%\plics-sw\erp.db` no Windows) — o banco em memória dos testes
+(`BaseServiceTest`) morre no `@AfterEach` e não povoar o app real.
+
+**Tentativa anterior (descartada):** um teste JUnit (`PerformanceProductDataTest`) com
+`@EnabledIfSystemProperty` e flag repassada via `tasks.test { systemProperty(...) }`. Funcionava,
+mas o usuário avaliou como **pior ideia**: o script Python é mais rápido pra escrever, mais simples
+e insere direto no banco real sem intermediário (Gradle/flag/JVM). Teste Java removido e
+`build.gradle.kts` revertido.
+
+**Decisões (aprovadas):**
+1. **Scripts Python puros (`scripts/criar_produtos_teste.py` e `scripts/apagar_produtos_teste.py`),
+   só `sqlite3` da stdlib** — nada de dependência externa, roda direto em qualquer máquina com
+   Python 3. Um script por ação (pedido do usuário): **criar** insere 20 mil (--total opcional) e
+   **apagar** remove os de teste.
+2. **Escreve no banco de produção real**, com o caminho resolvido igual ao app (`%APPDATA%` no
+   Windows, `~/.plics-sw` nos demais), e **avisa (sem bloquear) se a migration do banco estiver
+   atrás** da última do código (comparação `flyway_schema_history` vs nomes dos arquivos de
+   migration) — o Flyway em si continua sendo responsabilidade do app.
+3. **Formato das linhas espelhado ao Persism** (verificado contra uma linha real do banco):
+   `dataCriacao` como **epoch millis inteiro** (é assim que o Persism serializa `LocalDateTime` na
+   coluna `TIMESTAMP`), `total_liquido` preenchido (`NOT NULL`), id numérico continuando do
+   `MAX(id)` atual (mesmo esquema do `BaseRepository.salvar`).
+4. **Marcador `PERFTEST` no `codigo_barras`** (`PERFTEST%07d`): identificação inequívoca —
+   `codigo_barras` é `UNIQUE`/indexado; `criar` é **idempotente** (apaga `PERFTEST%` antes) e
+   `apagar` usa `DELETE ... LIKE 'PERFTEST%'`, sem tocar em dado real. Os dois assertam a contagem.
+
+**Verificação:** 20.000 inseridos em **~474 ms** na máquina do usuário (0,02 ms/produto, transação
+única `executemany`), apagados em <1s; linhas conferidas com formato idêntico ao do app.
+
+---
+
 ## 2026-09-19: IDs de `Integer` para `Long` — tabelas com PK/FK `BIGINT` e geração de id no app
 
 **Contexto:** os ids de todas as models eram `Long` em Java, mas as colunas do banco eram
