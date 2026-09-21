@@ -25,6 +25,7 @@ import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
@@ -138,22 +139,20 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     }
 
     @Override
-    public void populateFieldsFromModel() {
-        if (selected.get() == null) return;
-        var conta = selected.get();
+    public void populateFieldsFromModel(ContaAreceberModel model) {
 
-        descricao.set(conta.getDescricao());
-        valorOriginal.set(Utils.deRealParaCentavos(conta.getValorOriginal()));
-        dataVencimento.set(DatePack.millisParaLocalDate(conta.getDataVencimento()));
-        dataRecebimento.set(conta.getDataRecebimento() != null ? DatePack.millisParaLocalDate(conta.getDataRecebimento()) : null);
-        status.set(conta.getStatus());
-        tipoDocumento.set(conta.getTipoDocumento());
-        numeroDocumento.set(conta.getNumeroDocumento());
-        observacao.set(conta.getObservacao());
+        descricao.set(model.getDescricao());
+        valorOriginal.set(Utils.deRealParaCentavos(model.getValorOriginal()));
+        dataVencimento.set(DatePack.millisParaLocalDate(model.getDataVencimento()));
+        dataRecebimento.set(model.getDataRecebimento() != null ? DatePack.millisParaLocalDate(model.getDataRecebimento()) : null);
+        status.set(model.getStatus());
+        tipoDocumento.set(model.getTipoDocumento());
+        numeroDocumento.set(model.getNumeroDocumento());
+        observacao.set(model.getObservacao());
 
-        if (conta.getClienteId() != null) {
+        if (model.getClienteId() != null) {
             clientes.get().stream()
-                    .filter(c -> c.getId().equals(conta.getClienteId()))
+                    .filter(c -> c.getId().equals(model.getClienteId()))
                     .findFirst()
                     .ifPresent(clienteSelected::set);
         }
@@ -392,9 +391,15 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
     @Override
     public void onDestroy() throws Exception {
         EventBus.getInstance().unsubscribe(eventListener);
+        contaService.close();
         this.clienteService.close();
         this.contaService.close();
         this.vendaService.close();
         this.produtoService.close();
+    }
+
+    @Override
+    public ContaAreceberModel findById(Long id) throws SQLException {
+        return contaService.buscarById(id);
     }
 }

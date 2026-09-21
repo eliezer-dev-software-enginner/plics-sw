@@ -1,30 +1,33 @@
 package my_app.screens.clienteScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.route.v2.ScreenContextInterface;
+import megalodonte.base.state.State;
 import my_app.core.AppRoutes;
-import my_app.core.db.models.ClienteModel;
-import my_app.core.db.services.ClienteService;
 import my_app.core.Data;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.EventBus;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
+import my_app.core.db.models.ClienteModel;
+import my_app.core.db.services.ClienteService;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.core.states.EnderecoState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pack.utilities.DatePack;
 import pack.utilities.ValidatorPack;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.function.Consumer;
 
 public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
     private static final Logger log = LoggerFactory.getLogger(ClienteViewModel.class);
 
     private final ClienteService clienteService;
+    private final Consumer<Object> eventListener = this::onEntityEvent;
 
     final State<String> nome = new State<>("");
     final State<String> cnpjCpf = new State<>("");
@@ -54,7 +57,15 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_CLIENTE.name();
         this.clienteService = createOrReport(ClienteService::new);
         tipoPessoaSelected.subscribe(_ -> cnpjCpf.set(""));
+        EventBus.getInstance().subscribe(eventListener);
     }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
+            fetchListData();
+        }
+    }
+
 
     @Override
     protected boolean matchesSearch(ClienteModel model, String query) {
@@ -69,24 +80,22 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
     }
 
     @Override
-    public void populateFieldsFromModel() {
-        final var data = selected.get();
-        if (data == null) return;
+    public void populateFieldsFromModel(ClienteModel model) {
         tipoPessoaSelected.set(
-                ValidatorPack.isValidCpf(data.getCpfCnpj())
+                ValidatorPack.isValidCpf(model.getCpfCnpj())
                         ? Data.tiposPessoaList.getFirst()
                         : Data.tiposPessoaList.getLast()
         );
-        nome.set(data.getNome());
-        cnpjCpf.set(data.getCpfCnpj());
-        celular.set(data.getCelular());
-        email.set(data.getEmail());
-        observacao.set(data.getObservacao() == null? "": data.getObservacao());
-        dataNascimento.set(data.getDataNascimento() != null?
-                DatePack.millisParaLocalDate(data.getDataNascimento()): null
+        nome.set(model.getNome());
+        cnpjCpf.set(model.getCpfCnpj());
+        celular.set(model.getCelular());
+        email.set(model.getEmail());
+        observacao.set(model.getObservacao() == null? "": model.getObservacao());
+        dataNascimento.set(model.getDataNascimento() != null?
+                DatePack.millisParaLocalDate(model.getDataNascimento()): null
                 );
 
-        final Boolean gestante = data.getGestante();
+        final Boolean gestante = model.getGestante();
 
         if(gestante){
             isGestante.set(Data.simNaoList.getFirst());
@@ -94,11 +103,11 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
             isGestante.set(Data.simNaoList.getLast());
         }
 
-        dataNascimentoBebe.set(data.getDataNascimentoBebe() != null?
-                DatePack.millisParaLocalDate(data.getDataNascimentoBebe()): null
+        dataNascimentoBebe.set(model.getDataNascimentoBebe() != null?
+                DatePack.millisParaLocalDate(model.getDataNascimentoBebe()): null
         );
 
-        enderecoState.get().populateFromClienteModel(data);
+        enderecoState.get().populateFromClienteModel(model);
     }
 
     @Override
@@ -175,21 +184,10 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public void handleAddOrUpdate() {
-        if (isEditing && selected.get() == null) return;
-
-        // editando/model capturados aqui, síncronos (thread da UI) — não dentro do
-        // Async.Run abaixo. ScreenContract.handleAddOrUpdate() chama
-        // modoEdicaoState().set(false) logo depois de disparar essa chamada, então
-        // ler isEditing só depois de já estar rodando na thread virtual do
-        // Async.Run quase sempre lê o valor já resetado — toda edição virava
-        // cadastro novo. Mesmo bug já corrigido antes em CategoriaScreenViewModel/
-        // VendaMercadoriaScreenViewModel; aqui ainda não tinha sido.
-        boolean editando = isEditing;
         var model = populateModelFromFields();
-
         Async.Run(() -> {
             try {
-                if (editando) {
+                if (isEditing) {
                     clienteService.atualizar(model);
                     ClienteModel finalModel = new ClienteModel();
                     finalModel.setId(model.getId());
@@ -214,6 +212,7 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                         Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                         clearForm();
                         EventBus.getInstance().publish(EntityEvent.editado(finalModel));
+                        finishEditing();
                     });
                 } else {
                     clienteService.salvar(model);
@@ -250,5 +249,11 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
     @Override
     public void onDestroy() throws Exception {
         this.clienteService.close();
+        EventBus.getInstance().unsubscribe(eventListener);
+    }
+
+    @Override
+    public ClienteModel findById(Long id) throws SQLException {
+        return clienteService.buscarById(id);
     }
 }

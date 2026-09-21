@@ -1,21 +1,20 @@
 package my_app.screens.preferenciasScreen;
 
 import jssc.SerialPortList;
-
-import javax.print.PrintServiceLookup;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.route.v2.ScreenContextInterface;
+import megalodonte.base.state.State;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
+import my_app.core.ViewModelScreenContract;
+import my_app.core.components.Components;
 import my_app.core.db.models.PreferenciasModel;
 import my_app.core.db.services.PreferenciasService;
-import my_app.core.components.Components;
-import my_app.core.ViewModelScreenContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.PrintServiceLookup;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -124,7 +123,7 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
     }
 
     @Override
-    public void populateFieldsFromModel() {}
+    public void populateFieldsFromModel(PreferenciasModel model) {}
 
     @Override
     public PreferenciasModel populateModelFromFields() {
@@ -155,5 +154,10 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
     @Override
     public void onDestroy() throws Exception {
         this.preferenciasService.close();
+    }
+
+    @Override
+    public PreferenciasModel findById(Long id) throws SQLException {
+        return null;
     }
 }

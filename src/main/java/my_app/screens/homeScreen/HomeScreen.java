@@ -154,11 +154,8 @@ public class HomeScreen implements ScreenComponent {
                 .menu(new Menu("Gerencial")
                         .item("Empresa", ()-> ctx.spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
                         .item("Relatórios", ()-> ctx.spawnWindow(AppRoutes.Screens.RELATORIOS.name(),e->{}))
-                        .item("Fornecedores", ()-> ctx.spawnWindow(AppRoutes.Screens.FORNECEDORES.name(), e->{}))
-                        .item("Categorias", ()-> ctx.spawnWindow(AppRoutes.Screens.CATEGORIAS.name(),e->{}))
                 )
                 .menu(new Menu("Suporte")
-                        .item("Relatar erro", ()-> ctx.spawnWindow(AppRoutes.Screens.RELATAR_ERRO.name(),e->{}))
                         .item("Sugerir melhoria/funcionalidade", ()-> ctx.spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
                         .item("Novidades dessa atualização", ()-> ctx.spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
                         .item("Ver logs da aplicação", ()-> ctx.spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}))
@@ -171,13 +168,13 @@ public class HomeScreen implements ScreenComponent {
     //TODO: HISTÓRICO DE CAICXA, COMPRAS DE MERCADORIA E CONTAS A PAGAR NÃO APARECEM
     record CardItem(String img, String title, String desc, String destination){}
     final List<CardItem> cardItemList = List.of(
-            new CardItem("/assets/venda.png", "Venda","Tela de vendas",AppRoutes.Screens.VENDAS.name()),
+            new CardItem("/assets/venda.png", "Venda","Tela de vendas manuais",AppRoutes.Screens.VENDAS.name()),
             new CardItem("/assets/produtos.png", "Produtos","Gerencie seus produtos",AppRoutes.Screens.PRODUTOS.name()),
             new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes",AppRoutes.Screens.CLIENTES.name()),
             new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber",AppRoutes.Screens.COMPRAS_A_RECEBER.name()),
             new CardItem("/assets/pdv.png", "PDV","Abrir caixa",AppRoutes.Screens.PDV.name()),
-            new CardItem("/assets/despesas.png", "Contas a pagar","Tela de contas a pagar",AppRoutes.Screens.COMPRAS_A_PAGAR.name()),
-            new CardItem("/assets/compras.png", "Compras de mercadorias","Tela de compras",AppRoutes.Screens.COMPRAS.name()),
+            new CardItem("/assets/despesas.png", "Categorias","Tela de categorias",AppRoutes.Screens.CATEGORIAS.name()),
+            new CardItem("/assets/compras.png", "Fornecedores","Tela de fornecedores",AppRoutes.Screens.FORNECEDORES.name()),
             new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa",AppRoutes.Screens.PEDIDOS.name())
            // new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
     );

@@ -72,10 +72,6 @@ public interface ScreenContract<T extends Identifier> {
                 );
     }
 
-    default void populateFieldsFromModel() {
-        viewModel().populateFieldsFromModel();
-    }
-
     default void clearForm() {
         viewModel().clearForm();
     }

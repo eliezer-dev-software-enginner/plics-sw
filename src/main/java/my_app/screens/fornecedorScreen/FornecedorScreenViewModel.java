@@ -1,28 +1,30 @@
 package my_app.screens.fornecedorScreen;
 
 import megalodonte.ComputedState;
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.route.v2.ScreenContextInterface;
+import megalodonte.base.state.State;
 import my_app.core.AppRoutes;
-import my_app.core.db.models.FornecedorModel;
-import my_app.core.db.services.FornecedorService;
 import my_app.core.Data;
-import my_app.core.events.EntityEvent;
-import my_app.core.events.EventBus;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
+import my_app.core.db.models.FornecedorModel;
+import my_app.core.db.services.FornecedorService;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import my_app.core.states.EnderecoState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
+import java.util.function.Consumer;
+
 public class FornecedorScreenViewModel extends ViewModelScreenContract<FornecedorModel> {
     private static final Logger log = LoggerFactory.getLogger(FornecedorScreenViewModel.class);
 
+    private final Consumer<Object> eventListener = this::onEntityEvent;
     private final FornecedorService fornecedorService;
-
-    public final State<FornecedorModel> fornecedorSelected = new State<>(null);
 
     final State<String> nome = State.of("");
     final State<String> cnpjCpf = State.of("");
@@ -43,6 +45,13 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
         super(ctx);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_FORNECEDOR.name();
         this.fornecedorService = createOrReport(FornecedorService::new);
+        EventBus.getInstance().subscribe(eventListener);
+    }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
+            fetchListData();
+        }
     }
 
     @Override
@@ -71,29 +80,28 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
     }
 
     @Override
-    public void populateFieldsFromModel() {
-        final var data = fornecedorSelected.get();
-        if (data != null) {
-            nome.set(data.getNome());
-            cnpjCpf.set(data.getCpfCnpj());
-            celular.set(data.getCelular());
-            inscricaoEstadual.set(data.getInscricaoEstadual());
-            email.set(data.getEmail());
+    public void populateFieldsFromModel(FornecedorModel model) {
+        if (model != null) {
+            nome.set(model.getNome());
+            cnpjCpf.set(model.getCpfCnpj());
+            celular.set(model.getCelular());
+            inscricaoEstadual.set(model.getInscricaoEstadual());
+            email.set(model.getEmail());
             tipoPessoaSelected.set(
-                    Boolean.FALSE.equals(data.getPessoaFisica())
+                    Boolean.FALSE.equals(model.getPessoaFisica())
                             ? Data.tiposPessoaList.getLast()
                             : Data.tiposPessoaList.getFirst()
             );
             //
-            enderecoState.get().populateFromFornecedorModel(data);
-            observacao.set(data.getObservacao());
+            enderecoState.get().populateFromFornecedorModel(model);
+            observacao.set(model.getObservacao());
         }
     }
 
     @Override
     public FornecedorModel populateModelFromFields() {
-        var model = isEditing && fornecedorSelected.get() != null
-                ? fornecedorSelected.get()
+        var model = isEditing && selected.get() != null
+                ? selected.get()
                 : new FornecedorModel();
 
         model.setNome(nome.getOrDefault("").trim());
@@ -115,7 +123,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
 
     @Override
     public void handleAddOrUpdate() {
-        if (isEditing && fornecedorSelected.get() == null) return;
+        if (isEditing && selected.get() == null) return;
 
         var model = populateModelFromFields();
 
@@ -179,7 +187,7 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
     }
 
     public void handleClickMenuDelete() {
-        final var fornecedorModel = fornecedorSelected.get();
+        final var fornecedorModel = selected.get();
         if (fornecedorModel == null) return;
 
         Components.ShowAlertAdvice("Deseja excluir fornecedor  " + fornecedorModel.getNome(), () -> Async.Run(() -> {
@@ -212,5 +220,11 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
     @Override
     public void onDestroy() throws Exception {
         this.fornecedorService.close();
+        EventBus.getInstance().unsubscribe(eventListener);
+    }
+
+    @Override
+    public FornecedorModel findById(Long id) throws SQLException {
+        return fornecedorService.buscarById(id);
     }
 }

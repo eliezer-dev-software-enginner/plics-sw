@@ -150,6 +150,15 @@ public class Components {
                 .r_child(Components.TextColumn("VALOR", String.format("R$ %.2f", parcela.valor())));
     }
 
+    public static Component actionButton(State<String> btnText, RunnableThrowing onClick) {
+        return new Button(btnText,
+                new ButtonProps()
+                        .fillWidth()
+                        .paddingTop(10)
+                        .paddingDown(10)
+                        .textColor("white").bgColor(ThemeManager.theme().colors().primary())
+        ).onClick(onClick);
+    }
     public static Component actionButton(String btnText, RunnableThrowing onClick) {
         return ButtonsPack.ContainedButton(btnText, ButtonVariant.PRIMARY, onClick);
     }
@@ -204,7 +213,6 @@ public class Components {
                         new Row(new RowProps().spacingOf(10)).children(
                                 new Button(btnTitle).onClick(callback),
                                 new Button("Fechar", new ButtonProps().bgColor("red")).onClick(()->{
-                                    callback.run();
                                     popup.hide();
                                 })
                         )
@@ -248,10 +256,6 @@ public class Components {
 
         stage.show();
         return stage;
-    }
-
-    public static void ShowModal(Component ui, ScreenContextInterface context) {
-        ShowModal(ui, context, 500);
     }
 
     public static void ShowAlertAdvice(String bodyMessage, RunnableThrowing handleSuccessEvent) {

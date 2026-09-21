@@ -32,6 +32,8 @@ public class ScreenAddOrEditVenda extends ScreenAddOrEdit<VendaModel, VendaMerca
 
     public ScreenAddOrEditVenda(ScreenContextInterface screenContext) {
         super(screenContext);
+        boolean isClientSelectedDefault = false;
+        viewModel.fetchListData(isClientSelectedDefault);
     }
 
     @Override

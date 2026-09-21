@@ -59,7 +59,7 @@ public class FornecedorScreen implements ScreenComponent, ScreenContract<Fornece
                 .column("Data de Criação", it -> DatePack.localDateTimeToBrazilianDateTime(it.getDataCriacao()))
                 .end()
                 .build()
-                .onItemSelectChange(vm.fornecedorSelected::set)
+                .onItemSelectChange(vm.selected::set)
                 .onChangeFocus(vm::handleFocusChange)
                 .onItemDoubleClick(it -> Components.ShowModal(itemDetails(it), this.ctx, 550));
     }

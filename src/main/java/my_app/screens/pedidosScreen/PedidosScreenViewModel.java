@@ -25,6 +25,7 @@ import my_app.services.PDVService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
     }
 
     @Override
-    public void populateFieldsFromModel() {
+    public void populateFieldsFromModel(PedidoModel model) {
     }
 
     // Tela somente-leitura, sem formulário de CRUD.
@@ -260,5 +261,10 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
         this.pedidoService.close();
         this.clienteService.close();
         this.empresaService.close();
+    }
+
+    @Override
+    public PedidoModel findById(Long id) throws SQLException {
+        return pedidoService.buscarById(id);
     }
 }

@@ -36,18 +36,21 @@ public class ScreenAddOrEditFornecedor extends ScreenAddOrEdit<FornecedorModel, 
     @Override
     public Component render() {
         return new Card(
-                new Column(new ColumnProps().paddingAll(20))
-                        .c_child(new Row(new RowProps().centerHorizontally())
-                                .r_child(new Text("Cadastro de Fornecedor", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(informacoesPessoais())
-                        .c_child(new SpacerVertical(20))
-                        .c_child(Components.enderecoComponent(viewModel.enderecoState.get()))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(new LineHorizontal())
-                        .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre o fornecedor?"))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButton(getBtnActionText(), this::handleAddOrUpdate)));
+                Components.ScrollPaneDefault(
+                        new Column(new ColumnProps().paddingAll(20))
+                                .c_child(new Row(new RowProps().centerHorizontally())
+                                        .r_child(new Text("Cadastro de Fornecedor", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())))
+                                .c_child(new SpacerVertical(20))
+                                .c_child(informacoesPessoais())
+                                .c_child(new SpacerVertical(20))
+                                .c_child(Components.enderecoComponent(viewModel.enderecoState.get()))
+                                .c_child(new SpacerVertical(20))
+                                .c_child(new LineHorizontal())
+                                .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre o fornecedor?"))
+                                .c_child(new SpacerVertical(20))
+                                .c_child(Components.actionButton(getBtnActionText(), this::handleAddOrUpdate))
+                )
+        );
     }
 
     private Component informacoesPessoais() {

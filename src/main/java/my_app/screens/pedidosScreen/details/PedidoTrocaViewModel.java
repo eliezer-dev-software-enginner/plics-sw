@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import pack.utilities.CurrencyPack;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.*;
 
 public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
@@ -96,7 +97,7 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
     }
 
     @Override
-    public void populateFieldsFromModel() {
+    public void populateFieldsFromModel(PedidoModel model) {
     }
 
     @Override
@@ -267,5 +268,10 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
         this.pedidoService.close();
         this.pedidoItemService.close();
         this.produtoService.close();
+    }
+
+    @Override
+    public PedidoModel findById(Long id) throws SQLException {
+        return pedidoService.buscarById(id);
     }
 }

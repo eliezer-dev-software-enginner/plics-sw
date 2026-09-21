@@ -1,16 +1,21 @@
 package my_app.screens.categoriaScreen;
 
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.route.v2.ScreenContextInterface;
+import megalodonte.base.state.State;
 import my_app.core.AppRoutes;
-import my_app.core.db.models.CategoriaModel;
-import my_app.core.db.services.CategoriaService;
 import my_app.core.ViewModelScreenContract;
 import my_app.core.components.Components;
+import my_app.core.db.models.CategoriaModel;
+import my_app.core.db.services.CategoriaService;
+import my_app.core.events.EntityEvent;
+import my_app.core.events.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.function.Consumer;
 
 public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaModel> {
     private static final Logger log = LoggerFactory.getLogger(CategoriaScreenViewModel.class);
@@ -18,11 +23,19 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
     private final CategoriaService categoriaService;
 
     final State<String> nome = new State<>("");
+    private final Consumer<Object> eventListener = this::onEntityEvent;
 
     public CategoriaScreenViewModel(ScreenContextInterface ctx) {
         super(ctx);
         screenNameSpawn = AppRoutes.Screens.ADD_OR_EDIT_CATEGORIAS.name();
         this.categoriaService = createOrReport(CategoriaService::new);
+        EventBus.getInstance().subscribe(eventListener);
+    }
+
+    private void onEntityEvent(Object event) {
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof CategoriaModel) {
+            fetchListData();
+        }
     }
 
     @Override
@@ -48,9 +61,8 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
     }
 
     @Override
-    public void populateFieldsFromModel() {
-        var data = selected.get();
-        if (data != null) nome.set(data.getNome());
+    public void populateFieldsFromModel(CategoriaModel model) {
+        nome.set(model.getNome());
     }
 
     @Override
@@ -74,6 +86,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                         UI.runOnUi(() -> {
                             allDataList.removeIf(it -> it.getId().equals(model.getId()));
                             Components.ShowPopup(ctx, "Categoria excluída com sucesso");
+                            EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
                         });
                     } catch (Exception e) {
                         log.error("Erro ao excluir categoria id={}", model.getId(), e);
@@ -99,6 +112,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                         allDataList.updateIf(it -> it.getId().equals(atualizada.getId()), it -> atualizada);
                         Components.ShowPopup(ctx, "Categoria atualizada com sucesso");
                         clearForm();
+                        EventBus.getInstance().publish(EntityEvent.editado(atualizada));
                     });
                 } else {
                     var salvo = categoriaService.salvar(model);
@@ -106,6 +120,7 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                         allDataList.add(salvo);
                         Components.ShowPopup(ctx, "Categoria cadastrada com sucesso");
                         clearForm();
+                        EventBus.getInstance().publish(EntityEvent.criado(salvo));
                     });
                 }
             } catch (IllegalArgumentException e) {
@@ -125,5 +140,11 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
     @Override
     public void onDestroy() throws Exception {
         this.categoriaService.close();
+        EventBus.getInstance().unsubscribe(eventListener);
+    }
+
+    @Override
+    public CategoriaModel findById(Long id) throws SQLException {
+        return categoriaService.buscarById(id);
     }
 }

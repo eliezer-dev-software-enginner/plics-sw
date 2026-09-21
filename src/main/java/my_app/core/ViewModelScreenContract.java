@@ -1,10 +1,13 @@
 package my_app.core;
 
 import megalodonte.application.ErrorReporter;
+import megalodonte.base.UI;
 import megalodonte.base.state.State;
 import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.utils.ThrowingSupplier;
 import megalodonte.v2.ListState;
+
+import java.sql.SQLException;
 
 public abstract class ViewModelScreenContract<Model extends Identifier> {
     public String screenNameSpawn = "";
@@ -17,7 +20,9 @@ public abstract class ViewModelScreenContract<Model extends Identifier> {
     public final ListState<Model> filteredList = ListState.ofEmpty();
     public final State<Model> selected = State.of(null);
 
+
     protected boolean isEditing = false;
+    public final State<String> btnText = State.of("Cadastrar");
 
     public ViewModelScreenContract(ScreenContextInterface ctx) {
         this.ctx = ctx;
@@ -43,7 +48,11 @@ public abstract class ViewModelScreenContract<Model extends Identifier> {
         // no-op por padrão, subclasses sobrescrevem se precisar
     }
 
-    public abstract void populateFieldsFromModel();
+    public abstract Model findById(Long id) throws SQLException;
+    public abstract void populateFieldsFromModel(Model model);
+
+    @Deprecated(forRemoval = true)
+    public void populateFieldsFromModel(){}
 
     //inverso de populateFieldsFromModel(): monta um Model a partir do estado atual dos campos do formulário
     public abstract Model populateModelFromFields();
@@ -71,7 +80,9 @@ public abstract class ViewModelScreenContract<Model extends Identifier> {
 
     public void isEditing() {
         isEditing = true;
+        UI.runOnUi(()->   btnText.set("Atualizar"));
     }public void finishEditing() {
         isEditing = false;
+        UI.runOnUi(()-> btnText.set("Cadastrar"));
     }
 }

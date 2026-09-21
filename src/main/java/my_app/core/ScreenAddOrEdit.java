@@ -64,20 +64,21 @@ public abstract class ScreenAddOrEdit<Model extends Identifier, VM extends ViewM
         }
 
         Async.Run(()->{
-            var model = !id.equals(-1L)? service.buscarById(id): null;
+            var model = !id.equals(-1L)? viewModel.findById(id): null;
             UI.runOnUi(()-> {
-                viewModel.selected.set(model);
                 titleState.set("Incluir " + getTitle());
                 screenContext.selfStage().setTitle("Inclusão de " +getTitle());
 
                 if(type.equals("edit")){
-                    viewModel.populateFieldsFromModel();
+                    viewModel.populateFieldsFromModel(model);
+                    viewModel.isEditing();
+                    viewModel.selected.set(model);
                     titleState.set("Editar produto com Id: " + id);
                     screenContext.selfStage().setTitle("Edição de " + getTitle());
                 }
 
                 if(type.equals("clone")){
-                    viewModel.populateFieldsFromModel();
+                    viewModel.populateFieldsFromModel(model);
                 }
             });
         });
@@ -105,16 +106,14 @@ public abstract class ScreenAddOrEdit<Model extends Identifier, VM extends ViewM
     protected void handleAddOrUpdate() {
         try {
             viewModel.handleAddOrUpdate();
-            viewModel.finishEditing();
         } catch (Exception e) {
             log.error("Erro em handleAddOrUpdate", e);
             UI.runOnUi(() -> Components.ShowAlertError("Não foi possível salvar. Tente novamente."));
         }
     }
 
-    protected String getBtnActionText(){
-        if(type.equals("edit"))return "Atualizar";
-        return "Cadastrar";
+    protected State<String> getBtnActionText(){
+        return viewModel.btnText;
     }
 
     protected boolean isEdit(){

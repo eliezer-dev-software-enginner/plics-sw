@@ -25,6 +25,7 @@ import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
@@ -87,6 +88,10 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     private void onEntityEvent(Object event) {
         if (event instanceof EntityEvent<?> ee && ee.entity() instanceof FornecedorModel) {
             refreshFornecedores();
+        }
+
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ProdutoModel) {
+            fetchListData();
         }
     }
 
@@ -245,6 +250,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 UI.runOnUi(() -> {
                     this.allDataList.updateIf(p -> p.getId().equals(atualizado.getId()), p -> atualizado);
                     Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
+                    EventBus.getInstance().publish(EntityEvent.editado(atualizado));
                     clearForm();
                 });
             } catch (Exception e) {
@@ -265,6 +271,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 UI.runOnUi(() -> {
                     allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
+                    EventBus.getInstance().publish(EntityEvent.criado(salvo));
                     clearForm();
                 });
             } catch (Exception e) {
@@ -333,10 +340,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     }
 
     @Override
-    public void populateFieldsFromModel() {
-        if (selected.get() == null) return;
-        final var model = selected.get();
-
+    public void populateFieldsFromModel(ProdutoModel model) {
         codigoBarras.set(model.getCodigoBarras());
         descricao.set(model.getDescricao());
         precoCompra.set(Utils.deRealParaCentavos(model.getPrecoCompra()));
@@ -373,5 +377,10 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
         this.categoriaService.close();
         this.corService.close();
         this.fornecedorService.close();
+    }
+
+    @Override
+    public ProdutoModel findById(Long id) throws SQLException {
+        return produtoService.buscarById(id);
     }
 }
