@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.1.5",
+    "notes": [
+      "UI: Inputs da aplicação com visual renovado — borda cinza, altura padrão e * nos campos obrigatórios",
+      "UI: Tabelas de listagem agora mostram todas as informações que aparecem nos detalhes, sem largura fixa nas colunas",
+      "Feat: Vendas do Histórico do Caixa carregam das mais recentes para as mais antigas",
+      "Feat: Cadastros de Produtos, Categorias e Clientes renovados — adicionar/editar/clonar em janela própria e formulários com rolagem",
+      "Fix: Select de cliente ao abrir/editar/clonar venda — pré-seleciona CLIENTE PADRÃO em venda nova e mostra o nome do cliente em edição/clone (antes exibia o nome interno da classe)",
+      "Fix: Edição e clonagem de venda funcionando de forma consistente",
+      "Fix: Tela de produtos sem erro de null pointer ao abrir formulário",
+      "Refactor: Removidas as telas de Compras, Contas a Pagar, Ordem de Serviço e Técnicos"
+    ]
+  },
+  {
     "version": "v1.1.4",
     "notes": [
       "UI: Campo de data agora está mais moderno e não fica mais esprimido",
