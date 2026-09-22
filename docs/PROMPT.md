@@ -23,7 +23,8 @@ Não inicie nenhuma tarefa sem ter lido esses arquivos primeiro.
 - Explique brevemente o plano da tarefa antes de executar qualquer mudança.
 
 ## 4. Tarefa
-Como eu fiz em ProdutosScreen removendo a width de sua SimpleTable, quero que você remova a width das outras SimpleTable na aplicação. E inclusive adicione todos os campos às colunas, geralmente aparece mais dados em itemDetails do que em SimpleTable eu quero igualar os dados. 
+Crie um script para criar 20 mil registros na tabela de produtos. Pode ser um arquivo de teste no pacote do java mesmo, por ser mais prático.
+Minha ideia é testar a eficencia do aplicativo com muitos registros. Deixe já criada também uma função para apagar esses registros inseridos.
 
 
 ## 5. Ao final da tarefa

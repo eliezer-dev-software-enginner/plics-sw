@@ -42,19 +42,26 @@ public class PedidosScreen implements ScreenComponent {
 
     @Override
     public Component render() {
+        var tableInstance = pedidosTable().horizontalScroll().paginate(25);
+
         return new Container(new ContainerProps().paddingAll(10)).children(
                 Components.FormTitle("Histórico do Caixa — Vendas PDV"),
                 new SpacerVertical(10),
                 Components.searchInputFill(vm.searchState, "Pesquisar por cliente ou forma de pagamento"),
                 new SpacerVertical(10),
                 new Row(new megalodonte.props.RowProps().spacingOf(10)).children(
-                        new Column(new megalodonte.props.ColumnProps().fillWidth()).children(pedidosTable()),
+                        new Column(new megalodonte.props.ColumnProps().fillWidth()).children(
+                                tableInstance,
+                                new Row(new RowProps().fillWidth().rightHorizontally()).children(
+                                        tableInstance.paginationControls()
+                                )
+                        ),
                         new Column(new megalodonte.props.ColumnProps().fillWidth()).children(itensDoPedidoSelecionado())
                 )
         );
     }
 
-    Component pedidosTable() {
+    SimpleTable<PedidoModel> pedidosTable() {
         return new SimpleTable<PedidoModel>()
                 .fromData(vm.filteredList)
                 .header()

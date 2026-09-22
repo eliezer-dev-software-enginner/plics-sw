@@ -5,7 +5,9 @@ import megalodonte.base.state.State;
 import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
+import megalodonte.components.layout_components.Row;
 import megalodonte.props.ContainerProps;
+import megalodonte.props.RowProps;
 import my_app.core.components.Components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,8 @@ public interface ScreenContract<T extends Identifier> {
     Component itemDetails(T model);
 
     default Component mainView(State<Boolean> focusState) {
+        var tableInstance = table().horizontalScroll().paginate(25);
+
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))
                 .children(
                         commonCustomMenus(focusState),
@@ -67,7 +71,12 @@ public interface ScreenContract<T extends Identifier> {
                                         new Container(new ContainerProps().paddingLeft(20)
                                                 .paddingRight(20).fillHeight().spacingOf(15))
                                                 .children(Components.searchInput(viewModel().searchState, "Pesquisar"),
-                                                        table().horizontalScroll())
+                                                        tableInstance,
+                                                        new Row(new RowProps().fillWidth().rightHorizontally()).children(
+                                                                tableInstance.paginationControls()
+                                                        )
+
+                                                )
                                 )
                 );
     }
