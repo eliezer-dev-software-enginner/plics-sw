@@ -689,17 +689,18 @@ public class Components {
     }
     //v3
     public static <T> Component commonCustomMenusv3(
-            ReadableState<Boolean> focusState, Runnable onClickNew,
+            ReadableState<Boolean> hasSelection, ReadableState<Boolean> hasSingleSelection, Runnable onClickNew,
             Runnable onEdit, Runnable onDelete, Runnable onClone) {
 
         return new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md()))
                 .children(
                         MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", onClickNew::run),
-                        Show.when(focusState, ()-> new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md())).children(
-                                MenuItem("Editar", Entypo.EDIT, "blue", onEdit::run),
-                                MenuItem("Excluir", Entypo.TRASH, "red", onDelete::run),
-                                MenuItem("Clonar", Entypo.COPY, "black", onClone::run)
-                        )).withTransition(Animations::fadeSlide)
+                        Show.when(hasSingleSelection, () -> MenuItem("Editar", Entypo.EDIT, "blue", onEdit::run))
+                                .withTransition(Animations::fadeSlide),
+                        Show.when(hasSelection, () -> MenuItem("Excluir", Entypo.TRASH, "red", onDelete::run))
+                                .withTransition(Animations::fadeSlide),
+                        Show.when(hasSingleSelection, () -> MenuItem("Clonar", Entypo.COPY, "black", onClone::run))
+                                .withTransition(Animations::fadeSlide)
                 );
     }
 

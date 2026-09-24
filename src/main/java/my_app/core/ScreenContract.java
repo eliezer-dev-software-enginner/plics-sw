@@ -43,13 +43,17 @@ public interface ScreenContract<T extends Identifier> {
     }
 
     default Component commonCustomMenus(State<Boolean> focusState) {
-        var actionsVisible = ComputedState.of(
-                () -> focusState.get() || !viewModel().selectedItems.get().isEmpty(),
-                focusState,
+        var hasSelection = ComputedState.of(
+                () -> !viewModel().selectedItems.get().isEmpty(),
+                viewModel().selectedItems
+        );
+        var hasSingleSelection = ComputedState.of(
+                () -> viewModel().selectedItems.get().size() == 1,
                 viewModel().selectedItems
         );
         return Components.commonCustomMenusv3(
-                actionsVisible,
+                hasSelection,
+                hasSingleSelection,
                 this::handleClickNew,
                 this::handleClickMenuEdit,
                 this::handleClickMenuDelete,
