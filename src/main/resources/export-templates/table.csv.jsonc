@@ -1,0 +1,9 @@
+{
+  // Compatível com Excel no Windows e com valores que usam vírgula decimal.
+  "charset": "UTF-8",
+  "delimiter": ";",
+  "bom": true,
+  "includeHeader": true,
+  "alwaysQuote": false,
+  "lineSeparator": "\\r\\n"
+}

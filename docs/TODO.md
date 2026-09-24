@@ -1,5 +1,16 @@
 # TODO
 
+## Concluído (exportação tabular orientada a dados — 2026-09-24)
+- [x] `SimpleTable` fornece snapshot da lista filtrada completa, sem coluna de checkbox/paginação.
+- [x] CSV configurado por `table.csv.jsonc` (UTF-8 BOM, separador, escape e quebra de linha).
+- [x] PDF configurado por `table.pdf.jsonc`, com dados da empresa, placeholders, alinhamentos,
+      separadores, tabela e paginação.
+- [x] Botões adicionados pelo `ScreenContract`, sem replicação nas telas.
+- [x] Testes automatizados do interpretador e renderizadores CSV/PDF.
+- [ ] Evoluir o DSL para comandos de papel térmico e migrar as notas/recibos do `EscPosPrinter`.
+- [ ] Após estabilizar esse contrato com as notas, extrair o motor genérico para uma biblioteca
+      Megalodonte separada; o adaptador JavaFX/banco permanece no `plics-sw`.
+
 - [x] : Erro ao clicar em Clonar na tela de vendas: Error: Cannot invoke "megalodonte.components.inputs.Input.requestFocus()" because "this.inputRef" is null. Aqui na verdade nem era mais pra precisar disso também. Já que a ideia é spawnar uma tela nova e não precisamos focar em nada. Esse input ref pode ser removido
 - [x] : E inclusive o clique em Clonar não faz nada em lugar nenhum, deveria spawnar a tela de AddOrEdit específica com o type: "clone" na rota em ScreenContract e em ScreenAddOrEdit se o type for "clone" é só popular os dados nos inputs e tal como é feito quando em modo de edição.
 

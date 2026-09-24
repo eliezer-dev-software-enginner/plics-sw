@@ -26,6 +26,20 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-24: Exportação CSV/PDF das SimpleTable por definições JSONC
+- Todas as telas que implementam `ScreenContract` ganharam `Baixar CSV` e `Baixar PDF` no menu
+  comum. A exportação usa toda a lista filtrada, independentemente da página visível.
+- `SimpleTable.exportData()` fornece um snapshot genérico de cabeçalhos/linhas, sem dependência
+  de PDFBox ou do app. Checkbox de seleção não entra no arquivo.
+- `TableExportEngine` lê `export-templates/table.csv.jsonc` e `table.pdf.jsonc`: formato CSV e
+  layout PDF (página, fontes, elementos, alinhamentos, linha horizontal, tabela e exclusões) são
+  dados externos. Placeholders do cabeçalho recebem nome, documento, telefone e endereço da empresa.
+- PDF em A3 paisagem, Roboto, acentos preservados, múltiplas páginas e preâmbulo repetido. CSV em
+  UTF-8 com BOM, `;` e escaping apropriado para Excel.
+- Seleção múltipla preserva a regra de mostrar somente `Excluir` dentre as ações do topo.
+- O motor foi mantido genérico dentro do app para estabilizar o contrato; está pronto para futura
+  extração para biblioteca e extensão às notas/recibos ESC/POS.
+
 ### 2026-09-21: Ferramenta de teste de desempenho — 20 mil produtos no banco real (script Python)
 - **Pedido do usuário**: script prático pra criar 20 mil registros de produtos e medir a eficiência
   do app com muitos registros, com função de apagar de volta. **Sem passe pelo Gradle** — o usuário

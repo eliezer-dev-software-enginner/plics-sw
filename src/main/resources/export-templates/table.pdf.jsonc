@@ -1,0 +1,30 @@
+{
+  "page": {
+    "size": "A3",
+    "orientation": "LANDSCAPE",
+    "margin": 36
+  },
+  "fonts": {
+    "regular": "/assets/fonts/roboto/Roboto-Regular.ttf",
+    "bold": "/assets/fonts/roboto/Roboto-Bold.ttf"
+  },
+  "content": [
+    { "type": "TEXT", "align": "LEFT", "value": "${NOME_EMPRESA}", "fontSize": 16, "bold": true, "spacingAfter": 5 },
+    { "type": "TEXT", "align": "LEFT", "value": "${DOCUMENTO_EMPRESA}", "fontSize": 9, "bold": false, "spacingAfter": 3 },
+    { "type": "TEXT", "align": "LEFT", "value": "${TELEFONE}", "fontSize": 9, "bold": false, "spacingAfter": 3 },
+    { "type": "TEXT", "align": "LEFT", "value": "${ENDERECO}", "fontSize": 9, "bold": false, "spacingAfter": 8 },
+    { "type": "TEXT", "align": "CENTER", "value": "${TITULO_TABELA}", "fontSize": 13, "bold": true, "spacingAfter": 8 },
+    { "type": "HORIZONTAL_LINE", "spacingAfter": 10 },
+    { "type": "TABLE" },
+    { "type": "BREAK", "lines": 1 },
+    { "type": "TEXT", "align": "RIGHT", "value": "Gerado em ${GERADO_EM}", "fontSize": 7, "bold": false, "spacingAfter": 0 }
+  ],
+  "table": {
+    "fontSize": 7,
+    "headerFontSize": 7,
+    "rowHeight": 18,
+    "cellPadding": 3,
+    "repeatPreamble": true,
+    "excludedColumns": ["Imagem"]
+  }
+}

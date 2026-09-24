@@ -689,17 +689,27 @@ public class Components {
     }
     //v3
     public static <T> Component commonCustomMenusv3(
-            ReadableState<Boolean> hasSelection, ReadableState<Boolean> hasSingleSelection, Runnable onClickNew,
-            Runnable onEdit, Runnable onDelete, Runnable onClone) {
+            ReadableState<Boolean> hasSelection, ReadableState<Boolean> hasSingleSelection,
+            ReadableState<Boolean> canShowRegularActions, Runnable onClickNew,
+            Runnable onEdit, Runnable onDelete, Runnable onClone,
+            Runnable onExportCsv, Runnable onExportPdf) {
 
         return new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md()))
                 .children(
-                        MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", onClickNew::run),
+                        Show.when(canShowRegularActions,
+                                        () -> MenuItem("Novo (CTRL + N)", Entypo.ADD_TO_LIST, "green", onClickNew::run))
+                                .withTransition(Animations::fadeSlide),
                         Show.when(hasSingleSelection, () -> MenuItem("Editar", Entypo.EDIT, "blue", onEdit::run))
                                 .withTransition(Animations::fadeSlide),
                         Show.when(hasSelection, () -> MenuItem("Excluir", Entypo.TRASH, "red", onDelete::run))
                                 .withTransition(Animations::fadeSlide),
                         Show.when(hasSingleSelection, () -> MenuItem("Clonar", Entypo.COPY, "black", onClone::run))
+                                .withTransition(Animations::fadeSlide),
+                        Show.when(canShowRegularActions,
+                                        () -> MenuItem("Baixar CSV", Entypo.TEXT_DOCUMENT, "#0f766e", onExportCsv::run))
+                                .withTransition(Animations::fadeSlide),
+                        Show.when(canShowRegularActions,
+                                        () -> MenuItem("Baixar PDF", Entypo.DOCUMENT, "#b91c1c", onExportPdf::run))
                                 .withTransition(Animations::fadeSlide)
                 );
     }

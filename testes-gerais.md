@@ -4,6 +4,18 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 ---
 
+## Exportação das tabelas (telas com ScreenContract)
+
+| # | Cenário | Efeito Esperado | Erro/Inconsistência | Resultado |
+|---|---------|-----------------|---------------------|-----------|
+| 208 | Filtrar uma tabela, navegar para outra página e clicar em "Baixar CSV" | Arquivo `.csv` contém cabeçalho e todos os registros filtrados, não apenas os 25 da página atual; caracteres acentuados abrem corretamente no Excel. | | |
+| 209 | Clicar em "Baixar PDF" com empresa cadastrada | PDF contém nome, CPF/CNPJ, telefone e endereço da empresa no topo, título da tela e os dados da tabela. A coluna de checkbox e a coluna `Imagem` não aparecem. | | |
+| 210 | Exportar tabela grande em PDF | O documento cria mais páginas sem cortar linhas e repete o cabeçalho empresarial/título/cabeçalho das colunas. | | |
+| 211 | Cancelar o seletor de arquivo de CSV ou PDF | Nenhum arquivo é criado e nenhum alerta de erro aparece. | | |
+| 212 | Selecionar duas ou mais checkboxes | Somente `Excluir` fica visível entre as ações do topo; `Novo`, `Editar`, `Clonar`, `Baixar CSV` e `Baixar PDF` ficam ocultos. | | |
+
+---
+
 ## ClienteScreen
 
 | # | Cenário | Nome | Tipo Pessoa | CPF/CNPJ | Celular | Email | Data Nasc. | Gestante | Bebê | CEP | UF | Cidade | Bairro | Rua | Número | Efeito Esperado | Erro/Inconsistência | Resultado |

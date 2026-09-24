@@ -1,5 +1,38 @@
 # Decisões Arquiteturais
 
+## 2026-09-24: Exportação tabular orientada a dados por templates JSONC
+
+**Contexto:** todas as telas baseadas em `ScreenContract` precisam baixar a tabela filtrada em CSV
+e PDF. O PDF deve carregar os dados da empresa no cabeçalho, mas o layout não pode ficar
+codificado nas telas nem amarrado a uma model específica. O mesmo mecanismo deverá poder atender
+notas e recibos no futuro.
+
+**Decisão:**
+1. A `SimpleTable` expõe somente um snapshot neutro e imutável (`ExportData`: cabeçalhos + linhas)
+   da lista filtrada completa. Paginação, checkbox e JavaFX não vazam para a exportação.
+2. `TableExportEngine` interpreta os arquivos JSONC em `resources/export-templates/`. O template
+   CSV define charset, BOM, delimitador, cabeçalho, aspas e quebra de linha; o template PDF define
+   página, fontes, comandos (`TEXT`, `BREAK`, `HORIZONTAL_LINE`, `TABLE`), alinhamento, espaçamento
+   e estilo da tabela. Placeholders `${...}` recebem um `Map<String, String>` externo.
+3. O motor não conhece `SimpleTable`, JavaFX, `EmpresaModel` ou banco. `TableExportActions` é o
+   adaptador do app: abre o `FileChooser`, obtém a empresa, converte o snapshot e executa a gravação
+   fora da thread de UI. Essa separação permite extrair o motor para uma biblioteca sem mudar os
+   templates ou os consumidores.
+4. O PDF usa PDFBox e as fontes Roboto já empacotadas, preservando acentos. Tabelas longas criam
+   novas páginas e repetem o preâmbulo/cabeçalho conforme o template. A coluna `Imagem` é excluída
+   do PDF pelo próprio JSONC, não por regra Java.
+5. Os botões entram uma vez no menu comum de `ScreenContract`. Com seleção múltipla, continuam
+   ocultos junto das demais ações regulares, deixando somente `Excluir`, conforme a regra da UI.
+
+**Evolução planejada:** generalizar os comandos de saída para largura de papel/ESC-POS e migrar
+as notas hoje montadas imperativamente em `EscPosPrinter`; só depois extrair o pacote
+`my_app.services.exports` para uma biblioteca Megalodonte independente.
+
+**Testes:** `TableExportEngineTest` valida JSONC real, CSV compatível com Excel, escapes, UTF-8,
+placeholders, acentos, paginação e texto extraído do PDF.
+
+---
+
 ## 2026-09-21: Teste de desempenho com 20 mil produtos — script Python (sqlite3) que escreve no banco de produção
 
 **Contexto:** o usuário quer medir a eficiência do app com muitos registros. Para o app real

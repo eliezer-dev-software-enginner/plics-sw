@@ -44,6 +44,13 @@ Sistema ERP completo para controle de:
 - megalodonte-reactivity: Gerenciamento de estado
 - megalodonte-router: Sistema de navegação
 
+### Exportação orientada a dados
+
+As tabelas das telas cadastrais podem ser baixadas em CSV e PDF. O formato é definido em templates
+JSONC, incluindo cabeçalho empresarial, alinhamento, separadores e tabela; consulte
+[`docs/EXPORT_TEMPLATES.md`](docs/EXPORT_TEMPLATES.md) para o contrato e a evolução planejada para
+notas/recibos.
+
 ## Interface
 
 Moderna, intuitiva e responsiva com navegação estruturada e componentes otimizados.
