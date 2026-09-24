@@ -730,7 +730,7 @@ public class Components {
     public static Component searchInputFill(State<String> stateInput, String placeholder) {
         var icon = FontIcon.of(AntDesignIconsOutlined.SEARCH, 20, Color.web(ThemeManager.theme().colors().secondary()));
         return new Input(stateInput,
-                new InputProps().placeHolder(placeholder))
+                new InputProps().placeHolder(placeholder).fillWidth().height(40))
                 .left(icon);
     }
 

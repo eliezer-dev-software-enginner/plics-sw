@@ -44,12 +44,19 @@ public interface ScreenContract<T extends Identifier> {
 
     default Component commonCustomMenus(State<Boolean> focusState) {
         var hasSelection = ComputedState.of(
-                () -> !viewModel().selectedItems.get().isEmpty(),
-                viewModel().selectedItems
+                () -> !viewModel().selectedItems.get().isEmpty()
+                        || (focusState.get() && viewModel().selected.get() != null),
+                viewModel().selectedItems,
+                focusState,
+                viewModel().selected
         );
         var hasSingleSelection = ComputedState.of(
-                () -> viewModel().selectedItems.get().size() == 1,
-                viewModel().selectedItems
+                () -> viewModel().selectedItems.get().size() == 1
+                        || (viewModel().selectedItems.get().isEmpty()
+                        && focusState.get() && viewModel().selected.get() != null),
+                viewModel().selectedItems,
+                focusState,
+                viewModel().selected
         );
         return Components.commonCustomMenusv3(
                 hasSelection,
@@ -73,7 +80,7 @@ public interface ScreenContract<T extends Identifier> {
         var tableInstance = table().horizontalScroll().paginate(25);
         tableInstance.enableMultipleSelection(items -> {
             viewModel().selectedItems.set(items);
-            viewModel().selected.set(items.isEmpty() ? null : items.getLast());
+            viewModel().selected.set(items.isEmpty() ? tableInstance.getSelectedItem() : items.getLast());
         });
 
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))

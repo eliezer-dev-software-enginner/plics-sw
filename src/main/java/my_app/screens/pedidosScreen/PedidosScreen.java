@@ -49,7 +49,7 @@ public class PedidosScreen implements ScreenComponent {
                 new SpacerVertical(10),
                 Components.searchInputFill(vm.searchState, "Pesquisar por cliente ou forma de pagamento"),
                 new SpacerVertical(10),
-                new Row(new megalodonte.props.RowProps().spacingOf(10)).children(
+                new Row(new megalodonte.props.RowProps().spacingOf(10).fillHeight()).children(
                         new Column(new megalodonte.props.ColumnProps().fillWidth()).children(
                                 tableInstance,
                                 new Row(new RowProps().fillWidth().rightHorizontally()).children(
