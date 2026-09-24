@@ -130,7 +130,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 var coresList = corService.listar();
 
                 UI.runOnUi(() -> {
-                    this.allDataList.set(produtosList);
                     this.cores.set(coresList);
                     this.categorias.set(categoriasList);
                     this.categoriaSelected.set(categoriasList.isEmpty() ? null : categoriasList.getFirst());
@@ -150,6 +149,10 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                         p.setCategoria(cat);
                         p.setFornecedor(forn);
                     }
+
+                    // Publica somente depois de hidratar os relacionamentos usados pelas
+                    // colunas. A SimpleTable mede o conteúdo ao receber a lista.
+                    this.allDataList.set(produtosList);
                 });
             } catch (Exception e) {
                 log.error("Erro ao buscar produtos", e);
