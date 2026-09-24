@@ -156,7 +156,6 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
                 atualizado.setDataCriacao(model.getDataCriacao());
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(f -> f.getId().equals(atualizado.getId()), f -> atualizado);
                     Components.ShowPopup(ctx, "Fornecedor atualizado com sucesso");
                     clearForm();
                     EventBus.getInstance().publish(EntityEvent.editado(atualizado));
@@ -174,7 +173,6 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
                 var salvo = fornecedorService.salvar(model);
 
                 UI.runOnUi(() -> {
-                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Fornecedor cadastrado com sucesso");
                     clearForm();
                     EventBus.getInstance().publish(EntityEvent.criado(salvo));
@@ -187,19 +185,18 @@ public class FornecedorScreenViewModel extends ViewModelScreenContract<Fornecedo
     }
 
     public void handleClickMenuDelete() {
-        final var fornecedorModel = selected.get();
-        if (fornecedorModel == null) return;
+        final var fornecedores = selectedItemsOrCurrent();
+        if (fornecedores.isEmpty()) return;
 
-        Components.ShowAlertAdvice("Deseja excluir fornecedor  " + fornecedorModel.getNome(), () -> Async.Run(() -> {
+        Components.ShowAlertAdvice("Deseja excluir " + fornecedores.size() + " fornecedor(es)?", () -> Async.Run(() -> {
             try {
-                fornecedorService.excluirById(fornecedorModel.getId());
+                for (var fornecedor : fornecedores) fornecedorService.excluirById(fornecedor.getId());
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(it -> it.getId().equals(fornecedorModel.getId()));
-                    Components.ShowPopup(ctx, "Fornecedor excluido com sucesso");
-                    EventBus.getInstance().publish(EntityEvent.excluido(fornecedorModel.getId()));
+                    Components.ShowPopup(ctx, fornecedores.size() + " fornecedor(es) excluído(s) com sucesso");
+                    EventBus.getInstance().publish(EntityEvent.excluido(fornecedores.getLast()));
                 });
             } catch (Exception e) {
-                log.error("Erro ao excluir fornecedor id={}", fornecedorModel.getId(), e);
+                log.error("Erro ao excluir fornecedores", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
             }
         }));

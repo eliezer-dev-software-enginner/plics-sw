@@ -323,12 +323,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         final var original = selected.get();
         if (original == null) return;
 
-        // Não reaproveita/muta "original": ele é a MESMA referência que já está
-        // dentro de allDataList (veio da seleção da linha na tabela). Mutar e
-        // devolver essa mesma referência faz o allDataList.updateIf() "substituir"
-        // o item por ele mesmo — ListState.set() vê as duas listas como iguais
-        // (mesmas referências, mesma posição) e não notifica ninguém, então a
-        // tabela nunca redesenha essa linha sozinha.
 
         boolean atualizarEstoque = "Sim".equalsIgnoreCase(opcaoEstoqueSelected.get());
         try {
@@ -341,7 +335,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
         recarregarProdutoNaVenda(atualizado);
 
         UI.runOnUi(() -> {
-            allDataList.updateIf(it -> it.getId().equals(atualizado.getId()), it -> atualizado);
             Components.ShowPopup(ctx, "Venda atualizada com sucesso!");
             EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
             EventBus.getInstance().publish(EntityEvent.editado(atualizado));
@@ -374,7 +367,6 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
         VendaModel finalVenda = salvo;
         UI.runOnUi(() -> {
-            allDataList.add(finalVenda);
             clearForm();
             EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
             EventBus.getInstance().publish(EntityEvent.criado(finalVenda));
@@ -398,41 +390,25 @@ public class VendaMercadoriaScreenViewModel extends ViewModelScreenContract<Vend
 
     @Override
     public void handleClickMenuDelete() {
-        final var data = selected.get();
-        if (data == null) return;
+        final var vendas = selectedItemsOrCurrent();
+        if (vendas.isEmpty()) return;
 
-        Async.Run(() -> {
+        Components.ShowAlertAdvice("Deseja excluir " + vendas.size() + " venda(s) e suas contas vinculadas?", () -> Async.Run(() -> {
             try {
-                Long vendaId = data.getId();
-                // excluir() primeiro: ele pode falhar (ex: produto da venda não existe mais
-                // no catálogo e não dá pra devolver estoque). Se excluirPorVendaId rodasse
-                // antes e excluir() falhasse depois, as contas a receber já teriam sido
-                // apagadas mas a venda continuaria lá — corrompendo o vínculo silenciosamente.
-                // Devolução de estoque agora é decidida pelo afetaEstoque PERSISTIDO na
-                // própria venda (setado na criação/edição), não pelo dropdown do formulário
-                // — que não tem nenhuma relação com a venda sendo excluída aqui.
-                vendaService.excluir(vendaId);
-                contaService.excluirPorVendaId(vendaId);
+                for (var venda : vendas) {
+                    vendaService.excluir(venda.getId());
+                    contaService.excluirPorVendaId(venda.getId());
+                }
 
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(it -> it.getId().equals(vendaId));
-
-                    String mensagem = "Venda e contas vinculadas excluídas!";
-                    if (Boolean.TRUE.equals(data.getAfetaEstoque())) {
-                        String nomeProduto = data.getProduto() != null
-                                ? data.getProduto().getDescricao()
-                                : data.getProdutoCod();
-                        mensagem += " " + Utils.quantidadeTratada(data.getQuantidade())
-                                + " unidade(s) de \"" + nomeProduto + "\" devolvida(s) ao estoque.";
-                    }
-                    Components.ShowPopup(ctx, mensagem);
+                    Components.ShowPopup(ctx, vendas.size() + " venda(s) e contas vinculadas excluídas!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
-                    EventBus.getInstance().publish(EntityEvent.excluido(vendaId));
+                    EventBus.getInstance().publish(EntityEvent.excluido(vendas.getLast()));
                 });
             } catch (Exception e) {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
-        });
+        }));
     }
 
     public void handleClickMenuDevolucao(VendaModel data) {

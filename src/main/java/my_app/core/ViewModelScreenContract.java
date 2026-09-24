@@ -18,6 +18,7 @@ public abstract class ViewModelScreenContract<Model extends Identifier> {
     public final State<String> searchState = new State<>("");
     public final ListState<Model> allDataList = ListState.ofEmpty();
     public final ListState<Model> filteredList = ListState.ofEmpty();
+    public final ListState<Model> selectedItems = ListState.ofEmpty();
     public final State<Model> selected = State.of(null);
 
 
@@ -67,6 +68,11 @@ public abstract class ViewModelScreenContract<Model extends Identifier> {
 
     public void handleFocusChange(boolean focus) {
         focusState.set(focus);
+    }
+
+    public java.util.List<Model> selectedItemsOrCurrent() {
+        var items = selectedItems.get();
+        return items.isEmpty() && selected.get() != null ? java.util.List.of(selected.get()) : items;
     }
 
     protected <T> T createOrReport(ThrowingSupplier<T> supplier) {

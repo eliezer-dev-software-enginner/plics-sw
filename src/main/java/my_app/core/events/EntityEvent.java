@@ -16,6 +16,10 @@ public record EntityEvent<T>(T entity, EventType type, long entityId) {
         return new EntityEvent<>(null, EventType.EXCLUIDO, id);
     }
 
+    public static <T extends my_app.core.Identifier> EntityEvent<T> excluido(T entity) {
+        return new EntityEvent<>(entity, EventType.EXCLUIDO, entity.getId());
+    }
+
     public boolean is(EventType eventType) {
         return this.type == eventType;
     }

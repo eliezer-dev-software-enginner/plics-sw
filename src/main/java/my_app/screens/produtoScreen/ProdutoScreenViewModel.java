@@ -162,21 +162,20 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
     @Override
     public void handleClickMenuDelete() {
 
-        ProdutoModel produtoModel = selected.get();
-        if (produtoModel == null) return;
+        var produtos = selectedItemsOrCurrent();
+        if (produtos.isEmpty()) return;
 
-        var bodyMessage = "Tem certeza que deseja excluir o produto: %s com código: %s?"
-                .formatted(produtoModel.getDescricao(), produtoModel.getCodigoBarras());
+        var bodyMessage = "Tem certeza que deseja excluir %d produto(s)?".formatted(produtos.size());
         Components.ShowAlertAdvice(bodyMessage, () -> Async.Run(() -> {
             try {
-                produtoService.excluirById(produtoModel.getId());
+                for (var produto : produtos) produtoService.excluirById(produto.getId());
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(it -> it.getId().equals(produtoModel.getId()));
                     clearForm();
-                    Components.ShowPopup(ctx, "Produto excluído com sucesso");
+                    Components.ShowPopup(ctx, produtos.size() + " produto(s) excluído(s) com sucesso");
+                    EventBus.getInstance().publish(EntityEvent.excluido(produtos.getLast()));
                 });
             } catch (Exception e) {
-                log.error("Erro ao excluir produto id={}", produtoModel.getId(), e);
+                log.error("Erro ao excluir produtos", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir produto: " + e.getMessage()));
             }
         }));
@@ -248,7 +247,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 atualizado.setFornecedor(model.getFornecedor());
 
                 UI.runOnUi(() -> {
-                    this.allDataList.updateIf(p -> p.getId().equals(atualizado.getId()), p -> atualizado);
                     Components.ShowPopup(ctx, "Produto atualizado com sucesso!");
                     EventBus.getInstance().publish(EntityEvent.editado(atualizado));
                     clearForm();
@@ -269,7 +267,6 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 salvo.setFornecedor(fornecedorSelected.get());
 
                 UI.runOnUi(() -> {
-                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Produto cadastrado com sucesso");
                     EventBus.getInstance().publish(EntityEvent.criado(salvo));
                     clearForm();

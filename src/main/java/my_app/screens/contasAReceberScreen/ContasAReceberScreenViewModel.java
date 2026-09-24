@@ -80,6 +80,9 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
         if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ClienteModel) {
             loadClientes();
         }
+        if (event instanceof EntityEvent<?> ee && ee.entity() instanceof ContaAreceberModel) {
+            fetchListData();
+        }
     }
 
     @Override
@@ -199,19 +202,20 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
 
     @Override
     public void handleClickMenuDelete() {
-        if (selected.get() == null) return;
+        var contas = selectedItemsOrCurrent();
+        if (contas.isEmpty()) return;
 
-        Components.ShowAlertAdvice("Deseja excluir \"" +selected.get().getDescricao() + "\"?", () -> Async.Run(() -> {
+        Components.ShowAlertAdvice("Deseja excluir " + contas.size() + " conta(s)?", () -> Async.Run(() -> {
             try {
-                contaService.excluir(selected.get().getId());
+                for (var conta : contas) contaService.excluir(conta.getId());
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(c -> c.getId().equals(selected.get().getId()));
-                    Components.ShowPopup(ctx, "Conta excluída com sucesso!");
+                    Components.ShowPopup(ctx, contas.size() + " conta(s) excluída(s) com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    EventBus.getInstance().publish(EntityEvent.excluido(contas.getLast()));
                 });
             } catch (Exception e) {
-                log.error("Erro ao excluir conta a receber id={}",selected.get().getId(), e);
+                log.error("Erro ao excluir contas a receber", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao excluir: " + e.getMessage()));
             }
         }));
@@ -288,10 +292,10 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                 salvo.setCliente(clienteSelected.get());
 
                 UI.runOnUi(() -> {
-                    allDataList.add(salvo);
                     Components.ShowPopup(ctx, "Conta cadastrada com sucesso!");
                     clearForm();
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
+                    EventBus.getInstance().publish(EntityEvent.criado(salvo));
                 });
             } catch (Exception e) {
                 log.error("Erro ao salvar conta a receber", e);
@@ -307,9 +311,9 @@ public class ContasAReceberScreenViewModel extends ViewModelScreenContract<Conta
                 model.setCliente(clienteSelected.get());
 
                 UI.runOnUi(() -> {
-                    allDataList.updateIf(c -> c.getId().equals(model.getId()), c -> model);
                     Components.ShowPopup(ctx, "Conta atualizada com sucesso!");
                     clearForm();
+                    EventBus.getInstance().publish(EntityEvent.editado(model));
                 });
             } catch (Exception e) {
                 log.error("Erro ao atualizar conta a receber id={}", model.getId(), e);

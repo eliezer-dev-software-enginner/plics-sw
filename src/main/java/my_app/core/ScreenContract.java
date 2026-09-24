@@ -23,21 +23,21 @@ public interface ScreenContract<T extends Identifier> {
     }
 
     default void handleClickMenuDelete() {
-        if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
+        if(viewModel().selectedItemsOrCurrent().isEmpty())throw new IllegalArgumentException("Selecione ao menos um item na tabela antes!");
         viewModel().handleClickMenuDelete();
     }
 
     default void handleClickMenuClone() {
-        if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
+        if(viewModel().selectedItemsOrCurrent().size() != 1)throw new IllegalArgumentException("Selecione exatamente um item na tabela antes!");
 
-        long id = viewModel().selected.get().getId();
+        long id = viewModel().selectedItemsOrCurrent().getFirst().getId();
         viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/"+id+"/clone/");
     }
 
     default void handleClickMenuEdit() {
-        if(viewModel().selected.get() == null)throw new IllegalArgumentException("Selecione o item na tabela antes!");
+        if(viewModel().selectedItemsOrCurrent().size() != 1)throw new IllegalArgumentException("Selecione exatamente um item na tabela antes!");
 
-        long id = viewModel().selected.get().getId();
+        long id = viewModel().selectedItemsOrCurrent().getFirst().getId();
         viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/"+id+"/edit/");
     }
 
@@ -61,6 +61,10 @@ public interface ScreenContract<T extends Identifier> {
 
     default Component mainView(State<Boolean> focusState) {
         var tableInstance = table().horizontalScroll().paginate(25);
+        tableInstance.enableMultipleSelection(items -> {
+            viewModel().selectedItems.set(items);
+            viewModel().selected.set(items.isEmpty() ? null : items.getLast());
+        });
 
         return new Container(new ContainerProps().paddingAll(10).bgColor("#fff"))
                 .children(

@@ -76,20 +76,19 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
 
     @Override
     public void handleClickMenuDelete() {
-        var model = selected.get();
-        if (model == null) return;
+        var models = selectedItemsOrCurrent();
+        if (models.isEmpty()) return;
 
-        Components.ShowAlertAdvice("Deseja excluir categoria " + model.getNome(), () ->
+        Components.ShowAlertAdvice("Deseja excluir " + models.size() + " categoria(s)?", () ->
                 Async.Run(() -> {
                     try {
-                        categoriaService.excluirById(model.getId());
+                        for (var model : models) categoriaService.excluirById(model.getId());
                         UI.runOnUi(() -> {
-                            allDataList.removeIf(it -> it.getId().equals(model.getId()));
-                            Components.ShowPopup(ctx, "Categoria excluída com sucesso");
-                            EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
+                            Components.ShowPopup(ctx, models.size() + " categoria(s) excluída(s) com sucesso");
+                            EventBus.getInstance().publish(EntityEvent.excluido(models.getLast()));
                         });
                     } catch (Exception e) {
-                        log.error("Erro ao excluir categoria id={}", model.getId(), e);
+                        log.error("Erro ao excluir categorias", e);
                         UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
                     }
                 })
@@ -109,7 +108,6 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                     atualizada.setNome(model.getNome());
                     atualizada.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
-                        allDataList.updateIf(it -> it.getId().equals(atualizada.getId()), it -> atualizada);
                         Components.ShowPopup(ctx, "Categoria atualizada com sucesso");
                         clearForm();
                         EventBus.getInstance().publish(EntityEvent.editado(atualizada));
@@ -117,7 +115,6 @@ public class CategoriaScreenViewModel extends ViewModelScreenContract<CategoriaM
                 } else {
                     var salvo = categoriaService.salvar(model);
                     UI.runOnUi(() -> {
-                        allDataList.add(salvo);
                         Components.ShowPopup(ctx, "Categoria cadastrada com sucesso");
                         clearForm();
                         EventBus.getInstance().publish(EntityEvent.criado(salvo));

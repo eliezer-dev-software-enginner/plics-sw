@@ -122,21 +122,21 @@ public class PedidosScreenViewModel extends ViewModelScreenContract<PedidoModel>
 
     @Override
     public void handleClickMenuDelete() {
-        var pedido = pedidoSelecionado.get();
-        if (pedido == null) return;
+        var pedidos = selectedItemsOrCurrent();
+        if (pedidos.isEmpty()) return;
 
-        var mensagem = "Deseja excluir a venda #" + pedido.getId() + " (" + nomeClienteDoPedido(pedido) + ")? "
-                + "O estoque dos produtos será devolvido"
-                + (pedido.getFiado() != null && pedido.getFiado() == 1 ? " e as contas a receber vinculadas serão apagadas." : ".");
+        var mensagem = "Deseja excluir " + pedidos.size() + " venda(s)? O estoque dos produtos será devolvido e as contas vinculadas serão apagadas.";
 
         Components.ShowAlertAdvice(mensagem, () -> Async.Run(() -> {
             try {
-                pdvService.excluirVenda(pedido.getId());
+                for (var pedido : pedidos) pdvService.excluirVenda(pedido.getId());
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(it -> it.getId().equals(pedido.getId()));
                     pedidoSelecionado.set(null);
                     itensDoPedidoSelecionado.clear();
-                    Components.ShowPopup(ctx, "Venda excluída com sucesso!");
+                    selected.set(null);
+                    selectedItems.clear();
+                    fetchListData();
+                    Components.ShowPopup(ctx, pedidos.size() + " venda(s) excluída(s) com sucesso!");
                     EventBus.getInstance().publish(DadosFinanceirosAtualizadosEvent.getInstance());
                 });
             } catch (Exception e) {

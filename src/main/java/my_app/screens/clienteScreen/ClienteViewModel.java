@@ -164,19 +164,18 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
 
     @Override
     public void handleClickMenuDelete() {
-        final var model = selected.get();
-        if (model == null) return;
+        final var models = selectedItemsOrCurrent();
+        if (models.isEmpty()) return;
 
-        Components.ShowAlertAdvice("Deseja excluir cliente " + model.getNome(), () -> Async.Run(() -> {
+        Components.ShowAlertAdvice("Deseja excluir " + models.size() + " cliente(s)?", () -> Async.Run(() -> {
             try {
-                clienteService.excluirById(model.getId());
+                for (var model : models) clienteService.excluirById(model.getId());
                 UI.runOnUi(() -> {
-                    allDataList.removeIf(it -> it.getId().equals(model.getId()));
-                    Components.ShowPopup(ctx, "Cliente excluído com sucesso");
-                    EventBus.getInstance().publish(EntityEvent.excluido(model.getId()));
+                    Components.ShowPopup(ctx, models.size() + " cliente(s) excluído(s) com sucesso");
+                    EventBus.getInstance().publish(EntityEvent.excluido(models.getLast()));
                 });
             } catch (Exception e) {
-                log.error("Erro ao excluir cliente id={}", model.getId(), e);
+                log.error("Erro ao excluir clientes", e);
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao tentar excluir: " + e.getMessage()));
             }
         }));
@@ -208,7 +207,6 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                     finalModel.setNumero(model.getNumero());
                     finalModel.setDataCriacao(model.getDataCriacao());
                     UI.runOnUi(() -> {
-                        allDataList.updateIf(it -> it.getId().equals(finalModel.getId()), it -> finalModel);
                         Components.ShowPopup(ctx, "Cliente atualizado com sucesso");
                         clearForm();
                         EventBus.getInstance().publish(EntityEvent.editado(finalModel));
@@ -217,7 +215,6 @@ public class ClienteViewModel extends ViewModelScreenContract<ClienteModel> {
                 } else {
                     clienteService.salvar(model);
                     UI.runOnUi(() -> {
-                        allDataList.add(model);
                         Components.ShowPopup(ctx, "Cliente cadastrado com sucesso");
                         clearForm();
                         EventBus.getInstance().publish(EntityEvent.criado(model));
