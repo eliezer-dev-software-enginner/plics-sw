@@ -689,7 +689,7 @@ public class Components {
     }
     //v3
     public static <T> Component commonCustomMenusv3(
-            State<Boolean> focusState, Runnable onClickNew,
+            ReadableState<Boolean> focusState, Runnable onClickNew,
             Runnable onEdit, Runnable onDelete, Runnable onClone) {
 
         return new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().md()))

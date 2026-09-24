@@ -2,6 +2,7 @@ package my_app.core;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.state.State;
+import megalodonte.ComputedState;
 import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.layout_components.Container;
@@ -42,8 +43,13 @@ public interface ScreenContract<T extends Identifier> {
     }
 
     default Component commonCustomMenus(State<Boolean> focusState) {
-        return Components.commonCustomMenusv3(
+        var actionsVisible = ComputedState.of(
+                () -> focusState.get() || !viewModel().selectedItems.get().isEmpty(),
                 focusState,
+                viewModel().selectedItems
+        );
+        return Components.commonCustomMenusv3(
+                actionsVisible,
                 this::handleClickNew,
                 this::handleClickMenuEdit,
                 this::handleClickMenuDelete,
