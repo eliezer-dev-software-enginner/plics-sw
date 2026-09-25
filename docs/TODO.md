@@ -1,5 +1,11 @@
 # TODO
 
+## Concluído (identificação do dispositivo no Telegram — 2026-09-25)
+- [x] Acrescentar o MAC da interface física ativa às mensagens automáticas do Telegram.
+- [x] Acrescentar o MAC à legenda dos arquivos automáticos de log e banco.
+- [x] Ignorar loopback, interfaces virtuais/VPN e manter fallback `indisponível` sem bloquear envio.
+- [x] Atualizar a Política de Privacidade e cobrir formatação/fallback com testes.
+
 ## Concluído (exportação tabular orientada a dados — 2026-09-24)
 - [x] `SimpleTable` fornece snapshot da lista filtrada completa, sem coluna de checkbox/paginação.
 - [x] CSV configurado por `table.csv.jsonc` (UTF-8 BOM, separador, escape e quebra de linha).

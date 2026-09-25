@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -13,6 +14,9 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
 
 public class TelegramNotifier {
     private final String botToken;
@@ -22,6 +26,7 @@ public class TelegramNotifier {
 
     // Client reaproveitado — HttpClient é thread-safe e caro de recriar a cada chamada
     private static final HttpClient client = HttpClient.newHttpClient();
+    private static volatile String cachedDeviceMacAddress;
 
     public TelegramNotifier(String botToken, String chatId) {
         this.botToken = botToken;
@@ -46,8 +51,9 @@ public class TelegramNotifier {
 
         String newMessage = """
                 Plics SW (version): %s
+                MAC do dispositivo: %s
                 Descricao: %s
-                """.formatted(Main.APP_VERSION, mensagem);
+                """.formatted(Main.APP_VERSION, deviceMacAddress(), mensagem);
 
         // Sem parse_mode: as mensagens daqui são texto de diagnóstico puro (stack
         // traces, nomes de pacote com "_" etc.), nunca usam sintaxe Markdown de
@@ -99,7 +105,8 @@ public class TelegramNotifier {
             if (legenda != null && !legenda.isBlank()) {
                 header.append("--").append(boundary).append("\r\n");
                 header.append("Content-Disposition: form-data; name=\"caption\"\r\n\r\n")
-                        .append(legenda).append("\r\n");
+                        .append(legenda).append("\nMAC do dispositivo: ")
+                        .append(deviceMacAddress()).append("\r\n");
             }
             header.append("--").append(boundary).append("\r\n");
             header.append("Content-Disposition: form-data; name=\"document\"; filename=\"")
@@ -125,6 +132,78 @@ public class TelegramNotifier {
         } catch (Exception ignored) {
             // Sem log de propósito — ver comentário do método.
         }
+    }
+
+    private static String deviceMacAddress() {
+        String current = cachedDeviceMacAddress;
+        if (current == null || "indisponível".equals(current)) {
+            current = resolveDeviceMacAddress();
+            cachedDeviceMacAddress = current;
+        }
+        return current;
+    }
+
+    static String resolveDeviceMacAddress() {
+        try {
+            return Collections.list(NetworkInterface.getNetworkInterfaces()).stream()
+                    .filter(TelegramNotifier::isUsableNetworkInterface)
+                    .sorted(Comparator.comparingInt(TelegramNotifier::networkInterfacePriority))
+                    .map(TelegramNotifier::hardwareAddress)
+                    .filter(address -> address != null && address.length > 0)
+                    .map(TelegramNotifier::formatMacAddress)
+                    .findFirst()
+                    .orElse("indisponível");
+        } catch (Exception ignored) {
+            return "indisponível";
+        }
+    }
+
+    private static boolean isUsableNetworkInterface(NetworkInterface networkInterface) {
+        try {
+            return networkInterface.isUp()
+                    && !networkInterface.isLoopback()
+                    && !networkInterface.isVirtual()
+                    && !networkInterface.isPointToPoint()
+                    && !looksVirtual(networkInterface)
+                    && networkInterface.getHardwareAddress() != null;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private static int networkInterfacePriority(NetworkInterface networkInterface) {
+        String description = networkInterfaceDescription(networkInterface);
+        if (description.contains("ethernet") || description.startsWith("eth")) return 0;
+        if (description.contains("wi-fi") || description.contains("wifi") || description.contains("wlan")) return 1;
+        return 2;
+    }
+
+    private static boolean looksVirtual(NetworkInterface networkInterface) {
+        String description = networkInterfaceDescription(networkInterface);
+        return java.util.stream.Stream.of("virtual", "vmware", "hyper-v", "vbox", "docker", "veth", "wsl", "vpn", "tap", "tun")
+                .anyMatch(description::contains);
+    }
+
+    private static String networkInterfaceDescription(NetworkInterface networkInterface) {
+        return (networkInterface.getName() + " " + networkInterface.getDisplayName()).toLowerCase(Locale.ROOT);
+    }
+
+    private static byte[] hardwareAddress(NetworkInterface networkInterface) {
+        try {
+            return networkInterface.getHardwareAddress();
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    static String formatMacAddress(byte[] address) {
+        if (address == null || address.length == 0) return "indisponível";
+        var formatted = new StringBuilder(address.length * 3 - 1);
+        for (int index = 0; index < address.length; index++) {
+            if (index > 0) formatted.append(':');
+            formatted.append("%02X".formatted(Byte.toUnsignedInt(address[index])));
+        }
+        return formatted.toString();
     }
 
 static void main() {

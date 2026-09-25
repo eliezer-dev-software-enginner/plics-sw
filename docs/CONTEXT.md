@@ -26,6 +26,14 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-25: MAC do dispositivo nos envios automáticos ao Telegram
+- `TelegramNotifier` acrescenta o MAC da interface física ativa a mensagens e legendas de arquivos
+  automáticos (log/banco), permitindo identificar o dispositivo de origem no suporte.
+- Interfaces loopback, virtuais e ponto a ponto são ignoradas. Ausência ou erro de acesso resulta
+  em `indisponível` sem bloquear o envio; o app tenta resolver novamente no envio seguinte.
+- A Política de Privacidade da tela de Termos declara o identificador MAC e o canal de suporte no
+  Telegram. `TelegramNotifierTest` cobre a formatação hexadecimal e o fallback.
+
 ### 2026-09-24: Exportação CSV/PDF das SimpleTable por definições JSONC
 - Todas as telas que implementam `ScreenContract` ganharam `Baixar CSV` e `Baixar PDF` no menu
   comum. A exportação usa toda a lista filtrada, independentemente da página visível.

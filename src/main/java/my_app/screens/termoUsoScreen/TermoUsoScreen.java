@@ -17,7 +17,7 @@ public class TermoUsoScreen implements ScreenComponent {
         return new Scroll(new Container(new ContainerProps().paddingAll(10)).children(
             Components.FormTitle("Política de Privacidade – Plics SW"),
                 new SpacerVertical(2),
-                new Text("Última atualização: 28 de julho de 2026"),
+                new Text("Última atualização: 25 de setembro de 2026"),
                 new SpacerVertical(2),
                 new Text("A sua privacidade é importante para nós. Esta Política de Privacidade explica como o Plics SW coleta, utiliza, armazena e protege as informações dos usuários."),
                 new SpacerVertical(2),
@@ -35,7 +35,7 @@ public class TermoUsoScreen implements ScreenComponent {
                         "Nome do usuário;\n" +
                         "Endereço de e-mail;\n" +
                         "Informações da licença do software;\n" +
-                        "Identificador do dispositivo para validação da licença;\n" +
+                        "Identificador do dispositivo (endereço MAC) para validação da licença e identificação técnica nas notificações de suporte;\n" +
                         "Informações técnicas do aplicativo (versão instalada, sistema operacional e registros de erros);\n" +
                         "Dados necessários para atualização do aplicativo.\n" +
                         "\n" +
@@ -70,14 +70,12 @@ public class TermoUsoScreen implements ScreenComponent {
                         "prevenir uso indevido ou fraude.")),
                 new SpacerVertical(10),
                 Components.FormSubtitle("5. Compartilhamento de informações"),
-                new TextFlow(new Text("As informações coletadas podem ser utilizadas para:\n" +
+                new TextFlow(new Text("As informações técnicas podem ser transmitidas aos serviços usados pelo Plics SW para:\n" +
                         "\n" +
                         "validar a licença do software;\n" +
-                        "disponibilizar atualizações;\n" +
-                        "melhorar a estabilidade do aplicativo;\n" +
-                        "corrigir erros;\n" +
-                        "oferecer suporte técnico;\n" +
-                        "prevenir uso indevido ou fraude.")),
+                        "enviar registros de erros e arquivos automáticos de diagnóstico ao canal de suporte no Telegram;\n" +
+                        "identificar o dispositivo de origem dessas notificações por seu endereço MAC;\n" +
+                        "oferecer suporte técnico e melhorar a estabilidade do aplicativo.")),
                 new SpacerVertical(10),
                 Components.FormSubtitle("6. Segurança"),
                 new TextFlow(new Text("Adotamos medidas técnicas e organizacionais para proteger as informações contra acesso não autorizado, alteração, divulgação ou destruição.\n" +

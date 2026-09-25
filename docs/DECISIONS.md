@@ -1,5 +1,21 @@
 # Decisões Arquiteturais
 
+## 2026-09-25: MAC do dispositivo nas notificações automáticas do Telegram
+
+**Contexto:** logs, banco e erros recebidos pelo canal de suporte precisam indicar de qual
+dispositivo partiram.
+
+**Decisão:** `TelegramNotifier` resolve centralmente o endereço físico da interface ativa,
+ignorando loopback, interfaces virtuais e ponto a ponto. O MAC formatado (`AA:BB:CC:DD:EE:FF`)
+entra nas mensagens e nas legendas dos arquivos enviados. O valor é mantido em cache, mas uma
+resolução que resulte em `indisponível` é repetida no próximo envio para cobrir a rede ainda não
+inicializada durante a abertura do app. Falha de enumeração nunca impede a notificação.
+
+**Privacidade:** a Política de Privacidade exibida no aplicativo foi atualizada para declarar o
+endereço MAC e o envio de diagnósticos ao canal de suporte no Telegram.
+
+---
+
 ## 2026-09-24: Exportação tabular orientada a dados por templates JSONC
 
 **Contexto:** todas as telas baseadas em `ScreenContract` precisam baixar a tabela filtrada em CSV
