@@ -1,7 +1,9 @@
 # Regras do Projeto
 
-## Exclusão
-- desconsidere o arquivo docs/PROMPT.md
+## Contexto da sessão
+- `docs/PROMPT.md` contém a tarefa da sessão em andamento — **não é mais ignorado**. Ler junto com
+  os demais arquivos de contexto antes de qualquer ação; se a tarefa dele já tiver sido concluída,
+  considerar apenas o estado atual do código.
 
 ## Linguagem
 - Sempre usar Java moderno (25).
@@ -22,6 +24,7 @@
 ## Antes de qualquer alteração
 - Ler este arquivo.
 - Ler README.md.
+- Ler `docs/PROMPT.md` (tarefa da sessão).
 - Analisar estrutura existente.
 - Analisar arquivos de testes *.md (testes.md, testes-gerais.md, testes-*.md) por erros relatados e resolvê-los na sessão atual.
 - Não substituir funcionalidades sem autorização.

@@ -1,5 +1,10 @@
 # Contexto do Projeto
 
+## Documentação da sessão
+- `docs/PROMPT.md` = tarefa da sessão em andamento. Não é mais ignorado (a exclusão saiu do
+  `AI_RULES.md` em 2026-09-26) — ler no início da sessão, junto de `AI_RULES.md`, `CONTEXT.md`,
+  `DECISIONS.md`, `TODO.md` e `README.md`.
+
 ## Estrutura
 - JavaFX + Megalodonte (UI framework)
 - Persism (ORM) + SQLite

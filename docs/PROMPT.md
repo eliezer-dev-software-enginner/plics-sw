@@ -23,8 +23,7 @@ Não inicie nenhuma tarefa sem ter lido esses arquivos primeiro.
 - Explique brevemente o plano da tarefa antes de executar qualquer mudança.
 
 ## 4. Tarefa
-Crie um script para criar 20 mil registros na tabela de produtos. Pode ser um arquivo de teste no pacote do java mesmo, por ser mais prático.
-Minha ideia é testar a eficencia do aplicativo com muitos registros. Deixe já criada também uma função para apagar esses registros inseridos.
+registre as novas atualizações no updates.json, na versão 1.1.5
 
 
 ## 5. Ao final da tarefa
