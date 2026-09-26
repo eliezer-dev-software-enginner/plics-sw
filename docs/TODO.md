@@ -1,6 +1,21 @@
 # TODO
 
+## Concluído (changelog da v1.1.5 — 2026-09-26)
+- [x] `git log` desde a criação da entrada `v1.1.5` (2026-09-21) revisado commit a commit
+      (9 commits: 21 a 25/09).
+- [x] Entraram no `updates.json` (efeito visível): paginação 25/página; botões `Baixar CSV`/
+      `Baixar PDF`; ações da tabela conforme a seleção (só `Excluir` com múltiplos, seleção
+      preservada ao trocar de página); colunas Categoria/Fornecedor em branco na tabela de Produtos;
+      largura da tabela/busca do Histórico do Caixa. Total: 15 notas na `v1.1.5`.
+- [x] Fora do changelog por decisão (registrada em `DECISIONS.md`): MAC do dispositivo nos envios
+      automáticos ao Telegram (monitoramento de suporte); scripts Python dos 20 mil produtos de
+      teste; refactor de atualização de listas por eventos (interno).
+- [x] `gradle.properties` já em `appVersion=1.1.5`/`appPatch=0` — sem `bump_version.py`;
+      `README.md` corrigido de 1.1.2 para 1.1.5.
+- [x] `updates.json` validado (JSON parseável, UTF-8).
+
 ## Concluído (identificação do dispositivo no Telegram — 2026-09-25)
+
 - [x] Acrescentar o MAC da interface física ativa às mensagens automáticas do Telegram.
 - [x] Acrescentar o MAC à legenda dos arquivos automáticos de log e banco.
 - [x] Ignorar loopback, interfaces virtuais/VPN e manter fallback `indisponível` sem bloquear envio.

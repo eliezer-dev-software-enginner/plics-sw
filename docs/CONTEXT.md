@@ -26,7 +26,21 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-09-26: updates.json da v1.1.5 completado (21 a 25/09)
+- A entrada `v1.1.5` (criada em 2026-09-21) foi completada com o que veio depois: paginação de
+  25 registros por página nas tabelas do `mainView` e do Histórico do Caixa, botões
+  `Baixar CSV`/`Baixar PDF` (todas as telas de `ScreenContract`), ações da tabela ativas conforme a
+  seleção (só `Excluir` com múltiplos registros, seleção preservada ao trocar de página),
+  hidratação de produtos antes de publicar a lista (colunas Categoria/Fornecedor em branco) e o
+  layout de largura do Histórico do Caixa. 15 notas no total.
+- **Fora do changelog, por decisão**: MAC do dispositivo nos envios automáticos ao Telegram
+  (monitoramento de suporte), scripts Python dos 20 mil produtos de teste e o refactor de
+  atualização de listas por eventos (interno, sem efeito visível) — ver `docs/DECISIONS.md`.
+- `gradle.properties` já estava em `appVersion=1.1.5`/`appPatch=0`; `README.md` corrigido de
+  1.1.2 para 1.1.5.
+
 ### 2026-09-25: MAC do dispositivo nos envios automáticos ao Telegram
+
 - `TelegramNotifier` acrescenta o MAC da interface física ativa a mensagens e legendas de arquivos
   automáticos (log/banco), permitindo identificar o dispositivo de origem no suporte.
 - Interfaces loopback, virtuais e ponto a ponto são ignoradas. Ausência ou erro de acesso resulta

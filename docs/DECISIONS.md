@@ -1,6 +1,37 @@
 # Decisões Arquiteturais
 
+## 2026-09-26: Fechamento do changelog da v1.1.5 — o que entra e o que fica de fora
+
+**Contexto:** a entrada `v1.1.5` do `updates.json` foi criada em 2026-09-21 e ficou incompleta
+depois disso. O `git log` desde então traz 9 commits (2026-09-21 a 2026-09-25), parte deles
+visível ao usuário final e parte não.
+
+**Decisão:** aplicar o filtro já registrado no `AI_RULES.md` ("o que NÃO entra no `updates.json`")
+commit a commit, em vez de despejar o log no changelog:
+1. **Entram** (efeito visível no uso): paginação de 25 registros por página; exportação CSV/PDF das
+   tabelas; ações da tabela conforme a seleção (com múltiplos registros, só `Excluir`; seleção não
+   se perde ao trocar de página); colunas Categoria/Fornecedor que apareciam em branco em Produtos;
+   largura da tabela e da busca no Histórico do Caixa.
+2. **Ficam de fora**:
+   - **MAC do dispositivo nos envios automáticos ao Telegram** — é monitoramento de suporte
+     (regra explícita: "Envios automáticos de log/banco de dados pro Telegram"). A Política de
+     Privacidade continua declarando o identificador, mas descrevê-lo no changelog detalharia um
+     mecanismo de canal de suporte.
+   - **Scripts Python de 20 mil produtos de teste** (`criar_produtos_teste.py`/
+     `apagar_produtos_teste.py`) — ferramenta de teste/experimentação para o desenvolvedor, não
+     funcionalidade entregue ao usuário (continuam documentados no `README.md`).
+   - **`refactor: centraliza atualização de listas por eventos`** — refatoração interna, sem
+     mudança de comportamento observável.
+3. **Sem `bump_version.py`**: `gradle.properties` já estava em `appVersion=1.1.5`/`appPatch=0`,
+   então a versão final já é a `1.1.5` pedida. O único ajuste de versão foi o campo `Versão` do
+   `README.md`, que estava parado em 1.1.2.
+
+**Verificação:** `updates.json` parseado com sucesso (15 notas na `v1.1.5`).
+
+---
+
 ## 2026-09-25: MAC do dispositivo nas notificações automáticas do Telegram
+
 
 **Contexto:** logs, banco e erros recebidos pelo canal de suporte precisam indicar de qual
 dispositivo partiram.
