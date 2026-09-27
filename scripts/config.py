@@ -3,6 +3,10 @@ import subprocess
 import shutil
 import os
 
+RESTRICTED_NATIVE_LIBS = {
+    "jfxwebkit.dll",
+}
+
 ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -322,33 +326,15 @@ def run_jlink(temp_dir: Path):
 
 
 def copy_natives(temp_dir: Path):
-    # O JavaFX possui bibliotecas nativas que não entram automaticamente
-    # no runtime criado pelo jlink quando usamos os JARs do JavaFX SDK.
-    #
-    # Por enquanto mantemos a mesma estratégia original:
-    # copiar as DLLs/SOs do JavaFX para a imagem runtime.
-    #
-    # Essa lógica poderá ser melhorada futuramente para copiar somente
-    # natives pertencentes aos módulos efetivamente utilizados.
+    # DLLs/SOs que não devem entrar no runtime.
+    restricted_natives = {
+        "jfxwebkit.dll",
+    }
 
-    ext = (
-        ".dll"
-        if os.name == "nt"
-        else ".so"
-    )
+    ext = ".dll" if os.name == "nt" else ".so"
+    target = "bin" if os.name == "nt" else "lib"
 
-    # No Windows as DLLs ficam em runtime/bin.
-    # No Linux as bibliotecas ficam em runtime/lib.
-    target = (
-        "bin"
-        if os.name == "nt"
-        else "lib"
-    )
-
-    javafx_temp = (
-        temp_dir
-        / "javafx"
-    )
+    javafx_temp = temp_dir / "javafx"
 
     source = (
         javafx_temp / "bin"
@@ -357,6 +343,10 @@ def copy_natives(temp_dir: Path):
     )
 
     for native in source.glob(f"*{ext}"):
+        if native.name.lower() in restricted_natives:
+            print(f"Ignorando native restrito: {native.name}")
+            continue
+
         dest = (
             temp_dir
             / "runtime"
@@ -373,7 +363,6 @@ def copy_natives(temp_dir: Path):
             native,
             dest
         )
-
 
 def run_jpackage(
     temp_dir: Path,
