@@ -11,7 +11,11 @@ temp_dir = prepare_temp()
 print("[1/5] Gerando fat JAR...")
 run_gradle("clean", "shadowJar")
 jar_file = find_jar()
-shutil.copy(jar_file, temp_dir / "app.jar")
+# A entrada do jpackage agora fica isolada em temp/input.
+shutil.copy(
+    jar_file,
+    temp_dir / "input" / "app.jar"
+)
 
 print("[2/5] Copiando JavaFX modules...")
 copy_javafx(temp_dir)
