@@ -12,7 +12,7 @@
       "Fix: Edição e clonagem de venda funcionando de forma consistente",
       "Fix: Tela de produtos sem erro de null pointer ao abrir formulário",
       "Fix: Ações da tabela (Novo, Editar, Clonar, Excluir) passam a aparecer ao selecionar um registro na tabela",
-      "Fix: Ao selecionar vários registros, somente a ação Excluir fica disponível entre as ações da tabela",
+      "Fix: Agora é possível selecionar vários registros para Exclusão",
       "Fix: A seleção da tabela não é mais perdida ao trocar de página",
       "Fix: Colunas Categoria e Fornecedor apareciam em branco na tabela de Produtos",
       "UI: Tabela e campo de pesquisa do Histórico do Caixa agora ocupam a largura disponível da janela",
