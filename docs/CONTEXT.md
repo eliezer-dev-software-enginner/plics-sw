@@ -33,6 +33,14 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-10-07: Actions compartilhadas e compatibilidade de ícones
+- Workflow de instaladores centralizado em `megalodonte-packaging`; mantém clones e
+  publicação Maven local das bibliotecas e passa a resolver nome/versão pelo empacotador.
+- `pack-utilities` usa `pack.utilities:pack-utilities:1.0.0`; JitPack fica restrito
+  à biblioteca de impressão `escpos-coffee`.
+- Seis chamadas de ButtonsPack em Pedidos, Troca e Relatórios migradas para Feather,
+  compatível com o contrato `disgust.icons.Icon`; ações e dados preservados.
+
 ### 2026-09-26: updates.json da v1.1.5 completado (21 a 25/09)
 - A entrada `v1.1.5` (criada em 2026-09-21) foi completada com o que veio depois: paginação de
   25 registros por página nas tabelas do `mainView` e do Histórico do Caixa, botões

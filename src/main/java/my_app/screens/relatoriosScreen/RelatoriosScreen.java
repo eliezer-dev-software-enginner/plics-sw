@@ -1,6 +1,7 @@
 package my_app.screens.relatoriosScreen;
 
 import disgust.io.ButtonsPack;
+import disgust.icons.Feather;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -114,7 +115,7 @@ public class RelatoriosScreen implements ScreenComponent {
         return new Card(new Row(new RowProps().spacingOf(15).centerVertically()).children(
                 Components.DatePickerColumn(vm.dataInicio, "Data início"),
                 Components.DatePickerColumn(vm.dataFim, "Data fim"),
-                ButtonsPack.ContainedButtonWithIconEnd("Gerar relatório", ButtonVariant.PRIMARY,AntDesignIconsOutlined.BAR_CHART, vm::gerarRelatorio)
+                ButtonsPack.ContainedButtonWithIconEnd("Gerar relatório", ButtonVariant.PRIMARY, Feather.BAR_CHART, vm::gerarRelatorio)
         ));
     }
 

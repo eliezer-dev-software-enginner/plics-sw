@@ -26,9 +26,12 @@ group = "plicssw"
 version = fullVersion
 
 repositories {
-    mavenCentral()
     mavenLocal()
-    maven { url = uri("https://jitpack.io") }
+    mavenCentral()
+    maven {
+        url = uri("https://jitpack.io")
+        content { includeGroup("com.github.anastaciocintra") }
+    }
 }
 
 java {
@@ -130,7 +133,7 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:5.3.0")
 
     //utilitties
-    implementation("com.github.eliezer-dev-software-enginner:pack-utilities:v1.0.0")
+    implementation("pack.utilities:pack-utilities:1.0.0")
 
     //disgust-components
     implementation("disgust:distust-io-components:1.0.0-beta")

@@ -1,6 +1,7 @@
 package my_app.screens.pedidosScreen;
 
 import disgust.io.ButtonsPack;
+import disgust.icons.Feather;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.Card;
@@ -20,8 +21,6 @@ import my_app.core.AppRoutes;
 import my_app.core.db.models.PedidoItemModel;
 import my_app.core.db.models.PedidoModel;
 import my_app.core.components.Components;
-import org.kordamp.ikonli.antdesignicons.AntDesignIconsFilled;
-import org.kordamp.ikonli.entypo.Entypo;
 import pack.utilities.CurrencyPack;
 import pack.utilities.DatePack;
 
@@ -90,19 +89,19 @@ public class PedidosScreen implements ScreenComponent {
                         new FlowRow(new FlowRowProps().spacingOf(10)).children(
                                 //new Button("Imprimir venda").onClick(vm::imprimirVendaSelecionada),
                                 ButtonsPack.ContainedButtonWithIconStart("Imprimir venda", ButtonVariant.PRIMARY,
-                                        AntDesignIconsFilled.PRINTER,
+                                        Feather.PRINTER,
                                         vm::imprimirVendaSelecionada),
                                 ButtonsPack.ContainedButtonWithIconStart("Excluir venda selecionada", ButtonVariant.DANGER,
-                                                AntDesignIconsFilled.DELETE, vm::handleClickMenuDelete)
+                                                Feather.TRASH_2, vm::handleClickMenuDelete)
                         )
                 ),
                 Show.when(vm.podeDevolver, () ->
                         new Row(new RowProps().spacingOf(10)).children(
                                 ButtonsPack.ContainedButtonWithIconStart("Devolver venda selecionada", ButtonVariant.WARNING,
-                                        Entypo.BACK_IN_TIME,
+                                        Feather.ROTATE_CCW,
                                         vm::handleClickMenuDevolucaoVenda),
                                 ButtonsPack.ContainedButtonWithIconStart("Trocar venda selecionada", ButtonVariant.SUCCESS,
-                                        Entypo.SWAP,
+                                        Feather.REPEAT,
                                         this::handleClickMenuTroca)
                         )
                 ),

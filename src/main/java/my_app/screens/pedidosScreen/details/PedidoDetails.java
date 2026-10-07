@@ -1,6 +1,7 @@
 package my_app.screens.pedidosScreen.details;
 
 import disgust.io.ButtonsPack;
+import disgust.icons.Feather;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.components.*;
@@ -14,7 +15,6 @@ import megalodonte.v2.Show;
 import my_app.core.Data;
 import my_app.core.components.Components;
 import my_app.screens.pdvScreen.ItemVenda;
-import org.kordamp.ikonli.entypo.Entypo;
 import pack.utilities.CurrencyPack;
 
 public class PedidoDetails implements ScreenComponent {
@@ -93,7 +93,7 @@ public class PedidoDetails implements ScreenComponent {
                 new Row(new RowProps().spacingOf(10).hugWidth().paddingRight(30)).children(
                         Components.SelectColumn("Forma de pagamento", Data.tiposPagamentoList, vm.trocaFormaPagamento, it -> it),
                         ButtonsPack.ContainedButtonWithIconStart("Confirmar troca", ButtonVariant.SUCCESS,
-                                Entypo.CHECK,
+                                Feather.CHECK,
                                 () -> vm.confirmarTroca(() -> ctx.selfStage().close()))
                 ),
                 Stack.Corner.BOTTOM_RIGHT,

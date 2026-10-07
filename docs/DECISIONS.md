@@ -1,5 +1,13 @@
 # Decisões Arquiteturais
 
+## 2026-10-07: Workflow compartilhado e Maven local para utilities
+
+Todos os clientes JavaFX usam o mesmo workflow de `megalodonte-packaging`, mantendo
+clones e publicação local para testar bibliotecas sem releases intermediárias.
+`pack-utilities` passa às coordenadas próprias e publica seu JAR modular; as
+coordenadas GitHub/JitPack deixam de ser usadas. No Plics, as seis chamadas
+incompatíveis de ButtonsPack usam Feather, conforme a API atual do Disgust.
+
 ## 2026-09-26: Fechamento do changelog da v1.1.5 — o que entra e o que fica de fora
 
 **Contexto:** a entrada `v1.1.5` do `updates.json` foi criada em 2026-09-21 e ficou incompleta

@@ -1,5 +1,11 @@
 # TODO
 
+## Concluído (CI e compatibilidade — 2026-10-07)
+
+- [x] Usar workflow compartilhado para MSI/DEB, preservando clones e Maven local.
+- [x] Consumir pack-utilities pelas coordenadas próprias e restringir JitPack à impressão.
+- [x] Migrar seis chamadas de ButtonsPack para ícones Feather compatíveis com Disgust.
+
 ## Concluído (changelog da v1.1.5 — 2026-09-26)
 - [x] `git log` desde a criação da entrada `v1.1.5` (2026-09-21) revisado commit a commit
       (9 commits: 21 a 25/09).
