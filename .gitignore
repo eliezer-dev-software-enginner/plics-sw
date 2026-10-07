@@ -83,3 +83,5 @@ criptografando-dados-sensiveis.png
 temp
 dist
 /scripts/__pycache__
+
+/.packaging/

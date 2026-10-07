@@ -1,38 +1,7 @@
 #!/usr/bin/env python3
-import os
-import stat
-from config import *
+"""Compatibility command backed by megalodonte-packaging."""
+import sys
+from package import main
 
-gradlew = ROOT / "gradlew"
-if not os.access(gradlew, os.X_OK):
-    gradlew.chmod(gradlew.stat().st_mode | stat.S_IXUSR)
-
-temp_dir = prepare_temp()
-
-print("[1/5] Gerando fat JAR...")
-run_gradle("clean", "shadowJar")
-jar_file = find_jar()
-shutil.copy(jar_file, temp_dir / "app.jar")
-
-print("[2/5] Copiando JavaFX modules...")
-copy_javafx(temp_dir)
-
-print("[3/5] Gerando runtime com jlink...")
-run_jlink(temp_dir)
-copy_natives(temp_dir)
-
-smoke_test(temp_dir)
-
-print("[4/5] Gerando pacote .deb...")
-run_jpackage(temp_dir, "deb", [
-    "--linux-shortcut",
-    "--linux-menu-group", LINUX_MENU_GROUP,
-    "--linux-package-name", APP_NAME.lower().replace(" ", "-"),
-])
-
-print("[5/5] Renomeando pacote...")
-final = rename_output("deb")
-shutil.rmtree(temp_dir, ignore_errors=True)
-print(f"\nPacote .deb criado: {final}")
-print(f"   Para instalar: sudo dpkg -i \"{final}\"")
-open_dist_folder()
+if __name__ == "__main__":
+    raise SystemExit(main(['build', 'deb'] + sys.argv[1:]))

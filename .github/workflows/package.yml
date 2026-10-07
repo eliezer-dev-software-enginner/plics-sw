@@ -35,6 +35,19 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Shared packaging library: use one org/repository variable for all applications.
+      - name: Install shared packaging library
+        shell: bash
+        env:
+          MEGALODONTE_PACKAGING_SOURCE: ${{ vars.MEGALODONTE_PACKAGING_SOURCE }}
+        run: |
+          if [ -z "$MEGALODONTE_PACKAGING_SOURCE" ]; then
+            echo "Set MEGALODONTE_PACKAGING_SOURCE to the shared wheel URL or pinned pip Git source." >&2
+            exit 1
+          fi
+          python -m pip install "$MEGALODONTE_PACKAGING_SOURCE"
+          python scripts/package.py show
+
       # plics-sw depende de "megalodonte:*:1.0.0-beta" — só existe via mavenLocal, nenhum
       # artefato publicado num repositório remoto (Maven Central etc.). Clona o workspace
       # megalodonte-libs (5 submódulos, cada um seu próprio repo público) e publica cada um
@@ -94,14 +107,14 @@ jobs:
           $wix = Get-ChildItem "C:\Program Files (x86)\WiX Toolset v*\bin" -Directory | Select-Object -First 1
           echo "$($wix.FullName)" >> $env:GITHUB_PATH
 
-      # scripts/config.py::smoke_test abre uma janela JavaFX de verdade por alguns segundos
+      # megalodonte-packaging --smoke-test abre uma janela JavaFX de verdade por alguns segundos
       # pra confirmar que o runtime empacotado sobe sem exceção — runner Linux não tem
       # display nenhum por padrão, então cria um virtual.
       - name: Instalar Xvfb (só Linux, pro smoke test do pacote)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
-      # scripts/config.py::javafx_dir() espera JAVAFX_MODULES_HOME apontando pra uma pasta
+      # megalodonte-packaging javafx_dir() espera JAVAFX_MODULES_HOME apontando pra uma pasta
       # que contém "{linux|windows}-{versão}/lib" (e opcionalmente "/bin") — exatamente a
       # estrutura já empacotada neste zip (o mesmo usado localmente, publicado como asset de
       # release em megalodonte-base). Baixa os dois SOs de qualquer forma (é um zip só,
@@ -121,7 +134,7 @@ jobs:
       - name: Gerar .deb (Linux)
         if: runner.os == 'Linux'
         shell: bash
-        run: xvfb-run -a python3 scripts/create-deb.py
+        run: xvfb-run -a python3 scripts/create-deb.py --smoke-test
 
       - name: Gerar .msi (Windows)
         if: runner.os == 'Windows'
