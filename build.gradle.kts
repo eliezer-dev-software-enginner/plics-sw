@@ -18,8 +18,7 @@ val props = Properties()
 file("gradle.properties").inputStream().use { props.load(it) }
 
 // appVersion (base, x.x.x) + appPatch (contador, 0 = sem patch) compostos em uma
-// única string — mesma lógica de scripts/config.py, pra Gradle e jpackage nunca
-// divergirem. Ver gradle.properties para o porquê dos dois campos separados.
+// única string, seguindo a mesma composição de megalodonte-packaging.
 val appPatchNumber = props.getProperty("appPatch", "0").toIntOrNull() ?: 0
 val fullVersion = if (appPatchNumber > 0) "${props.getProperty("appVersion")}.$appPatchNumber" else props.getProperty("appVersion")
 

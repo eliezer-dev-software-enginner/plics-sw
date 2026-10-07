@@ -30,7 +30,8 @@
 - Não substituir funcionalidades sem autorização.
 
 ## Versão do app (fonte única: gradle.properties)
-- `Main.APP_VERSION` **não é mais hardcoded** — lê a system property `plics.appVersion` em runtime (`System.getProperty`), setada via `-Dplics.appVersion=...` tanto na task `run` do Gradle quanto em `scripts/config.py` (`run_jpackage()`, usado por todo build empacotado). Nunca edite `APP_VERSION` direto no `Main.java`.
+- `Main.APP_VERSION` lê a system property `plics.appVersion` em runtime, setada na task `run` do Gradle e por `megalodonte-packaging` nos aplicativos empacotados. Nunca edite `APP_VERSION` direto no `Main.java`.
+- `gradle.properties` mantém apenas `appName`, `appVersion`, `appPatch` e `appMainClass`. Dados exclusivos do instalador ficam em `packaging.toml`; não duplicar versão ou classe principal no TOML.
 - `gradle.properties` tem dois campos: `appVersion` (base, x.x.x — só muda em release nova) e `appPatch` (contador, incrementado a cada patch da mesma base). Versão final = `appVersion` sozinho se `appPatch=0`, senão `appVersion.appPatch` (ex: base `1.1.1` + patch `5` = `1.1.1.5`).
 - Use `python scripts/bump_version.py patch` pra incrementar o patch, ou `python scripts/bump_version.py release X.Y.Z` pra definir uma versão base nova (zera o patch) — nunca edite `appVersion`/`appPatch` à mão.
 

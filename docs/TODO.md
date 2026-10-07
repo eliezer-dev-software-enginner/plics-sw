@@ -502,3 +502,4 @@
 - `scripts/create-msi.py`: updater.jar incluso no pacote; smoke test adicionado
 - `scripts/create-deb.py`: updater.jar incluso no pacote
 - `scripts/config.py`: múltiplas correções — `_java_home()`, `jdeps` dinâmico, `copy_natives` busca em `temp/bin/`, `ICON_PATH` condicional, caminhos absolutos JDK
+- [x] 2026-10-07: reduzir gradle.properties aos quatro metadados compartilhados e mover dados do instalador para packaging.toml.

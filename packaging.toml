@@ -2,6 +2,10 @@
 schema_version = 1
 
 [app]
+name = "Plics SW"
+vendor = "Coerente Inc."
+copyright = "Copyright 2026"
+description = "Sistema de gestao para pequenos e medios negocios. Controle vendas, compras, estoque e financeiro."
 version_property = "plics.appVersion"
 icon_windows = "src/main/resources/assets/app_ico.ico"
 icon_linux = "src/main/resources/assets/app_ico.png"

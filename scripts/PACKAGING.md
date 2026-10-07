@@ -4,6 +4,11 @@ A implementação está na biblioteca `megalodonte-packaging`, compartilhada por
 `packaging.toml` contém apenas os dados específicos deste aplicativo. A versão vem de
 `gradle.properties` quando presente; a configuração não copia os algoritmos da biblioteca.
 
+Neste projeto, `gradle.properties` mantém apenas `appName` (nome do artefato),
+`appVersion`, `appPatch` e `appMainClass`, compartilhados com o build.
+Nome de exibição, fornecedor, descrição, copyright e categoria do menu Linux ficam
+em `packaging.toml`. A versão continua sendo alterada por `scripts/bump_version.py`.
+
 ```sh
 python scripts/package.py show
 python scripts/create-msi.py --dry-run --platform windows

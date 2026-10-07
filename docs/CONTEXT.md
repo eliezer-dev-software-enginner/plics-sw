@@ -22,7 +22,9 @@ ou os instaladores pra baixar. `UpdaterService` (que fazia essa checagem em Java
 removido — ver docs/DECISIONS.md.
 
 ## Scripts de empacotamento
-- `scripts/config.py`: funções compartilhadas (`run_gradle()`, `run_jlink()`, `run_jpackage()`, etc.)
+- Implementação compartilhada em `megalodonte-packaging`; os scripts locais são adaptadores.
+- `gradle.properties`: apenas `appName`, `appVersion`, `appPatch` e `appMainClass`.
+- `packaging.toml`: dados e opções do instalador, incluindo nome de exibição e fornecedor.
 - `scripts/create-msi.py`: gera instalador Windows (.msi) — build normal (site, GitHub Releases)
 - `scripts/create-deb.py`: gera instalador Linux (.deb)
 - `scripts/create-msi-store.py`: gera MSI com `-Dplics.microsoftStore=true`, pra publicação na Microsoft Store

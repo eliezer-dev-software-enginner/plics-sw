@@ -1814,3 +1814,9 @@ do app ID é a própria convenção do Flathub (`org.gnome.Software`, etc.), nã
 - `src/main/java/my_app/screens/pedidosScreen/PedidosScreenViewModel.java`
 - `src/main/java/my_app/screens/vendaScreen/VendaMercadoriaScreenViewModel.java`
 - `src/main/java/my_app/utils/TrayManager.java`
+## 2026-10-07: Configuração mínima no gradle.properties
+
+Manter apenas nome do artefato, versão base, patch e classe principal no
+`gradle.properties`, pois são compartilhados pelo Gradle e pelo empacotador.
+Metadados exclusivos do instalador ficam em `packaging.toml`. A versão permanece
+centralizada no arquivo de propriedades e gerenciada por `scripts/bump_version.py`.
