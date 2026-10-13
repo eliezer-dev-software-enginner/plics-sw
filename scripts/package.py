@@ -13,8 +13,7 @@ def load_shared_library():
         candidates = [Path(override).resolve() / "src"]
     else:
         candidates = [candidate for parent in (ROOT, *ROOT.parents)
-                      for candidate in (parent / "megalodonte-packaging/src",
-                                        parent / "megalodonte-world/megalodonte-packaging/src")]
+                      for candidate in (parent / "framework/megalodonte-packaging/src",)]
     source = next((p for p in candidates if (p / "megalodonte_packaging").is_dir()), None)
     if override and source is None:
         raise SystemExit("MEGALODONTE_PACKAGING_HOME does not contain the shared library")

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "id": "info_update",
+  "states": {
+    "notas": { "type": "string", "initial": "[]" },
+    "selecionada": { "type": "integer", "initial": -1 },
+    "detalhes": { "type": "string", "initial": "Nenhuma atualização disponível." }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [{
+      "type": "Column", "props": { "padding": 16, "spacing": 12, "fillWidth": true },
+      "children": [
+        { "type": "Text", "props": { "text": "Notas de atualização" }, "style": { "fontSize": 18, "bold": true } },
+        {
+          "type": "DataList", "id": "listaNotas", "props": { "height": 240, "fillWidth": true },
+          "bind": { "items": "notas", "selected": "selecionada" },
+          "events": { "onSelect": "selecionarNota" }
+        },
+        {
+          "type": "TextArea", "id": "detalhesNota", "props": { "height": 300, "readOnly": true },
+          "bind": { "value": "detalhes" }
+        }
+      ]
+    }]
+  }
+}

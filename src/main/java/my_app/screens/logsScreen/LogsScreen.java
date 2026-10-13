@@ -1,49 +1,26 @@
 package my_app.screens.logsScreen;
 
-import disgust.io.ButtonsPack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.SpacerHorizontal;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.Text;
-import megalodonte.components.inputs.TextAreaInput;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
 import megalodonte.base.route.v2.ScreenContextInterface;
+import megalodonte.base.state.Subscription;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 
-public class LogsScreen implements ScreenComponent {
-    private final LogsScreenViewModel vm;
+/** Reads logs through the existing service; layout and state bindings live in JSONC. */
+public final class LogsScreen implements ScreenComponent {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(LogsScreen.class, "/views/logs.view.jsonc");
+    private final LogsScreenViewModel viewModel = new LogsScreenViewModel();
+    private final UiSession session = VIEW.open(new Actions()
+            .register("atualizar", ignored -> viewModel.carregarLogs())
+            .register("abrirPasta", ignored -> viewModel.abrirPastaDeLogs()));
+    private final Subscription logUpdates = viewModel.conteudoLogs.observe(
+            value -> session.states().string("conteudoLogs").set(value));
 
-    public LogsScreen(ScreenContextInterface ctx) {
-        this.vm = new LogsScreenViewModel();
-    }
+    public LogsScreen(ScreenContextInterface context) {}
 
-    @Override
-    public Component render() {
-        var textoLogs = new TextAreaInput(vm.conteudoLogs,
-                new InputProps()
-                        .fontSize(ThemeManager.theme().typography().small())
-                        .fontFamily("'Courier New', monospace")
-                        .editable(false)
-                        .fillHeight());
+    @Override public Component render() { return session.render(); }
 
-        return new Container(new ContainerProps().paddingAll(20).fillHeight())
-                .children(
-                        new Column(new ColumnProps().fillWidth().fillHeight().spacingOf(10))
-                                .children(
-                                        new Text("Logs da aplicação", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())),
-                                        new Row(new RowProps().fillWidth().spacingOf(10))
-                                                .children(
-                                                        ButtonsPack.ContainedButton("Atualizar", ButtonVariant.PRIMARY, vm::carregarLogs),
-                                                        ButtonsPack.OutlinedButton("Abrir pasta de logs", ButtonVariant.PRIMARY, vm::abrirPastaDeLogs),
-                                                        new SpacerHorizontal().fill()
-                                                ),
-                                        new SpacerVertical(5),
-                                        textoLogs
-                                )
-                );
-    }
+    @Override public void onDestroy() { logUpdates.close(); session.close(); }
 }
