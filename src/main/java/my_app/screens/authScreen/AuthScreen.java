@@ -1,88 +1,56 @@
 package my_app.screens.authScreen;
 
-import disgust.io.ButtonsPack;
-import disgust.io.Pack;
 import megalodonte.base.Redirect;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.*;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
 import megalodonte.base.route.v2.ScreenContextInterface;
-import megalodonte.v2.Show;
+import megalodonte.base.state.Subscription;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 import my_app.Main;
 import my_app.core.Data;
-import my_app.core.components.Components;
 
-public class AuthScreen implements ScreenComponent {
-    private final ScreenContextInterface ctx;
-    private final AuthScreenViewModel vm;
+/** Authentication view and controls are declared in JSONC; this adapter owns domain actions. */
+public final class AuthScreen implements ScreenComponent {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(AuthScreen.class, "/views/auth.view.jsonc");
+    private final ScreenContextInterface context;
+    private final AuthScreenViewModel viewModel = new AuthScreenViewModel();
+    private final UiSession session;
+    private final Subscription licenseVisibility;
+    private final Subscription loading;
 
-    public AuthScreen(ScreenContextInterface ctx) {
-        this.ctx = ctx;
-        this.vm = new AuthScreenViewModel();
+    public AuthScreen(ScreenContextInterface context) {
+        this.context = context;
+        session = VIEW.open(new Actions()
+            .register("entrar", screen -> {
+                viewModel.licensaState.set(screen.states().string("licenca").get());
+                viewModel.loginState.set(screen.states().string("login").get());
+                viewModel.passwordState.set(screen.states().string("senha").get());
+                viewModel.entrar(context);
+            })
+            .register("abrirSuporte", ignored -> Redirect.to(Data.linkWhatsappSupport))
+            .register("abrirSite", ignored -> Redirect.to(Data.linkWebsiteOfficial)));
+        licenseVisibility = viewModel.showLicensaState.observe(
+                visible -> session.states().state("mostrarLicenca", Boolean.class).set(visible));
+        loading = viewModel.loadingState.observe(
+                value -> session.states().state("carregando", Boolean.class).set(value));
+        session.states().string("versao").set("Plics - SW " + Main.APP_VERSION);
+        session.states().string("suporte").set(Data.getNumberWhatsappSupportFormatted() + " - Suporte garantido.");
     }
 
-    @Override
-    public void onMount() {
-        ctx.selfStage().getIcons().add(Main.loadIcon());
-        vm.load();
+    @Override public void onMount() {
+        context.selfStage().getIcons().add(Main.loadIcon());
+        viewModel.load();
     }
 
-    @Override
-    public void onDestroy() {
-        try {
-            vm.onDestroy();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override public Component render() { return session.render(); }
 
-    @Override
-    public Component render() {
-        return new Container(new ContainerProps().paddingAll(20).bgImage("/assets/bgAuth.jpg")).children(
-                new Row(new RowProps()).children(Components.FormSubtitle("Plics - SW " + Main.APP_VERSION, "white")),
-                new SpacerVertical(20),
-                new Row().children(
-                        new Column().children(
-                                Components.FormSubtitle("Realize já seu login na Plics SW", "white"),
-                                new SpacerVertical(ThemeManager.theme().spacing().md()),
-                                new Card(
-                                        new Column(new ColumnProps().maxWidth(185)).children(
-                                                Show.when(vm.showLicensaState, () -> Pack.InputColumn("Licença",
-                                                        vm.licensaState, "Ex: ABC123")),
-                                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                                //Components.InputColumnAuthFill("Login", vm.loginState, "Ex: admin"),
-                                                Pack.InputColumn("Login", vm.loginState, "Ex: admin"),
-                                                new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                                //Components.InputColumnAuthFill("Senha", vm.passwordState, "Digite sua senha"),
-                                                Pack.InputColumn("Senha", vm.passwordState, "Digite sua senha"),
-                                                new SpacerVertical(ThemeManager.theme().spacing().md()),
-                                                ButtonsPack.ContainedButton("Entrar", ButtonVariant.PRIMARY,true, () -> vm.entrar(ctx))
-                                                //Components.ButtonCadastro("Entrar", () -> vm.entrar(ctx))
-                                        ),
-                                        new CardProps().paddingAll(10).borderRadius(10)
-                                )
-                        ),
-                        new Row(new RowProps().fillWidth()),
-                        new Column(new ColumnProps().maxWidth(170)).children(
-                                new Column(new ColumnProps().centerHorizontally()).children(
-                                        new Image("/assets/qrcode2.png", new ImageProps().size(170)),
-                                        new Text("Plics - SW", new TextProps().textColor("white").bold())
-                                ),
-                                new SpacerVertical(10),
-                                new TextFlow(new Text("Scaneie o QRCode para ir para o suporte no WhatsApp.",
-                                        new TextProps().textColor("#fff").fontSize(13)))
-                        )
-                ),
-                new Column(new ColumnProps().fillHeight()),
-                Components.imageWithTextRow("/assets/whatsapp.png", Data.getNumberWhatsappSupportFormatted() + " - Suporte garantido."),
-                new Button("Ir para o Suporte (24h)", new ButtonProps().bgColor("#25D366").textColor("black")).onClick(() -> Redirect.to(Data.linkWhatsappSupport)),
-                new SpacerVertical(15),
-                new Button("Ir para o Site Oficial").onClick(() -> Redirect.to(Data.linkWebsiteOfficial))
-        );
+    @Override public void onDestroy() {
+        licenseVisibility.close();
+        loading.close();
+        session.close();
+        try { viewModel.onDestroy(); }
+        catch (Exception e) { throw new IllegalStateException("Could not close authentication services", e); }
     }
 }

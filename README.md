@@ -169,7 +169,7 @@ O [levantamento de configuração](docs/CONFIGURATION_AUDIT.md) identifica tamb�
 
 ## Interface declarativa
 
-As telas de acesso bloqueado, relato de erro, sugestão de melhoria, logs e notas de atualização usam `megalodonte-jsonc-ui`. Seus recursos em `src/main/resources/views/` definem a árvore, os componentes nativos, o estado e os eventos; as classes Java registram apenas ações de domínio e controlam as sessões. Os testes validam os recursos e o registro das ações. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
+As telas de boas-vindas, autenticação, acesso bloqueado, relato de erro, sugestão de melhoria, logs e notas de atualização usam `megalodonte-jsonc-ui`. Seus recursos em `src/main/resources/views/` definem a árvore, os componentes nativos, o estado e os eventos; as classes Java registram apenas ações de domínio e controlam as sessões. Os testes validam os recursos e o registro das ações. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
 
 ## Versão
 

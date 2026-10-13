@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "id": "welcome",
+  "states": {},
+  "view": {
+    "type": "Container",
+    "props": { "bgImage": "/assets/wallpapers/welcome.jpg", "fillWidth": true, "fillHeight": true },
+    "children": [{
+      "type": "Column",
+      "props": { "padding": 30, "spacing": 18, "alignment": "center", "fillWidth": true, "fillHeight": true },
+      "children": [
+        { "type": "Image", "props": { "source": "/assets/app_banner.png", "width": 400, "height": 280 } },
+        { "type": "Text", "props": { "text": "Plics — gestão para pequenos e médios negócios" }, "style": { "fontSize": 21, "bold": true, "textColor": "#ffffff" } },
+        { "type": "Text", "props": { "text": "Controle vendas, compras, estoque e financeiro." }, "style": { "fontSize": 15, "textColor": "#ffffff" } },
+        { "type": "Button", "props": { "text": "Entrar no sistema", "defaultButton": true }, "events": { "onClick": "entrar" } }
+      ]
+    }]
+  }
+}

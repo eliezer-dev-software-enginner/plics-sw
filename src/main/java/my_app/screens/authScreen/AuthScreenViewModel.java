@@ -28,6 +28,7 @@ public class AuthScreenViewModel {
     private final PreferenciasService preferenciasService;
 
     final State<Boolean> showLicensaState = State.of(true);
+    final State<Boolean> loadingState = State.of(true);
 
     final State<String> licensaState = State.of("");
     final State<String> loginState = State.of("");
@@ -59,6 +60,7 @@ public class AuthScreenViewModel {
                         boolean firstAccess = prefRecuperada.isFirstAccess();
                         log.info("first access: {}", firstAccess);
                         showLicensaState.set(firstAccess || invalid);
+                        loadingState.set(false);
                     });
                 }
             } catch (SQLException e) {

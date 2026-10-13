@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "auth",
+  "states": {
+    "licenca": { "type": "string", "initial": "" },
+    "login": { "type": "string", "initial": "" },
+    "senha": { "type": "string", "initial": "" },
+    "mostrarLicenca": { "type": "boolean", "initial": true },
+    "carregando": { "type": "boolean", "initial": true },
+    "versao": { "type": "string", "initial": "" },
+    "suporte": { "type": "string", "initial": "" }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [{
+      "type": "Container",
+      "props": { "padding": 20, "bgImage": "/assets/bgAuth.jpg", "fillWidth": true, "fillHeight": true },
+      "children": [{
+        "type": "Column", "props": { "spacing": 16, "fillWidth": true, "alignment": "center" },
+        "children": [
+          { "type": "Text", "bind": { "text": "versao" }, "style": { "fontSize": 22, "bold": true, "textColor": "#ffffff" } },
+          { "type": "Text", "props": { "text": "Realize seu login na Plics SW" }, "style": { "fontSize": 18, "textColor": "#ffffff" } },
+          { "type": "Text", "props": { "text": "Licença" }, "bind": { "visible": "mostrarLicenca" }, "style": { "textColor": "#ffffff" } },
+          { "type": "Input", "props": { "placeholder": "Sua licença", "width": 280 }, "bind": { "value": "licenca", "visible": "mostrarLicenca" } },
+          { "type": "Text", "props": { "text": "Login" }, "style": { "textColor": "#ffffff" } },
+          { "type": "Input", "props": { "placeholder": "Seu usuário", "width": 280 }, "bind": { "value": "login" } },
+          { "type": "Text", "props": { "text": "Senha" }, "style": { "textColor": "#ffffff" } },
+          { "type": "PasswordInput", "props": { "placeholder": "Sua senha", "width": 280 }, "bind": { "value": "senha" }, "events": { "onEnter": "entrar" } },
+          { "type": "Button", "props": { "text": "Entrar", "defaultButton": true }, "bind": { "disabled": "carregando" }, "events": { "onClick": "entrar" } },
+          { "type": "Image", "props": { "source": "/assets/qrcode2.png", "width": 140, "height": 140 } },
+          { "type": "Text", "props": { "text": "Escaneie o QR Code para acessar o suporte no WhatsApp." }, "style": { "textColor": "#ffffff" } },
+          { "type": "Text", "bind": { "text": "suporte" }, "style": { "textColor": "#ffffff" } },
+          { "type": "Button", "props": { "text": "Suporte via WhatsApp" }, "style": { "bgColor": "#25D366", "textColor": "#000000" }, "events": { "onClick": "abrirSuporte" } },
+          { "type": "Button", "props": { "text": "Site oficial" }, "events": { "onClick": "abrirSite" } }
+        ]
+      }]
+    }]
+  }
+}
