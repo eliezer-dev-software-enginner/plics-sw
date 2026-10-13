@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "id": "categoria_form",
+  "states": {
+    "nome": { "type": "string", "initial": "" },
+    "acao": { "type": "string", "initial": "Cadastrar" }
+  },
+  "view": {
+    "type": "Column", "props": { "padding": 20, "spacing": 16, "fillWidth": true },
+    "children": [
+      { "type": "Text", "props": { "text": "Dados da categoria" }, "style": { "fontSize": 18, "bold": true } },
+      { "type": "Text", "props": { "text": "Nome *" } },
+      { "type": "Input", "id": "nome", "props": { "placeholder": "Ex.: Eletrônicos" },
+        "bind": { "value": "nome" }, "validation": { "required": true, "label": "Nome" },
+        "events": { "onEnter": "salvarCategoria" } },
+      { "type": "Button", "bind": { "text": "acao" }, "events": { "onClick": "salvarCategoria" } }
+    ]
+  }
+}
