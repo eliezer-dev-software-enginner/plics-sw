@@ -169,7 +169,7 @@ O [levantamento de configuração](docs/CONFIGURATION_AUDIT.md) identifica tamb�
 
 ## Interface declarativa
 
-A tela de acesso bloqueado é a primeira migração do ERP para `megalodonte-jsonc-ui`: `src/main/resources/views/acesso-bloqueado.view.jsonc` define a árvore, os estilos e o evento, enquanto `AcessoBloqueadoScreen` registra apenas a ação de suporte e controla a sessão. O teste da view valida o schema e o registro da ação. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
+As telas de acesso bloqueado, relato de erro e sugestão de melhoria usam `megalodonte-jsonc-ui`. Seus recursos em `src/main/resources/views/` definem a árvore, os componentes nativos, o estado e os eventos; as classes Java registram apenas ações de domínio e controlam as sessões. Os testes validam os recursos e o registro das ações. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
 
 ## Versão
 

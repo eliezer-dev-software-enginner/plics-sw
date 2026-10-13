@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "id": "sugerir_melhoria",
+  "states": {
+    "conteudo": {
+      "type": "string",
+      "initial": ""
+    }
+  },
+  "view": {
+    "type": "Column",
+    "props": {
+      "padding": 20,
+      "spacing": 16,
+      "fillWidth": true
+    },
+    "children": [
+      {
+        "type": "Text",
+        "props": {
+          "text": "Diga abaixo sua sugestão de melhoria ou de funcionalidade"
+        },
+        "style": {
+          "fontSize": 16,
+          "bold": true
+        }
+      },
+      {
+        "type": "TextArea",
+        "id": "conteudo",
+        "props": {
+          "placeholder": "Descreva sua ideia com o máximo de detalhes possível",
+          "height": 180
+        },
+        "bind": {
+          "value": "conteudo"
+        },
+        "validation": {
+          "maxLength": 300,
+          "label": "Diga abaixo sua sugestão de melhoria ou de funcionalidade"
+        }
+      },
+      {
+        "type": "Button",
+        "props": {
+          "text": "Enviar"
+        },
+        "events": {
+          "onClick": "enviar"
+        }
+      }
+    ]
+  }
+}

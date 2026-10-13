@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "id": "relatar_erro",
+  "states": {
+    "conteudo": {
+      "type": "string",
+      "initial": ""
+    }
+  },
+  "view": {
+    "type": "Column",
+    "props": {
+      "padding": 20,
+      "spacing": 16,
+      "fillWidth": true
+    },
+    "children": [
+      {
+        "type": "Text",
+        "props": {
+          "text": "Detalhes do erro"
+        },
+        "style": {
+          "fontSize": 16,
+          "bold": true
+        }
+      },
+      {
+        "type": "TextArea",
+        "id": "conteudo",
+        "props": {
+          "placeholder": "Descreva o que aconteceu e, se possível, como reproduzir o erro",
+          "height": 180
+        },
+        "bind": {
+          "value": "conteudo"
+        },
+        "validation": {
+          "maxLength": 300,
+          "label": "Detalhes do erro"
+        }
+      },
+      {
+        "type": "Button",
+        "props": {
+          "text": "Enviar"
+        },
+        "events": {
+          "onClick": "enviar"
+        }
+      }
+    ]
+  }
+}

@@ -2,32 +2,16 @@ package my_app.screens.feedbackScreen;
 
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.Card;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.layout_components.Column;
-import megalodonte.props.ColumnProps;
 import megalodonte.base.route.v2.ScreenContextInterface;
-import my_app.core.components.Components;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.RowProps;
 
-public class RelatarErroScreen implements ScreenComponent {
-    private final ScreenContextInterface ctx;
-    private final FeedbackViewModel vm;
+public final class RelatarErroScreen implements ScreenComponent {
+    private final FeedbackScreen screen;
 
-    public RelatarErroScreen(ScreenContextInterface ctx) {
-        this.ctx = ctx;
-        this.vm = new FeedbackViewModel();
+    public RelatarErroScreen(ScreenContextInterface context) {
+        screen = new FeedbackScreen(context, "/views/relatar-erro.view.jsonc");
     }
 
-    public Component render() {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(20))
-                        .c_child(new Row(new RowProps().centerHorizontally()))
-                        .c_child(Components.TextAreaColumn("Detalhes do erro", vm.content, "Descreva o que aconteceu e, se possível, como reproduzir o erro", 300))
-                        .c_child(new SpacerVertical(ThemeManager.theme().spacing().md()))
-                        .c_child(Components.ButtonCadastro(vm.btnText, () -> vm.send(() ->
-                                Components.ShowPopup(ctx, "Enviado com sucesso")))));
-    }
+    @Override public Component render() { return screen.render(); }
+
+    @Override public void onDestroy() { screen.onDestroy(); }
 }
