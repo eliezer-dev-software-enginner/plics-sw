@@ -14,6 +14,6 @@ jobs:
     with:
       project-directory: .
       artifact-name: plics-sw
-      dependencies: 'pack-utilities disgust'
+      dependencies: 'pack-utilities disgust jsonc-ui'
       release: true
       smoke-test: true

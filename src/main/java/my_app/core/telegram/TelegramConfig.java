@@ -1,17 +1,15 @@
 package my_app.core.telegram;
 
-import my_app.core.CryptoManager;
-
+/** Runtime-only notification credentials. They are never included in installers. */
 public record TelegramConfig(String botToken, String chatId) {
-    public static TelegramConfig fromEncrypted(String encryptedToken, String encryptedChatId) {
-        CryptoManager crypto = new CryptoManager();
-        try {
-            return new TelegramConfig(
-                    crypto.decrypt(encryptedToken),
-                    crypto.decrypt(encryptedChatId)
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao descriptografar config do Telegram", e);
-        }
+    public static TelegramConfig fromEnvironment() {
+        return new TelegramConfig(
+                nonBlank(System.getenv("PLICS_TELEGRAM_BOT_TOKEN")),
+                nonBlank(System.getenv("PLICS_TELEGRAM_CHAT_ID"))
+        );
+    }
+
+    private static String nonBlank(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 }

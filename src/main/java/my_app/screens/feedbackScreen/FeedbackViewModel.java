@@ -23,6 +23,11 @@ public class FeedbackViewModel {
     public void send(Runnable onSuccess) {
         if (isSending.get() || content.get() == null || content.get().trim().isEmpty()) return;
 
+        if (!TelegramNotifierFactory.isConfigured()) {
+            Components.ShowAlertError("O envio de feedback não está configurado nesta instalação.");
+            return;
+        }
+
         if (content.get().trim().length() > 300) {
             Components.ShowAlertError("Erro ao enviar, texto muito longo. Seu texto deve possuir no máximo 300 caracteres!");
             return;

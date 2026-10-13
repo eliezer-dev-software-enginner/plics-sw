@@ -42,10 +42,20 @@ public class Data {
     );
     public static final List<String> tiposPessoaList = List.of("Física", "Jurídica");
 
-    private static final String numberWhatsappSupport = "5532985066537";
+    private static final String numberWhatsappSupport = envOrDefault("PLICS_SUPPORT_WHATSAPP", "5532985066537");
     public static final String linkWhatsappSupport = "https://wa.me/"+numberWhatsappSupport;
 
-    public static final String linkWebsiteOfficial = "https://plics-sw-webpage.vercel.app/";
+    public static final String linkWebsiteOfficial = websiteBase();
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? fallback : value.trim();
+    }
+
+    private static String websiteBase() {
+        String value = envOrDefault("PLICS_WEBSITE_URL", "https://plics-sw-webpage.vercel.app/");
+        return value.endsWith("/") ? value : value + "/";
+    }
 
     public static String getNumberWhatsappSupportFormatted() {
         return FormatterPack.formatPhone(numberWhatsappSupport.replace("55",""));

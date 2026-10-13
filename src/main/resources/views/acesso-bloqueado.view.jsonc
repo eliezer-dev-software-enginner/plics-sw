@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "id": "acesso_bloqueado",
+  "states": {},
+  "view": {
+    "type": "Column",
+    "props": {
+      "alignment": "center",
+      "spacing": 15,
+      "padding": 30,
+      "fillWidth": true,
+      "fillHeight": true
+    },
+    "children": [
+      { "type": "Text", "props": { "text": "🔒" }, "style": { "fontSize": 54 } },
+      { "type": "Text", "props": { "text": "Acesso bloqueado" }, "style": { "fontSize": 18, "bold": true } },
+      { "type": "Text", "props": { "text": "Não foi possível confirmar o acesso ao aplicativo no momento." }, "style": { "fontSize": 14 } },
+      {
+        "type": "Button",
+        "props": { "text": "Suporte via WhatsApp" },
+        "style": { "bgColor": "#25D366", "textColor": "#000000" },
+        "events": { "onClick": "abrirSuporte" }
+      }
+    ]
+  }
+}

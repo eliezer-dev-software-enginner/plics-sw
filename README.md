@@ -110,7 +110,7 @@ python scripts/create-deb.py         # Linux
 python scripts/create-msi-store.py   # Windows, build específico pra Microsoft Store
 ```
 
-**Rodar em modo watch dog:
+**Rodar em modo watch dog:**
 ```bash
 pip install watchdog
 python dev.py
@@ -151,6 +151,25 @@ Manifest e metadados ficam em `flatpak/`. Pra **publicar de verdade** no Flathub
 (não só testar local), veja o passo a passo em [`flatpak/README.md`](flatpak/README.md)
 — tem um bloqueio importante ali (a fonte do manifest hoje não é reproduzível, só
 funciona pra build local) e as ressalvas sobre licença/permissões.
+
+## Configuração de execução
+
+Os valores de integração são lidos do ambiente **na máquina que executa o aplicativo**, não embutidos pelo workflow de release. Defina-os somente quando a integração correspondente for desejada:
+
+| Variável | Uso | Quando ausente |
+| --- | --- | --- |
+| `PLICS_TELEGRAM_BOT_TOKEN` e `PLICS_TELEGRAM_CHAT_ID` | Envio de notificações de suporte pelo Telegram | Envios desativados |
+| `PLICS_ACCESS_VERIFY_URL` e `PLICS_ACCESS_VERIFY_EXPECTED` | Verificação remota opcional de acesso | Verificação ignorada |
+| `PLICS_SUPPORT_WHATSAPP` | Número de suporte no link `wa.me` | Número público padrão |
+| `PLICS_WEBSITE_URL` | Base dos links do site oficial | Site público padrão |
+
+O aplicativo conserva o comportamento de envio automático de log e banco local ao Telegram **somente quando** as duas variáveis do Telegram são fornecidas. Administre esse recurso de acordo com a política de privacidade e a autorização dos usuários. Não coloque tokens em `packaging.toml`, no workflow, em argumentos de build ou em arquivos versionados. Credenciais que já estiveram em commits antigos devem ser substituídas no provedor; removê-las do código atual não apaga o histórico Git.
+
+O [levantamento de configuração](docs/CONFIGURATION_AUDIT.md) identifica também a lista de licenças offline e as credenciais administrativas iniciais ainda embutidas, com a migração necessária para não quebrar instalações existentes nem expor valores em instaladores.
+
+## Interface declarativa
+
+A tela de acesso bloqueado é a primeira migração do ERP para `megalodonte-jsonc-ui`: `src/main/resources/views/acesso-bloqueado.view.jsonc` define a árvore, os estilos e o evento, enquanto `AcessoBloqueadoScreen` registra apenas a ação de suporte e controla a sessão. O teste da view valida o schema e o registro da ação. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
 
 ## Versão
 
