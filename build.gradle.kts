@@ -62,6 +62,7 @@ dependencies {
     implementation("megalodonte:megalodonte-router:1.0.0-beta")
     implementation("megalodonte:megalodonte-theme:1.0.0-beta")
     implementation("megalodonte:megalodonte-jsonc-ui:0.1.0")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     //implementation("org.controlsfx:controlsfx:11.2.4-SNAPSHOT")
 

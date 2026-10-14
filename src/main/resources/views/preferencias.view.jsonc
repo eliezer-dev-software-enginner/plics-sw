@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "preferences",
+  "states": {
+    "yesNo": { "type": "string", "initial": "[\"Sim\",\"Não\"]" },
+    "credentialsEnabled": { "type": "string", "initial": "Não" },
+    "instagramPopup": { "type": "string", "initial": "Não" },
+    "printers": { "type": "string", "initial": "[\"N/D\"]" },
+    "printer": { "type": "string", "initial": "N/D" },
+    "login": { "type": "string", "initial": "" },
+    "password": { "type": "string", "initial": "" },
+    "showCredentials": { "type": "boolean", "initial": false },
+    "confirmSignOut": { "type": "boolean", "initial": false }
+  },
+  "view": {
+    "type": "Scroll", "children": [{
+      "type": "Column", "props": { "padding": 20, "spacing": 12, "fillWidth": true },
+      "children": [
+        { "type": "Text", "props": { "text": "Minhas preferências" }, "style": { "fontSize": 20, "bold": true } },
+        { "type": "Row", "props": { "spacing": 20, "fillWidth": true }, "children": [
+          { "type": "Column", "props": { "spacing": 6 }, "children": [
+            { "type": "Text", "props": { "text": "Habilitar credenciais" } },
+            { "type": "Select", "bind": { "items": "yesNo", "value": "credentialsEnabled" } }
+          ] },
+          { "type": "Column", "props": { "spacing": 6 }, "children": [
+            { "type": "Text", "props": { "text": "Exibir popup Instagram na abertura" } },
+            { "type": "Select", "bind": { "items": "yesNo", "value": "instagramPopup" } }
+          ] },
+          { "type": "Column", "props": { "spacing": 6 }, "children": [
+            { "type": "Text", "props": { "text": "Selecionar impressora" } },
+            { "type": "Select", "bind": { "items": "printers", "value": "printer" } }
+          ] }
+        ] },
+        { "type": "Column", "props": { "spacing": 8 }, "bind": { "visible": "showCredentials" }, "children": [
+          { "type": "Text", "props": { "text": "Escolha seu login e senha de acesso" }, "style": { "bold": true } },
+          { "type": "Text", "props": { "text": "Login" } },
+          { "type": "Input", "props": { "placeholder": "Ex: admin" }, "bind": { "value": "login" } },
+          { "type": "Text", "props": { "text": "Senha" } },
+          { "type": "PasswordInput", "props": { "placeholder": "Digite uma senha" }, "bind": { "value": "password" } }
+        ] },
+        { "type": "Button", "props": { "text": "Salvar preferências", "fillWidth": true }, "events": { "onClick": "save" } },
+        { "type": "Button", "props": { "text": "Encerrar sessão", "fillWidth": true }, "events": { "onClick": "askSignOut" } },
+        { "type": "Column", "props": { "spacing": 8 }, "bind": { "visible": "confirmSignOut" }, "children": [
+          { "type": "Text", "props": { "text": "Tem certeza que deseja sair? Seus dados serão mantidos." } },
+          { "type": "Row", "props": { "spacing": 8 }, "children": [
+            { "type": "Button", "props": { "text": "Cancelar" }, "events": { "onClick": "cancelSignOut" } },
+            { "type": "Button", "props": { "text": "Confirmar saída" }, "events": { "onClick": "signOut" } }
+          ] }
+        ] }
+      ]
+    }]
+  }
+}

@@ -1,63 +1,53 @@
 package my_app.screens.preferenciasScreen;
 
-import disgust.io.ButtonsPack;
-import disgust.io.Pack;
-import megalodonte.ComputedState;
+import com.google.gson.Gson;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.LineHorizontal;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.Text;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.ButtonVariant;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.props.TextProps;
 import megalodonte.base.route.v2.ScreenContextInterface;
-import megalodonte.v2.Show;
-import my_app.core.Data;
+import megalodonte.base.state.Subscription;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 import my_app.core.components.Components;
 
-public class PreferenciasScreen implements ScreenComponent {
+import java.sql.SQLException;
 
-    private final PreferenciasViewModel vm;
+/** Preferences layout and confirmation live in JSONC; persistence stays in the view model. */
+public final class PreferenciasScreen implements ScreenComponent {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(PreferenciasScreen.class, "/views/preferencias.view.jsonc");
+    private static final Gson JSON = new Gson();
+    private final PreferenciasViewModel viewModel;
+    private final UiSession session;
+    private final Subscription printerUpdates;
+    private final Subscription credentialVisibilityUpdates;
 
-    public PreferenciasScreen(ScreenContextInterface ctx) {
-        this.vm = new PreferenciasViewModel(ctx);
+    public PreferenciasScreen(ScreenContextInterface context) {
+        viewModel = new PreferenciasViewModel(context);
+        session = VIEW.open(new Actions()
+                .register("save", ignored -> viewModel.salvar())
+                .register("askSignOut", screen -> screen.states().state("confirmSignOut", Boolean.class).set(true))
+                .register("cancelSignOut", screen -> screen.states().state("confirmSignOut", Boolean.class).set(false))
+                .register("signOut", ignored -> {
+                    try { viewModel.signOut(); }
+                    catch (SQLException error) { Components.ShowAlertError(error.getMessage()); }
+                }));
+        session.bind("credentialsEnabled", viewModel.habilitarCredenciaisSelected, String.class)
+                .bind("instagramPopup", viewModel.habilitarPopupInstagramSelected, String.class)
+                .bind("printer", viewModel.comportsStateSelected, String.class)
+                .bind("login", viewModel.loginState, String.class)
+                .bind("password", viewModel.passwordState, String.class);
+        printerUpdates = viewModel.comportsState.observe(items -> session.states().string("printers").set(JSON.toJson(items)));
+        credentialVisibilityUpdates = viewModel.habilitarCredenciaisSelected.observe(value ->
+                session.states().state("showCredentials", Boolean.class).set("Sim".equals(value)));
     }
 
-    @Override
-    public void onMount() {
-        vm.load();
-    }
-
-    public Component render() {
-        var credentialsScreenIsVisible = ComputedState.of(
-                () -> vm.habilitarCredenciaisSelected.get().equals("Sim"),
-                vm.habilitarCredenciaisSelected
-        );
-
-        return new Column(new ColumnProps().paddingAll(20).spacingOf(ThemeManager.theme().spacing().sm())).children(
-                new Text("Minhas preferências", new TextProps().bold().fontSize(ThemeManager.theme().typography().subtitle())),
-                new Row(new RowProps().spacingOf(20)).children(
-                        Components.SelectColumn("Habilitar credenciais", Data.simNaoList, vm.habilitarCredenciaisSelected, it -> it),
-                        Components.SelectColumn("Exibir popup Instagram na abertura", Data.simNaoList, vm.habilitarPopupInstagramSelected, it -> it),
-                        Components.SelectColumn("Selecionar impressora", vm.comportsState, vm.comportsStateSelected, it -> it,false)
-                        ),
-                     Show.when(credentialsScreenIsVisible, () -> new Column().children(
-                        new Text("Escolha seu login e senha de acesso", new TextProps().bold()),
-                        new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                        Pack.InputColumn("Login", vm.loginState, "Ex: admin"),
-                        Pack.InputColumn("Senha", vm.passwordState, "Digite uma senha")
-                )),
-                ButtonsPack.ContainedButton("Salvar Preferências", ButtonVariant.PRIMARY, true, vm::salvar),
-                new LineHorizontal(),
-                ButtonsPack.OutlinedButton("Encerrar sessão", ButtonVariant.DANGER, true, () -> Components.ShowAlertAdvice(
-                        "Tem certeza que deseja sair? Não se preocupe seus dados serão mantidos ;)",
-                        vm::signOut
-                ))
-        );
+    @Override public Component render() { return session.render(); }
+    @Override public void onMount() { viewModel.load(); }
+    @Override public void onDestroy() {
+        printerUpdates.close();
+        credentialVisibilityUpdates.close();
+        session.close();
+        try { viewModel.onDestroy(); }
+        catch (Exception error) { throw new IllegalStateException("Could not close preferences", error); }
     }
 }
