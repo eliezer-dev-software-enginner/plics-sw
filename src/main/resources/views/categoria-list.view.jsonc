@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "id": "categoryList",
+  "states": {
+    "search": {
+      "type": "string",
+      "initial": ""
+    },
+    "rows": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "selected": {
+      "type": "string",
+      "initial": ""
+    },
+    "selectedItems": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "hasSelection": {
+      "type": "boolean",
+      "initial": false
+    },
+    "hasSingleSelection": {
+      "type": "boolean",
+      "initial": false
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 15,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Categorias"
+            },
+            "style": {
+              "fontSize": 20,
+              "bold": true
+            }
+          },
+          {
+            "type": "Input",
+            "props": {
+              "placeholder": "Pesquisar"
+            },
+            "bind": {
+              "value": "search"
+            }
+          },
+          {
+            "type": "Table",
+            "props": {
+              "columns": [
+                {
+                  "title": "ID",
+                  "field": "id"
+                },
+                {
+                  "title": "Nome",
+                  "field": "nome"
+                },
+                {
+                  "title": "Data de criação",
+                  "field": "dataCriacao"
+                }
+              ],
+              "height": 400,
+              "pageSize": 25,
+              "horizontalScroll": true,
+              "multipleSelection": true
+            },
+            "bind": {
+              "items": "rows",
+              "selected": "selected",
+              "selectedItems": "selectedItems"
+            },
+            "events": {
+              "onSelect": "select"
+            }
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Novo"
+                },
+                "events": {
+                  "onClick": "create"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Editar"
+                },
+                "events": {
+                  "onClick": "edit"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Excluir"
+                },
+                "events": {
+                  "onClick": "delete"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Clonar"
+                },
+                "events": {
+                  "onClick": "clone"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Exportar CSV"
+                },
+                "events": {
+                  "onClick": "exportCsv"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Exportar PDF"
+                },
+                "events": {
+                  "onClick": "exportPdf"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
