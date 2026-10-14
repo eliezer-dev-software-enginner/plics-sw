@@ -1,90 +1,39 @@
 package my_app.screens.empresaScreen;
 
-import disgust.io.ButtonsPack;
-import disgust.io.br.Pack;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.Card;
-import megalodonte.components.Scroll;
-import megalodonte.components.SpacerHorizontal;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.ButtonVariant;
-import megalodonte.props.ContainerProps;
-import megalodonte.props.ImageProps;
-import megalodonte.props.RowProps;
 import megalodonte.base.route.v2.ScreenContextInterface;
-import my_app.core.components.Components;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 
-public class CadastroEmpresaScreen implements ScreenComponent {
-    private final EmpresaViewModel vm;
+/** Company form layout is JSONC; loading and persistence remain in the view model. */
+public final class CadastroEmpresaScreen implements ScreenComponent {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(CadastroEmpresaScreen.class, "/views/empresa.view.jsonc");
+    private final EmpresaViewModel viewModel;
+    private final UiSession session;
 
-    public CadastroEmpresaScreen(ScreenContextInterface ctx) {
-       vm =  new EmpresaViewModel(ctx);
+    public CadastroEmpresaScreen(ScreenContextInterface context) {
+        viewModel = new EmpresaViewModel(context);
+        session = VIEW.open(new Actions()
+                .register("chooseLogo", ignored -> viewModel.handleUpdateLogoMarca())
+                .register("save", ignored -> viewModel.handleSave()));
+        session.bind("nome", viewModel.nome, String.class)
+                .bind("celular", viewModel.celular, String.class)
+                .display("logo", viewModel.logoMarca, String.class)
+                .bind("cep", viewModel.cep, String.class)
+                .bind("cidade", viewModel.cidade, String.class)
+                .bind("bairro", viewModel.bairro, String.class)
+                .bind("rua", viewModel.rua, String.class)
+                .bind("localPagamento", viewModel.localPagamento, String.class)
+                .bind("textoResponsabilidade", viewModel.textoResponsabilidade, String.class);
     }
 
-    public void onMount(){
-        vm.fetchData();
-    }
-
-    @Override
-    public void onDestroy() {
-        try {
-            vm.onDestroy();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Component render() {
-        return new Scroll(
-                new Container(new ContainerProps().paddingAll(5))
-                        .c_child(new SpacerVertical(10))
-                        .c_child(form())
-        );
-    }
-
-    Component form(){
-        return new Card(new Column()
-                .c_child(Components.FormSubtitle("Informações da empresa"))
-                .c_child(new SpacerVertical(ThemeManager.theme().spacing().md()))
-                .c_child(TopWithImage())
-                .c_child(new SpacerVertical(ThemeManager.theme().spacing().sm()))
-                .c_child(Components.FormSubtitle("Endereço"))
-                .c_child(new Row(new RowProps().bottomVertically().spacingOf(ThemeManager.theme().spacing().sm()))
-                        .children(
-                                Pack.InputColumnCep("Cep", vm.cep),
-                                disgust.io.Pack.InputColumn("Cidade", vm.cidade,"Ex: Paraiso"),
-                                disgust.io.Pack.InputColumn("Bairro", vm.bairro,"Ex: Bairro abc"),
-                                disgust.io.Pack.InputColumn("Rua", vm.rua,"Ex: rua das graças")
-                        )
-                )
-                .c_child(new SpacerVertical(ThemeManager.theme().spacing().sm()))
-                .c_child(Components.FormSubtitle("Dados de carnê"))
-                .c_child(new Row(new RowProps().bottomVertically().spacingOf(ThemeManager.theme().spacing().sm()))
-                        .r_child(
-                                disgust.io.Pack.InputColumn("Local de pagamento",  vm.localPagamento,"Ex: Pagável em qualquer banco ou lotérica"))
-                        .r_child(
-                                Components.TextAreaColumnWidthNoRestricted("Texto de responsabilidade do cedente",  vm.textoResponsabilidade,
-                                        "Ex: Após o vencimento cobrar multa...",200))
-                )
-                .c_child(new SpacerVertical(20))
-                .c_child(ButtonsPack.ContainedButton("Salvar", ButtonVariant.PRIMARY,true,vm::handleSave)));
-    }
-
-    Row TopWithImage() {
-        var left = new Row(new RowProps().bottomVertically().spacingOf(ThemeManager.theme().spacing().sm()))
-                .children(
-                        disgust.io.Pack.InputColumn("Nome *", vm.nome, "Ex: Empresa ABC"),
-                        Pack.InputColumnPhone("Telefone/Celular",  vm.celular));
-
-        return new Row()
-                .r_child(left)
-                .r_child(new SpacerHorizontal(ThemeManager.theme().spacing().sm()))
-                .r_child(Components.ImageSelector("Mudar logomarca",  vm.logoMarca,
-                        new ImageProps().size(100),  vm::handleUpdateLogoMarca));
+    @Override public Component render() { return session.render(); }
+    @Override public void onMount() { viewModel.fetchData(); }
+    @Override public void onDestroy() {
+        session.close();
+        try { viewModel.onDestroy(); }
+        catch (Exception error) { throw new IllegalStateException("Could not close company form", error); }
     }
 }

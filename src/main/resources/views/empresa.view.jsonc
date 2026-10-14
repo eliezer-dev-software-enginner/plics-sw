@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "id": "companySettings",
+  "states": {
+    "nome": {
+      "type": "string",
+      "initial": ""
+    },
+    "celular": {
+      "type": "string",
+      "initial": ""
+    },
+    "logo": {
+      "type": "string",
+      "initial": ""
+    },
+    "cep": {
+      "type": "string",
+      "initial": ""
+    },
+    "cidade": {
+      "type": "string",
+      "initial": ""
+    },
+    "bairro": {
+      "type": "string",
+      "initial": ""
+    },
+    "rua": {
+      "type": "string",
+      "initial": ""
+    },
+    "localPagamento": {
+      "type": "string",
+      "initial": ""
+    },
+    "textoResponsabilidade": {
+      "type": "string",
+      "initial": ""
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 16,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Informações da empresa"
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 18
+            }
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 12
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Nome *"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: Empresa ABC",
+                      "width": 200
+                    },
+                    "bind": {
+                      "value": "nome"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Telefone/Celular"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "",
+                      "width": 200
+                    },
+                    "bind": {
+                      "value": "celular"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Logomarca"
+                }
+              },
+              {
+                "type": "Image",
+                "props": {
+                  "width": 100,
+                  "height": 100
+                },
+                "bind": {
+                  "source": "logo"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Mudar logomarca"
+                },
+                "events": {
+                  "onClick": "chooseLogo"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Endereço"
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 18
+            }
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 12
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "CEP"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "",
+                      "width": 200
+                    },
+                    "bind": {
+                      "value": "cep"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Cidade"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: Paraíso",
+                      "width": 200
+                    },
+                    "bind": {
+                      "value": "cidade"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 12
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Bairro"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: Bairro ABC",
+                      "width": 200
+                    },
+                    "bind": {
+                      "value": "bairro"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Rua"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: Rua das Graças",
+                      "width": 200
+                    },
+                    "bind": {
+                      "value": "rua"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Dados de carnê"
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 18
+            }
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Local de pagamento"
+                }
+              },
+              {
+                "type": "Input",
+                "props": {
+                  "placeholder": "Ex: Pagável em qualquer banco ou lotérica",
+                  "width": 200
+                },
+                "bind": {
+                  "value": "localPagamento"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Texto de responsabilidade do cedente"
+                }
+              },
+              {
+                "type": "TextArea",
+                "props": {
+                  "placeholder": "Ex: Após o vencimento cobrar multa...",
+                  "width": 200
+                },
+                "bind": {
+                  "value": "textoResponsabilidade"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Salvar"
+            },
+            "events": {
+              "onClick": "save"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
