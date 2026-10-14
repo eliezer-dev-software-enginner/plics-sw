@@ -1,0 +1,282 @@
+{
+  "version": 1,
+  "id": "privacyPolicy",
+  "states": {
+    "site": {
+      "type": "string",
+      "initial": ""
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 12,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Política de Privacidade – Plics SW",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 20
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Última atualização: 25 de setembro de 2026",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "A sua privacidade é importante para nós. Esta Política de Privacidade explica como o Plics SW coleta, utiliza, armazena e protege as informações dos usuários.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Ao utilizar o aplicativo, você concorda com os termos desta Política.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "1. Sobre o Plics SW",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "O Plics SW é um sistema de gestão empresarial (ERP) desenvolvido para auxiliar pequenos e médios negócios no gerenciamento de clientes, fornecedores, produtos, estoque, vendas, financeiro e demais rotinas administrativas.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "2. Informações coletadas",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "O Plics SW foi desenvolvido para funcionar principalmente de forma local (offline). Os dados cadastrados pelo usuário permanecem armazenados no computador onde o aplicativo está instalado.\n\nDependendo dos recursos utilizados, o aplicativo poderá coletar as seguintes informações:\n\nNome do usuário;\nEndereço de e-mail;\nInformações da licença do software;\nIdentificador do dispositivo (endereço MAC) para validação da licença e identificação técnica nas notificações de suporte;\nInformações técnicas do aplicativo (versão instalada, sistema operacional e registros de erros);\nDados necessários para atualização do aplicativo.\n\nO Plics SW não coleta automaticamente informações financeiras, bancárias ou dados pessoais além daqueles necessários para o funcionamento do software.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "3. Dados cadastrados pelo usuário",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "As informações inseridas pelo usuário, como:\n\nClientes;\nFornecedores;\nProdutos;\nEstoque;\nVendas;\nOrdens de serviço;\nInformações financeiras;\nDemais registros criados dentro do sistema;\n\nsão armazenadas localmente no computador do usuário e pertencem exclusivamente ao próprio usuário.\n\nEsses dados não são enviados aos nossos servidores, exceto quando alguma funcionalidade específica exigir essa comunicação e houver autorização do usuário.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "4. Como utilizamos as informações",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "As informações coletadas podem ser utilizadas para:\n\nvalidar a licença do software;\ndisponibilizar atualizações;\nmelhorar a estabilidade do aplicativo;\ncorrigir erros;\noferecer suporte técnico;\nprevenir uso indevido ou fraude.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "5. Compartilhamento de informações",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "As informações técnicas podem ser transmitidas aos serviços usados pelo Plics SW para:\n\nvalidar a licença do software;\nenviar registros de erros e arquivos automáticos de diagnóstico ao canal de suporte no Telegram;\nidentificar o dispositivo de origem dessas notificações por seu endereço MAC;\noferecer suporte técnico e melhorar a estabilidade do aplicativo.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "6. Segurança",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Adotamos medidas técnicas e organizacionais para proteger as informações contra acesso não autorizado, alteração, divulgação ou destruição.\n\nApesar dos nossos esforços, nenhum sistema é totalmente seguro. Recomendamos que o usuário mantenha cópias de segurança (backups) de seus dados regularmente.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "7. Atualizações do aplicativo",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "O Plics SW poderá verificar a existência de novas versões pela internet para oferecer atualizações automáticas ou informar a disponibilidade de uma nova versão.\n\nDurante esse processo poderão ser transmitidas apenas as informações necessárias para identificar a versão instalada e realizar a atualização.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "8. Serviços de terceiros",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "O aplicativo poderá utilizar serviços de terceiros para funcionalidades específicas, como:\n\nverificação de licença;\ndistribuição de atualizações;\narmazenamento de registros de erros;\nsuporte ao usuário.\n\nCada serviço possui sua própria política de privacidade.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "9. Direitos do usuário",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "O usuário poderá, a qualquer momento:\n\nsolicitar informações sobre os dados eventualmente armazenados;\nsolicitar correções;\nsolicitar exclusão de informações que estejam sob responsabilidade do desenvolvedor, quando aplicável;\nentrar em contato para esclarecimentos sobre esta Política.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "10. Alterações nesta Política",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Esta Política poderá ser atualizada periodicamente.\n\nSempre que houver alterações relevantes, uma nova versão será disponibilizada juntamente com a data de atualização.",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "11. Contato",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Caso tenha dúvidas sobre esta Política de Privacidade, entre em contato:\n\nDesenvolvedor: Eliezer Dev\n\nE-mail: eliezerassuncaocustodio@hotmail.com\n\nSite: ",
+              "wrapWidth": 900
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "wrapWidth": 900
+            },
+            "bind": {
+              "text": "site"
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "12. Legislação aplicável",
+              "wrapWidth": 900
+            },
+            "style": {
+              "bold": true,
+              "fontSize": 16
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Esta Política é regida pelas leis da República Federativa do Brasil, especialmente pela Lei Geral de Proteção de Dados (Lei nº 13.709/2018 – LGPD), sem prejuízo das normas aplicáveis da Microsoft Store e demais legislações eventualmente incidentes.\n\nAo utilizar o Plics SW, o usuário declara ter lido e concordado com esta Política de Privacidade.",
+              "wrapWidth": 900
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
