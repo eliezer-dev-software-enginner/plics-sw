@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "id": "spreadsheetImport",
+  "states": {
+    "status": { "type": "string", "initial": "" }
+  },
+  "view": {
+    "type": "Column",
+    "props": { "padding": 24, "spacing": 16, "fillWidth": true, "fillHeight": true },
+    "children": [
+      { "type": "Text", "props": { "text": "Carregar planilha automaticamente para o sistema" }, "style": { "bold": true, "fontSize": 20 } },
+      { "type": "Button", "props": { "text": "Carregar planilha" }, "events": { "onClick": "import" } },
+      { "type": "Text", "bind": { "text": "status" } }
+    ]
+  }
+}

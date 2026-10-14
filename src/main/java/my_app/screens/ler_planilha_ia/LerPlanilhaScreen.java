@@ -1,16 +1,13 @@
 package my_app.screens.ler_planilha_ia;
 
-import javafx.stage.FileChooser;
 import megalodonte.base.UI;
-import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.state.State;
-import megalodonte.components.Button;
-import megalodonte.components.Text;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
-import megalodonte.props.ColumnProps;
+import megalodonte.components.FilePicker;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.db.models.CategoriaModel;
 import my_app.core.db.models.FornecedorModel;
@@ -30,9 +27,11 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class LerPlanilhaScreen implements ScreenComponent {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(LerPlanilhaScreen.class, "/views/ler-planilha.view.jsonc");
     private static final Logger log = LoggerFactory.getLogger(LerPlanilhaScreen.class);
 
     private final ScreenContextInterface screenContext;
+    private final UiSession session;
     private final FornecedorService fornecedorService;
     private final ProdutoService produtoService;
     private final CategoriaService categoriaService;
@@ -44,6 +43,8 @@ public class LerPlanilhaScreen implements ScreenComponent {
         this.fornecedorService = createFornecedorService();
         this.produtoService = createProdutoService();
         categoriaService = createCategoriaService();
+        session = VIEW.open(new Actions().register("import", ignored -> importarPlanilha()));
+        session.display("status", status, String.class);
     }
 
     @Override
@@ -57,76 +58,41 @@ public class LerPlanilhaScreen implements ScreenComponent {
         }
     }
 
-    @Override
-    public Component render() {
-        var stage = screenContext.selfStage();
+    @Override public Component render() { return session.render(); }
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Escolha a planilha");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("planilha",
-                "*.xlsx", "*.excel"));
+    @Override public void onDestroy() { session.close(); }
 
-        RunnableThrowing handleClick = ()->{
-            var file = fileChooser.showOpenDialog(stage);
+    private void importarPlanilha() {
+        var selected = FilePicker.chooseFile(screenContext.selfStage(), "Escolha a planilha", "Planilhas", java.util.List.of("*.xlsx", "*.xls"));
+        if (selected.isEmpty()) return;
+        var file = java.nio.file.Path.of(selected.get());
+        Components.ShowPopup(screenContext, "Planilha selecionada");
+        try {
+            var items = new PlanilhaFornecedorReader().ler(file);
+            for (PlanilhaFornecedorReader.ItemFornecedor row : items) {
+                FornecedorModel fornecedorModel = new FornecedorModel();
+                fornecedorModel.setNome(row.fornecedor());
+                fornecedorModel.setDataCriacao(LocalDateTime.now());
+                fornecedorModel = fornecedorService.salvar(fornecedorModel);
 
-            if (file != null) {
-                IO.print("caminho: " + file.toPath().toUri());
-
-                Components.ShowPopup(screenContext, "Planilha selecionada");
-
-                try{
-                    var items = new PlanilhaFornecedorReader().ler(file.toPath());
-                    //salvar fornecedores
-                    for (PlanilhaFornecedorReader.ItemFornecedor row : items) {
-                        String fornecedorNome = row.fornecedor();
-                        FornecedorModel fornecedorModel = new FornecedorModel();
-                        fornecedorModel.setNome(fornecedorNome);
-                        fornecedorModel.setDataCriacao(LocalDateTime.now());
-
-                        try{
-                          fornecedorModel = fornecedorService.salvar(fornecedorModel);
-                        }catch (Exception e){
-                            throw new RuntimeException("Erro ao salvar fornecedor: " + e.getMessage());
-                        }
-                        //salvar produtos referenciando o fornecedor
-                        ProdutoModel produtoModel = new ProdutoModel();
-                        produtoModel.setCodigoBarras(Utils.gerarCodigoBarrasEAN13());
-                        produtoModel.setUnidade(Data.unidadesDeMedidaList.getFirst());
-                        produtoModel.setTotalLiquido(row.venda().subtract(row.custo()));
-                        produtoModel.setCategoriaId(categoria.get().getId());
-
-                        produtoModel.setDescricao(row.produto());
-
-                        produtoModel.setEstoque(new BigDecimal(row.quantidade()));
-                        produtoModel.setFornecedorId(fornecedorModel.getId());
-                        produtoModel.setPrecoCompra(row.custo());
-                        produtoModel.setPrecoVenda(row.venda());
-                        produtoModel.setDataCriacao(LocalDateTime.now());
-
-                        try {
-                            produtoService.salvar(produtoModel);
-                        } catch (Exception e) {
-                            throw new RuntimeException("Erro ao salvar produto: " + e.getMessage());
-                        }
-                    }
-                    UI.runOnUi(()->Components.ShowPopupWithButton(screenContext,"Dados copiados com sucesso","Fechar tela", stage::close));
-
-                }catch (Exception e){
-                    log.error("Erro ao importar planilha de fornecedor", e);
-                    UI.runOnUi(()-> Components.ShowAlertError(e.getMessage()));
-                }
+                ProdutoModel produtoModel = new ProdutoModel();
+                produtoModel.setCodigoBarras(Utils.gerarCodigoBarrasEAN13());
+                produtoModel.setUnidade(Data.unidadesDeMedidaList.getFirst());
+                produtoModel.setTotalLiquido(row.venda().subtract(row.custo()));
+                produtoModel.setCategoriaId(categoria.get().getId());
+                produtoModel.setDescricao(row.produto());
+                produtoModel.setEstoque(new BigDecimal(row.quantidade()));
+                produtoModel.setFornecedorId(fornecedorModel.getId());
+                produtoModel.setPrecoCompra(row.custo());
+                produtoModel.setPrecoVenda(row.venda());
+                produtoModel.setDataCriacao(LocalDateTime.now());
+                produtoService.salvar(produtoModel);
             }
-        };
-
-        return new Container()
-                .children(
-                      new Column(new ColumnProps().fillHeight().centerVertically().centerHorizontally().paddingTop(90))
-                              .children(
-                                      Components.FormTitle("Carregar planilha automaticamente para o sistema"),
-                                      new Button("Carregar planilha").onClick(handleClick),
-                                      new Text(status)
-                              )
-                );
+            UI.runOnUi(() -> Components.ShowPopupWithButton(screenContext, "Dados copiados com sucesso", "Fechar tela", screenContext.selfStage()::close));
+        } catch (Exception error) {
+            log.error("Erro ao importar planilha de fornecedor", error);
+            UI.runOnUi(() -> Components.ShowAlertError(error.getMessage()));
+        }
     }
 
     private static FornecedorService createFornecedorService() {
