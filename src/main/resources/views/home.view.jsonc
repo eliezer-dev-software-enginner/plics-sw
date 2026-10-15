@@ -1,0 +1,490 @@
+{
+  "version": 1,
+  "id": "home",
+  "states": {
+    "receitas": {
+      "type": "string",
+      "initial": "R$ 0,00"
+    },
+    "despesas": {
+      "type": "string",
+      "initial": "R$ 0,00"
+    },
+    "lucroLiquido": {
+      "type": "string",
+      "initial": "R$ 0,00"
+    },
+    "mesAtual": {
+      "type": "string",
+      "initial": ""
+    },
+    "vendasHoje": {
+      "type": "string",
+      "initial": ""
+    },
+    "showPromo": {
+      "type": "boolean",
+      "initial": false
+    },
+    "canCheckUpdates": {
+      "type": "boolean",
+      "initial": true
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Container",
+        "props": {
+          "bgImage": "/assets/wallpapers/shapelined-_JBKdviweXI-unsplash.jpg",
+          "fillHeight": true
+        },
+        "children": [
+          {
+            "type": "Column",
+            "props": {
+              "padding": 20,
+              "spacing": 16,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Plics SW"
+                },
+                "style": {
+                  "bold": true
+                }
+              },
+              {
+                "type": "Text",
+                "bind": {
+                  "text": "mesAtual"
+                }
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 16,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Container",
+                    "props": {
+                      "padding": 14,
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "Column",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Receitas do mês"
+                            },
+                            "style": {
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "receitas"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Container",
+                    "props": {
+                      "padding": 14,
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "Column",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Despesas do mês"
+                            },
+                            "style": {
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "despesas"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Container",
+                    "props": {
+                      "padding": 14,
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "Column",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Lucro líquido"
+                            },
+                            "style": {
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "lucroLiquido"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "Text",
+                "bind": {
+                  "text": "vendasHoje"
+                }
+              },
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Acesso rápido"
+                },
+                "style": {
+                  "bold": true
+                }
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 10,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Venda",
+                      "fillWidth": true,
+                      "iconSource": "/assets/venda.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "sales"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Produtos",
+                      "fillWidth": true,
+                      "iconSource": "/assets/produtos.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "products"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Clientes",
+                      "fillWidth": true,
+                      "iconSource": "/assets/clientes.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "customers"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Contas a receber",
+                      "fillWidth": true,
+                      "iconSource": "/assets/contas_a_receber.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "receivables"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 10,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "PDV",
+                      "fillWidth": true,
+                      "iconSource": "/assets/pdv.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "pos"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Categorias",
+                      "fillWidth": true,
+                      "iconSource": "/assets/categoria.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "categories"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Fornecedores",
+                      "fillWidth": true,
+                      "iconSource": "/assets/fornecedores.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "suppliers"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Histórico do caixa",
+                      "fillWidth": true,
+                      "iconSource": "/assets/abertura.png",
+                      "iconSize": 24
+                    },
+                    "events": {
+                      "onClick": "orders"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Gerencial e suporte"
+                },
+                "style": {
+                  "bold": true
+                }
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 10,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Empresa",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "company"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Relatórios",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "reports"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Preferências",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "preferences"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Sugerir melhoria",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "feedback"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 10,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Novidades",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "updates"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Logs",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "logs"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Termos de uso",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "terms"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Buscar atualização",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "checkUpdates"
+                    },
+                    "bind": {
+                      "visible": "canCheckUpdates"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 12,
+                  "fillWidth": true
+                },
+                "bind": {
+                  "visible": "showPromo"
+                },
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 10
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Impulsione seu Instagram!"
+                        },
+                        "style": {
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Conheça os pacotes de divulgação."
+                        }
+                      },
+                      {
+                        "type": "Button",
+                        "props": {
+                          "text": "Comprar agora",
+                          "fillWidth": true
+                        },
+                        "events": {
+                          "onClick": "buyInstagram"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 10
+                },
+                "children": [
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Canal de vídeos",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "videos"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Serviços para Instagram",
+                      "fillWidth": true
+                    },
+                    "events": {
+                      "onClick": "instagram"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

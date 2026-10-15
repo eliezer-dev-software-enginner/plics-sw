@@ -1,192 +1,61 @@
 package my_app.screens.homeScreen;
 
-import javafx.util.Duration;
 import megalodonte.base.Redirect;
-import megalodonte.base.UI;
-import megalodonte.base.state.State;
-import megalodonte.base.Animations;
 import megalodonte.base.components.Component;
-import megalodonte.base.components.Ref;
 import megalodonte.base.components.ScreenComponent;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.*;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.FlowRow;
-import megalodonte.components.layout_components.Row;
-import megalodonte.components.layout_components.Stack;
-import megalodonte.ForEachState;
-import megalodonte.props.*;
 import megalodonte.base.route.v2.ScreenContextInterface;
-import megalodonte.v2.Show;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 import my_app.Main;
 import my_app.core.AppRoutes;
 import my_app.core.Data;
-import my_app.core.components.Components;
-import org.kordamp.ikonli.Ikon;
-import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
-import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
-
-public class HomeScreen implements ScreenComponent {
-
+/** Home layout, navigation and promotion are declared in JSONC. */
+public final class HomeScreen implements ScreenComponent {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(HomeScreen.class, "/views/home.view.jsonc");
     private final HomeScreenViewModel viewModel;
-
-    private final ScreenContextInterface ctx;
-
-    private final Ref<Image> bannerRef = new Ref<>();
+    private final UiSession session;
 
     public HomeScreen(ScreenContextInterface ctx) {
-        this.ctx = ctx;
-        this.viewModel = new HomeScreenViewModel(ctx);
+        viewModel = new HomeScreenViewModel(ctx);
+        session = VIEW.open(new Actions()
+                .register("sales", ignored -> open(ctx, AppRoutes.Screens.VENDAS))
+                .register("products", ignored -> open(ctx, AppRoutes.Screens.PRODUTOS))
+                .register("customers", ignored -> open(ctx, AppRoutes.Screens.CLIENTES))
+                .register("receivables", ignored -> open(ctx, AppRoutes.Screens.COMPRAS_A_RECEBER))
+                .register("pos", ignored -> open(ctx, AppRoutes.Screens.PDV))
+                .register("categories", ignored -> open(ctx, AppRoutes.Screens.CATEGORIAS))
+                .register("suppliers", ignored -> open(ctx, AppRoutes.Screens.FORNECEDORES))
+                .register("orders", ignored -> open(ctx, AppRoutes.Screens.PEDIDOS))
+                .register("company", ignored -> open(ctx, AppRoutes.Screens.EMPRESA))
+                .register("reports", ignored -> open(ctx, AppRoutes.Screens.RELATORIOS))
+                .register("preferences", ignored -> open(ctx, AppRoutes.Screens.PREFERENCIAS))
+                .register("feedback", ignored -> open(ctx, AppRoutes.Screens.SUGERIR_MELHORIA))
+                .register("updates", ignored -> open(ctx, AppRoutes.Screens.INFO_UPDATE))
+                .register("logs", ignored -> open(ctx, AppRoutes.Screens.LOGS))
+                .register("terms", ignored -> open(ctx, AppRoutes.Screens.TERMOS_DE_USO))
+                .register("checkUpdates", ignored -> viewModel.verificarAtualizacao())
+                .register("videos", ignored -> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK"))
+                .register("instagram", ignored -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram"))
+                .register("buyInstagram", ignored -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram")));
+        session.display("receitas", viewModel.receitas, String.class);
+        session.display("despesas", viewModel.despesas, String.class);
+        session.display("lucroLiquido", viewModel.lucroLiquido, String.class);
+        session.display("mesAtual", viewModel.mesAtual, String.class);
+        session.display("vendasHoje", viewModel.vendasHoje, String.class);
+        session.display("showPromo", viewModel.mostrarPromoInstagram, Boolean.class);
+        session.states().set("canCheckUpdates", !Main.isMicrosoftStore);
     }
 
-    private void buscarAtualizacao() {
-        viewModel.verificarAtualizacao();
+    private static void open(ScreenContextInterface ctx, AppRoutes.Screens screen) {
+        ctx.spawnWindow(screen.name(), ignored -> {});
     }
 
-    @Override
-    public void onMount() {
-        //buscarAtualizacao();
-        viewModel.calcularFinanceiroMesAtual();
-
-        UI.runOnUi(() -> {
-            var anim = Animations.pulse(bannerRef.current(), 4,Duration.millis(600) ,Duration.seconds(1));
-            if (anim != null) anim.play();
-        });
-    }
-
-    public Component render (){
-        var rowProps = new RowProps().spacingOf(10);
-        var homeContent = new Container(new ContainerProps()
-                .paddingAll(0)
-                .fillHeight()
-                .bgImage("/assets/wallpapers/shapelined-_JBKdviweXI-unsplash.jpg"))
-                .children(
-                menuBar(),
-                        Components.ScrollPaneDefault(
-                                new Container(new ContainerProps().paddingAll(10))
-                                        .children(
-                                                new Row(rowProps).children(
-                                                        new Column().children(
-                                                                financeCard("Receitas", AntDesignIconsOutlined.RISE, viewModel.receitas),
-                                                                financeCard("Despesas", AntDesignIconsOutlined.FALL, viewModel.despesas),
-                                                                financeCard("Lucro líquido", AntDesignIconsOutlined.FUND, viewModel.lucroLiquido),
-                                                                new SpacerVertical(20),
-                                                                new Clickable(
-                                                                        new Image("assets/banners/banner_convite_playlist_ytb.png",
-                                                                                new ImageProps().width(200).height(90))
-                                                                                .ref(bannerRef),
-                                                                        ()-> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK")
-                                                                ),
-                                                                new SpacerVertical(20),
-                                                                new Clickable(
-                                                                        new Image("assets/banners/instagram-comprar-inscritos.png",
-                                                                                new ImageProps().size(180))
-                                                                                .ref(bannerRef)
-                                                                ).onClick(()-> Redirect.to(Data.linkWebsiteOfficial+"comprar-inscritos-instagram"))
-                                                        ),
-                                                        centerContent()
-                                                )
-                                        )
-                        )
-
-
-        );
-
-        // Modal chamativo, exibido alguns milissegundos depois da tela abrir (ver
-        // HomeScreenViewModel.onInit) — precisa ficar POR CIMA do resto da tela na
-        // mesma janela, por isso o Stack (Modal por si só não empilha nada sozinho).
-        return new Stack().children(
-                homeContent,
-                new Modal(viewModel.mostrarPromoInstagram, promoInstagramContent())
-        );
-    }
-
-    private Component promoInstagramContent() {
-        return new Column(new ColumnProps().centerHorizontally().paddingAll(20).spacingOf(12))
-                .c_child(new Image("assets/banners/instagram-comprar-inscritos.png", new ImageProps().width(260).height(210)))
-                .c_child(new Text("Impulsione seu Instagram!", new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold()))
-                .c_child(new Text("Ganhe mais seguidores e alcance com pacotes a partir de poucos reais.",
-                        new TextProps().fontSize(ThemeManager.theme().typography().small())))
-                .c_child(new SpacerVertical(6))
-                .c_child(new Button("Comprar agora",
-                                new ButtonProps().fillWidth().height(35).bgColor("#10b981").textColor("white"))
-                        .onClick(() -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram")));
-    }
-
-    private Column centerContent() {
-        var cardsState = State.of(cardItemList);
-        ForEachState<CardItem, Component> cardsForEach = ForEachState.of(cardsState, this::CardColumn);
-
-        return new Column(new ColumnProps().spacingOf(10).fillWidth()).children(
-                new FlowRow(new FlowRowProps().fillWidth().spacingOf(10))
-                        .withTransition(Animations::riseIn)
-                        .items(cardsForEach)
-                        .children(saudacaoComponent())
-        );
-    }
-
-    public Component saudacaoComponent(){
-        return new Column().children(
-                Show.when(viewModel.gifVisible, ()->  new Image(viewModel.currentGif, new ImageProps().size(90)))
-                        .withTransition(Animations::fadeSlide),
-                new Text(viewModel.vendasHoje, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold())
-        );
-    }
-
-    private Component financeCard(String title, Ikon ikon, State<String> valueState){
-        return new Card(new Column(new ColumnProps().centerHorizontally().paddingAll(20))
-                        .children(
-                                Component.CreateFromJavaFxNode(FontIcon.of(ikon)),
-                                new Text(title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()),
-                                new Text("do mês",  new TextProps().fontSize(ThemeManager.theme().typography().small())),
-                                new Text(valueState, new TextProps().fontSize(ThemeManager.theme().typography().subtitle()).bold())
-                        ),
-                new CardProps().paddingAll(0).height(100).borderRadius(20).width(170)
-        );
-    }
-
-    private Component menuBar(){
-        return new MenuBar()
-                .menu(new Menu("Preferências").item("Abrir tela", ()-> ctx.spawnWindow(AppRoutes.Screens.PREFERENCIAS.name(),e->{})))
-                .menu(new Menu("Gerencial")
-                        .item("Empresa", ()-> ctx.spawnWindow(AppRoutes.Screens.EMPRESA.name(),e->{}))
-                        .item("Relatórios", ()-> ctx.spawnWindow(AppRoutes.Screens.RELATORIOS.name(),e->{}))
-                )
-                .menu(new Menu("Suporte")
-                        .item("Sugerir melhoria/funcionalidade", ()-> ctx.spawnWindow(AppRoutes.Screens.SUGERIR_MELHORIA.name(),e->{}))
-                        .item("Novidades dessa atualização", ()-> ctx.spawnWindow(AppRoutes.Screens.INFO_UPDATE.name(),e->{}))
-                        .item("Ver logs da aplicação", ()-> ctx.spawnWindow(AppRoutes.Screens.LOGS.name(),e->{}))
-                        .itemIf(!Main.isMicrosoftStore, "Buscar atualização", this::buscarAtualizacao)
-                        .item("Termos de uso", ()-> ctx.spawnWindow(AppRoutes.Screens.TERMOS_DE_USO.name(),e->{}))
-                );
-    }
-
-
-    //TODO: HISTÓRICO DE CAICXA, COMPRAS DE MERCADORIA E CONTAS A PAGAR NÃO APARECEM
-    record CardItem(String img, String title, String desc, String destination){}
-    final List<CardItem> cardItemList = List.of(
-            new CardItem("/assets/venda.png", "Venda","Tela de vendas manuais",AppRoutes.Screens.VENDAS.name()),
-            new CardItem("/assets/produtos.png", "Produtos","Gerencie seus produtos",AppRoutes.Screens.PRODUTOS.name()),
-            new CardItem("/assets/clientes.png", "Clientes","Gerencie seus clientes",AppRoutes.Screens.CLIENTES.name()),
-            new CardItem("/assets/contas_a_receber.png", "Contas a receber","Tela de contas a receber",AppRoutes.Screens.COMPRAS_A_RECEBER.name()),
-            new CardItem("/assets/pdv.png", "PDV","Abrir caixa",AppRoutes.Screens.PDV.name()),
-            new CardItem("/assets/categoria.png", "Categorias","Tela de categorias",AppRoutes.Screens.CATEGORIAS.name()),
-            new CardItem("/assets/fornecedores.png", "Fornecedores","Tela de fornecedores",AppRoutes.Screens.FORNECEDORES.name()),
-            new CardItem("/assets/abertura.png", "Histórico do caixa","Histórico do caixa",AppRoutes.Screens.PEDIDOS.name())
-           // new CardItem("/assets/relatorio.png", "Ordem de serviço (F5)","Tela de vendas",null)
-    );
-    Component CardColumn(CardItem cardItem){
-       return new Clickable(
-               new Card(
-                new Column(new ColumnProps().centerHorizontally().paddingAll(20))
-                        .c_child(new Image(cardItem.img, new ImageProps().size(60)))
-                        .c_child(new Text(cardItem.title, new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
-                        .c_child(new Text(cardItem.desc,  new TextProps().fontSize(ThemeManager.theme().typography().small()))),
-                       new CardProps().paddingAll(0).height(170).width(230).borderRadius(20)),
-               ()-> ctx.spawnWindow(cardItem.destination,e->{})
-       );
+    @Override public Component render() { return session.render(); }
+    @Override public void onDestroy() {
+        session.close();
+        try { viewModel.onDestroy(); }
+        catch (Exception error) { throw new IllegalStateException("Could not close home services", error); }
     }
 }
