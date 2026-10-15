@@ -37,45 +37,96 @@
       {
         "type": "Container",
         "props": {
-          "bgImage": "/assets/wallpapers/shapelined-_JBKdviweXI-unsplash.jpg",
-          "fillHeight": true
+          "bgColor": "#f3f7fb",
+          "fillHeight": true,
+          "fillWidth": true
         },
         "children": [
           {
             "type": "Column",
             "props": {
-              "padding": 20,
-              "spacing": 16,
-              "fillWidth": true
+              "padding": 24,
+              "spacing": 18,
+              "fillWidth": true,
+              "bgColor": "#f3f7fb"
             },
             "children": [
               {
-                "type": "Text",
+                "type": "Container",
                 "props": {
-                  "text": "Plics SW"
+                  "padding": 24,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
                 },
-                "style": {
-                  "bold": true
-                }
-              },
-              {
-                "type": "Text",
-                "bind": {
-                  "text": "mesAtual"
-                }
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 12,
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "PAINEL DE CONTROLE"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#167a80",
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Bem-vindo ao Plics SW"
+                        },
+                        "style": {
+                          "fontSize": 27,
+                          "textColor": "#18324d",
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Acompanhe o desempenho e acesse as rotinas do seu negócio."
+                        },
+                        "style": {
+                          "fontSize": 14,
+                          "textColor": "#53657e",
+                          "bold": false
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "mesAtual"
+                        },
+                        "style": {
+                          "fontSize": 14,
+                          "textColor": "#47647c",
+                          "bold": false
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "type": "Row",
                 "props": {
-                  "spacing": 16,
+                  "spacing": 12,
                   "fillWidth": true
                 },
                 "children": [
                   {
                     "type": "Container",
                     "props": {
-                      "padding": 14,
-                      "fillWidth": true
+                      "padding": 18,
+                      "fillWidth": true,
+                      "bgColor": "#e9f5f2"
                     },
                     "children": [
                       {
@@ -90,13 +141,20 @@
                               "text": "Receitas do mês"
                             },
                             "style": {
-                              "bold": true
+                              "fontSize": 13,
+                              "bold": true,
+                              "textColor": "#53657e"
                             }
                           },
                           {
                             "type": "Text",
                             "bind": {
                               "text": "receitas"
+                            },
+                            "style": {
+                              "fontSize": 23,
+                              "bold": true,
+                              "textColor": "#18324d"
                             }
                           }
                         ]
@@ -106,8 +164,9 @@
                   {
                     "type": "Container",
                     "props": {
-                      "padding": 14,
-                      "fillWidth": true
+                      "padding": 18,
+                      "fillWidth": true,
+                      "bgColor": "#eef3fb"
                     },
                     "children": [
                       {
@@ -122,13 +181,20 @@
                               "text": "Despesas do mês"
                             },
                             "style": {
-                              "bold": true
+                              "fontSize": 13,
+                              "bold": true,
+                              "textColor": "#53657e"
                             }
                           },
                           {
                             "type": "Text",
                             "bind": {
                               "text": "despesas"
+                            },
+                            "style": {
+                              "fontSize": 23,
+                              "bold": true,
+                              "textColor": "#18324d"
                             }
                           }
                         ]
@@ -138,8 +204,9 @@
                   {
                     "type": "Container",
                     "props": {
-                      "padding": 14,
-                      "fillWidth": true
+                      "padding": 18,
+                      "fillWidth": true,
+                      "bgColor": "#eaf2fc"
                     },
                     "children": [
                       {
@@ -154,13 +221,20 @@
                               "text": "Lucro líquido"
                             },
                             "style": {
-                              "bold": true
+                              "fontSize": 13,
+                              "bold": true,
+                              "textColor": "#53657e"
                             }
                           },
                           {
                             "type": "Text",
                             "bind": {
                               "text": "lucroLiquido"
+                            },
+                            "style": {
+                              "fontSize": 23,
+                              "bold": true,
+                              "textColor": "#18324d"
                             }
                           }
                         ]
@@ -170,249 +244,422 @@
                 ]
               },
               {
-                "type": "Text",
-                "bind": {
-                  "text": "vendasHoje"
-                }
-              },
-              {
-                "type": "Text",
+                "type": "Container",
                 "props": {
-                  "text": "Acesso rápido"
-                },
-                "style": {
-                  "bold": true
-                }
-              },
-              {
-                "type": "Row",
-                "props": {
-                  "spacing": 10,
-                  "fillWidth": true
+                  "padding": 14,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
                 },
                 "children": [
                   {
-                    "type": "Button",
+                    "type": "Column",
                     "props": {
-                      "text": "Venda",
-                      "fillWidth": true,
-                      "iconSource": "/assets/venda.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "sales"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Produtos",
-                      "fillWidth": true,
-                      "iconSource": "/assets/produtos.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "products"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Clientes",
-                      "fillWidth": true,
-                      "iconSource": "/assets/clientes.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "customers"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Contas a receber",
-                      "fillWidth": true,
-                      "iconSource": "/assets/contas_a_receber.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "receivables"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "Row",
-                "props": {
-                  "spacing": 10,
-                  "fillWidth": true
-                },
-                "children": [
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "PDV",
-                      "fillWidth": true,
-                      "iconSource": "/assets/pdv.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "pos"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Categorias",
-                      "fillWidth": true,
-                      "iconSource": "/assets/categoria.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "categories"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Fornecedores",
-                      "fillWidth": true,
-                      "iconSource": "/assets/fornecedores.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "suppliers"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Histórico do caixa",
-                      "fillWidth": true,
-                      "iconSource": "/assets/abertura.png",
-                      "iconSize": 24
-                    },
-                    "events": {
-                      "onClick": "orders"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "Text",
-                "props": {
-                  "text": "Gerencial e suporte"
-                },
-                "style": {
-                  "bold": true
-                }
-              },
-              {
-                "type": "Row",
-                "props": {
-                  "spacing": 10,
-                  "fillWidth": true
-                },
-                "children": [
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Empresa",
+                      "spacing": 12,
                       "fillWidth": true
                     },
-                    "events": {
-                      "onClick": "company"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Relatórios",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "reports"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Preferências",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "preferences"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Sugerir melhoria",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "feedback"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "Row",
-                "props": {
-                  "spacing": 10,
-                  "fillWidth": true
-                },
-                "children": [
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Novidades",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "updates"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Logs",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "logs"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Termos de uso",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "terms"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Buscar atualização",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "checkUpdates"
-                    },
-                    "bind": {
-                      "visible": "canCheckUpdates"
-                    }
+                    "children": [
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "vendasHoje"
+                        },
+                        "style": {
+                          "fontSize": 14,
+                          "textColor": "#47647c"
+                        }
+                      }
+                    ]
                   }
                 ]
               },
               {
                 "type": "Container",
                 "props": {
-                  "padding": 12,
-                  "fillWidth": true
+                  "padding": 20,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
+                },
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 12,
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Acesso rápido"
+                        },
+                        "style": {
+                          "fontSize": 18,
+                          "textColor": "#18324d",
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "As tarefas mais usadas, sempre à mão."
+                        },
+                        "style": {
+                          "fontSize": 13,
+                          "textColor": "#53657e",
+                          "bold": false
+                        }
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 10,
+                          "fillWidth": true
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Venda",
+                              "fillWidth": true,
+                              "iconSource": "/assets/venda.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "sales"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Produtos",
+                              "fillWidth": true,
+                              "iconSource": "/assets/produtos.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "products"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Clientes",
+                              "fillWidth": true,
+                              "iconSource": "/assets/clientes.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "customers"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Contas a receber",
+                              "fillWidth": true,
+                              "iconSource": "/assets/contas_a_receber.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "receivables"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 10,
+                          "fillWidth": true
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "PDV",
+                              "fillWidth": true,
+                              "iconSource": "/assets/pdv.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "pos"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Categorias",
+                              "fillWidth": true,
+                              "iconSource": "/assets/categoria.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "categories"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Fornecedores",
+                              "fillWidth": true,
+                              "iconSource": "/assets/fornecedores.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "suppliers"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Histórico do caixa",
+                              "fillWidth": true,
+                              "iconSource": "/assets/abertura.png",
+                              "iconSize": 24,
+                              "height": 54
+                            },
+                            "events": {
+                              "onClick": "orders"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 20,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
+                },
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 12,
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Gerencial e suporte"
+                        },
+                        "style": {
+                          "fontSize": 18,
+                          "textColor": "#18324d",
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 10,
+                          "fillWidth": true
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Empresa",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "company"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Relatórios",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "reports"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Preferências",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "preferences"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Sugerir melhoria",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "feedback"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 10,
+                          "fillWidth": true
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Novidades",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "updates"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Logs",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "logs"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Termos de uso",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "terms"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Buscar atualização",
+                              "fillWidth": true,
+                              "height": 42
+                            },
+                            "events": {
+                              "onClick": "checkUpdates"
+                            },
+                            "bind": {
+                              "visible": "canCheckUpdates"
+                            },
+                            "style": {
+                              "bgColor": "#edf2f7",
+                              "textColor": "#183f60",
+                              "bold": false
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#e9f5f2"
                 },
                 "bind": {
                   "visible": "showPromo"
@@ -467,6 +714,10 @@
                     },
                     "events": {
                       "onClick": "videos"
+                    },
+                    "style": {
+                      "bgColor": "#edf2f7",
+                      "textColor": "#254365"
                     }
                   },
                   {
@@ -477,6 +728,10 @@
                     },
                     "events": {
                       "onClick": "instagram"
+                    },
+                    "style": {
+                      "bgColor": "#edf2f7",
+                      "textColor": "#254365"
                     }
                   }
                 ]
