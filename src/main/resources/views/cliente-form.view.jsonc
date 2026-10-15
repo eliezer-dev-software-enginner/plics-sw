@@ -1,0 +1,608 @@
+{
+  "version": 1,
+  "id": "clienteForm",
+  "states": {
+    "nome": {
+      "type": "string",
+      "initial": ""
+    },
+    "tipoPessoa": {
+      "type": "string",
+      "initial": ""
+    },
+    "documento": {
+      "type": "string",
+      "initial": ""
+    },
+    "celular": {
+      "type": "string",
+      "initial": ""
+    },
+    "email": {
+      "type": "string",
+      "initial": ""
+    },
+    "cep": {
+      "type": "string",
+      "initial": ""
+    },
+    "uf": {
+      "type": "string",
+      "initial": ""
+    },
+    "cidade": {
+      "type": "string",
+      "initial": ""
+    },
+    "bairro": {
+      "type": "string",
+      "initial": ""
+    },
+    "rua": {
+      "type": "string",
+      "initial": ""
+    },
+    "numero": {
+      "type": "string",
+      "initial": ""
+    },
+    "observacao": {
+      "type": "string",
+      "initial": ""
+    },
+    "btnText": {
+      "type": "string",
+      "initial": "Salvar"
+    },
+    "tipoOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "ufOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "pessoaFisica": {
+      "type": "boolean",
+      "initial": true
+    },
+    "pessoaJuridica": {
+      "type": "boolean",
+      "initial": false
+    },
+    "dataNascimento": {
+      "type": "string",
+      "initial": ""
+    },
+    "gestante": {
+      "type": "string",
+      "initial": "Não"
+    },
+    "dataNascimentoBebe": {
+      "type": "string",
+      "initial": ""
+    },
+    "gestanteVisible": {
+      "type": "boolean",
+      "initial": false
+    },
+    "simNaoOptions": {
+      "type": "string",
+      "initial": "[]"
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 16,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Dados do Cliente"
+            },
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Nome *"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: João"
+                    },
+                    "bind": {
+                      "value": "nome"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Tipo de pessoa"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "bind": {
+                      "value": "tipoPessoa",
+                      "items": "tipoOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "CPF"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "000.000.000-00"
+                    },
+                    "bind": {
+                      "value": "documento"
+                    },
+                    "format": {
+                      "kind": "mask",
+                      "pattern": "###.###.###-##",
+                      "store": "digits"
+                    }
+                  }
+                ],
+                "bind": {
+                  "visible": "pessoaFisica"
+                }
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "CNPJ"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "CNPJ alfanumérico"
+                    },
+                    "bind": {
+                      "value": "documento"
+                    }
+                  }
+                ],
+                "bind": {
+                  "visible": "pessoaJuridica"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Celular"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "(00) 00000-0000"
+                    },
+                    "bind": {
+                      "value": "celular"
+                    },
+                    "format": {
+                      "kind": "mask",
+                      "pattern": "(##) #####-####",
+                      "store": "digits"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Email"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: email@teste.com"
+                    },
+                    "bind": {
+                      "value": "email"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Data de nascimento"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "bind": {
+                      "value": "dataNascimento"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "É gestante?"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "bind": {
+                      "value": "gestante",
+                      "items": "simNaoOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Data de nascimento do bebê"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "bind": {
+                      "value": "dataNascimentoBebe"
+                    }
+                  }
+                ],
+                "bind": {
+                  "visible": "gestanteVisible"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Endereço"
+            },
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "CEP"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "00000-000"
+                    },
+                    "bind": {
+                      "value": "cep"
+                    },
+                    "format": {
+                      "kind": "mask",
+                      "pattern": "#####-###",
+                      "store": "digits"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "UF"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "bind": {
+                      "value": "uf",
+                      "items": "ufOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Cidade"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: São Paulo"
+                    },
+                    "bind": {
+                      "value": "cidade"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Bairro"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: Centro"
+                    },
+                    "bind": {
+                      "value": "bairro"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Rua"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: Av. Brasil"
+                    },
+                    "bind": {
+                      "value": "rua"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Número"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {
+                      "placeholder": "Ex: 123"
+                    },
+                    "bind": {
+                      "value": "numero"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Observação"
+                },
+                "style": {
+                  "bold": true
+                }
+              },
+              {
+                "type": "TextArea",
+                "props": {
+                  "placeholder": "Alguma observação?",
+                  "height": 120
+                },
+                "bind": {
+                  "value": "observacao"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "props": {
+              "fillWidth": true
+            },
+            "bind": {
+              "text": "btnText"
+            },
+            "events": {
+              "onClick": "save"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
