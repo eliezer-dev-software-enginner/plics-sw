@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "id": "ordersHistory",
+  "states": {
+    "search": {
+      "type": "string",
+      "initial": ""
+    },
+    "orders": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "items": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "selectedOrder": {
+      "type": "string",
+      "initial": ""
+    },
+    "selectedItem": {
+      "type": "string",
+      "initial": ""
+    },
+    "hasSelection": {
+      "type": "boolean",
+      "initial": false
+    },
+    "canReturn": {
+      "type": "boolean",
+      "initial": false
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 12,
+          "spacing": 12,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Histórico do Caixa — Vendas PDV"
+            },
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "type": "Input",
+            "props": {
+              "placeholder": "Pesquisar por cliente ou forma de pagamento"
+            },
+            "bind": {
+              "value": "search"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Table",
+                    "id": "orders",
+                    "props": {
+                      "columns": [
+                        {
+                          "title": "ID",
+                          "field": "id"
+                        },
+                        {
+                          "title": "Cliente",
+                          "field": "cliente"
+                        },
+                        {
+                          "title": "Total",
+                          "field": "total"
+                        },
+                        {
+                          "title": "Pagamento",
+                          "field": "pagamento"
+                        },
+                        {
+                          "title": "Fiado?",
+                          "field": "fiado"
+                        },
+                        {
+                          "title": "Desconto",
+                          "field": "desconto"
+                        },
+                        {
+                          "title": "Frete",
+                          "field": "frete"
+                        },
+                        {
+                          "title": "Observação",
+                          "field": "observacao"
+                        },
+                        {
+                          "title": "Data",
+                          "field": "data"
+                        },
+                        {
+                          "title": "Status",
+                          "field": "status"
+                        },
+                        {
+                          "title": "Devolvida em",
+                          "field": "devolvidaEm"
+                        }
+                      ],
+                      "height": 400,
+                      "pageSize": 25,
+                      "horizontalScroll": true
+                    },
+                    "bind": {
+                      "items": "orders",
+                      "selected": "selectedOrder"
+                    },
+                    "events": {
+                      "onSelect": "select"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Itens da venda selecionada"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Button",
+                        "props": {
+                          "text": "Imprimir venda"
+                        },
+                        "events": {
+                          "onClick": "print"
+                        },
+                        "bind": {
+                          "visible": "hasSelection"
+                        }
+                      },
+                      {
+                        "type": "Button",
+                        "props": {
+                          "text": "Excluir venda selecionada"
+                        },
+                        "events": {
+                          "onClick": "delete"
+                        },
+                        "bind": {
+                          "visible": "hasSelection"
+                        }
+                      },
+                      {
+                        "type": "Button",
+                        "props": {
+                          "text": "Devolver venda selecionada"
+                        },
+                        "events": {
+                          "onClick": "return"
+                        },
+                        "bind": {
+                          "visible": "canReturn"
+                        }
+                      },
+                      {
+                        "type": "Button",
+                        "props": {
+                          "text": "Trocar venda selecionada"
+                        },
+                        "events": {
+                          "onClick": "exchange"
+                        },
+                        "bind": {
+                          "visible": "canReturn"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Table",
+                    "id": "orderItems",
+                    "props": {
+                      "columns": [
+                        {
+                          "title": "Produto",
+                          "field": "produto"
+                        },
+                        {
+                          "title": "Qtd.",
+                          "field": "quantidade"
+                        },
+                        {
+                          "title": "Vl. Unit.",
+                          "field": "precoUnitario"
+                        },
+                        {
+                          "title": "Desconto",
+                          "field": "desconto"
+                        },
+                        {
+                          "title": "Total",
+                          "field": "total"
+                        },
+                        {
+                          "title": "Data",
+                          "field": "data"
+                        }
+                      ],
+                      "height": 400,
+                      "pageSize": 25,
+                      "horizontalScroll": true
+                    },
+                    "bind": {
+                      "items": "items",
+                      "selected": "selectedItem"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
