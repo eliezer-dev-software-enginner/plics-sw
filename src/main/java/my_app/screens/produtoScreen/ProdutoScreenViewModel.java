@@ -112,6 +112,7 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
                 UI.runOnUi(() -> {
                     this.fornecedores.set(fornecedorModelList);
                     this.fornecedorSelected.set(fornecedorModelList.isEmpty() ? null : fornecedorModelList.getFirst());
+                    if (selected.get() != null) selectAssociations(selected.get());
                 });
             } catch (Exception e) {
                 log.error("Erro ao atualizar lista de fornecedores", e);
@@ -341,29 +342,39 @@ public class ProdutoScreenViewModel extends ViewModelScreenContract<ProdutoModel
 
     @Override
     public void populateFieldsFromModel(ProdutoModel model) {
+        selectAssociations(model);
         codigoBarras.set(model.getCodigoBarras());
         descricao.set(model.getDescricao());
         precoCompra.set(Utils.deRealParaCentavos(model.getPrecoCompra()));
         precoVenda.set(Utils.deRealParaCentavos(model.getPrecoVenda()));
-        garantia.set(model.getGarantia());
-        marca.set(model.getMarca());
+        garantia.set(java.util.Objects.toString(model.getGarantia(), ""));
+        marca.set(java.util.Objects.toString(model.getMarca(), ""));
         var corStr = model.getCor();
         coresSelecionadas.set(corStr != null && !corStr.isBlank()
                 ? List.of(corStr.split(",\s*"))
                 : List.of());
 
-        tamanhoSelected.set(model.getTamanho());
-        modelo.set(model.getModelo());
-        unidadeSelected.set(model.getUnidade());
+        tamanhoSelected.set(java.util.Objects.toString(model.getTamanho(), ""));
+        modelo.set(java.util.Objects.toString(model.getModelo(), ""));
+        unidadeSelected.set(java.util.Objects.toString(model.getUnidade(), "UN"));
         estoque.set(Utils.quantidadeTratada(model.getEstoque()));
         estoqueMinimo.set(Utils.quantidadeTratada(model.getEstoqueMinimo()));
 
         validade.set(model.getValidade() != null ? DatePack.millisParaLocalDate(model.getValidade()) : null);
         perecivelSelected.set(model.getValidade() != null && model.getValidade() > 0 ? "Sim" : "Não");
-        observacoes.set(model.getObservacoes());
-        imagem.set(model.getImagem());
+        observacoes.set(java.util.Objects.toString(model.getObservacoes(), ""));
+        imagem.set(java.util.Objects.toString(model.getImagem(), "/assets/produto-generico.png"));
         frete.set(Utils.deRealParaCentavos(model.getFrete()));
         aceitaDevolucao.set(Boolean.TRUE.equals(model.getAceitaDevolucao()) ? "Sim" : "Não");
+    }
+
+    private void selectAssociations(ProdutoModel model) {
+        if (model.getCategoriaId() != null) categorias.get().stream()
+                .filter(item -> model.getCategoriaId().equals(item.getId()))
+                .findFirst().ifPresent(categoriaSelected::set);
+        if (model.getFornecedorId() != null) fornecedores.get().stream()
+                .filter(item -> model.getFornecedorId().equals(item.getId()))
+                .findFirst().ifPresent(fornecedorSelected::set);
     }
 
     public ScreenContextInterface getCtx() {

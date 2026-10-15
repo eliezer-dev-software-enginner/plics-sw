@@ -36,6 +36,21 @@ Sistema ERP completo para controle de:
 - JavaFX 25 para interface moderna e responsiva
 - SQLite para banco local e offline
 - Megalodonte Router para navegação limpa e centralizada
+- Megalodonte JSONC UI para declarar as telas; o código Java mantém estado, validação e acesso a dados
+
+### Interface orientada a dados
+
+As telas e formulários ficam em [`src/main/resources/views`](src/main/resources/views). O renderer JSONC usa controles de `megalodonte-components`, sem WebView. Cadastros de produto, cliente e fornecedor, vendas, PDV, contas a receber, pedidos, relatórios e início usam esse contrato. Os respectivos `Screen` ligam estados e ações à lógica de domínio. Execute `./gradlew test` após mudar um contrato JSONC.
+
+### AppImage local
+
+O empacotamento é fornecido por `megalodonte-packaging`, configurado em [`packaging.toml`](packaging.toml). Com a biblioteca instalada (`python -m pip install -e /caminho/para/megalodonte-packaging`), execute na raiz deste projeto:
+
+```bash
+megalodonte-package --project . build appimage --run
+```
+
+O arquivo fica em `dist/`; a saída da execução fica em `dist/appimage-run.log`.
 
 ## Estrutura Modular
 

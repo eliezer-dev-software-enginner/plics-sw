@@ -1,0 +1,648 @@
+{
+  "version": 1,
+  "id": "saleForm",
+  "states": {
+    "codigo": {
+      "type": "string",
+      "initial": ""
+    },
+    "numeroNota": {
+      "type": "string",
+      "initial": ""
+    },
+    "qtd": {
+      "type": "string",
+      "initial": ""
+    },
+    "pcVenda": {
+      "type": "string",
+      "initial": ""
+    },
+    "desconto": {
+      "type": "string",
+      "initial": ""
+    },
+    "frete": {
+      "type": "string",
+      "initial": ""
+    },
+    "tipoPagamento": {
+      "type": "string",
+      "initial": ""
+    },
+    "afetaEstoque": {
+      "type": "string",
+      "initial": ""
+    },
+    "observacao": {
+      "type": "string",
+      "initial": ""
+    },
+    "btnText": {
+      "type": "string",
+      "initial": ""
+    },
+    "dataVenda": {
+      "type": "string",
+      "initial": ""
+    },
+    "cliente": {
+      "type": "string",
+      "initial": ""
+    },
+    "selectedSuggestion": {
+      "type": "string",
+      "initial": ""
+    },
+    "totalBruto": {
+      "type": "string",
+      "initial": ""
+    },
+    "descontoExibido": {
+      "type": "string",
+      "initial": ""
+    },
+    "totalComFrete": {
+      "type": "string",
+      "initial": ""
+    },
+    "estoqueAnterior": {
+      "type": "string",
+      "initial": ""
+    },
+    "estoqueAtual": {
+      "type": "string",
+      "initial": ""
+    },
+    "primeiroVencimento": {
+      "type": "string",
+      "initial": ""
+    },
+    "quantidadeParcelas": {
+      "type": "string",
+      "initial": ""
+    },
+    "paymentOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "yesNoOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "clientOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "suggestions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "installments": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "installmentsVisible": {
+      "type": "boolean",
+      "initial": false
+    },
+    "selectedInstallment": {
+      "type": "string",
+      "initial": ""
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 12,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Dados da venda"
+            }
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Nome ou código do produto"
+                }
+              },
+              {
+                "type": "Input",
+                "props": {},
+                "bind": {
+                  "value": "codigo"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Table",
+            "props": {
+              "columns": [
+                {
+                  "title": "Código",
+                  "field": "codigo"
+                },
+                {
+                  "title": "Produto",
+                  "field": "descricao"
+                }
+              ],
+              "height": 155,
+              "pageSize": 8
+            },
+            "bind": {
+              "items": "suggestions",
+              "selected": "selectedSuggestion"
+            },
+            "events": {
+              "onSelect": "selectProduct"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Data da venda"
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "props": {},
+                    "bind": {
+                      "value": "dataVenda"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Cliente"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "cliente",
+                      "items": "clientOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Nº NF / pedido de compra"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "numeroNota"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Quantidade"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "qtd"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Preço de venda"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "pcVenda"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Desconto em R$"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "desconto"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Frete"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "frete"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Tipo de pagamento"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "tipoPagamento",
+                      "items": "paymentOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Refletir no estoque?"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "afetaEstoque",
+                      "items": "yesNoOptions"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Observação"
+                }
+              },
+              {
+                "type": "TextArea",
+                "props": {
+                  "height": 90
+                },
+                "bind": {
+                  "value": "observacao"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Total bruto"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "bind": {
+                      "text": "totalBruto"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Desconto"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "bind": {
+                      "text": "descontoExibido"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Total com frete"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "bind": {
+                      "text": "totalComFrete"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Estoque anterior"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "bind": {
+                      "text": "estoqueAnterior"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Estoque após a venda"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "bind": {
+                      "text": "estoqueAtual"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 8
+            },
+            "bind": {
+              "visible": "installmentsVisible"
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Parcelas"
+                }
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 8
+                },
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 4
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Primeiro vencimento"
+                        }
+                      },
+                      {
+                        "type": "DatePicker",
+                        "props": {},
+                        "bind": {
+                          "value": "primeiroVencimento"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 4
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Quantidade de parcelas"
+                        }
+                      },
+                      {
+                        "type": "Input",
+                        "props": {},
+                        "bind": {
+                          "value": "quantidadeParcelas"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Gerar parcelas"
+                    },
+                    "events": {
+                      "onClick": "generateInstallments"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Table",
+                "props": {
+                  "columns": [
+                    {
+                      "title": "Parcela",
+                      "field": "numero"
+                    },
+                    {
+                      "title": "Vencimento",
+                      "field": "vencimento"
+                    },
+                    {
+                      "title": "Valor",
+                      "field": "valor"
+                    }
+                  ],
+                  "height": 180,
+                  "pageSize": 10
+                },
+                "bind": {
+                  "items": "installments",
+                  "selected": "selectedInstallment"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "props": {
+              "fillWidth": true
+            },
+            "bind": {
+              "text": "btnText"
+            },
+            "events": {
+              "onClick": "save"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

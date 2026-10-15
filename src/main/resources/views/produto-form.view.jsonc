@@ -1,0 +1,659 @@
+{
+  "version": 1,
+  "id": "productForm",
+  "states": {
+    "codigoBarras": {
+      "type": "string",
+      "initial": ""
+    },
+    "descricao": {
+      "type": "string",
+      "initial": ""
+    },
+    "unidade": {
+      "type": "string",
+      "initial": ""
+    },
+    "marca": {
+      "type": "string",
+      "initial": ""
+    },
+    "tamanho": {
+      "type": "string",
+      "initial": ""
+    },
+    "modelo": {
+      "type": "string",
+      "initial": ""
+    },
+    "precoCompra": {
+      "type": "string",
+      "initial": ""
+    },
+    "frete": {
+      "type": "string",
+      "initial": ""
+    },
+    "precoVenda": {
+      "type": "string",
+      "initial": ""
+    },
+    "categoria": {
+      "type": "string",
+      "initial": ""
+    },
+    "fornecedor": {
+      "type": "string",
+      "initial": ""
+    },
+    "perecivel": {
+      "type": "string",
+      "initial": ""
+    },
+    "validade": {
+      "type": "string",
+      "initial": ""
+    },
+    "garantia": {
+      "type": "string",
+      "initial": ""
+    },
+    "aceitaDevolucao": {
+      "type": "string",
+      "initial": ""
+    },
+    "observacoes": {
+      "type": "string",
+      "initial": ""
+    },
+    "estoque": {
+      "type": "string",
+      "initial": ""
+    },
+    "estoqueMinimo": {
+      "type": "string",
+      "initial": ""
+    },
+    "imagem": {
+      "type": "string",
+      "initial": ""
+    },
+    "cores": {
+      "type": "string",
+      "initial": ""
+    },
+    "availableColors": {
+      "type": "string",
+      "initial": ""
+    },
+    "btnText": {
+      "type": "string",
+      "initial": ""
+    },
+    "unitOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "yesNoOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "perishableOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "categoryOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "supplierOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "expiryVisible": {
+      "type": "boolean",
+      "initial": false
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 12,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Dados do produto"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "SKU / código de barras *"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "codigoBarras"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Gerar código"
+                },
+                "events": {
+                  "onClick": "generateBarcode"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Nome *"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "descricao"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Unidade"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "unidade",
+                      "items": "unitOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Marca"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "marca"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Tamanho"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "tamanho"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Modelo"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "modelo"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Estoque"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "estoque"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Estoque mínimo"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "estoqueMinimo"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Preço de compra"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "precoCompra"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Frete"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "frete"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Preço de venda"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "precoVenda"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Categoria"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "categoria",
+                      "items": "categoryOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Fornecedor"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "fornecedor",
+                      "items": "supplierOptions"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Cores (separe por vírgulas)"
+                }
+              },
+              {
+                "type": "Input",
+                "props": {},
+                "bind": {
+                  "value": "cores"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "bind": {
+              "text": "availableColors"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "É perecível?"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "perecivel",
+                      "items": "perishableOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Validade"
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "props": {},
+                    "bind": {
+                      "value": "validade"
+                    }
+                  }
+                ],
+                "bind": {
+                  "visible": "expiryVisible"
+                }
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Garantia"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "garantia"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Aceita devolução/troca?"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "aceitaDevolucao",
+                      "items": "yesNoOptions"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Observações"
+                }
+              },
+              {
+                "type": "TextArea",
+                "props": {
+                  "height": 100
+                },
+                "bind": {
+                  "value": "observacoes"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Imagem do produto"
+            }
+          },
+          {
+            "type": "ImagePreview",
+            "bind": {
+              "source": "imagem"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Escolher imagem"
+            },
+            "events": {
+              "onClick": "chooseImage"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "fillWidth": true
+            },
+            "bind": {
+              "text": "btnText"
+            },
+            "events": {
+              "onClick": "save"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

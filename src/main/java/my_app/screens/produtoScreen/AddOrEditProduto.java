@@ -1,29 +1,17 @@
 package my_app.screens.produtoScreen;
 
-import disgust.io.br.Pack;
+import com.google.gson.Gson;
 import javafx.stage.FileChooser;
-import megalodonte.ComputedState;
-import megalodonte.ForEachState;
-import megalodonte.base.async.RunnableThrowing;
 import megalodonte.base.components.Component;
-import megalodonte.base.state.State;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.Card;
-import megalodonte.components.Checkbox;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.Text;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Container;
-import megalodonte.components.layout_components.FlowRow;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.*;
 import megalodonte.base.route.v2.ScreenContextInterface;
-import megalodonte.v2.Show;
+import megalodonte.base.state.State;
+import megalodonte.base.state.Subscription;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 import my_app.core.Data;
 import my_app.core.ScreenAddOrEdit;
-import my_app.core.components.Components;
 import my_app.core.db.models.CategoriaModel;
-import my_app.core.db.models.CorModel;
 import my_app.core.db.models.FornecedorModel;
 import my_app.core.db.models.ProdutoModel;
 import my_app.core.db.services.BaseService;
@@ -33,136 +21,118 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
-public class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel,ProdutoScreenViewModel> {
+/** Product fields and actions are declared in JSONC; persistence remains in the view model. */
+public final class AddOrEditProduto extends ScreenAddOrEdit<ProdutoModel, ProdutoScreenViewModel> {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(AddOrEditProduto.class, "/views/produto-form.view.jsonc");
+    private static final Gson JSON = new Gson();
+    private final UiSession session;
+    private final List<Subscription> subscriptions = new ArrayList<>();
 
     public AddOrEditProduto(ScreenContextInterface screenContext) {
-      super(screenContext);
-    }
-
-    @Override
-    public Component render() {
-        return new Card(
-                Components.ScrollPaneDefault( new Container(new ContainerProps().paddingAll(5))
-                                .children(
-                                        new Text("Dados do Produto",
-                                                new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()),
-                                        new SpacerVertical(ThemeManager.theme().spacing().sm()),
-                                        new Row(new RowProps().spacingOf(ThemeManager.theme().spacing().sm()))
-                                                .children(
-                                                        ContainerLeft(viewModel),
-                                                        Components.CardImageSelector(viewModel.imagem, handleChangeImage)
-                                                ),
-                                        new SpacerVertical(ThemeManager.theme().spacing().md()),
-                                        Components.actionButton(getBtnActionText(), this::handleAddOrUpdate)
-                                )),
-                new CardProps()
-                        .paddingAll(10)
-                        .borderRadius(12)
-//                        .bgColor("red")
-                        .fillWidth()
-                //new Container(new ContainerProps().paddingAll(5).bgColor("green"))
-
-        );
-    }
-
-    public Component ContainerLeft(ProdutoScreenViewModel viewModel) {
-        RunnableThrowing handleGerarCodigoBarras = () -> {
-            final var codigo = Utils.gerarCodigoBarrasEAN13();
-            viewModel.codigoBarras.set(codigo);
-        };
-
-        var showValidadePicker = ComputedState.of(() -> viewModel.perecivelSelected.get().equals("Sim"), viewModel.perecivelSelected);
-
-        //return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()).bgColor("yellow"))
-        return new FlowRow(new FlowRowProps().fillWidth().spacingOf(theme.spacing().md()))
-                .children(
-                        disgust.io.Pack.InputWithButtonRow("SKU(Código de barras) *", "Ex: 7891234567895", "Gerar", viewModel.codigoBarras, handleGerarCodigoBarras),
-                        disgust.io.Pack.InputColumn("Nome *", viewModel.descricao, "Ex: Camiseta Polo M",150),
-                        Components.SelectColumn("Unidade", Data.unidadesDeMedidaList, viewModel.unidadeSelected, it -> it),
-                        disgust.io.Pack.InputColumn("Marca", viewModel.marca, "Ex: Nike",150),
-                        coresCheckboxes(),
-                        disgust.io.Pack.InputColumn("Tamanho", viewModel.tamanhoSelected, "Ex: M",90),
-                        disgust.io.Pack.InputColumn("Modelo", viewModel.modelo, "Ex: Slim Fit",150),
-                        Pack.InputColumnCurrency("Preço de compra", viewModel.precoCompra),
-                        Pack.InputColumnCurrency("Frete", viewModel.frete),
-                        Pack.InputColumnCurrency("Preço de venda", viewModel.precoVenda),
-                        disgust.io.Pack.SelectColumn("Categoria", viewModel.categorias, viewModel.categoriaSelected, CategoriaModel::getNome),
-                        disgust.io.Pack.SelectColumn("Fornecedor", viewModel.fornecedores, viewModel.fornecedorSelected, FornecedorModel::getNome),
-                        Components.SelectColumn("É perecível?", List.of("Sim", "Não"), viewModel.perecivelSelected, it -> it),
-                        Show.when(showValidadePicker, () -> Components.DatePickerColumn(viewModel.validade, "Validade")),
-                        disgust.io.Pack.InputColumn("Garantia", viewModel.garantia, "Ex: 12 meses",150),
-                        Components.SelectColumn("Aceita devolução/troca?", Data.simNaoList, viewModel.aceitaDevolucao, it -> it),
-                        Components.TextAreaColumn("Observações", viewModel.observacoes, "Ex: Produto frágil, manusear com cuidado", 60, 160),
-                        Components.InputColumnNumeric("Estoque", viewModel.estoque, "Ex: 100"),
-                        Components.InputColumnNumeric("Estoque Mínimo", viewModel.estoqueMinimo, "Ex: 10")
-                );
-    }
-
-    private Component coresCheckboxes() {
-        var checkboxesPorCor = ForEachState.of(viewModel.cores, this::corCheckbox);
-
-        return new Column(new ColumnProps().spacingOf(3))
-                .c_child(new Text("Cores", new TextProps().fontSize(theme.typography().small())))
-                .c_child(new FlowRow(new FlowRowProps().spacingOf(8).width(620)).items(checkboxesPorCor));
-    }
-
-    private Checkbox corCheckbox(CorModel cor) {
-        var selecionado = new State<>(viewModel.coresSelecionadas.get().contains(cor.getNome()));
-
-        // checkbox -> coresSelecionadas
-        selecionado.subscribe(isSelected -> {
-            var current = new java.util.ArrayList<>(viewModel.coresSelecionadas.get());
-            boolean jaSelecionado = current.contains(cor.getNome());
-            if (isSelected && !jaSelecionado) {
-                current.add(cor.getNome());
-                viewModel.coresSelecionadas.set(current);
-            } else if (!isSelected && jaSelecionado) {
-                current.remove(cor.getNome());
-                viewModel.coresSelecionadas.set(current);
+        super(screenContext);
+        session = VIEW.open(new Actions()
+                .register("save", ignored -> handleAddOrUpdate())
+                .register("generateBarcode", ignored -> viewModel.codigoBarras.set(Utils.gerarCodigoBarrasEAN13()))
+                .register("chooseImage", ignored -> chooseImage()));
+        bind("codigoBarras", viewModel.codigoBarras);
+        bind("descricao", viewModel.descricao);
+        bind("unidade", viewModel.unidadeSelected);
+        bind("marca", viewModel.marca);
+        bind("tamanho", viewModel.tamanhoSelected);
+        bind("modelo", viewModel.modelo);
+        bind("precoCompra", viewModel.precoCompra);
+        bind("frete", viewModel.frete);
+        bind("precoVenda", viewModel.precoVenda);
+        bind("perecivel", viewModel.perecivelSelected);
+        bind("garantia", viewModel.garantia);
+        bind("aceitaDevolucao", viewModel.aceitaDevolucao);
+        bind("observacoes", viewModel.observacoes);
+        bind("estoque", viewModel.estoque);
+        bind("estoqueMinimo", viewModel.estoqueMinimo);
+        bind("imagem", viewModel.imagem);
+        session.display("btnText", getBtnActionText(), String.class);
+        session.states().string("unitOptions").set(JSON.toJson(Data.unidadesDeMedidaList));
+        session.states().string("yesNoOptions").set(JSON.toJson(Data.simNaoList));
+        session.states().string("perishableOptions").set(JSON.toJson(List.of("Sim", "Não")));
+        subscriptions.add(viewModel.perecivelSelected.observe(v -> session.states().set("expiryVisible", "Sim".equals(v))));
+        bindDate("validade", viewModel.validade);
+        bindSelection("categoria", "categoryOptions", viewModel.categorias, viewModel.categoriaSelected, CategoriaModel::getId, CategoriaModel::getNome);
+        bindSelection("fornecedor", "supplierOptions", viewModel.fornecedores, viewModel.fornecedorSelected, FornecedorModel::getId, FornecedorModel::getNome);
+        var colorsText = session.states().string("cores");
+        final boolean[] updatingColorsFromInput = {false};
+        subscriptions.add(viewModel.coresSelecionadas.observe(values -> {
+            if (updatingColorsFromInput[0]) return;
+            String joined = String.join(", ", values);
+            if (!Objects.equals(colorsText.get(), joined)) colorsText.set(joined);
+        }));
+        subscriptions.add(colorsText.observe(value -> {
+            var names = Arrays.stream(value.split(",")).map(String::trim).filter(s -> !s.isEmpty()).distinct().toList();
+            if (!viewModel.coresSelecionadas.get().equals(names)) {
+                updatingColorsFromInput[0] = true;
+                try { viewModel.coresSelecionadas.set(names); }
+                finally { updatingColorsFromInput[0] = false; }
             }
-        });
-
-        // coresSelecionadas -> checkbox
-        viewModel.coresSelecionadas.subscribe(selecionadas -> selecionado.set(selecionadas.contains(cor.getNome())));
-
-        return new Checkbox(cor.getNome(), selecionado, new CheckboxProps().fontSize(theme.typography().small()));
+        }));
+        subscriptions.add(viewModel.cores.observe(colors -> session.states().string("availableColors").set(
+                "Cores disponíveis: " + String.join(", ", colors.stream().map(color -> color.getNome()).toList()))));
+        viewModel.fetchListData();
     }
 
-    RunnableThrowing handleChangeImage = () -> {
-        var stage = viewModel.getCtx().selfStage();
+    private void bind(String name, State<String> model) { session.bind(name, model, String.class); }
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Escolha a imagem");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("imagens",
-                "*.png", "*.jpg", "*.jpeg"));
-        var file = fileChooser.showOpenDialog(stage);
-
-        if (file != null) {
-            IO.print("caminho: " + file.toPath().toUri());
-            viewModel.imagem.set(file.toPath().toUri().toString());
-        }
-    };
-
-    @Override
-    protected ProdutoScreenViewModel getViewModel(ScreenContextInterface screenContext) {
-        return new ProdutoScreenViewModel(screenContext);
+    private <T> void bindSelection(String stateName, String optionsName, State<List<T>> choices, State<T> selected,
+                                   Function<T, Long> id, Function<T, String> name) {
+        var view = session.states().string(stateName);
+        Function<T, String> label = value -> id.apply(value) + " · " + name.apply(value);
+        subscriptions.add(choices.observe(list -> {
+            session.states().string(optionsName).set(JSON.toJson(list.stream().map(label).toList()));
+            T value = selected.get();
+            if (value != null) view.set(label.apply(value));
+        }));
+        subscriptions.add(selected.observe(value -> {
+            String next = value == null ? "" : label.apply(value);
+            if (!Objects.equals(view.get(), next)) view.set(next);
+        }));
+        subscriptions.add(view.observe(text -> choices.get().stream()
+                .filter(value -> label.apply(value).equals(text)).findFirst()
+                .ifPresent(value -> { if (!Objects.equals(selected.get(), value)) selected.set(value); })));
     }
 
-    @Override
-    protected BaseService<ProdutoModel> getService() throws SQLException {
-        return new ProdutoService();
+    private void bindDate(String name, State<LocalDate> model) {
+        var view = session.states().string(name);
+        subscriptions.add(model.observe(date -> {
+            String iso = date == null ? "" : date.toString();
+            if (!Objects.equals(view.get(), iso)) view.set(iso);
+        }));
+        subscriptions.add(view.observe(iso -> {
+            LocalDate date = iso == null || iso.isBlank() ? null : LocalDate.parse(iso);
+            if (!Objects.equals(model.get(), date)) model.set(date);
+        }));
     }
 
-    @Override
-    protected String getTitle() {
-        return "produto";
+    private void chooseImage() {
+        var chooser = new FileChooser();
+        chooser.setTitle("Escolha a imagem");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imagens", "*.png", "*.jpg", "*.jpeg"));
+        var file = chooser.showOpenDialog(screenContext.selfStage());
+        if (file != null) viewModel.imagem.set(file.toURI().toString());
     }
 
-    @Override
-    protected Logger getLogger() {
-        return LoggerFactory.getLogger(AddOrEditProduto.class);
+    @Override public Component render() { return session.render(); }
+    @Override public void onDestroy() {
+        subscriptions.forEach(Subscription::close);
+        session.close();
+        super.onDestroy();
     }
-
+    @Override protected ProdutoScreenViewModel getViewModel(ScreenContextInterface ctx) { return new ProdutoScreenViewModel(ctx); }
+    @Override protected BaseService<ProdutoModel> getService() throws SQLException { return new ProdutoService(); }
+    @Override protected String getTitle() { return "produto"; }
+    @Override protected Logger getLogger() { return LoggerFactory.getLogger(AddOrEditProduto.class); }
 }
