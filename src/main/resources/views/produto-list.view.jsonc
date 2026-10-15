@@ -28,238 +28,233 @@
     }
   },
   "view": {
-    "type": "Scroll",
+    "type": "Column",
+    "props": {
+      "padding": 16,
+      "spacing": 12,
+      "fillWidth": true,
+      "bgColor": "#f3f7fb",
+      "fillHeight": true
+    },
     "children": [
       {
-        "type": "Column",
+        "type": "Text",
         "props": {
-          "padding": 16,
-          "spacing": 12,
-          "fillWidth": true,
-          "bgColor": "#f3f7fb"
+          "text": "Produtos"
+        },
+        "style": {
+          "fontSize": 22,
+          "bold": true,
+          "textColor": "#18324d"
+        }
+      },
+      {
+        "type": "Input",
+        "props": {
+          "placeholder": "Pesquisar"
+        },
+        "bind": {
+          "value": "search"
+        }
+      },
+      {
+        "type": "Row",
+        "props": {
+          "spacing": 8,
+          "fillWidth": true
         },
         "children": [
           {
-            "type": "Text",
+            "type": "Button",
             "props": {
-              "text": "Produtos"
-            },
-            "style": {
-              "fontSize": 22,
-              "bold": true,
-              "textColor": "#18324d"
-            }
-          },
-          {
-            "type": "Input",
-            "props": {
-              "placeholder": "Pesquisar"
-            },
-            "bind": {
-              "value": "search"
-            }
-          },
-          {
-            "type": "Row",
-            "props": {
-              "spacing": 8,
-              "fillWidth": true
-            },
-            "children": [
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Novo",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "create"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Editar",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "edit"
-                },
-                "style": {
-                  "bgColor": "#edf2f7",
-                  "textColor": "#263e56"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Excluir",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "delete"
-                },
-                "style": {
-                  "bgColor": "#fce8e8",
-                  "textColor": "#a63131"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Clonar",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "clone"
-                },
-                "style": {
-                  "bgColor": "#edf2f7",
-                  "textColor": "#263e56"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Exportar CSV",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "exportCsv"
-                },
-                "style": {
-                  "bgColor": "#e8eef7",
-                  "textColor": "#254365"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Exportar PDF",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "exportPdf"
-                },
-                "style": {
-                  "bgColor": "#e8eef7",
-                  "textColor": "#254365"
-                }
-              }
-            ]
-          },
-          {
-            "type": "Table",
-            "props": {
-              "columns": [
-                {
-                  "title": "ID",
-                  "field": "id"
-                },
-                {
-                  "title": "Imagem",
-                  "field": "imagem",
-                  "kind": "image",
-                  "size": 40
-                },
-                {
-                  "title": "Código",
-                  "field": "codigoBarras"
-                },
-                {
-                  "title": "Descrição",
-                  "field": "descricao"
-                },
-                {
-                  "title": "Categoria",
-                  "field": "categoria"
-                },
-                {
-                  "title": "Fornecedor",
-                  "field": "fornecedor"
-                },
-                {
-                  "title": "Cor",
-                  "field": "cor"
-                },
-                {
-                  "title": "Tamanho",
-                  "field": "tamanho"
-                },
-                {
-                  "title": "Modelo",
-                  "field": "modelo"
-                },
-                {
-                  "title": "Unidade",
-                  "field": "unidade"
-                },
-                {
-                  "title": "Marca",
-                  "field": "marca"
-                },
-                {
-                  "title": "Estoque",
-                  "field": "estoque"
-                },
-                {
-                  "title": "Est. Mínimo",
-                  "field": "estoqueMinimo"
-                },
-                {
-                  "title": "Preço de compra",
-                  "field": "precoCompra"
-                },
-                {
-                  "title": "Frete",
-                  "field": "frete"
-                },
-                {
-                  "title": "Preço de venda",
-                  "field": "precoVenda"
-                },
-                {
-                  "title": "Ganho líquido",
-                  "field": "ganhoLiquido"
-                },
-                {
-                  "title": "Garantia",
-                  "field": "garantia"
-                },
-                {
-                  "title": "Aceita devolução",
-                  "field": "aceitaDevolucao"
-                },
-                {
-                  "title": "Validade",
-                  "field": "validade"
-                },
-                {
-                  "title": "Observação",
-                  "field": "observacoes"
-                },
-                {
-                  "title": "Data de criação",
-                  "field": "dataCriacao"
-                }
-              ],
-              "height": 460,
-              "pageSize": 25,
-              "horizontalScroll": true,
-              "multipleSelection": true,
-              "rowHeight": 62
-            },
-            "bind": {
-              "items": "rows",
-              "selected": "selected",
-              "selectedItems": "selectedItems"
+              "text": "Novo",
+              "height": 36
             },
             "events": {
-              "onSelect": "select",
-              "onDoubleClick": "details"
+              "onClick": "create"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Editar",
+              "height": 36
+            },
+            "events": {
+              "onClick": "edit"
+            },
+            "style": {
+              "bgColor": "#edf2f7",
+              "textColor": "#263e56"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Excluir",
+              "height": 36
+            },
+            "events": {
+              "onClick": "delete"
+            },
+            "style": {
+              "bgColor": "#fce8e8",
+              "textColor": "#a63131"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Clonar",
+              "height": 36
+            },
+            "events": {
+              "onClick": "clone"
+            },
+            "style": {
+              "bgColor": "#edf2f7",
+              "textColor": "#263e56"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Exportar CSV",
+              "height": 36
+            },
+            "events": {
+              "onClick": "exportCsv"
+            },
+            "style": {
+              "bgColor": "#e8eef7",
+              "textColor": "#254365"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Exportar PDF",
+              "height": 36
+            },
+            "events": {
+              "onClick": "exportPdf"
+            },
+            "style": {
+              "bgColor": "#e8eef7",
+              "textColor": "#254365"
             }
           }
         ]
+      },
+      {
+        "type": "Table",
+        "props": {
+          "columns": [
+            {
+              "title": "ID",
+              "field": "id"
+            },
+            {
+              "title": "Imagem",
+              "field": "imagem",
+              "kind": "image",
+              "size": 40
+            },
+            {
+              "title": "Código",
+              "field": "codigoBarras"
+            },
+            {
+              "title": "Descrição",
+              "field": "descricao"
+            },
+            {
+              "title": "Categoria",
+              "field": "categoria"
+            },
+            {
+              "title": "Fornecedor",
+              "field": "fornecedor"
+            },
+            {
+              "title": "Cor",
+              "field": "cor"
+            },
+            {
+              "title": "Tamanho",
+              "field": "tamanho"
+            },
+            {
+              "title": "Modelo",
+              "field": "modelo"
+            },
+            {
+              "title": "Unidade",
+              "field": "unidade"
+            },
+            {
+              "title": "Marca",
+              "field": "marca"
+            },
+            {
+              "title": "Estoque",
+              "field": "estoque"
+            },
+            {
+              "title": "Est. Mínimo",
+              "field": "estoqueMinimo"
+            },
+            {
+              "title": "Preço de compra",
+              "field": "precoCompra"
+            },
+            {
+              "title": "Frete",
+              "field": "frete"
+            },
+            {
+              "title": "Preço de venda",
+              "field": "precoVenda"
+            },
+            {
+              "title": "Ganho líquido",
+              "field": "ganhoLiquido"
+            },
+            {
+              "title": "Garantia",
+              "field": "garantia"
+            },
+            {
+              "title": "Aceita devolução",
+              "field": "aceitaDevolucao"
+            },
+            {
+              "title": "Validade",
+              "field": "validade"
+            },
+            {
+              "title": "Observação",
+              "field": "observacoes"
+            },
+            {
+              "title": "Data de criação",
+              "field": "dataCriacao"
+            }
+          ],
+          "pageSize": 25,
+          "horizontalScroll": true,
+          "multipleSelection": true,
+          "rowHeight": 62
+        },
+        "bind": {
+          "items": "rows",
+          "selected": "selected",
+          "selectedItems": "selectedItems"
+        },
+        "events": {
+          "onSelect": "select",
+          "onDoubleClick": "details"
+        }
       }
     ]
   }

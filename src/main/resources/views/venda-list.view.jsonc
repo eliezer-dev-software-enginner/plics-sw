@@ -28,218 +28,213 @@
     }
   },
   "view": {
-    "type": "Scroll",
+    "type": "Column",
+    "props": {
+      "padding": 16,
+      "spacing": 12,
+      "fillWidth": true,
+      "bgColor": "#f3f7fb",
+      "fillHeight": true
+    },
     "children": [
       {
-        "type": "Column",
+        "type": "Text",
         "props": {
-          "padding": 16,
-          "spacing": 12,
-          "fillWidth": true,
-          "bgColor": "#f3f7fb"
+          "text": "Vendas de mercadorias"
+        },
+        "style": {
+          "fontSize": 22,
+          "bold": true,
+          "textColor": "#18324d"
+        }
+      },
+      {
+        "type": "Input",
+        "props": {
+          "placeholder": "Pesquisar"
+        },
+        "bind": {
+          "value": "search"
+        }
+      },
+      {
+        "type": "Row",
+        "props": {
+          "spacing": 8,
+          "fillWidth": true
         },
         "children": [
           {
-            "type": "Text",
+            "type": "Button",
             "props": {
-              "text": "Vendas de mercadorias"
-            },
-            "style": {
-              "fontSize": 22,
-              "bold": true,
-              "textColor": "#18324d"
-            }
-          },
-          {
-            "type": "Input",
-            "props": {
-              "placeholder": "Pesquisar"
-            },
-            "bind": {
-              "value": "search"
-            }
-          },
-          {
-            "type": "Row",
-            "props": {
-              "spacing": 8,
-              "fillWidth": true
-            },
-            "children": [
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Novo",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "create"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Editar",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "edit"
-                },
-                "style": {
-                  "bgColor": "#edf2f7",
-                  "textColor": "#263e56"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Excluir",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "delete"
-                },
-                "style": {
-                  "bgColor": "#fce8e8",
-                  "textColor": "#a63131"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Clonar",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "clone"
-                },
-                "style": {
-                  "bgColor": "#edf2f7",
-                  "textColor": "#263e56"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Exportar CSV",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "exportCsv"
-                },
-                "style": {
-                  "bgColor": "#e8eef7",
-                  "textColor": "#254365"
-                }
-              },
-              {
-                "type": "Button",
-                "props": {
-                  "text": "Exportar PDF",
-                  "height": 36
-                },
-                "events": {
-                  "onClick": "exportPdf"
-                },
-                "style": {
-                  "bgColor": "#e8eef7",
-                  "textColor": "#254365"
-                }
-              }
-            ]
-          },
-          {
-            "type": "Table",
-            "props": {
-              "columns": [
-                {
-                  "title": "ID",
-                  "field": "id"
-                },
-                {
-                  "title": "Imagem",
-                  "field": "imagem",
-                  "kind": "image",
-                  "size": 40
-                },
-                {
-                  "title": "Código",
-                  "field": "produtoCod"
-                },
-                {
-                  "title": "Produto",
-                  "field": "produto"
-                },
-                {
-                  "title": "Cliente",
-                  "field": "cliente"
-                },
-                {
-                  "title": "Nº Nota",
-                  "field": "numeroNota"
-                },
-                {
-                  "title": "Pagamento",
-                  "field": "tipoPagamento"
-                },
-                {
-                  "title": "Quantidade",
-                  "field": "quantidade"
-                },
-                {
-                  "title": "Preço de venda",
-                  "field": "precoUnitario"
-                },
-                {
-                  "title": "Desconto",
-                  "field": "desconto"
-                },
-                {
-                  "title": "Frete",
-                  "field": "frete"
-                },
-                {
-                  "title": "Total líquido",
-                  "field": "totalLiquido"
-                },
-                {
-                  "title": "Validade",
-                  "field": "dataValidade"
-                },
-                {
-                  "title": "Observação",
-                  "field": "observacao"
-                },
-                {
-                  "title": "Data",
-                  "field": "dataCriacao"
-                },
-                {
-                  "title": "Status",
-                  "field": "status"
-                },
-                {
-                  "title": "Devolvida em",
-                  "field": "dataDevolucao"
-                }
-              ],
-              "height": 460,
-              "pageSize": 25,
-              "horizontalScroll": true,
-              "multipleSelection": true,
-              "rowHeight": 62
-            },
-            "bind": {
-              "items": "rows",
-              "selected": "selected",
-              "selectedItems": "selectedItems"
+              "text": "Novo",
+              "height": 36
             },
             "events": {
-              "onSelect": "select",
-              "onDoubleClick": "details"
+              "onClick": "create"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Editar",
+              "height": 36
+            },
+            "events": {
+              "onClick": "edit"
+            },
+            "style": {
+              "bgColor": "#edf2f7",
+              "textColor": "#263e56"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Excluir",
+              "height": 36
+            },
+            "events": {
+              "onClick": "delete"
+            },
+            "style": {
+              "bgColor": "#fce8e8",
+              "textColor": "#a63131"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Clonar",
+              "height": 36
+            },
+            "events": {
+              "onClick": "clone"
+            },
+            "style": {
+              "bgColor": "#edf2f7",
+              "textColor": "#263e56"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Exportar CSV",
+              "height": 36
+            },
+            "events": {
+              "onClick": "exportCsv"
+            },
+            "style": {
+              "bgColor": "#e8eef7",
+              "textColor": "#254365"
+            }
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Exportar PDF",
+              "height": 36
+            },
+            "events": {
+              "onClick": "exportPdf"
+            },
+            "style": {
+              "bgColor": "#e8eef7",
+              "textColor": "#254365"
             }
           }
         ]
+      },
+      {
+        "type": "Table",
+        "props": {
+          "columns": [
+            {
+              "title": "ID",
+              "field": "id"
+            },
+            {
+              "title": "Imagem",
+              "field": "imagem",
+              "kind": "image",
+              "size": 40
+            },
+            {
+              "title": "Código",
+              "field": "produtoCod"
+            },
+            {
+              "title": "Produto",
+              "field": "produto"
+            },
+            {
+              "title": "Cliente",
+              "field": "cliente"
+            },
+            {
+              "title": "Nº Nota",
+              "field": "numeroNota"
+            },
+            {
+              "title": "Pagamento",
+              "field": "tipoPagamento"
+            },
+            {
+              "title": "Quantidade",
+              "field": "quantidade"
+            },
+            {
+              "title": "Preço de venda",
+              "field": "precoUnitario"
+            },
+            {
+              "title": "Desconto",
+              "field": "desconto"
+            },
+            {
+              "title": "Frete",
+              "field": "frete"
+            },
+            {
+              "title": "Total líquido",
+              "field": "totalLiquido"
+            },
+            {
+              "title": "Validade",
+              "field": "dataValidade"
+            },
+            {
+              "title": "Observação",
+              "field": "observacao"
+            },
+            {
+              "title": "Data",
+              "field": "dataCriacao"
+            },
+            {
+              "title": "Status",
+              "field": "status"
+            },
+            {
+              "title": "Devolvida em",
+              "field": "dataDevolucao"
+            }
+          ],
+          "pageSize": 25,
+          "horizontalScroll": true,
+          "multipleSelection": true,
+          "rowHeight": 62
+        },
+        "bind": {
+          "items": "rows",
+          "selected": "selected",
+          "selectedItems": "selectedItems"
+        },
+        "events": {
+          "onSelect": "select",
+          "onDoubleClick": "details"
+        }
       }
     ]
   }
