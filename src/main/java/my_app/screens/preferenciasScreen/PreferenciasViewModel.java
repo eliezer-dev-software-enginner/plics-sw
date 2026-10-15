@@ -104,9 +104,6 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
        prefLoaded.setCredenciaisHabilitadas(1);
        prefLoaded.setPopupInstagramHabilitado(1);
        prefLoaded.setPrimeiroAcesso(1);
-       prefLoaded.setLogin("admin");
-       prefLoaded.setSenha("1234");
-
         preferenciasService.atualizar(prefLoaded);
 
         ctx.navigateAndCloseOthers(AppRoutes.Screens.WELCOME.name());
