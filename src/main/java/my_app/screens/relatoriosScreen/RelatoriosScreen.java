@@ -2,16 +2,14 @@ package my_app.screens.relatoriosScreen;
 
 import disgust.io.ButtonsPack;
 import disgust.icons.Feather;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.PieChart;
 import javafx.scene.paint.Color;
 import megalodonte.base.components.Component;
 import megalodonte.base.components.ScreenComponent;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.components.Button;
+import megalodonte.components.BarChartView;
 import megalodonte.components.Card;
+import megalodonte.components.PieChartView;
 import megalodonte.components.SpacerVertical;
 import megalodonte.components.Text;
 import megalodonte.components.layout_components.Column;
@@ -79,36 +77,19 @@ public class RelatoriosScreen implements ScreenComponent {
     }
 
     private Component graficoComparativo() {
-        var barChart = new BarChart<String, Number>(new CategoryAxis(), new NumberAxis());
-        barChart.setTitle("Receitas x Despesas x Lucro");
-        barChart.setLegendVisible(false);
-        barChart.setPrefSize(320, 260);
-        barChart.getData().add(vm.comparativoSeries);
-        return Component.CreateFromJavaFxNode(barChart);
+        return new BarChartView("Receitas x Despesas x Lucro", vm.comparativoSeries);
     }
 
     private Component graficoPizzaReceitas() {
-        var pieChart = new PieChart(vm.receitasPieData);
-        pieChart.setTitle("Composição das Receitas");
-        pieChart.setPrefSize(320, 260);
-        pieChart.setLegendVisible(false);
-        return Component.CreateFromJavaFxNode(pieChart);
+        return new PieChartView("Composição das Receitas", vm.receitasPieData);
     }
 
     private Component graficoPizzaDespesas() {
-        var pieChart = new PieChart(vm.despesasPieData);
-        pieChart.setTitle("Composição das Despesas");
-        pieChart.setPrefSize(320, 260);
-        pieChart.setLegendVisible(false);
-        return Component.CreateFromJavaFxNode(pieChart);
+        return new PieChartView("Composição das Despesas", vm.despesasPieData);
     }
 
     private Component graficoPizzaFormasPagamento() {
-        var pieChart = new PieChart(vm.formasPagamentoPieData);
-        pieChart.setTitle("Formas de pagamento mais usadas");
-        pieChart.setPrefSize(320, 260);
-        pieChart.setLegendVisible(false);
-        return Component.CreateFromJavaFxNode(pieChart);
+        return new PieChartView("Formas de pagamento mais usadas", vm.formasPagamentoPieData);
     }
 
     private Component filtroPeriodo() {

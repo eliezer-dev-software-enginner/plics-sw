@@ -1,13 +1,11 @@
 package my_app.screens.relatoriosScreen;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.stage.FileChooser;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.state.State;
+import megalodonte.components.BarChartView;
+import megalodonte.components.PieChartView;
 import megalodonte.base.route.v2.ScreenContextInterface;
 import my_app.core.db.services.EmpresaService;
 import my_app.core.components.Components;
@@ -21,6 +19,7 @@ import pack.utilities.DatePack;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 
 public class RelatoriosScreenViewModel {
 
@@ -54,51 +53,15 @@ public class RelatoriosScreenViewModel {
 
     private RelatorioDados ultimoRelatorio;
 
-    // Dados dos gráficos (javafx.scene.chart, nativo — sem lib nova). O framework de
-    // UI da app não tem um jeito genérico de "reconstruir componente quando o State
-    // muda" fora de Show.when (que só alterna visibilidade, não reconstrói) — então
-    // os gráficos são criados uma vez em RelatoriosScreen e atualizados aqui mutando
-    // os mesmos objetos Data/Series, que é como o JavaFX Chart já é reativo por padrão.
-    final PieChart.Data receitaVendasSlice = new PieChart.Data("Vendas de Mercadoria", 0);
-    final PieChart.Data receitaPdvSlice = new PieChart.Data("Vendas no PDV", 0);
-    final PieChart.Data receitaContasSlice = new PieChart.Data("Contas Recebidas", 0);
-    final ObservableList<PieChart.Data> receitasPieData =
-            FXCollections.observableArrayList(receitaVendasSlice, receitaPdvSlice, receitaContasSlice);
-
-    final PieChart.Data despesaComprasSlice = new PieChart.Data("Compras de Mercadoria", 0);
-    final PieChart.Data despesaContasSlice = new PieChart.Data("Contas a Pagar", 0);
-    final ObservableList<PieChart.Data> despesasPieData =
-            FXCollections.observableArrayList(despesaComprasSlice, despesaContasSlice);
-
-    // Quantidade de formas de pagamento varia (depende do que foi usado no período),
-    // então, diferente das 2 pizzas acima (fatias fixas), essa lista é reconstruída
-    // inteira a cada geração de relatório — o PieChart já reage a isso sozinho.
-    final ObservableList<PieChart.Data> formasPagamentoPieData = FXCollections.observableArrayList();
-
-    final XYChart.Data<String, Number> receitasBarra = new XYChart.Data<>("Receitas", 0);
-    final XYChart.Data<String, Number> despesasBarra = new XYChart.Data<>("Despesas", 0);
-    final XYChart.Data<String, Number> lucroBarra = new XYChart.Data<>("Lucro líquido", 0);
-    final XYChart.Series<String, Number> comparativoSeries = new XYChart.Series<>();
+    final State<List<PieChartView.Slice>> receitasPieData = State.of(List.of());
+    final State<List<PieChartView.Slice>> despesasPieData = State.of(List.of());
+    final State<List<PieChartView.Slice>> formasPagamentoPieData = State.of(List.of());
+    final State<List<BarChartView.Bar>> comparativoSeries = State.of(List.of());
 
     public RelatoriosScreenViewModel(ScreenContextInterface ctx) {
         this.ctx = ctx;
         this.relatorioService = createOrReport(RelatorioService::new);
         this.empresaService = createOrReport(EmpresaService::new);
-        comparativoSeries.setName("Valores (R$)");
-        comparativoSeries.getData().addAll(receitasBarra, despesasBarra, lucroBarra);
-        // As 3 barras vêm da mesma Series (única forma de compartilhar o eixo Y
-        // sem 3 séries separadas), então o CSS padrão do BarChart pinta todas com
-        // a mesma cor (".default-color0"). Coloridas manualmente aqui, uma vez
-        // que cada Data ganha seu node, com as mesmas cores dos cards acima.
-        colorirBarraQuandoDisponivel(receitasBarra, "#10b981");
-        colorirBarraQuandoDisponivel(despesasBarra, "#ef4444");
-        colorirBarraQuandoDisponivel(lucroBarra, "#2563eb");
-    }
-
-    private void colorirBarraQuandoDisponivel(XYChart.Data<String, Number> data, String cor) {
-        data.nodeProperty().addListener((obs, old, node) -> {
-            if (node != null) node.setStyle("-fx-bar-fill: " + cor + ";");
-        });
     }
 
     private static <T> T createOrReport(megalodonte.utils.ThrowingSupplier<T> supplier) {
@@ -178,21 +141,22 @@ public class RelatoriosScreenViewModel {
                         .map(f -> "• " + f.getNome())
                         .collect(java.util.stream.Collectors.joining("\n")));
 
-        receitaVendasSlice.setPieValue(dados.receitasVendas().doubleValue());
-        receitaPdvSlice.setPieValue(dados.receitasPedidosPdv().doubleValue());
-        receitaContasSlice.setPieValue(dados.receitasContasRecebidas().doubleValue());
-
-        despesaComprasSlice.setPieValue(dados.despesasCompras().doubleValue());
-        despesaContasSlice.setPieValue(dados.despesasContasPagas().doubleValue());
-
-        receitasBarra.setYValue(dados.totalReceitas().doubleValue());
-        despesasBarra.setYValue(dados.totalDespesas().doubleValue());
-        lucroBarra.setYValue(dados.lucroLiquido().doubleValue());
+        receitasPieData.set(List.of(
+                new PieChartView.Slice("Vendas de Mercadoria", dados.receitasVendas().doubleValue()),
+                new PieChartView.Slice("Vendas no PDV", dados.receitasPedidosPdv().doubleValue()),
+                new PieChartView.Slice("Contas Recebidas", dados.receitasContasRecebidas().doubleValue())));
+        despesasPieData.set(List.of(
+                new PieChartView.Slice("Compras de Mercadoria", dados.despesasCompras().doubleValue()),
+                new PieChartView.Slice("Contas a Pagar", dados.despesasContasPagas().doubleValue())));
+        comparativoSeries.set(List.of(
+                new BarChartView.Bar("Receitas", dados.totalReceitas().doubleValue(), "#10b981"),
+                new BarChartView.Bar("Despesas", dados.totalDespesas().doubleValue(), "#ef4444"),
+                new BarChartView.Bar("Lucro líquido", dados.lucroLiquido().doubleValue(), "#2563eb")));
 
         var formasPagamento = dados.formasPagamento();
-        formasPagamentoPieData.setAll(formasPagamento == null ? java.util.List.of() :
+        formasPagamentoPieData.set(formasPagamento == null ? List.of() :
                 formasPagamento.stream()
-                        .map(f -> new PieChart.Data(f.forma(), f.valor().doubleValue()))
+                        .map(f -> new PieChartView.Slice(f.forma(), f.valor().doubleValue()))
                         .toList());
     }
 
