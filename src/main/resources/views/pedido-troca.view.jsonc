@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "id": "orderExchange",
+  "states": {
+    "title": {
+      "type": "string",
+      "initial": "Trocar venda"
+    },
+    "search": {
+      "type": "string",
+      "initial": ""
+    },
+    "selectedProduct": {
+      "type": "string",
+      "initial": ""
+    },
+    "productOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "items": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "selectedItem": {
+      "type": "string",
+      "initial": ""
+    },
+    "payment": {
+      "type": "string",
+      "initial": ""
+    },
+    "paymentOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "searchVisible": {
+      "type": "boolean",
+      "initial": false
+    },
+    "showSearchButton": {
+      "type": "boolean",
+      "initial": false
+    },
+    "showReplaceButton": {
+      "type": "boolean",
+      "initial": false
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 12,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "bind": {
+              "text": "title"
+            },
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Clique no produto que deseja substituir, escolha o novo produto e confirme a troca."
+            }
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 8
+            },
+            "bind": {
+              "visible": "searchVisible"
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Buscar produto para troca"
+                },
+                "style": {
+                  "bold": true
+                }
+              },
+              {
+                "type": "Input",
+                "props": {
+                  "placeholder": "Nome ou código"
+                },
+                "bind": {
+                  "value": "search"
+                }
+              },
+              {
+                "type": "Select",
+                "bind": {
+                  "value": "selectedProduct",
+                  "items": "productOptions"
+                }
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 8
+                },
+                "children": [
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Pesquisar produto"
+                    },
+                    "events": {
+                      "onClick": "resetSearch"
+                    },
+                    "bind": {
+                      "visible": "showSearchButton"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Trocar"
+                    },
+                    "events": {
+                      "onClick": "replace"
+                    },
+                    "bind": {
+                      "visible": "showReplaceButton"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Produtos da troca (clique para substituir)"
+            },
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "type": "Table",
+            "props": {
+              "columns": [
+                {
+                  "title": "Cod",
+                  "field": "codigo"
+                },
+                {
+                  "title": "Nome",
+                  "field": "nome"
+                },
+                {
+                  "title": "Cor",
+                  "field": "cor"
+                },
+                {
+                  "title": "Tamanho",
+                  "field": "tamanho"
+                },
+                {
+                  "title": "Qtd.",
+                  "field": "quantidade"
+                },
+                {
+                  "title": "Vl. Unit.",
+                  "field": "precoUnitario"
+                },
+                {
+                  "title": "Total",
+                  "field": "total"
+                }
+              ],
+              "height": 420,
+              "horizontalScroll": true
+            },
+            "bind": {
+              "items": "items",
+              "selected": "selectedItem"
+            },
+            "events": {
+              "onSelect": "selectItem"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "children": [
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Forma de pagamento"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "bind": {
+                      "value": "payment",
+                      "items": "paymentOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Confirmar troca"
+                },
+                "events": {
+                  "onClick": "confirm"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
