@@ -1,0 +1,472 @@
+{
+  "version": 1,
+  "id": "receivableForm",
+  "states": {
+    "descricao": {
+      "type": "string",
+      "initial": ""
+    },
+    "valorOriginal": {
+      "type": "string",
+      "initial": ""
+    },
+    "valorRecebimento": {
+      "type": "string",
+      "initial": ""
+    },
+    "status": {
+      "type": "string",
+      "initial": ""
+    },
+    "tipoDocumento": {
+      "type": "string",
+      "initial": ""
+    },
+    "numeroDocumento": {
+      "type": "string",
+      "initial": ""
+    },
+    "observacao": {
+      "type": "string",
+      "initial": ""
+    },
+    "btnText": {
+      "type": "string",
+      "initial": ""
+    },
+    "clienteId": {
+      "type": "string",
+      "initial": ""
+    },
+    "dataVencimento": {
+      "type": "string",
+      "initial": ""
+    },
+    "dataRecebimento": {
+      "type": "string",
+      "initial": ""
+    },
+    "totalOpen": {
+      "type": "string",
+      "initial": ""
+    },
+    "totalOverdue": {
+      "type": "string",
+      "initial": ""
+    },
+    "statusOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "documentOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "clientOptions": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "editVisible": {
+      "type": "boolean",
+      "initial": false
+    },
+    "receiptVisible": {
+      "type": "boolean",
+      "initial": false
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 14,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Resumo financeiro"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 10
+            },
+            "children": [
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Em aberto"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "bind": {
+                      "text": "totalOpen"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Vencidas"
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "bind": {
+                      "text": "totalOverdue"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Text",
+            "props": {
+              "text": "Dados da conta a receber"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 10
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Descrição"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "descricao"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Valor original"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "valorOriginal"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Cliente"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "clienteId",
+                      "items": "clientOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Status"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "status",
+                      "items": "statusOptions"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 10
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Data de vencimento"
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "props": {},
+                    "bind": {
+                      "value": "dataVencimento"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Data de recebimento"
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "props": {},
+                    "bind": {
+                      "value": "dataRecebimento"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Tipo de documento"
+                    }
+                  },
+                  {
+                    "type": "Select",
+                    "props": {},
+                    "bind": {
+                      "value": "tipoDocumento",
+                      "items": "documentOptions"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Número do documento"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "numeroDocumento"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 4
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Observação"
+                }
+              },
+              {
+                "type": "TextArea",
+                "props": {
+                  "height": 110
+                },
+                "bind": {
+                  "value": "observacao"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "props": {
+              "fillWidth": true
+            },
+            "bind": {
+              "text": "btnText"
+            },
+            "events": {
+              "onClick": "save"
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 8
+            },
+            "bind": {
+              "visible": "editVisible"
+            },
+            "children": [
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Receber"
+                },
+                "events": {
+                  "onClick": "startReceipt"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Quitar"
+                },
+                "events": {
+                  "onClick": "settle"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 8
+            },
+            "bind": {
+              "visible": "receiptVisible"
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Registrar recebimento"
+                }
+              },
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 4
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Valor recebido"
+                    }
+                  },
+                  {
+                    "type": "Input",
+                    "props": {},
+                    "bind": {
+                      "value": "valorRecebimento"
+                    },
+                    "format": {
+                      "kind": "currency",
+                      "currency": "BRL",
+                      "locale": "pt-BR"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Row",
+                "props": {
+                  "spacing": 10
+                },
+                "children": [
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Registrar"
+                    },
+                    "events": {
+                      "onClick": "registerReceipt"
+                    }
+                  },
+                  {
+                    "type": "Button",
+                    "props": {
+                      "text": "Cancelar"
+                    },
+                    "events": {
+                      "onClick": "cancelReceipt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

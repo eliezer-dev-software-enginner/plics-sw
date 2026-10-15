@@ -1,23 +1,15 @@
 package my_app.screens.contasAReceberScreen;
 
-import disgust.io.br.Pack;
-import megalodonte.ComputedState;
+import com.google.gson.Gson;
 import megalodonte.base.components.Component;
-import megalodonte.base.theme.ThemeManager;
-import megalodonte.components.Button;
-import megalodonte.components.Card;
-import megalodonte.components.SpacerVertical;
-import megalodonte.components.Text;
-import megalodonte.components.layout_components.Column;
-import megalodonte.components.layout_components.Row;
-import megalodonte.props.ButtonProps;
-import megalodonte.props.ColumnProps;
-import megalodonte.props.RowProps;
-import megalodonte.props.TextProps;
 import megalodonte.base.route.v2.ScreenContextInterface;
-import megalodonte.v2.Show;
+import megalodonte.base.state.State;
+import megalodonte.base.state.Subscription;
+import megalodonte.jsonc.Actions;
+import megalodonte.jsonc.UiDefinition;
+import megalodonte.jsonc.UiSession;
 import my_app.core.ScreenAddOrEdit;
-import my_app.core.components.Components;
+import my_app.core.db.models.ClienteModel;
 import my_app.core.db.models.ContaAreceberModel;
 import my_app.core.db.services.BaseService;
 import my_app.core.db.services.ContaAreceberService;
@@ -26,168 +18,86 @@ import org.slf4j.LoggerFactory;
 import pack.utilities.CurrencyPack;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class ScrenAddOrEditContasAReceber extends ScreenAddOrEdit<ContaAreceberModel, ContasAReceberScreenViewModel> {
+/** Receivable form and payment actions rendered from a JSONC view. */
+public final class ScrenAddOrEditContasAReceber extends ScreenAddOrEdit<ContaAreceberModel, ContasAReceberScreenViewModel> {
+    private static final UiDefinition VIEW = UiDefinition.fromResource(ScrenAddOrEditContasAReceber.class, "/views/conta-a-receber-form.view.jsonc");
+    private static final Gson JSON = new Gson();
+    private final UiSession session;
+    private final List<Subscription> subscriptions = new ArrayList<>();
 
     public ScrenAddOrEditContasAReceber(ScreenContextInterface screenContext) {
         super(screenContext);
+        session = VIEW.open(new Actions()
+                .register("save", ignored -> handleAddOrUpdate())
+                .register("startReceipt", ignored -> viewModel.modoRecebimento.set(true))
+                .register("registerReceipt", ignored -> viewModel.registrarRecebimento(screenContext))
+                .register("cancelReceipt", ignored -> {
+                    viewModel.modoRecebimento.set(false);
+                    viewModel.valorRecebimento.set("0");
+                })
+                .register("settle", ignored -> viewModel.quitarConta(screenContext)));
+        session.bind("descricao", viewModel.descricao, String.class);
+        session.bind("valorOriginal", viewModel.valorOriginal, String.class);
+        session.bind("valorRecebimento", viewModel.valorRecebimento, String.class);
+        session.bind("status", viewModel.status, String.class);
+        session.bind("tipoDocumento", viewModel.tipoDocumento, String.class);
+        session.bind("numeroDocumento", viewModel.numeroDocumento, String.class);
+        session.bind("observacao", viewModel.observacao, String.class);
+        session.display("btnText", getBtnActionText(), String.class);
+        session.display("receiptVisible", viewModel.modoRecebimento, Boolean.class);
+        session.states().set("editVisible", isEdit());
+        session.states().string("statusOptions").set(JSON.toJson(viewModel.statusOptions));
+        session.states().string("documentOptions").set(JSON.toJson(viewModel.tipoDocumentoOptions));
+        bindDate("dataVencimento", viewModel.dataVencimento);
+        bindDate("dataRecebimento", viewModel.dataRecebimento);
+        var clientId = session.states().string("clienteId");
+        subscriptions.add(viewModel.clientes.observe(list -> {
+            session.states().string("clientOptions").set(JSON.toJson(list.stream().map(this::clientLabel).toList()));
+            syncSelectedClient();
+        }));
+        subscriptions.add(viewModel.clienteSelected.observe(ignored -> syncSelectedClient()));
+        subscriptions.add(clientId.observe(label -> viewModel.clientes.get().stream()
+                .filter(client -> clientLabel(client).equals(label))
+                .findFirst().ifPresent(client -> {
+                    if (!Objects.equals(viewModel.clienteSelected.get(), client)) viewModel.clienteSelected.set(client);
+                })));
+        session.states().string("totalOpen").set(CurrencyPack.toBRLCurrency(viewModel.getTotalEmAberto()));
+        session.states().string("totalOverdue").set(CurrencyPack.toBRLCurrency(viewModel.getTotalVencidas()));
     }
 
-    @Override
-    public Component render() {
-        ComputedState<Boolean> naoEhRecebimento = ComputedState.of(() -> !viewModel.modoRecebimento.get(), viewModel.modoRecebimento);
+    private String clientLabel(ClienteModel client) { return client.getId() + " · " + client.getNome(); }
 
-        // mainView() (ScreenContract) só chama form()/table() — não tem mais slot
-        // próprio pra summarySection()/paymentSection() desde que render() passou a
-        // devolver mainView() direto, então as duas entram aqui, em volta do Card do
-        // formulário, pra continuar aparecendo na tela.
-        return Components.ScrollPaneDefault(
-                new Column(new ColumnProps().spacingOf(20)).children(
-                        summarySection(),
-                        formCard(naoEhRecebimento),
-                        paymentSection()
-                )
-        ) ;
-    }
-    
-    private Component summarySection() {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                        .c_child(new Text("Resumo Financeiro", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
-                        .c_child(
-                                new Row(new RowProps().spacingOf(16))
-                                        .r_child(
-                                                new Column(new ColumnProps())
-                                                        .c_child(new Text("Em Aberto", new TextProps().fontSize(ThemeManager.theme().typography().body())))
-                                                        .c_child(
-                                                                new Text(CurrencyPack.toBRLCurrency(viewModel.getTotalEmAberto()),
-                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#ff6b6b"))
-                                                        )
-                                        )
-                                        .r_child(
-                                                new Column(new ColumnProps())
-                                                        .c_child(new Text("Vencidas", new TextProps().fontSize(ThemeManager.theme().typography().body())))
-                                                        .c_child(
-                                                                new Text(CurrencyPack.toBRLCurrency(viewModel.getTotalVencidas()),
-                                                                        new TextProps().fontSize(ThemeManager.theme().typography().body()).textColor("#dc3545"))
-                                                        )
-                                        )
-                        )
-        );
+    private void syncSelectedClient() {
+        var client = viewModel.clienteSelected.get();
+        String label = client == null ? "" : clientLabel(client);
+        if (!Objects.equals(session.states().string("clienteId").get(), label)) session.states().string("clienteId").set(label);
     }
 
-    private Component formCard(ComputedState<Boolean> naoEhRecebimento) {
-        return new Card(
-                new Column(new ColumnProps().paddingAll(20).spacingOf(15))
-                        .c_child(new Text("Dados da conta a receber",
-                                new TextProps().fontSize(ThemeManager.theme().typography().body()).bold()))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(
-                                new Row(new RowProps().spacingOf(10).bottomVertically())
-                                        .r_child(disgust.io.Pack.InputColumn("Descrição", viewModel.descricao, "Descrição da conta"))
-                                        .r_child(Pack.InputColumnCurrency("Valor Original", viewModel.valorOriginal))
-                                        .r_child(Components.SelectColumn("Cliente", viewModel.clientes, viewModel.clienteSelected,
-                                                f -> f != null ? f.getNome() : "", true))
-                                        .r_child(Components.SelectColumn("Status", viewModel.statusOptions, viewModel.status, s -> s))
-                        )
-                        .c_child(
-                                new Row(new RowProps().spacingOf(10).bottomVertically())
-                                        .r_child(Components.DatePickerColumn(viewModel.dataVencimento, "Data Vencimento"))
-                                        .r_child(Components.DatePickerColumn(viewModel.dataRecebimento, "Data Recebimento"))
-                                        .r_child(Components.SelectColumn("Tipo Doc", viewModel.tipoDocumentoOptions, viewModel.tipoDocumento, t -> t))
-                                        .r_child(disgust.io.Pack.InputColumn("Número Doc", viewModel.numeroDocumento, "Número do documento"))
-                        )
-                        .c_child(Components.TextAreaColumn("Observação", viewModel.observacao, "Alguma observação sobre esta conta?"))
-                        .c_child(new SpacerVertical(20))
-                        .c_child(Components.actionButton(this.getBtnActionText(), this::handleAddOrUpdate))
-                        .c_child(Show.when(isEdit(), () -> new Row(new RowProps().spacingOf(8))
-                                .r_child(
-                                        Show.when(naoEhRecebimento, () -> new Button(
-                                                viewModel.btnRecebimentoText,
-                                                new ButtonProps()
-                                                        .height(35)
-                                                        .fontSize(theme.typography().small())
-                                                        .bgColor("#10b981")
-                                                        .textColor("white")
-                                        ).onClick(() -> {
-                                            if (viewModel.modoRecebimento.get()) {
-                                                viewModel.registrarRecebimento(screenContext);
-                                            } else {
-                                                viewModel.modoRecebimento.set(true);
-                                            }
-                                        }))
-                                )
-                                .r_child(
-                                        new Button("Quitar",
-                                                new ButtonProps()
-                                                        .height(35)
-                                                        .fontSize(theme.typography().small())
-                                                        .bgColor("#007bff")
-                                                        .textColor("white")
-                                        ).onClick(() -> viewModel.quitarConta(screenContext))
-                                )
-                        ))
-        );
+    private void bindDate(String name, State<LocalDate> model) {
+        var view = session.states().string(name);
+        subscriptions.add(model.observe(date -> {
+            String iso = date == null ? "" : date.toString();
+            if (!Objects.equals(view.get(), iso)) view.set(iso);
+        }));
+        subscriptions.add(view.observe(iso -> {
+            LocalDate date = iso == null || iso.isBlank() ? null : LocalDate.parse(iso);
+            if (!Objects.equals(model.get(), date)) model.set(date);
+        }));
     }
 
-    private Component paymentSection() {
-        return Show.when(viewModel.modoRecebimento, () ->
-                new Card(
-                        new Column(new ColumnProps().paddingAll(16).spacingOf(12))
-                                .c_child(new Text("Registrar Recebimento", new TextProps().fontSize(ThemeManager.theme().typography().subtitle())))
-                                .c_child(
-                                        new Row(new RowProps().spacingOf(12).bottomVertically())
-                                                .r_child(
-                                                        new Column(new ColumnProps())
-                                                                .c_child(new Text("Valor do Recebimento:", new TextProps().fontSize(ThemeManager.theme().typography().body())))
-                                                                .c_child(Pack.InputColumnCurrency("Valor", viewModel.valorRecebimento))
-                                                )
-                                                .r_child(
-                                                        new Row(new RowProps().spacingOf(8))
-                                                                .r_child(
-                                                                        new Button("Registrar",
-                                                                                new ButtonProps()
-                                                                                        .height(35)
-                                                                                        .fontSize(theme.typography().small())
-                                                                                        .bgColor("#10b981")
-                                                                                        .textColor("white")
-                                                                        ).onClick(() -> viewModel.registrarRecebimento(screenContext))
-                                                                )
-                                                                .r_child(
-                                                                        new Button("Cancelar",
-                                                                                new ButtonProps()
-                                                                                        .height(35)
-                                                                                        .fontSize(theme.typography().small())
-                                                                                        .bgColor("#6c757d")
-                                                                                        .textColor("white")
-                                                                        ).onClick(() -> {
-                                                                            viewModel.modoRecebimento.set(false);
-                                                                            viewModel.valorRecebimento.set("0");
-                                                                        })
-                                                                )
-                                                )
-                                )
-                )
-        );
+    @Override public Component render() { return session.render(); }
+    @Override public void onDestroy() {
+        subscriptions.forEach(Subscription::close);
+        session.close();
+        super.onDestroy();
     }
-
-    @Override
-    protected ContasAReceberScreenViewModel getViewModel(ScreenContextInterface screenContext) {
-        return new ContasAReceberScreenViewModel(screenContext);
-    }
-
-    @Override
-    protected BaseService<ContaAreceberModel> getService() throws SQLException {
-        return new ContaAreceberService();
-    }
-
-    @Override
-    protected String getTitle() {
-        return "compra a receber";
-    }
-
-    @Override
-    protected Logger getLogger() {
-        return LoggerFactory.getLogger(ScrenAddOrEditContasAReceber.class);
-    }
+    @Override protected ContasAReceberScreenViewModel getViewModel(ScreenContextInterface ctx) { return new ContasAReceberScreenViewModel(ctx); }
+    @Override protected BaseService<ContaAreceberModel> getService() throws SQLException { return new ContaAreceberService(); }
+    @Override protected String getTitle() { return "conta a receber"; }
+    @Override protected Logger getLogger() { return LoggerFactory.getLogger(ScrenAddOrEditContasAReceber.class); }
 }
