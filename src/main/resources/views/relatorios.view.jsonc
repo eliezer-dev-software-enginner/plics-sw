@@ -1,0 +1,734 @@
+{
+  "version": 1,
+  "id": "financialReports",
+  "states": {
+    "receitasVendas": {
+      "type": "string",
+      "initial": ""
+    },
+    "receitasPedidosPdv": {
+      "type": "string",
+      "initial": ""
+    },
+    "receitasContasRecebidas": {
+      "type": "string",
+      "initial": ""
+    },
+    "despesasCompras": {
+      "type": "string",
+      "initial": ""
+    },
+    "despesasContasPagas": {
+      "type": "string",
+      "initial": ""
+    },
+    "totalReceitas": {
+      "type": "string",
+      "initial": ""
+    },
+    "totalDespesas": {
+      "type": "string",
+      "initial": ""
+    },
+    "lucroLiquido": {
+      "type": "string",
+      "initial": ""
+    },
+    "contasReceberEmAberto": {
+      "type": "string",
+      "initial": ""
+    },
+    "contasPagarEmAberto": {
+      "type": "string",
+      "initial": ""
+    },
+    "produtosMaisVendidos": {
+      "type": "string",
+      "initial": ""
+    },
+    "produtosSemVenda": {
+      "type": "string",
+      "initial": ""
+    },
+    "produtosDevolvidos": {
+      "type": "string",
+      "initial": ""
+    },
+    "novosClientes": {
+      "type": "string",
+      "initial": ""
+    },
+    "novosFornecedores": {
+      "type": "string",
+      "initial": ""
+    },
+    "comparativo": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "receitasPie": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "despesasPie": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "formasPagamentoPie": {
+      "type": "string",
+      "initial": "[]"
+    },
+    "dataInicio": {
+      "type": "string",
+      "initial": "2026-01-01"
+    },
+    "dataFim": {
+      "type": "string",
+      "initial": "2026-01-01"
+    }
+  },
+  "view": {
+    "type": "Scroll",
+    "children": [
+      {
+        "type": "Column",
+        "props": {
+          "padding": 15,
+          "spacing": 15,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Text",
+            "props": {
+              "text": "Relatórios Financeiros"
+            },
+            "style": {
+              "bold": true
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 12
+            },
+            "children": [
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Data início"
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "bind": {
+                      "value": "dataInicio"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Data fim"
+                    }
+                  },
+                  {
+                    "type": "DatePicker",
+                    "bind": {
+                      "value": "dataFim"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Gerar relatório"
+                },
+                "events": {
+                  "onClick": "generate"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Receitas"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Vendas de mercadoria:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "receitasVendas"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Vendas no PDV:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "receitasPedidosPdv"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Contas a receber recebidas:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "receitasContasRecebidas"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Total de receitas:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "totalReceitas"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Despesas"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Compras de mercadoria:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "despesasCompras"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Contas a pagar pagas:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "despesasContasPagas"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Total de despesas:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "totalDespesas"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Resumo"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Lucro líquido do período:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "lucroLiquido"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Contas a receber em aberto:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "contasReceberEmAberto"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Contas a pagar em aberto:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "contasPagarEmAberto"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Produtos mais vendidos do período"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Produtos mais vendidos do período:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "produtosMaisVendidos"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Produtos sem venda no período"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Produtos sem venda no período:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "produtosSemVenda"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Produtos devolvidos no período"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Produtos devolvidos no período:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "produtosDevolvidos"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Novos clientes no período"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Novos clientes no período:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "novosClientes"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 12,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 8,
+                  "fillWidth": true
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Novos fornecedores no período"
+                    },
+                    "style": {
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 8
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Novos fornecedores no período:"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "novosFornecedores"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 12
+            },
+            "children": [
+              {
+                "type": "BarChart",
+                "props": {
+                  "title": "Receitas x Despesas x Lucro"
+                },
+                "bind": {
+                  "items": "comparativo"
+                }
+              },
+              {
+                "type": "PieChart",
+                "props": {
+                  "title": "Composição das Receitas"
+                },
+                "bind": {
+                  "items": "receitasPie"
+                }
+              },
+              {
+                "type": "PieChart",
+                "props": {
+                  "title": "Composição das Despesas"
+                },
+                "bind": {
+                  "items": "despesasPie"
+                }
+              },
+              {
+                "type": "PieChart",
+                "props": {
+                  "title": "Formas de pagamento mais usadas"
+                },
+                "bind": {
+                  "items": "formasPagamentoPie"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "props": {
+              "text": "Baixar PDF"
+            },
+            "events": {
+              "onClick": "downloadPdf"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
