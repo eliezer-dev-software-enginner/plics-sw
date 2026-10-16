@@ -521,7 +521,7 @@ public class PDVScreenViewModel {
     }
 
     void handleCriarCliente(){
-        ctx.spawnWindow(AppRoutes.Screens.CLIENTES.name(), e->{});
+        ctx.spawnWindow(AppRoutes.Screens.CLIENTES.name());
     }
 
     public void onDestroy() throws Exception {

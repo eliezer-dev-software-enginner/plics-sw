@@ -49,7 +49,7 @@ public final class HomeScreen implements ScreenComponent {
     }
 
     private static void open(ScreenContextInterface ctx, AppRoutes.Screens screen) {
-        ctx.spawnWindow(screen.name(), ignored -> {});
+        ctx.spawnWindow(screen.name());
     }
 
     @Override public Component render() { return session.render(); }

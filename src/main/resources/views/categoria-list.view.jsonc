@@ -25,6 +25,14 @@
     "hasSingleSelection": {
       "type": "boolean",
       "initial": false
+    },
+    "noSelection": {
+      "type": "boolean",
+      "initial": true
+    },
+    "notSingleSelection": {
+      "type": "boolean",
+      "initial": true
     }
   },
   "view": {
@@ -86,6 +94,9 @@
             "style": {
               "bgColor": "#edf2f7",
               "textColor": "#263e56"
+            },
+            "bind": {
+              "disabled": "notSingleSelection"
             }
           },
           {
@@ -100,6 +111,9 @@
             "style": {
               "bgColor": "#fce8e8",
               "textColor": "#a63131"
+            },
+            "bind": {
+              "disabled": "noSelection"
             }
           },
           {
@@ -114,6 +128,9 @@
             "style": {
               "bgColor": "#edf2f7",
               "textColor": "#263e56"
+            },
+            "bind": {
+              "disabled": "notSingleSelection"
             }
           },
           {

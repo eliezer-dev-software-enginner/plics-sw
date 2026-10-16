@@ -67,11 +67,13 @@ public final class CategoriaScreen implements ScreenComponent, ScreenContract<Ca
                 long id = JsonParser.parseString(selected).getAsJsonObject().get("id").getAsLong();
                 viewModel.selected.set(viewModel.filteredList.get().stream().filter(model -> model.getId() == id).findFirst().orElse(null));
                 viewModel.focusState.set(true);
+                updateSelectionActions(session);
                 return;
             } catch (RuntimeException ignored) { }
         }
         viewModel.selected.set(models.isEmpty() ? null : models.getLast());
         viewModel.focusState.set(!models.isEmpty());
+        updateSelectionActions(session);
     }
 
     private String rowsJson(List<CategoriaModel> items) {

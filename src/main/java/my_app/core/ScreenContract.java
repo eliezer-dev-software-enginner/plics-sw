@@ -5,10 +5,12 @@ import megalodonte.base.state.State;
 import megalodonte.ComputedState;
 import megalodonte.components.SimpleTable;
 import megalodonte.components.SpacerVertical;
+import megalodonte.jsonc.UiSession;
 import megalodonte.components.layout_components.Container;
 import megalodonte.components.layout_components.Row;
 import megalodonte.props.ContainerProps;
 import megalodonte.props.RowProps;
+import megalodonte.jsonc.UiSession;
 import my_app.core.components.Components;
 import my_app.services.exports.TableExportActions;
 import org.slf4j.Logger;
@@ -21,7 +23,7 @@ public interface ScreenContract<T extends Identifier> {
     ViewModelScreenContract<T> viewModel();
 
     default void handleClickNew() {
-        viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/-1/add/");
+        viewModel().ctx.spawnWindow(formRoute(viewModel().screenNameSpawn, -1, "add"));
     }
 
     default void handleClickMenuDelete() {
@@ -33,14 +35,24 @@ public interface ScreenContract<T extends Identifier> {
         if(viewModel().selectedItemsOrCurrent().size() != 1)throw new IllegalArgumentException("Selecione exatamente um item na tabela antes!");
 
         long id = viewModel().selectedItemsOrCurrent().getFirst().getId();
-        viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/"+id+"/clone/");
+        viewModel().ctx.spawnWindow(formRoute(viewModel().screenNameSpawn, id, "clone"));
     }
 
     default void handleClickMenuEdit() {
         if(viewModel().selectedItemsOrCurrent().size() != 1)throw new IllegalArgumentException("Selecione exatamente um item na tabela antes!");
 
         long id = viewModel().selectedItemsOrCurrent().getFirst().getId();
-        viewModel().ctx.spawnWindow(viewModel().screenNameSpawn+"/"+id+"/edit/");
+        viewModel().ctx.spawnWindow(formRoute(viewModel().screenNameSpawn, id, "edit"));
+    }
+
+    static String formRoute(String screenName, long id, String action) {
+        return screenName + "/" + id + "/" + action;
+    }
+
+    default void updateSelectionActions(UiSession session) {
+        int count = viewModel().selectedItemsOrCurrent().size();
+        session.states().set("noSelection", count == 0);
+        session.states().set("notSingleSelection", count != 1);
     }
 
     default Component commonCustomMenus(State<Boolean> focusState, SimpleTable<T> table) {

@@ -78,11 +78,13 @@ public final class VendaMercadoriaScreen implements ScreenComponent, ScreenContr
                 long id = JsonParser.parseString(selected).getAsJsonObject().get("id").getAsLong();
                 vm.selected.set(vm.filteredList.get().stream().filter(model -> model.getId() == id).findFirst().orElse(null));
                 vm.focusState.set(true);
+                updateSelectionActions(session);
                 return;
             } catch (RuntimeException ignored) { }
         }
         vm.selected.set(models.isEmpty() ? null : models.getLast());
         vm.focusState.set(!models.isEmpty());
+        updateSelectionActions(session);
     }
 
     private void showDetails() {

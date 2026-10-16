@@ -109,6 +109,6 @@ public final class PedidosScreen implements ScreenComponent {
     private void handleClickMenuTroca() {
         var pedido = vm.pedidoSelecionado.get();
         if (pedido == null) return;
-        ctx.spawnWindow(AppRoutes.Screens.PEDIDO_DETAILS.name() + "/" + pedido.getId(), e -> {});
+        ctx.spawnWindow(AppRoutes.Screens.PEDIDO_DETAILS.name() + "/" + pedido.getId());
     }
 }
