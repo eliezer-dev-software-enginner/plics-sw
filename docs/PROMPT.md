@@ -23,7 +23,7 @@ Não inicie nenhuma tarefa sem ter lido esses arquivos primeiro.
 - Explique brevemente o plano da tarefa antes de executar qualquer mudança.
 
 ## 4. Tarefa
-registre as novas atualizações no updates.json, na versão 1.1.5
+Registre as melhorias posteriores à v1.1.5 na v1.1.6 do `updates.json` e mantenha a versão do build alinhada.
 
 
 ## 5. Ao final da tarefa

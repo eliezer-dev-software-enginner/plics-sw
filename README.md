@@ -117,7 +117,7 @@ atual vs a mais recente lado a lado, com os instaladores pra baixar.
 
 **Subir versão**
 ```bash
-python scripts/bump_version.py release 1.1.2
+python scripts/bump_version.py release 1.1.6
 ```
 
 **Empacotamento:**
@@ -197,7 +197,7 @@ completa dessa tela ainda não foi migrada para JSONC.
 
 ## Versão
 
-**Versão:** 1.1.5  
+**Versão:** 1.1.6
 **Status:** Estável para Produção
 
 ## Benefícios

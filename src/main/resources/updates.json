@@ -1,5 +1,18 @@
 [
   {
+    "version": "v1.1.6",
+    "notes": [
+      "Feat: Plics SW agora é totalmente gratuito para usar, sem chave de ativação nem bloqueio por verificação remota",
+      "UI: Telas de acesso, início e listagens reorganizadas com espaçamento, cores e ações mais consistentes",
+      "UI: Tabelas das janelas de cadastro ocupam a área disponível; busca e comandos permanecem acessíveis acima dos registros",
+      "Fix: Rolagem da tabela não esconde mais os registros quando todas as linhas já cabem na janela",
+      "Fix: Editar, clonar e excluir nas listagens atuam no registro selecionado",
+      "Fix: Login de administrador permanece configurado após sair do aplicativo",
+      "UI: Formulários de produto, cliente, fornecedor, vendas e contas a receber seguem o mesmo padrão visual das listagens",
+      "UI: PDV, pedidos, relatórios e painel inicial têm apresentação mais uniforme"
+    ]
+  },
+  {
     "version": "v1.1.5",
     "notes": [
       "UI: Inputs da aplicação com visual renovado — borda cinza, altura padrão e * nos campos obrigatórios",

@@ -33,6 +33,13 @@ removido — ver docs/DECISIONS.md.
 
 ## Últimas alterações
 
+### 2026-10-16: v1.1.6
+- Notas de atualização incluem o uso gratuito sem ativação, as telas harmonizadas, ações de
+  listagem e a correção da rolagem quando todos os registros cabem no viewport.
+- `gradle.properties` é a fonte da versão 1.1.6; README e `updates.json` estão alinhados.
+- A tabela usa `megalodonte-components` para impedir rolagem vertical desnecessária em listas
+  curtas; listas longas continuam rolando.
+
 ### 2026-10-07: Actions compartilhadas e compatibilidade de ícones
 - Workflow de instaladores centralizado em `megalodonte-packaging`; mantém clones e
   publicação Maven local das bibliotecas e passa a resolver nome/versão pelo empacotador.

@@ -1,5 +1,12 @@
 # TODO
 
+## Concluído (v1.1.6 — 2026-10-16)
+
+- [x] Revisar commits posteriores à v1.1.5 e registrar apenas mudanças visíveis ao usuário.
+- [x] Alinhar `gradle.properties`, `updates.json` e README na versão 1.1.6.
+- [x] Cobrir a rolagem de tabelas curtas no componente compartilhado, preservando listas longas.
+- [x] Testar o aplicativo, gerar o AppImage 1.1.6 com `megalodonte-packaging` e abri-lo.
+
 ## Concluído (CI e compatibilidade — 2026-10-07)
 
 - [x] Usar workflow compartilhado para MSI/DEB, preservando clones e Maven local.
