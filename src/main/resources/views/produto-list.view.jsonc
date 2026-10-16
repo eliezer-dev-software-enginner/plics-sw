@@ -260,8 +260,7 @@
           ],
           "pageSize": 25,
           "horizontalScroll": true,
-          "multipleSelection": true,
-          "rowHeight": 62
+          "multipleSelection": true
         },
         "bind": {
           "items": "rows",
