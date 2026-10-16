@@ -4,7 +4,6 @@ import megalodonte.base.route.RouteProps;
 import megalodonte.base.route.Route;
 import my_app.Main;
 import my_app.SplashScreen;
-import my_app.screens.acessoBloqueadoScreen.AcessoBloqueadoScreen;
 import my_app.screens.authScreen.AuthScreen;
 import my_app.screens.categoriaScreen.AddOrEditCategorias;
 import my_app.screens.categoriaScreen.CategoriaScreen;
@@ -58,7 +57,6 @@ public class AppRoutes {
         INFO_UPDATE,
         RELATORIOS,
         LOGS,
-        ACESSO_BLOQUEADO,
         PEDIDO_DETAILS,
         TERMOS_DE_USO,
         ADD_OR_EDIT_PRODUTO,
@@ -111,8 +109,6 @@ public class AppRoutes {
                 new Route(Screens.RELATORIOS.name(), RelatoriosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Relatórios financeiros", true)),
                 new Route(Screens.LOGS.name(), LogsScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Logs da aplicação", true)),
                 new Route(Screens.PEDIDO_DETAILS.name() + "/${id}", PedidoDetails::new, new RouteProps(MEDIUM_WIDTH, MAX_HEIGHT, "Detalhes do pedido", true)),
-                new Route(Screens.ACESSO_BLOQUEADO.name(), ctx -> new AcessoBloqueadoScreen(),
-                        new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Acesso bloqueado", false)),
                 new Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false)),
                 new Route(Screens.ADD_OR_EDIT_PRODUTO.name()+"/${id}/${type}", AddOrEditProduto::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar produto", true)),
                 new Route(Screens.ADD_OR_EDIT_CATEGORIAS.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar categoria", true)),

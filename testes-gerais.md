@@ -110,12 +110,12 @@ Testes de validação genérica e telas que não dependem de perfil de negócio.
 
 ## AuthScreen
 
-| # | Cenário | Licença | Login | Senha | Efeito Esperado | Erro | Resultado |
-|---|---------|---------|-------|-------|-----------------|------|---|
-| 99 | Login com credenciais corretas | (licença válida) | admin | admin123 | Acesso liberado. | | |
-| 100 | Licença inválida | LICENCA-INVALIDA | - | - | Alerta: "Licença inválida". | | |
-| 101 | Login sem credenciais (credenciais desabilitadas) | (licença válida) | - | - | Acesso liberado (pula tela de login). | | |
-| 102 | Senha incorreta | (licença válida) | admin | senha-errada | Alerta: "Login ou senha incorretos". | | |
+| # | Cenário | Login | Senha | Efeito Esperado | Erro | Resultado |
+|---|---------|-------|-------|-----------------|------|-----------|
+| 99 | Login com credenciais corretas | admin | admin123 | Acesso liberado. | | |
+| 100 | Instalação sem ativação | - | - | O aplicativo inicia sem solicitar licença. | | |
+| 101 | Login sem credenciais (credenciais desabilitadas) | - | - | Acesso liberado (pula tela de login). | | |
+| 102 | Senha incorreta | admin | senha-errada | Alerta: "Login inválido". | | |
 
 ---
 

@@ -2,6 +2,8 @@
 
 Sistema desktop completo para gestão de pequenas e médias empresas, desenvolvido com JavaFX.
 
+O Plics SW é gratuito para usar: não exige chave de ativação, licença de teste ou verificação remota de acesso. O login local, quando habilitado, protege os dados da instalação.
+
 ## Propósito
 
 Sistema ERP completo para controle de:
@@ -165,7 +167,7 @@ desativado — quem atualiza é o próprio `flatpak update` (ver `Main.isFlatpak
 Manifest e metadados ficam em `flatpak/`. Pra **publicar de verdade** no Flathub
 (não só testar local), veja o passo a passo em [`flatpak/README.md`](flatpak/README.md)
 — tem um bloqueio importante ali (a fonte do manifest hoje não é reproduzível, só
-funciona pra build local) e as ressalvas sobre licença/permissões.
+funciona pra build local) e as ressalvas sobre metadados de distribuição e permissões.
 
 ## Configuração de execução
 
@@ -174,17 +176,16 @@ Os valores de integração são lidos do ambiente **na máquina que executa o ap
 | Variável | Uso | Quando ausente |
 | --- | --- | --- |
 | `PLICS_TELEGRAM_BOT_TOKEN` e `PLICS_TELEGRAM_CHAT_ID` | Envio de notificações de suporte pelo Telegram | Envios desativados |
-| `PLICS_ACCESS_VERIFY_URL` e `PLICS_ACCESS_VERIFY_EXPECTED` | Verificação remota opcional de acesso | Verificação ignorada |
 | `PLICS_SUPPORT_WHATSAPP` | Número de suporte no link `wa.me` | Número público padrão |
 | `PLICS_WEBSITE_URL` | Base dos links do site oficial | Site público padrão |
 
 O aplicativo conserva o comportamento de envio automático de log e banco local ao Telegram **somente quando** as duas variáveis do Telegram são fornecidas. Administre esse recurso de acordo com a política de privacidade e a autorização dos usuários. Não coloque tokens em `packaging.toml`, no workflow, em argumentos de build ou em arquivos versionados. Credenciais que já estiveram em commits antigos devem ser substituídas no provedor; removê-las do código atual não apaga o histórico Git.
 
-O [levantamento de configuração](docs/CONFIGURATION_AUDIT.md) identifica também a lista de licenças offline e as credenciais administrativas iniciais ainda embutidas, com a migração necessária para não quebrar instalações existentes nem expor valores em instaladores.
+O [levantamento de configuração](docs/CONFIGURATION_AUDIT.md) identifica as credenciais administrativas iniciais ainda embutidas, com a migração necessária para não quebrar instalações existentes nem expor valores em instaladores.
 
 ## Interface declarativa
 
-As telas de boas-vindas, autenticação, acesso bloqueado, relato de erro, sugestão de melhoria, logs e notas de atualização usam `megalodonte-jsonc-ui`. Seus recursos em `src/main/resources/views/` definem a árvore, os componentes nativos, o estado e os eventos; as classes Java registram apenas ações de domínio e controlam as sessões. Os testes validam os recursos e o registro das ações. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
+As telas de boas-vindas, autenticação, relato de erro, sugestão de melhoria, logs e notas de atualização usam `megalodonte-jsonc-ui`. Seus recursos em `src/main/resources/views/` definem a árvore, os componentes nativos, o estado e os eventos; as classes Java registram apenas ações de domínio e controlam as sessões. Os testes validam os recursos e o registro das ações. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
 
 As listas de fornecedores e clientes também declaram tabela, busca e ações em
 `fornecedor-list.view.jsonc` e `cliente-list.view.jsonc`; seleção, detalhes e

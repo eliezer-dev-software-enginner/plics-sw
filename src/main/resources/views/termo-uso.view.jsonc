@@ -82,7 +82,7 @@
           {
             "type": "Text",
             "props": {
-              "text": "O Plics SW foi desenvolvido para funcionar principalmente de forma local (offline). Os dados cadastrados pelo usuário permanecem armazenados no computador onde o aplicativo está instalado.\n\nDependendo dos recursos utilizados, o aplicativo poderá coletar as seguintes informações:\n\nNome do usuário;\nEndereço de e-mail;\nInformações da licença do software;\nIdentificador do dispositivo (endereço MAC) para validação da licença e identificação técnica nas notificações de suporte;\nInformações técnicas do aplicativo (versão instalada, sistema operacional e registros de erros);\nDados necessários para atualização do aplicativo.\n\nO Plics SW não coleta automaticamente informações financeiras, bancárias ou dados pessoais além daqueles necessários para o funcionamento do software.",
+              "text": "O Plics SW foi desenvolvido para funcionar principalmente de forma local (offline). Os dados cadastrados pelo usuário permanecem armazenados no computador onde o aplicativo está instalado.\n\nDependendo dos recursos utilizados, o aplicativo poderá coletar as seguintes informações:\n\nNome do usuário;\nEndereço de e-mail;\nIdentificador do dispositivo (endereço MAC) para identificação técnica nas notificações de suporte;\nInformações técnicas do aplicativo (versão instalada, sistema operacional e registros de erros);\nDados necessários para atualização do aplicativo.\n\nO Plics SW não coleta automaticamente informações financeiras, bancárias ou dados pessoais além daqueles necessários para o funcionamento do software.",
               "wrapWidth": 900
             }
           },
@@ -118,7 +118,7 @@
           {
             "type": "Text",
             "props": {
-              "text": "As informações coletadas podem ser utilizadas para:\n\nvalidar a licença do software;\ndisponibilizar atualizações;\nmelhorar a estabilidade do aplicativo;\ncorrigir erros;\noferecer suporte técnico;\nprevenir uso indevido ou fraude.",
+              "text": "As informações coletadas podem ser utilizadas para:\n\ndisponibilizar atualizações;\nmelhorar a estabilidade do aplicativo;\ncorrigir erros;\noferecer suporte técnico;\nprevenir uso indevido ou fraude.",
               "wrapWidth": 900
             }
           },
@@ -136,7 +136,7 @@
           {
             "type": "Text",
             "props": {
-              "text": "As informações técnicas podem ser transmitidas aos serviços usados pelo Plics SW para:\n\nvalidar a licença do software;\nenviar registros de erros e arquivos automáticos de diagnóstico ao canal de suporte no Telegram;\nidentificar o dispositivo de origem dessas notificações por seu endereço MAC;\noferecer suporte técnico e melhorar a estabilidade do aplicativo.",
+              "text": "As informações técnicas podem ser transmitidas aos serviços usados pelo Plics SW para:\n\nenviar registros de erros e arquivos automáticos de diagnóstico ao canal de suporte no Telegram;\nidentificar o dispositivo de origem dessas notificações por seu endereço MAC;\noferecer suporte técnico e melhorar a estabilidade do aplicativo.",
               "wrapWidth": 900
             }
           },
@@ -190,7 +190,7 @@
           {
             "type": "Text",
             "props": {
-              "text": "O aplicativo poderá utilizar serviços de terceiros para funcionalidades específicas, como:\n\nverificação de licença;\ndistribuição de atualizações;\narmazenamento de registros de erros;\nsuporte ao usuário.\n\nCada serviço possui sua própria política de privacidade.",
+              "text": "O aplicativo poderá utilizar serviços de terceiros para funcionalidades específicas, como:\n\ndistribuição de atualizações;\narmazenamento de registros de erros;\nsuporte ao usuário.\n\nCada serviço possui sua própria política de privacidade.",
               "wrapWidth": 900
             }
           },

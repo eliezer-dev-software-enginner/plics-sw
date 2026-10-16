@@ -17,22 +17,18 @@ public final class AuthScreen implements ScreenComponent {
     private final ScreenContextInterface context;
     private final AuthScreenViewModel viewModel = new AuthScreenViewModel();
     private final UiSession session;
-    private final Subscription licenseVisibility;
     private final Subscription loading;
 
     public AuthScreen(ScreenContextInterface context) {
         this.context = context;
         session = VIEW.open(new Actions()
             .register("entrar", screen -> {
-                viewModel.licensaState.set(screen.states().string("licenca").get());
                 viewModel.loginState.set(screen.states().string("login").get());
                 viewModel.passwordState.set(screen.states().string("senha").get());
                 viewModel.entrar(context);
             })
             .register("abrirSuporte", ignored -> Redirect.to(Data.linkWhatsappSupport))
             .register("abrirSite", ignored -> Redirect.to(Data.linkWebsiteOfficial)));
-        licenseVisibility = viewModel.showLicensaState.observe(
-                visible -> session.states().state("mostrarLicenca", Boolean.class).set(visible));
         loading = viewModel.loadingState.observe(
                 value -> session.states().state("carregando", Boolean.class).set(value));
         session.states().string("versao").set("Plics - SW " + Main.APP_VERSION);
@@ -47,7 +43,6 @@ public final class AuthScreen implements ScreenComponent {
     @Override public Component render() { return session.render(); }
 
     @Override public void onDestroy() {
-        licenseVisibility.close();
         loading.close();
         session.close();
         try { viewModel.onDestroy(); }

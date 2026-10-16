@@ -27,8 +27,6 @@ public class PreferenciasModel extends Identifier {
     @Column(name = "primeiro_acesso")
     private Integer primeiroAcesso;
 
-    private String licensa;
-
     @Column(name = "porta_impressora")
     private String portaImpressora;
 

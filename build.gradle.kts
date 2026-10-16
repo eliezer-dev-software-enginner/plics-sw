@@ -67,7 +67,6 @@ dependencies {
     //implementation("org.controlsfx:controlsfx:11.2.4-SNAPSHOT")
 
 
-    implementation("org.jsoup:jsoup:1.23.1")
 
     //
     implementation("net.java.dev.jna:jna:5.14.0")

@@ -2,10 +2,6 @@
   "version": 1,
   "id": "auth",
   "states": {
-    "licenca": {
-      "type": "string",
-      "initial": ""
-    },
     "login": {
       "type": "string",
       "initial": ""
@@ -13,10 +9,6 @@
     "senha": {
       "type": "string",
       "initial": ""
-    },
-    "mostrarLicenca": {
-      "type": "boolean",
-      "initial": true
     },
     "carregando": {
       "type": "boolean",
@@ -133,40 +125,6 @@
                           "textColor": "#17324d",
                           "bold": true
                         }
-                      },
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 6,
-                          "fillWidth": true
-                        },
-                        "bind": {
-                          "visible": "mostrarLicenca"
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "Licença"
-                            },
-                            "style": {
-                              "fontSize": 13,
-                              "textColor": "#263a54",
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Input",
-                            "props": {
-                              "placeholder": "Informe sua licença",
-                              "width": 408,
-                              "height": 42
-                            },
-                            "bind": {
-                              "value": "licenca"
-                            }
-                          }
-                        ]
                       },
                       {
                         "type": "Column",

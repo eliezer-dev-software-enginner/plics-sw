@@ -20,8 +20,6 @@ import my_app.core.db.services.PreferenciasService;
 import my_app.core.components.Components;
 import my_app.core.telegram.TelegramNotifierFactory;
 import my_app.core.ProcessKiller;
-import my_app.screens.authScreen.AuthScreenViewModel;
-import my_app.services.VerificacaoAcessoService;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,18 +171,6 @@ public class Main {
             flyway.migrate();
             log.info("Migrations do banco aplicadas com sucesso");
 
-            // Checagem provisória de acesso (ver VerificacaoAcessoService) — se o
-            // dígito verificador do site não bater (ou o site estiver fora do ar/sem
-            // internet), nem chega a resolver a rota normal: vai direto pro bloqueio.
-            if (!VerificacaoAcessoService.acessoLiberado()) {
-                UI.runOnUi(() -> {
-                    Components.ShowAlertError("O acesso não pode ser realizado.");
-                    var result = router.navigateOnStage(AppRoutes.Screens.ACESSO_BLOQUEADO.name(), context.javafxStage());
-                    context.useView(result);
-                });
-                return;
-            }
-
             boolean enterWithCredentials = false;
             boolean isFirstAccess = false;
 
@@ -193,9 +179,7 @@ public class Main {
                 if (!prefs.isEmpty()) {
                     var pref = prefs.getFirst();
                     isFirstAccess = pref.isFirstAccess();
-                    enterWithCredentials =
-                            pref.getCredenciaisHabilitadas() == 1||
-                                    AuthScreenViewModel.isLicenseInvalid(pref.getLicensa());
+                    enterWithCredentials = pref.getCredenciaisHabilitadas() == 1;
                 }
             }
 

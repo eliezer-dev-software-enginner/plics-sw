@@ -1,36 +1,23 @@
 package my_app.screens.authScreen;
 
-import megalodonte.base.state.State;
 import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.route.v2.ScreenContextInterface;
+import megalodonte.base.state.State;
 import my_app.core.AppRoutes;
+import my_app.core.components.Components;
 import my_app.core.db.models.PreferenciasModel;
 import my_app.core.db.services.PreferenciasService;
-import my_app.core.components.Components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class AuthScreenViewModel {
-
     private static final Logger log = LoggerFactory.getLogger(AuthScreenViewModel.class);
-    //TODO: REMOVER NO FUTURO: CONSULTAR SERVIDOR
-    public static final List<String> LICENCAS_PRODUCAO = List.of(
-            "5fZl2OI7f2ksjc8YRzBRR0ycjsCzycXyrX",
-            "Fh0OofMRVVE30elP6KvES4AuBBEYcK8qZIyXzL",
-            "5Zlix2GJbCqM2vYcxWSHk3E5YI8bf2ePHAxaWK",
-            "fBiO4l1qmTj3WdwhbU5At7UTAWiBuoBfk1FMXo"
-    );
 
     private final PreferenciasService preferenciasService;
-
-    final State<Boolean> showLicensaState = State.of(true);
     final State<Boolean> loadingState = State.of(true);
-
-    final State<String> licensaState = State.of("");
     final State<String> loginState = State.of("");
     final State<String> passwordState = State.of("");
 
@@ -53,51 +40,29 @@ public class AuthScreenViewModel {
         Async.Run(() -> {
             try {
                 var prefs = preferenciasService.listar();
-                if (!prefs.isEmpty()) {
-                    prefRecuperada = prefs.getFirst();
-                    UI.runOnUi(() -> {
-                        boolean invalid = isLicenseInvalid(prefRecuperada.getLicensa());
-                        boolean firstAccess = prefRecuperada.isFirstAccess();
-                        log.info("first access: {}", firstAccess);
-                        showLicensaState.set(firstAccess || invalid);
-                        loadingState.set(false);
-                    });
-                }
+                prefRecuperada = prefs.isEmpty() ? null : prefs.getFirst();
+                UI.runOnUi(() -> {
+                    log.info("first access: {}", prefRecuperada != null && prefRecuperada.isFirstAccess());
+                    loadingState.set(false);
+                });
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                log.error("Erro ao carregar preferências de acesso", e);
+                UI.runOnUi(() -> {
+                    loadingState.set(false);
+                    Components.ShowAlertError("Não foi possível carregar as preferências de acesso.");
+                });
             }
         });
     }
 
-    public static boolean isLicenseInvalid(String license) {
-        // LICENCAS_PRODUCAO é uma lista imutável (List.of) — contains(null) lança NPE
-        // em vez de retornar false. licensa é null em toda instalação nova (o INSERT
-        // padrão em V16__dados_padrao.sql não preenche essa coluna), então isso
-        // quebrava a splash logo na primeira execução do app.
-        return license == null || !LICENCAS_PRODUCAO.contains(license);
-    }
-
     void entrar(ScreenContextInterface ctx) {
-        var licenseValue = licensaState.get().trim();
-
-        if (showLicensaState.get()) {
-            if (licenseValue.isEmpty()) {
-                Components.ShowAlertError("Licença inválida");
-                return;
-            }
-
-            if (isLicenseInvalid(licenseValue)) {
-                Components.ShowAlertError("Licença inválida");
-                return;
-            }
-
-            prefRecuperada.setLicensa(licenseValue);
+        if (prefRecuperada == null) {
+            Components.ShowAlertError("Preferências de acesso indisponíveis.");
+            return;
         }
-
         String loginValue = loginState.get().trim();
         String senhaValue = passwordState.get().trim();
-
-        if (!prefRecuperada.getLogin().trim().equals(loginValue) || !prefRecuperada.getSenha().trim().equals(senhaValue)) {
+        if (!loginValue.equals(prefRecuperada.getLogin()) || !senhaValue.equals(prefRecuperada.getSenha())) {
             Components.ShowAlertError("Login inválido");
             return;
         }

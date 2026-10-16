@@ -12,7 +12,6 @@ DELETE FROM clientes;
 DELETE FROM usuarios;
 DELETE FROM fornecedores;
 DELETE FROM categorias;
-DELETE FROM licensas;
 DELETE FROM preferencias;
 
 PRAGMA foreign_keys = ON;

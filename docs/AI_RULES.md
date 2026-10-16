@@ -45,7 +45,7 @@
 
 ## O que NÃO entra no updates.json
 - Envios automáticos de log/banco de dados pro Telegram (monitoramento de suporte)
-- Mecanismos de verificação de acesso/licença
+- Mecanismos de autenticação local
 - Refatorações internas sem efeito visível pro usuário final
 - Commits de teste/experimentação
 
