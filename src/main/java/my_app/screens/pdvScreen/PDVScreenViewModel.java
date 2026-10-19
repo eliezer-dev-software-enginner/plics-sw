@@ -372,7 +372,13 @@ public class PDVScreenViewModel {
         }
 
         final var finalClienteId = clienteId;
-        final int qtdParcelas = fiado ? Math.max(1, Integer.parseInt(numeroParcelas.get())) : 1;
+        final int qtdParcelas;
+        try {
+            qtdParcelas = fiado ? validarNumeroParcelas(numeroParcelas.get()) : 1;
+        } catch (NumberFormatException e) {
+            Components.ShowAlertError("Informe um número de parcelas maior que zero.");
+            return;
+        }
         final String formaPagamento = formaPagamentoSelecionado.get();
         final BigDecimal descontoValue;
         try {
@@ -420,6 +426,12 @@ public class PDVScreenViewModel {
                 UI.runOnUi(() -> Components.ShowAlertError("Erro ao finalizar venda: " + e.getMessage()));
             }
         });
+    }
+
+    static int validarNumeroParcelas(String valor) {
+        int parcelas = Integer.parseInt(valor == null ? "" : valor.trim());
+        if (parcelas < 1) throw new NumberFormatException("Número de parcelas deve ser positivo");
+        return parcelas;
     }
 
     void imprimirNota(){
