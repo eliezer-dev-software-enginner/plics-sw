@@ -73,11 +73,26 @@ notas/recibos.
 Moderna, intuitiva e responsiva com navegação estruturada e componentes otimizados.
 
 ### Build
+
+Requer JDK 25. O Gradle Wrapper está incluído. O build consulta `mavenLocal()` antes
+do Maven Central; as bibliotecas `megalodonte:*`, `pack.utilities` e `disgust`
+declaradas em [`build.gradle.kts`](build.gradle.kts) precisam estar disponíveis
+nos repositórios configurados. O repositório não inclui o código dessas bibliotecas
+nem instruções suficientes para instalá-las separadamente. Se o Gradle não resolver
+uma delas, obtenha os artefatos correspondentes antes de continuar.
+
 ```bash
 ./gradlew clean build
 ```
 
 ### Execução
+
+Além das dependências do build, a tarefa `run` exige a variável
+`JAVAFX_MODULES_HOME` apontando para um diretório que contenha
+`linux-25.0.1/lib` no Linux ou `windows-25.0.1/lib` no Windows. O script
+`build.gradle.kts` seleciona essas pastas conforme o sistema operacional.
+Configure a variável no seu ambiente antes de executar:
+
 ```bash
 ./gradlew run
 ```
@@ -86,8 +101,11 @@ Moderna, intuitiva e responsiva com navegação estruturada e componentes otimiz
 
 O projeto tem dois scripts Python que inserem e depois apagam **20 mil produtos no banco real**
 (`%APPDATA%\plics-sw\erp.db` no Windows, `~/.plics-sw/erp.db` nos demais) pra você medir como o
-app se comporta com muitos registros. Não passam pelo Gradle e não têm dependência externa (só
-`sqlite3`).
+app se comporta com muitos registros. Faça backup desse banco antes do teste: a criação
+remove registros cujo código de barras começa com `PERFTEST`, e o script de limpeza
+remove novamente todos os registros com esse prefixo. Abra o aplicativo uma vez para
+criar ou migrar o banco antes de rodar os scripts. Eles não passam pelo Gradle e não
+têm dependência externa (só `sqlite3` da biblioteca padrão do Python).
 
 ```powershell
 # 1) Criar os 20 mil produtos (idempotente: apaga os "PERFTEST%" antigos antes de inserir)
@@ -110,10 +128,9 @@ python scripts/apagar_produtos_teste.py
 
 ### Verificação de atualização
 
-O Plics SW não baixa/instala nem verifica versão sozinho. O menu "Suporte" > "Buscar
-atualização" só abre `plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X` no
-navegador — a própria página busca a versão mais recente no GitHub e mostra a versão
-atual vs a mais recente lado a lado, com os instaladores pra baixar.
+O Plics SW não baixa nem instala atualizações sozinho. O menu "Suporte" > "Buscar
+atualização" abre `plics-sw-webpage.vercel.app/atualizacao?versao=X.X.X` no
+navegador; a consulta e a comparação de versões ocorrem na página web.
 
 **Subir versão**
 ```bash
@@ -161,8 +178,8 @@ Desinstalar:
 flatpak uninstall io.github.eliezerdevsoftwareenginner.PlicsSW
 ```
 
-Dentro do Flatpak, o updater automático (menu Suporte > Buscar atualização) fica
-desativado — quem atualiza é o próprio `flatpak update` (ver `Main.isFlatpak`).
+Dentro do Flatpak, a opção "Buscar atualização" fica desativada; as atualizações
+são gerenciadas pelo Flatpak (ver `Main.isFlatpak`).
 
 Manifest e metadados ficam em `flatpak/`. Pra **publicar de verdade** no Flathub
 (não só testar local), veja o passo a passo em [`flatpak/README.md`](flatpak/README.md)
@@ -198,6 +215,7 @@ completa dessa tela ainda não foi migrada para JSONC.
 ## Versão
 
 **Versão:** 1.1.6
+
 **Status:** Estável para Produção
 
 ## Benefícios
@@ -217,3 +235,9 @@ Para suporte e dúvidas:
 ---
 
 Desenvolvido com tecnologias nacionais e foco em simplicidade e performance.
+
+## Licença do código
+
+Não há arquivo de licença neste repositório. A gratuidade de uso descrita acima
+não define permissão para copiar, modificar ou redistribuir o código; isso requer
+esclarecimento dos responsáveis pelo projeto.
