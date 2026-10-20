@@ -1,14 +1,15 @@
 # Plics SW
 
-Sistema desktop completo para gestão de pequenas e médias empresas, desenvolvido com JavaFX.
+Sistema desktop para gestão de pequenas e médias empresas, desenvolvido com JavaFX.
 
 O Plics SW é gratuito para usar: não exige chave de ativação, licença de teste ou verificação remota de acesso. O login local, quando habilitado, protege os dados da instalação.
 
 ## Propósito
 
-Sistema ERP completo para controle de:
+Aplicação desktop para controle de:
 - Cadastros (Produtos, Categorias, Clientes, Fornecedores)
-- Compras com controle inteligente de estoque
+- Vendas e pedidos no ponto de venda (PDV)
+- Estoque de produtos
 - Gestão financeira básica
 - Relatórios e visualizações
 
@@ -23,14 +24,10 @@ Sistema ERP completo para controle de:
 ### Controle de Estoque Inteligente
 - Controle por operação: Opção de refletir no estoque individualmente
 - Visualização em tempo real: Campos mostram estoque anterior e posterior
-- Validação automática: Impede estoque negativo
+- Alerta ao vender abaixo do estoque mínimo, com opção de confirmar a operação
 - Migração automática: Atualiza bancos existentes
 
-### Fluxo de Compras
-- Cadastro completo de compras
-- Cálculo automático de totais
-- Controle financeiro integrado
-- Relatórios de compras por período
+Os serviços de compras existem no código e alimentam indicadores financeiros, mas as rotas de cadastro de compras não estão registradas na navegação atual.
 
 ## Tecnologia
 
@@ -202,21 +199,19 @@ O [levantamento de configuração](docs/CONFIGURATION_AUDIT.md) identifica as cr
 
 ## Interface declarativa
 
-As telas de boas-vindas, autenticação, relato de erro, sugestão de melhoria, logs e notas de atualização usam `megalodonte-jsonc-ui`. Seus recursos em `src/main/resources/views/` definem a árvore, os componentes nativos, o estado e os eventos; as classes Java registram apenas ações de domínio e controlam as sessões. Os testes validam os recursos e o registro das ações. As demais telas ainda usam a API Java de componentes e serão migradas por módulo para preservar as regras de cadastro, estoque e financeiro.
+As telas de boas-vindas, autenticação, relato de erro, sugestão de melhoria, logs e notas de atualização usam `megalodonte-jsonc-ui`. Cadastros, vendas, PDV, contas a receber, pedidos e relatórios também carregam recursos em `src/main/resources/views/`. Esses recursos declaram a estrutura visual; as classes Java conectam estado, ações, validação e serviços. Alguns detalhes e ações ainda são montados em Java.
 
 As listas de fornecedores e clientes também declaram tabela, busca e ações em
 `fornecedor-list.view.jsonc` e `cliente-list.view.jsonc`; seleção, detalhes e
 exportação permanecem em Java.
 
 Os gráficos da tela de relatórios usam `BarChartView` e `PieChartView` de
-`megalodonte-components`, alimentados pelo ViewModel via `State`. A composição
-completa dessa tela ainda não foi migrada para JSONC.
+`megalodonte-components`, alimentados pelo ViewModel via `State`; o layout da tela
+é carregado de `relatorios.view.jsonc`.
 
 ## Versão
 
 **Versão:** 1.1.6
-
-**Status:** Estável para Produção
 
 ## Benefícios
 
