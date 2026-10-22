@@ -163,49 +163,81 @@
                       {
                         "type": "Button",
                         "props": {
-                          "text": "Imprimir venda"
+                          "text": "Imprimir",
+                          "iconSource": "/assets/icons/print.png",
+                          "iconSize": 18,
+                          "height": 42
                         },
                         "events": {
                           "onClick": "print"
                         },
                         "bind": {
                           "visible": "hasSelection"
+                        },
+                        "style": {
+                          "bgColor": "#e7f0f8",
+                          "textColor": "#23456e",
+                          "bold": true
                         }
                       },
                       {
                         "type": "Button",
                         "props": {
-                          "text": "Excluir venda selecionada"
+                          "text": "Excluir",
+                          "iconSource": "/assets/icons/delete.png",
+                          "iconSize": 18,
+                          "height": 42
                         },
                         "events": {
                           "onClick": "delete"
                         },
                         "bind": {
                           "visible": "hasSelection"
+                        },
+                        "style": {
+                          "bgColor": "#fcebea",
+                          "textColor": "#a43a34",
+                          "bold": true
                         }
                       },
                       {
                         "type": "Button",
                         "props": {
-                          "text": "Devolver venda selecionada"
+                          "text": "Devolver",
+                          "iconSource": "/assets/icons/return.png",
+                          "iconSize": 18,
+                          "height": 42
                         },
                         "events": {
                           "onClick": "return"
                         },
                         "bind": {
                           "visible": "canReturn"
+                        },
+                        "style": {
+                          "bgColor": "#fff1d9",
+                          "textColor": "#8b560e",
+                          "bold": true
                         }
                       },
                       {
                         "type": "Button",
                         "props": {
-                          "text": "Trocar venda selecionada"
+                          "text": "Trocar",
+                          "iconSource": "/assets/icons/exchange.png",
+                          "iconSize": 18,
+                          "height": 42
                         },
                         "events": {
                           "onClick": "exchange"
                         },
                         "bind": {
                           "visible": "canReturn"
+                        },
+                        "style": {
+                          "bgColor": "#e4f4ef",
+                          "textColor": "#12645d",
+                          "bold": true
                         }
                       }
                     ]
