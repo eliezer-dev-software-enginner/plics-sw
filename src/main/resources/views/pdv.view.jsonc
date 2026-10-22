@@ -93,526 +93,56 @@
           {
             "type": "Column",
             "props": {
-              "padding": 12,
+              "padding": 18,
               "spacing": 14,
               "fillWidth": true
             },
             "children": [
               {
-                "type": "Text",
+                "type": "Container",
                 "props": {
-                  "text": "Plics SW — Ponto de venda"
-                },
-                "style": {
-                  "bold": true
-                }
-              },
-              {
-                "type": "Row",
-                "props": {
-                  "spacing": 12,
+                  "padding": 18,
+                  "bgColor": "#ffffff",
                   "fillWidth": true
                 },
                 "children": [
                   {
                     "type": "Column",
                     "props": {
-                      "spacing": 10,
-                      "fillWidth": true
-                    },
-                    "children": [
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 5
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "Código ou nome do produto"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Input",
-                            "props": {
-                              "placeholder": "Pesquise por código ou nome"
-                            },
-                            "bind": {
-                              "value": "productSearch"
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 5
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "Sugestões"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Select",
-                            "bind": {
-                              "value": "selectedProduct",
-                              "items": "productOptions"
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 5
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "Quantidade"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Input",
-                            "props": {
-                              "placeholder": "Ex: 1"
-                            },
-                            "bind": {
-                              "value": "quantity"
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Button",
-                        "props": {
-                          "text": "Adicionar produto"
-                        },
-                        "events": {
-                          "onClick": "addProduct"
-                        }
-                      },
-                      {
-                        "type": "Text",
-                        "props": {
-                          "text": "Lista de produtos"
-                        },
-                        "style": {
-                          "bold": true
-                        }
-                      },
-                      {
-                        "type": "Table",
-                        "props": {
-                          "columns": [
-                            {
-                              "title": "Imagem",
-                              "field": "imagem",
-                              "kind": "image",
-                              "size": 40
-                            },
-                            {
-                              "title": "Cod",
-                              "field": "codigo"
-                            },
-                            {
-                              "title": "Nome",
-                              "field": "nome"
-                            },
-                            {
-                              "title": "Qtd.",
-                              "field": "quantidade"
-                            },
-                            {
-                              "title": "Vlr. Unit.",
-                              "field": "precoUnitario"
-                            },
-                            {
-                              "title": "Total",
-                              "field": "total"
-                            }
-                          ],
-                          "height": 350,
-                          "horizontalScroll": true
-                        },
-                        "bind": {
-                          "items": "cart",
-                          "selected": "selectedCart"
-                        },
-                        "events": {
-                          "onSelect": "selectCart"
-                        }
-                      },
-                      {
-                        "type": "Row",
-                        "props": {
-                          "spacing": 8
-                        },
-                        "children": [
-                          {
-                            "type": "Column",
-                            "props": {
-                              "spacing": 5
-                            },
-                            "children": [
-                              {
-                                "type": "Text",
-                                "props": {
-                                  "text": "Quantidade do item selecionado"
-                                },
-                                "style": {
-                                  "bold": true
-                                }
-                              },
-                              {
-                                "type": "Input",
-                                "props": {
-                                  "placeholder": "Ex: 1"
-                                },
-                                "bind": {
-                                  "value": "editQuantity"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "type": "Button",
-                            "props": {
-                              "text": "Atualizar quantidade"
-                            },
-                            "events": {
-                              "onClick": "updateQuantity"
-                            }
-                          },
-                          {
-                            "type": "Button",
-                            "props": {
-                              "text": "Remover item"
-                            },
-                            "events": {
-                              "onClick": "removeItem"
-                            }
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Column",
-                    "props": {
-                      "spacing": 10,
-                      "fillWidth": true
+                      "spacing": 5
                     },
                     "children": [
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Totais"
+                          "text": "CAIXA / VENDA"
                         },
                         "style": {
+                          "fontSize": 12,
+                          "textColor": "#167a80",
                           "bold": true
                         }
-                      },
-                      {
-                        "type": "Row",
-                        "props": {
-                          "spacing": 8
-                        },
-                        "children": [
-                          {
-                            "type": "Column",
-                            "children": [
-                              {
-                                "type": "Text",
-                                "props": {
-                                  "text": "SUBTOTAL"
-                                },
-                                "style": {
-                                  "bold": true
-                                }
-                              },
-                              {
-                                "type": "Text",
-                                "bind": {
-                                  "text": "subtotal"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "type": "Column",
-                            "children": [
-                              {
-                                "type": "Text",
-                                "props": {
-                                  "text": "TOTAL A PAGAR"
-                                },
-                                "style": {
-                                  "bold": true
-                                }
-                              },
-                              {
-                                "type": "Text",
-                                "bind": {
-                                  "text": "totalAPagar"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "type": "Column",
-                            "children": [
-                              {
-                                "type": "Text",
-                                "props": {
-                                  "text": "TROCO"
-                                },
-                                "style": {
-                                  "bold": true
-                                }
-                              },
-                              {
-                                "type": "Text",
-                                "bind": {
-                                  "text": "troco"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 5
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "TOTAL RECEBIDO"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Input",
-                            "props": {
-                              "placeholder": "R$ 0,00"
-                            },
-                            "bind": {
-                              "value": "totalRecebido"
-                            },
-                            "format": {
-                              "kind": "currency",
-                              "currency": "BRL",
-                              "locale": "pt-BR"
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 5
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "DESCONTO"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Input",
-                            "props": {
-                              "placeholder": "R$ 0,00"
-                            },
-                            "bind": {
-                              "value": "desconto"
-                            },
-                            "format": {
-                              "kind": "currency",
-                              "currency": "BRL",
-                              "locale": "pt-BR"
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 5
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "FRETE"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Input",
-                            "props": {
-                              "placeholder": "R$ 0,00"
-                            },
-                            "bind": {
-                              "value": "frete"
-                            },
-                            "format": {
-                              "kind": "currency",
-                              "currency": "BRL",
-                              "locale": "pt-BR"
-                            }
-                          }
-                        ]
                       },
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Cliente e pagamento"
+                          "text": "Ponto de venda"
                         },
                         "style": {
+                          "fontSize": 25,
+                          "textColor": "#18324d",
                           "bold": true
                         }
                       },
                       {
-                        "type": "Column",
+                        "type": "Text",
                         "props": {
-                          "spacing": 5
+                          "text": "Registre os itens e confira o pagamento antes de finalizar."
                         },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "Cliente"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Select",
-                            "bind": {
-                              "value": "cliente",
-                              "items": "clientOptions"
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Button",
-                        "props": {
-                          "text": "Criar cliente"
-                        },
-                        "events": {
-                          "onClick": "createCustomer"
-                        }
-                      },
-                      {
-                        "type": "Column",
-                        "props": {
-                          "spacing": 5
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "props": {
-                              "text": "Forma de pagamento"
-                            },
-                            "style": {
-                              "bold": true
-                            }
-                          },
-                          {
-                            "type": "Select",
-                            "bind": {
-                              "value": "formaPagamento",
-                              "items": "paymentOptions"
-                            }
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Column",
-                        "bind": {
-                          "visible": "installmentsVisible"
-                        },
-                        "children": [
-                          {
-                            "type": "Column",
-                            "props": {
-                              "spacing": 5
-                            },
-                            "children": [
-                              {
-                                "type": "Text",
-                                "props": {
-                                  "text": "Nº Parcelas"
-                                },
-                                "style": {
-                                  "bold": true
-                                }
-                              },
-                              {
-                                "type": "Input",
-                                "props": {
-                                  "placeholder": "Ex: 3"
-                                },
-                                "bind": {
-                                  "value": "numeroParcelas"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "type": "Button",
-                        "props": {
-                          "text": "Finalizar venda"
-                        },
-                        "events": {
-                          "onClick": "finish"
-                        }
-                      },
-                      {
-                        "type": "Button",
-                        "props": {
-                          "text": "Imprimir nota de venda"
-                        },
-                        "events": {
-                          "onClick": "print"
-                        }
-                      },
-                      {
-                        "type": "Button",
-                        "props": {
-                          "text": "Imprimir (modo alternativo)"
-                        },
-                        "events": {
-                          "onClick": "printAlternative"
+                        "style": {
+                          "fontSize": 13,
+                          "textColor": "#53657e",
+                          "bold": false
                         }
                       }
                     ]
@@ -622,22 +152,755 @@
               {
                 "type": "Row",
                 "props": {
-                  "spacing": 10
+                  "spacing": 14,
+                  "fillWidth": true
                 },
                 "children": [
                   {
-                    "type": "Image",
+                    "type": "Container",
                     "props": {
-                      "source": "/assets/qrcode_suporte.jpg",
-                      "width": 80,
-                      "height": 80
-                    }
+                      "padding": 18,
+                      "bgColor": "#ffffff",
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "Column",
+                        "props": {
+                          "spacing": 12,
+                          "fillWidth": true
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "ITENS DA VENDA"
+                            },
+                            "style": {
+                              "fontSize": 12,
+                              "textColor": "#167a80",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Localize e adicione produtos"
+                            },
+                            "style": {
+                              "fontSize": 21,
+                              "textColor": "#18324d",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Row",
+                            "props": {
+                              "spacing": 10,
+                              "fillWidth": true
+                            },
+                            "children": [
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 5,
+                                  "fillWidth": true
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "Código de barras ou produto"
+                                    },
+                                    "style": {
+                                      "fontSize": 12,
+                                      "textColor": "#53657e",
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Input",
+                                    "props": {
+                                      "placeholder": "Leia o código de barras ou busque pelo nome"
+                                    },
+                                    "bind": {
+                                      "value": "productSearch"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 5,
+                                  "fillWidth": true
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "Qtd."
+                                    },
+                                    "style": {
+                                      "fontSize": 12,
+                                      "textColor": "#53657e",
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Input",
+                                    "props": {
+                                      "placeholder": "Ex: 1",
+                                      "width": 100
+                                    },
+                                    "bind": {
+                                      "value": "quantity"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "Button",
+                                "props": {
+                                  "text": "Adicionar produto",
+                                  "height": 42,
+                                  "fillWidth": false
+                                },
+                                "events": {
+                                  "onClick": "addProduct"
+                                },
+                                "style": {
+                                  "bgColor": "#167a80",
+                                  "textColor": "#ffffff",
+                                  "bold": true
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Column",
+                            "props": {
+                              "spacing": 5,
+                              "fillWidth": true
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "text": "Resultados da busca"
+                                },
+                                "style": {
+                                  "fontSize": 12,
+                                  "textColor": "#53657e",
+                                  "bold": true
+                                }
+                              },
+                              {
+                                "type": "Select",
+                                "bind": {
+                                  "value": "selectedProduct",
+                                  "items": "productOptions"
+                                },
+                                "props": {}
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Row",
+                            "props": {
+                              "spacing": 12
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "text": "Carrinho"
+                                },
+                                "style": {
+                                  "fontSize": 18,
+                                  "textColor": "#18324d",
+                                  "bold": true
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "text": "Selecione um item para alterar a quantidade ou remover"
+                                },
+                                "style": {
+                                  "fontSize": 12,
+                                  "textColor": "#66788c",
+                                  "bold": false
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Table",
+                            "props": {
+                              "columns": [
+                                {
+                                  "title": "Imagem",
+                                  "field": "imagem",
+                                  "kind": "image",
+                                  "size": 40
+                                },
+                                {
+                                  "title": "Cod",
+                                  "field": "codigo"
+                                },
+                                {
+                                  "title": "Nome",
+                                  "field": "nome"
+                                },
+                                {
+                                  "title": "Qtd.",
+                                  "field": "quantidade"
+                                },
+                                {
+                                  "title": "Vlr. Unit.",
+                                  "field": "precoUnitario"
+                                },
+                                {
+                                  "title": "Total",
+                                  "field": "total"
+                                }
+                              ],
+                              "height": 425,
+                              "horizontalScroll": true
+                            },
+                            "bind": {
+                              "items": "cart",
+                              "selected": "selectedCart"
+                            },
+                            "events": {
+                              "onSelect": "selectCart"
+                            }
+                          },
+                          {
+                            "type": "Row",
+                            "props": {
+                              "spacing": 8
+                            },
+                            "children": [
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 5,
+                                  "fillWidth": true
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "Quantidade do item selecionado"
+                                    },
+                                    "style": {
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Input",
+                                    "props": {
+                                      "placeholder": "Ex: 1",
+                                      "width": 125
+                                    },
+                                    "bind": {
+                                      "value": "editQuantity"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "Button",
+                                "props": {
+                                  "text": "Atualizar quantidade",
+                                  "height": 42,
+                                  "fillWidth": false
+                                },
+                                "events": {
+                                  "onClick": "updateQuantity"
+                                },
+                                "style": {
+                                  "bgColor": "#e7f0f8",
+                                  "textColor": "#183f60",
+                                  "bold": true
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "props": {
+                                  "text": "Remover item",
+                                  "height": 42,
+                                  "fillWidth": false
+                                },
+                                "events": {
+                                  "onClick": "removeItem"
+                                },
+                                "style": {
+                                  "bgColor": "#fcebea",
+                                  "textColor": "#a43a34",
+                                  "bold": true
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
-                    "type": "Text",
+                    "type": "Container",
                     "props": {
-                      "text": "Escaneie o QR Code para acessar o suporte no WhatsApp."
-                    }
+                      "padding": 18,
+                      "bgColor": "#ffffff",
+                      "width": 375
+                    },
+                    "children": [
+                      {
+                        "type": "Column",
+                        "props": {
+                          "spacing": 12,
+                          "fillWidth": true
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "RESUMO DA VENDA"
+                            },
+                            "style": {
+                              "fontSize": 12,
+                              "textColor": "#167a80",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Row",
+                            "props": {
+                              "spacing": 12
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "text": "Subtotal"
+                                },
+                                "style": {
+                                  "fontSize": 14,
+                                  "textColor": "#53657e",
+                                  "bold": false
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "bind": {
+                                  "text": "subtotal"
+                                },
+                                "style": {
+                                  "fontSize": 18,
+                                  "textColor": "#18324d",
+                                  "bold": true
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Row",
+                            "props": {
+                              "spacing": 10
+                            },
+                            "children": [
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 5,
+                                  "fillWidth": true
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "Desconto"
+                                    },
+                                    "style": {
+                                      "fontSize": 12,
+                                      "textColor": "#53657e",
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Input",
+                                    "props": {
+                                      "placeholder": "R$ 0,00",
+                                      "width": 160
+                                    },
+                                    "bind": {
+                                      "value": "desconto"
+                                    },
+                                    "format": {
+                                      "kind": "currency",
+                                      "currency": "BRL",
+                                      "locale": "pt-BR"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 5,
+                                  "fillWidth": true
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "Frete"
+                                    },
+                                    "style": {
+                                      "fontSize": 12,
+                                      "textColor": "#53657e",
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Input",
+                                    "props": {
+                                      "placeholder": "R$ 0,00",
+                                      "width": 160
+                                    },
+                                    "bind": {
+                                      "value": "frete"
+                                    },
+                                    "format": {
+                                      "kind": "currency",
+                                      "currency": "BRL",
+                                      "locale": "pt-BR"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Container",
+                            "props": {
+                              "padding": 14,
+                              "bgColor": "#e9f5f2",
+                              "fillWidth": true
+                            },
+                            "children": [
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 3
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "TOTAL A PAGAR"
+                                    },
+                                    "style": {
+                                      "fontSize": 12,
+                                      "textColor": "#176b6c",
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Text",
+                                    "bind": {
+                                      "text": "totalAPagar"
+                                    },
+                                    "style": {
+                                      "fontSize": 30,
+                                      "textColor": "#105e64",
+                                      "bold": true
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "CLIENTE E PAGAMENTO"
+                            },
+                            "style": {
+                              "fontSize": 12,
+                              "textColor": "#53657e",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Row",
+                            "props": {
+                              "spacing": 8,
+                              "fillWidth": true
+                            },
+                            "children": [
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 5,
+                                  "fillWidth": true
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "Cliente"
+                                    },
+                                    "style": {
+                                      "fontSize": 12,
+                                      "textColor": "#53657e",
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Select",
+                                    "bind": {
+                                      "value": "cliente",
+                                      "items": "clientOptions"
+                                    },
+                                    "props": {}
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "Button",
+                                "props": {
+                                  "text": "Criar cliente",
+                                  "height": 34,
+                                  "fillWidth": false
+                                },
+                                "events": {
+                                  "onClick": "createCustomer"
+                                },
+                                "style": {
+                                  "bgColor": "#e7f0f8",
+                                  "textColor": "#183f60",
+                                  "bold": true
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Column",
+                            "props": {
+                              "spacing": 5,
+                              "fillWidth": true
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "text": "Forma de pagamento"
+                                },
+                                "style": {
+                                  "fontSize": 12,
+                                  "textColor": "#53657e",
+                                  "bold": true
+                                }
+                              },
+                              {
+                                "type": "Select",
+                                "bind": {
+                                  "value": "formaPagamento",
+                                  "items": "paymentOptions"
+                                },
+                                "props": {}
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Column",
+                            "bind": {
+                              "visible": "installmentsVisible"
+                            },
+                            "children": [
+                              {
+                                "type": "Column",
+                                "props": {
+                                  "spacing": 5,
+                                  "fillWidth": true
+                                },
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "text": "Nº Parcelas"
+                                    },
+                                    "style": {
+                                      "bold": true
+                                    }
+                                  },
+                                  {
+                                    "type": "Input",
+                                    "props": {
+                                      "placeholder": "Ex: 3"
+                                    },
+                                    "bind": {
+                                      "value": "numeroParcelas"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Column",
+                            "props": {
+                              "spacing": 5,
+                              "fillWidth": true
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "text": "Valor recebido"
+                                },
+                                "style": {
+                                  "fontSize": 12,
+                                  "textColor": "#53657e",
+                                  "bold": true
+                                }
+                              },
+                              {
+                                "type": "Input",
+                                "props": {
+                                  "placeholder": "R$ 0,00"
+                                },
+                                "bind": {
+                                  "value": "totalRecebido"
+                                },
+                                "format": {
+                                  "kind": "currency",
+                                  "currency": "BRL",
+                                  "locale": "pt-BR"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Row",
+                            "props": {
+                              "spacing": 12
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "text": "Troco"
+                                },
+                                "style": {
+                                  "fontSize": 14,
+                                  "textColor": "#53657e",
+                                  "bold": false
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "bind": {
+                                  "text": "troco"
+                                },
+                                "style": {
+                                  "fontSize": 18,
+                                  "textColor": "#18324d",
+                                  "bold": true
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Finalizar venda",
+                              "height": 52,
+                              "fillWidth": true
+                            },
+                            "events": {
+                              "onClick": "finish"
+                            },
+                            "style": {
+                              "bgColor": "#167a80",
+                              "textColor": "#ffffff",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Imprimir nota de venda",
+                              "height": 38,
+                              "fillWidth": true
+                            },
+                            "events": {
+                              "onClick": "print"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "text": "Imprimir (modo alternativo)",
+                              "height": 38,
+                              "fillWidth": true
+                            },
+                            "events": {
+                              "onClick": "printAlternative"
+                            },
+                            "style": {
+                              "bgColor": "#e7f0f8",
+                              "textColor": "#183f60",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 8,
+                  "bgColor": "#f3f7fb"
+                },
+                "children": [
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 12
+                    },
+                    "children": [
+                      {
+                        "type": "Image",
+                        "props": {
+                          "source": "/assets/qrcode_suporte.jpg",
+                          "width": 80,
+                          "height": 80
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Precisa de ajuda? Escaneie o QR Code para falar com o suporte."
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": false
+                        }
+                      }
+                    ]
                   }
                 ]
               }
