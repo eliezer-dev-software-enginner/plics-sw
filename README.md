@@ -135,6 +135,10 @@ python scripts/bump_version.py release 1.1.6
 ```
 
 **Empacotamento:**
+Os scripts abaixo usam a biblioteca `megalodonte-packaging` descrita em
+[`scripts/PACKAGING.md`](scripts/PACKAGING.md). Ela precisa estar disponível
+no ambiente antes de executar os comandos.
+
 ```bash
 python scripts/create-msi.py         # Windows
 python scripts/create-deb.py         # Linux
@@ -151,7 +155,8 @@ python dev.py
 
 Empacotamento experimental pra rodar/testar como Flatpak antes de considerar publicar
 no Flathub (a loja "Software" do GNOME/Zorin instala a partir de lá, entre outras
-fontes). Isso aqui só builda e instala **localmente** — publicar de verdade exige um
+fontes). O script usa `megalodonte-packaging` e gera o pacote localmente;
+a instalação local exige `--install-flatpak`. Publicar de verdade exige um
 Pull Request manual em `github.com/flathub/flathub` e passar pela revisão deles.
 
 Requer `flatpak` e `flatpak-builder` instalados, e os runtimes:
@@ -160,9 +165,14 @@ sudo apt install flatpak-builder
 flatpak install flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
 ```
 
-Buildar e instalar:
+Gerar o pacote:
 ```bash
 python3 scripts/create-flatpak.py
+```
+
+Para gerar e instalar localmente:
+```bash
+python3 scripts/create-flatpak.py --install-flatpak
 ```
 
 Rodar:
