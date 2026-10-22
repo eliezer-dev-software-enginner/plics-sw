@@ -93,116 +93,166 @@
       {
         "type": "Column",
         "props": {
-          "padding": 15,
-          "spacing": 15,
-          "fillWidth": true
+          "padding": 22,
+          "spacing": 16,
+          "fillWidth": true,
+          "bgColor": "#f3f7fb"
         },
         "children": [
           {
-            "type": "Text",
+            "type": "Container",
             "props": {
-              "text": "Relatórios Financeiros"
-            },
-            "style": {
-              "bold": true
-            }
-          },
-          {
-            "type": "Row",
-            "props": {
-              "spacing": 12
+              "padding": 20,
+              "fillWidth": true,
+              "bgColor": "#ffffff"
             },
             "children": [
               {
                 "type": "Column",
-                "children": [
-                  {
-                    "type": "Text",
-                    "props": {
-                      "text": "Data início"
-                    }
-                  },
-                  {
-                    "type": "DatePicker",
-                    "bind": {
-                      "value": "dataInicio"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "Column",
-                "children": [
-                  {
-                    "type": "Text",
-                    "props": {
-                      "text": "Data fim"
-                    }
-                  },
-                  {
-                    "type": "DatePicker",
-                    "bind": {
-                      "value": "dataFim"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "Button",
                 "props": {
-                  "text": "Gerar relatório"
+                  "spacing": 5
                 },
-                "events": {
-                  "onClick": "generate"
-                }
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "ANÁLISE / FINANÇAS"
+                    },
+                    "style": {
+                      "fontSize": 12,
+                      "textColor": "#167a80",
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Relatórios financeiros"
+                    },
+                    "style": {
+                      "fontSize": 25,
+                      "textColor": "#18324d",
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "Acompanhe resultados, movimentações e indicadores do período."
+                    },
+                    "style": {
+                      "fontSize": 13,
+                      "textColor": "#53657e",
+                      "bold": false
+                    }
+                  }
+                ]
               }
             ]
           },
           {
             "type": "Container",
             "props": {
-              "padding": 12,
-              "fillWidth": true
+              "padding": 20,
+              "fillWidth": true,
+              "bgColor": "#ffffff"
             },
             "children": [
               {
                 "type": "Column",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "spacing": 12
                 },
                 "children": [
                   {
                     "type": "Text",
                     "props": {
-                      "text": "Receitas"
+                      "text": "PERÍODO"
                     },
                     "style": {
+                      "fontSize": 12,
+                      "textColor": "#167a80",
                       "bold": true
                     }
                   },
                   {
                     "type": "Row",
                     "props": {
-                      "spacing": 8
+                      "spacing": 14
                     },
                     "children": [
                       {
-                        "type": "Text",
-                        "props": {
-                          "text": "Vendas de mercadoria:"
-                        }
+                        "type": "Column",
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Data início"
+                            }
+                          },
+                          {
+                            "type": "DatePicker",
+                            "bind": {
+                              "value": "dataInicio"
+                            }
+                          }
+                        ]
                       },
                       {
-                        "type": "Text",
-                        "bind": {
-                          "text": "receitasVendas"
+                        "type": "Column",
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Data fim"
+                            }
+                          },
+                          {
+                            "type": "DatePicker",
+                            "bind": {
+                              "value": "dataFim"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Button",
+                        "props": {
+                          "text": "Gerar relatório",
+                          "height": 42
+                        },
+                        "events": {
+                          "onClick": "generate"
+                        },
+                        "style": {
+                          "bgColor": "#176f76",
+                          "textColor": "#ffffff",
+                          "bold": true
                         }
                       }
                     ]
-                  },
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 14,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#e9f5f2"
+                },
+                "children": [
                   {
-                    "type": "Row",
+                    "type": "Column",
                     "props": {
                       "spacing": 8
                     },
@@ -210,47 +260,12 @@
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Vendas no PDV:"
-                        }
-                      },
-                      {
-                        "type": "Text",
-                        "bind": {
-                          "text": "receitasPedidosPdv"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
-                    },
-                    "children": [
-                      {
-                        "type": "Text",
-                        "props": {
-                          "text": "Contas a receber recebidas:"
-                        }
-                      },
-                      {
-                        "type": "Text",
-                        "bind": {
-                          "text": "receitasContasRecebidas"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
-                    },
-                    "children": [
-                      {
-                        "type": "Text",
-                        "props": {
-                          "text": "Total de receitas:"
+                          "text": "RECEITAS"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
                         }
                       },
                       {
@@ -262,34 +277,17 @@
                     ]
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "type": "Container",
-            "props": {
-              "padding": 12,
-              "fillWidth": true
-            },
-            "children": [
+              },
               {
-                "type": "Column",
+                "type": "Container",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#fff0ec"
                 },
                 "children": [
                   {
-                    "type": "Text",
-                    "props": {
-                      "text": "Despesas"
-                    },
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "Row",
+                    "type": "Column",
                     "props": {
                       "spacing": 8
                     },
@@ -297,47 +295,12 @@
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Compras de mercadoria:"
-                        }
-                      },
-                      {
-                        "type": "Text",
-                        "bind": {
-                          "text": "despesasCompras"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
-                    },
-                    "children": [
-                      {
-                        "type": "Text",
-                        "props": {
-                          "text": "Contas a pagar pagas:"
-                        }
-                      },
-                      {
-                        "type": "Text",
-                        "bind": {
-                          "text": "despesasContasPagas"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
-                    },
-                    "children": [
-                      {
-                        "type": "Text",
-                        "props": {
-                          "text": "Total de despesas:"
+                          "text": "DESPESAS"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
                         }
                       },
                       {
@@ -349,34 +312,17 @@
                     ]
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "type": "Container",
-            "props": {
-              "padding": 12,
-              "fillWidth": true
-            },
-            "children": [
+              },
               {
-                "type": "Column",
+                "type": "Container",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#eef3fb"
                 },
                 "children": [
                   {
-                    "type": "Text",
-                    "props": {
-                      "text": "Resumo"
-                    },
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "Row",
+                    "type": "Column",
                     "props": {
                       "spacing": 8
                     },
@@ -384,7 +330,12 @@
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Lucro líquido do período:"
+                          "text": "LUCRO LÍQUIDO"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
                         }
                       },
                       {
@@ -394,6 +345,247 @@
                         }
                       }
                     ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 14,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 20,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
+                },
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 12
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Entradas"
+                        },
+                        "style": {
+                          "fontSize": 18,
+                          "textColor": "#18324d",
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Vendas de mercadoria:"
+                            },
+                            "style": {
+                              "fontSize": 13,
+                              "textColor": "#53657e"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "receitasVendas"
+                            },
+                            "style": {
+                              "fontSize": 14,
+                              "textColor": "#18324d",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Vendas no PDV:"
+                            },
+                            "style": {
+                              "fontSize": 13,
+                              "textColor": "#53657e"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "receitasPedidosPdv"
+                            },
+                            "style": {
+                              "fontSize": 14,
+                              "textColor": "#18324d",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Contas a receber recebidas:"
+                            },
+                            "style": {
+                              "fontSize": 13,
+                              "textColor": "#53657e"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "receitasContasRecebidas"
+                            },
+                            "style": {
+                              "fontSize": 14,
+                              "textColor": "#18324d",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 20,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
+                },
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 12
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Saídas"
+                        },
+                        "style": {
+                          "fontSize": 18,
+                          "textColor": "#18324d",
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Compras de mercadoria:"
+                            },
+                            "style": {
+                              "fontSize": 13,
+                              "textColor": "#53657e"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "despesasCompras"
+                            },
+                            "style": {
+                              "fontSize": 14,
+                              "textColor": "#18324d",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "props": {
+                          "spacing": 8
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "text": "Contas a pagar pagas:"
+                            },
+                            "style": {
+                              "fontSize": 13,
+                              "textColor": "#53657e"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "despesasContasPagas"
+                            },
+                            "style": {
+                              "fontSize": 14,
+                              "textColor": "#18324d",
+                              "bold": true
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "props": {
+              "padding": 20,
+              "fillWidth": true,
+              "bgColor": "#ffffff"
+            },
+            "children": [
+              {
+                "type": "Column",
+                "props": {
+                  "spacing": 12
+                },
+                "children": [
+                  {
+                    "type": "Text",
+                    "props": {
+                      "text": "CONTAS EM ABERTO"
+                    },
+                    "style": {
+                      "fontSize": 12,
+                      "textColor": "#167a80",
+                      "bold": true
+                    }
                   },
                   {
                     "type": "Row",
@@ -440,91 +632,86 @@
             ]
           },
           {
-            "type": "Container",
+            "type": "Row",
             "props": {
-              "padding": 12,
+              "spacing": 14,
               "fillWidth": true
             },
             "children": [
               {
-                "type": "Column",
+                "type": "Container",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
                 },
                 "children": [
                   {
-                    "type": "Text",
+                    "type": "Column",
                     "props": {
-                      "text": "Produtos mais vendidos do período"
-                    },
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
+                      "spacing": 10
                     },
                     "children": [
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Produtos mais vendidos do período:"
+                          "text": "Produtos mais vendidos do período"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
                         }
                       },
                       {
                         "type": "Text",
                         "bind": {
                           "text": "produtosMaisVendidos"
+                        },
+                        "style": {
+                          "fontSize": 22,
+                          "textColor": "#18324d",
+                          "bold": true
                         }
                       }
                     ]
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "type": "Container",
-            "props": {
-              "padding": 12,
-              "fillWidth": true
-            },
-            "children": [
+              },
               {
-                "type": "Column",
+                "type": "Container",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
                 },
                 "children": [
                   {
-                    "type": "Text",
+                    "type": "Column",
                     "props": {
-                      "text": "Produtos sem venda no período"
-                    },
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
+                      "spacing": 10
                     },
                     "children": [
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Produtos sem venda no período:"
+                          "text": "Produtos sem venda no período"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
                         }
                       },
                       {
                         "type": "Text",
                         "bind": {
                           "text": "produtosSemVenda"
+                        },
+                        "style": {
+                          "fontSize": 22,
+                          "textColor": "#18324d",
+                          "bold": true
                         }
                       }
                     ]
@@ -534,91 +721,126 @@
             ]
           },
           {
-            "type": "Container",
+            "type": "Row",
             "props": {
-              "padding": 12,
+              "spacing": 14,
               "fillWidth": true
             },
             "children": [
               {
-                "type": "Column",
+                "type": "Container",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
                 },
                 "children": [
                   {
-                    "type": "Text",
+                    "type": "Column",
                     "props": {
-                      "text": "Produtos devolvidos no período"
-                    },
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
+                      "spacing": 10
                     },
                     "children": [
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Produtos devolvidos no período:"
+                          "text": "Produtos devolvidos no período"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
                         }
                       },
                       {
                         "type": "Text",
                         "bind": {
                           "text": "produtosDevolvidos"
+                        },
+                        "style": {
+                          "fontSize": 22,
+                          "textColor": "#18324d",
+                          "bold": true
                         }
                       }
                     ]
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "type": "Container",
-            "props": {
-              "padding": 12,
-              "fillWidth": true
-            },
-            "children": [
+              },
               {
-                "type": "Column",
+                "type": "Container",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
                 },
                 "children": [
                   {
-                    "type": "Text",
+                    "type": "Column",
                     "props": {
-                      "text": "Novos clientes no período"
-                    },
-                    "style": {
-                      "bold": true
-                    }
-                  },
-                  {
-                    "type": "Row",
-                    "props": {
-                      "spacing": 8
+                      "spacing": 10
                     },
                     "children": [
                       {
                         "type": "Text",
                         "props": {
-                          "text": "Novos clientes no período:"
+                          "text": "Novos clientes no período"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
                         }
                       },
                       {
                         "type": "Text",
                         "bind": {
                           "text": "novosClientes"
+                        },
+                        "style": {
+                          "fontSize": 22,
+                          "textColor": "#18324d",
+                          "bold": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "Container",
+                "props": {
+                  "padding": 18,
+                  "fillWidth": true,
+                  "bgColor": "#ffffff"
+                },
+                "children": [
+                  {
+                    "type": "Column",
+                    "props": {
+                      "spacing": 10
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "text": "Novos fornecedores no período"
+                        },
+                        "style": {
+                          "fontSize": 12,
+                          "textColor": "#53657e",
+                          "bold": true
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "novosFornecedores"
+                        },
+                        "style": {
+                          "fontSize": 22,
+                          "textColor": "#18324d",
+                          "bold": true
                         }
                       }
                     ]
@@ -630,42 +852,78 @@
           {
             "type": "Container",
             "props": {
-              "padding": 12,
-              "fillWidth": true
+              "padding": 20,
+              "fillWidth": true,
+              "bgColor": "#ffffff"
             },
             "children": [
               {
                 "type": "Column",
                 "props": {
-                  "spacing": 8,
-                  "fillWidth": true
+                  "spacing": 14
                 },
                 "children": [
                   {
                     "type": "Text",
                     "props": {
-                      "text": "Novos fornecedores no período"
+                      "text": "VISÃO GRÁFICA"
                     },
                     "style": {
+                      "fontSize": 12,
+                      "textColor": "#167a80",
                       "bold": true
                     }
                   },
                   {
                     "type": "Row",
                     "props": {
-                      "spacing": 8
+                      "spacing": 12,
+                      "fillWidth": true
                     },
                     "children": [
                       {
-                        "type": "Text",
+                        "type": "BarChart",
                         "props": {
-                          "text": "Novos fornecedores no período:"
+                          "title": "Receitas x Despesas x Lucro"
+                        },
+                        "bind": {
+                          "items": "comparativo"
                         }
                       },
                       {
-                        "type": "Text",
+                        "type": "PieChart",
+                        "props": {
+                          "title": "Composição das Receitas"
+                        },
                         "bind": {
-                          "text": "novosFornecedores"
+                          "items": "receitasPie"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Row",
+                    "props": {
+                      "spacing": 12,
+                      "fillWidth": true
+                    },
+                    "children": [
+                      {
+                        "type": "PieChart",
+                        "props": {
+                          "title": "Composição das Despesas"
+                        },
+                        "bind": {
+                          "items": "despesasPie"
+                        }
+                      },
+                      {
+                        "type": "PieChart",
+                        "props": {
+                          "title": "Formas de pagamento mais usadas"
+                        },
+                        "bind": {
+                          "items": "formasPagamentoPie"
                         }
                       }
                     ]
@@ -681,51 +939,21 @@
             },
             "children": [
               {
-                "type": "BarChart",
+                "type": "Button",
                 "props": {
-                  "title": "Receitas x Despesas x Lucro"
+                  "text": "Baixar PDF",
+                  "height": 42
                 },
-                "bind": {
-                  "items": "comparativo"
-                }
-              },
-              {
-                "type": "PieChart",
-                "props": {
-                  "title": "Composição das Receitas"
+                "events": {
+                  "onClick": "downloadPdf"
                 },
-                "bind": {
-                  "items": "receitasPie"
-                }
-              },
-              {
-                "type": "PieChart",
-                "props": {
-                  "title": "Composição das Despesas"
-                },
-                "bind": {
-                  "items": "despesasPie"
-                }
-              },
-              {
-                "type": "PieChart",
-                "props": {
-                  "title": "Formas de pagamento mais usadas"
-                },
-                "bind": {
-                  "items": "formasPagamentoPie"
+                "style": {
+                  "bgColor": "#e7f0f8",
+                  "textColor": "#183f60",
+                  "bold": true
                 }
               }
             ]
-          },
-          {
-            "type": "Button",
-            "props": {
-              "text": "Baixar PDF"
-            },
-            "events": {
-              "onClick": "downloadPdf"
-            }
           }
         ]
       }
