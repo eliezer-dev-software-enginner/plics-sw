@@ -183,7 +183,7 @@
                   "field": "total"
                 }
               ],
-              "height": 420,
+        "height": 300,
               "horizontalScroll": true
             },
             "bind": {

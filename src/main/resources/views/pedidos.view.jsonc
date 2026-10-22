@@ -61,7 +61,7 @@
             }
           },
           {
-            "type": "Row",
+            "type": "Column",
             "props": {
               "spacing": 12,
               "fillWidth": true
@@ -124,7 +124,7 @@
                           "field": "devolvidaEm"
                         }
                       ],
-                      "height": 400,
+                      "height": 280,
                       "pageSize": 25,
                       "horizontalScroll": true
                     },
@@ -240,7 +240,7 @@
                           "field": "data"
                         }
                       ],
-                      "height": 400,
+                      "height": 280,
                       "pageSize": 25,
                       "horizontalScroll": true
                     },

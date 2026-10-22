@@ -10,44 +10,79 @@
   "view": {
     "type": "Column",
     "props": {
-      "padding": 20,
+      "padding": 24,
       "spacing": 16,
-      "fillWidth": true
+      "fillWidth": true,
+      "fillHeight": true,
+      "bgColor": "#f3f7fb"
     },
     "children": [
       {
-        "type": "Text",
+        "type": "Container",
         "props": {
-          "text": "Detalhes do erro"
+          "bgColor": "#ffffff",
+          "padding": 20,
+          "maxWidth": 680,
+          "fillWidth": true
         },
-        "style": {
-          "fontSize": 16,
-          "bold": true
-        }
-      },
-      {
-        "type": "TextArea",
-        "id": "conteudo",
-        "props": {
-          "placeholder": "Descreva o que aconteceu e, se possível, como reproduzir o erro",
-          "height": 180
-        },
-        "bind": {
-          "value": "conteudo"
-        },
-        "validation": {
-          "maxLength": 300,
-          "label": "Detalhes do erro"
-        }
-      },
-      {
-        "type": "Button",
-        "props": {
-          "text": "Enviar"
-        },
-        "events": {
-          "onClick": "enviar"
-        }
+        "children": [
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 14,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Relatar um erro"
+                },
+                "style": {
+                  "fontSize": 22,
+                  "bold": true,
+                  "textColor": "#18324d"
+                }
+              },
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Conte o que aconteceu e como podemos reproduzir o problema."
+                },
+                "style": {
+                  "fontSize": 14,
+                  "textColor": "#587087"
+                }
+              },
+              {
+                "type": "TextArea",
+                "id": "conteudo",
+                "props": {
+                  "placeholder": "Descreva o que aconteceu e, se possível, como reproduzir o erro",
+                  "height": 180
+                },
+                "bind": {
+                  "value": "conteudo"
+                },
+                "validation": {
+                  "maxLength": 300,
+                  "label": "Detalhes do erro"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Enviar",
+                  "height": 40,
+                  "fillWidth": true
+                },
+                "events": {
+                  "onClick": "enviar"
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   }

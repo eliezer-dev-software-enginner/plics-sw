@@ -2,15 +2,79 @@
   "version": 1,
   "id": "spreadsheetImport",
   "states": {
-    "status": { "type": "string", "initial": "" }
+    "status": {
+      "type": "string",
+      "initial": ""
+    }
   },
   "view": {
     "type": "Column",
-    "props": { "padding": 24, "spacing": 16, "fillWidth": true, "fillHeight": true },
+    "props": {
+      "padding": 24,
+      "spacing": 16,
+      "fillWidth": true,
+      "fillHeight": true,
+      "bgColor": "#f3f7fb"
+    },
     "children": [
-      { "type": "Text", "props": { "text": "Carregar planilha automaticamente para o sistema" }, "style": { "bold": true, "fontSize": 20 } },
-      { "type": "Button", "props": { "text": "Carregar planilha" }, "events": { "onClick": "import" } },
-      { "type": "Text", "bind": { "text": "status" } }
+      {
+        "type": "Container",
+        "props": {
+          "bgColor": "#ffffff",
+          "padding": 20,
+          "maxWidth": 680,
+          "fillWidth": true
+        },
+        "children": [
+          {
+            "type": "Column",
+            "props": {
+              "spacing": 14,
+              "fillWidth": true
+            },
+            "children": [
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Importar planilha"
+                },
+                "style": {
+                  "fontSize": 22,
+                  "bold": true,
+                  "textColor": "#18324d"
+                }
+              },
+              {
+                "type": "Text",
+                "props": {
+                  "text": "Selecione uma planilha para carregar os dados no sistema. O resultado da importação aparecerá abaixo."
+                },
+                "style": {
+                  "fontSize": 14,
+                  "textColor": "#587087"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Carregar planilha",
+                  "height": 40,
+                  "fillWidth": true
+                },
+                "events": {
+                  "onClick": "import"
+                }
+              },
+              {
+                "type": "Text",
+                "bind": {
+                  "text": "status"
+                }
+              }
+            ]
+          }
+        ]
+      }
     ]
   }
 }

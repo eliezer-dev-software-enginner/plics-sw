@@ -2,24 +2,75 @@
   "version": 1,
   "id": "logs",
   "states": {
-    "conteudoLogs": { "type": "string", "initial": "Carregando..." }
+    "conteudoLogs": {
+      "type": "string",
+      "initial": "Carregando..."
+    }
   },
   "view": {
-    "type": "Column",
-    "props": { "padding": 20, "spacing": 12, "fillWidth": true, "fillHeight": true },
+    "type": "Scroll",
     "children": [
-      { "type": "Text", "props": { "text": "Logs da aplicação" }, "style": { "fontSize": 18, "bold": true } },
       {
-        "type": "Row", "props": { "spacing": 10 },
+        "type": "Column",
+        "props": {
+          "padding": 20,
+          "spacing": 12,
+          "fillWidth": true,
+          "fillHeight": true
+        },
         "children": [
-          { "type": "Button", "props": { "text": "Atualizar" }, "events": { "onClick": "atualizar" } },
-          { "type": "Button", "props": { "text": "Abrir pasta de logs" }, "events": { "onClick": "abrirPasta" } }
+          {
+            "type": "Text",
+            "props": {
+              "text": "Logs da aplicação"
+            },
+            "style": {
+              "fontSize": 18,
+              "bold": true
+            }
+          },
+          {
+            "type": "Row",
+            "props": {
+              "spacing": 10
+            },
+            "children": [
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Atualizar"
+                },
+                "events": {
+                  "onClick": "atualizar"
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "text": "Abrir pasta de logs"
+                },
+                "events": {
+                  "onClick": "abrirPasta"
+                }
+              }
+            ]
+          },
+          {
+            "type": "TextArea",
+            "id": "conteudo",
+            "props": {
+              "height": 420,
+              "readOnly": true
+            },
+            "style": {
+              "fontFamily": "Courier New",
+              "fontSize": 12
+            },
+            "bind": {
+              "value": "conteudoLogs"
+            }
+          }
         ]
-      },
-      {
-        "type": "TextArea", "id": "conteudo", "props": { "height": 500, "readOnly": true },
-        "style": { "fontFamily": "Courier New", "fontSize": 12 },
-        "bind": { "value": "conteudoLogs" }
       }
     ]
   }

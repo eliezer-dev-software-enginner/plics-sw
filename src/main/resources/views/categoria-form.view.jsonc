@@ -13,7 +13,7 @@
       { "type": "Input", "id": "nome", "props": { "placeholder": "Ex.: Eletrônicos" },
         "bind": { "value": "nome" }, "validation": { "required": true, "label": "Nome" },
         "events": { "onEnter": "salvarCategoria" } },
-      { "type": "Button", "bind": { "text": "acao" }, "events": { "onClick": "salvarCategoria" } }
+      { "type": "Button", "props": { "height": 40, "fillWidth": true }, "bind": { "text": "acao" }, "events": { "onClick": "salvarCategoria" } }
     ]
   }
 }

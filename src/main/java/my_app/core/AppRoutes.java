@@ -85,7 +85,7 @@ public class AppRoutes {
                 new Route(Screens.SPLASH.name(), ctx -> new SplashScreen(),
                         new RouteProps(MIN_WIDTH, MIN_HEIGHT, Main.BASE_TITLE, false)),
                 new Route(Screens.WELCOME.name(), WelcomeScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, Main.BASE_TITLE, true)),
-                new Route(Screens.AUTH.name(), AuthScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Seja muito bem vindo", false)),
+                new Route(Screens.AUTH.name(), AuthScreen::new, new RouteProps(MEDIUM_WIDTH, MAX_HEIGHT, "Seja muito bem vindo", false)),
                 new Route(Screens.HOME.name(), HomeScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, Main.BASE_TITLE, true)),
                 //new Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
                 new Route(Screens.PRODUTOS.name(), ProdutoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Cadastro de produtos", true)),

@@ -85,7 +85,8 @@
       {
         "type": "Container",
         "props": {
-          "bgImage": "/assets/wallpapers/drew-beamer-kUHfMW8awpE-unsplash.jpg",
+          "bgColor": "#f3f7fb",
+          "fillWidth": true,
           "fillHeight": true
         },
         "children": [
