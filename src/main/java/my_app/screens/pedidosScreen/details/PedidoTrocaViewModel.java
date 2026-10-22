@@ -90,7 +90,7 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
                     trocaShowPesquisarBtn.set(false);
                     trocaShowTrocarBtn.set(true);
                 }
-                trocaBuscaInput.set(produto.getCodigoBarras());
+                trocaBuscaInput.set(produto.getDescricao() + " — " + produto.getCodigoBarras());
                 trocaSugestoes.clear();
             }
         });
@@ -181,8 +181,15 @@ public class PedidoTrocaViewModel extends ViewModelScreenContract<PedidoModel> {
         }
 
         var selected = trocaProdutoEncontrado.get();
-        if (selected != null && !selected.getCodigoBarras().equals(termo.trim())) {
+        if (selected != null && !selected.getCodigoBarras().equals(termo.trim())
+                && !(selected.getDescricao() + " — " + selected.getCodigoBarras()).equals(termo.trim())) {
             trocaProdutoEncontrado.set(null);
+        }
+
+        if (selected != null && (selected.getCodigoBarras().equals(termo.trim())
+                || (selected.getDescricao() + " — " + selected.getCodigoBarras()).equals(termo.trim()))) {
+            trocaSugestoes.clear();
+            return;
         }
 
         var filtrados = produtosCacheTroca.values().stream()

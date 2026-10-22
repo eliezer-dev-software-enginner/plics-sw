@@ -92,17 +92,12 @@
                 }
               },
               {
-                "type": "Input",
+                "type": "InputSelector",
                 "props": {
-                  "placeholder": "Nome ou código"
+                  "placeholder": "Digite nome ou código do produto"
                 },
                 "bind": {
-                  "value": "search"
-                }
-              },
-              {
-                "type": "Select",
-                "bind": {
+                  "text": "search",
                   "value": "selectedProduct",
                   "items": "productOptions"
                 }
@@ -183,7 +178,7 @@
                   "field": "total"
                 }
               ],
-        "height": 300,
+              "height": 300,
               "horizontalScroll": true
             },
             "bind": {
