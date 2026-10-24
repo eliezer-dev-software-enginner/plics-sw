@@ -4,11 +4,83 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/../../framework/libraries/megalodonte-base" name="megalodonte-base">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/libraries/megalodonte-base" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/libraries/megalodonte-components" name="megalodonte-components">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/libraries/megalodonte-components" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/libraries/megalodonte-core" name="megalodonte-core">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/libraries/megalodonte-core" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/megalodonte-ecossystem" name="megalodonte-ecossystem">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/megalodonte-ecossystem" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/megalodonte-declarative/megalodonte-jsonc-ui" name="megalodonte-jsonc-ui">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/megalodonte-declarative/megalodonte-jsonc-ui" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/megalodonte-packaging" name="megalodonte-packaging">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/megalodonte-packaging" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/libraries/megalodonte-reactivity" name="megalodonte-reactivity">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/libraries/megalodonte-reactivity" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/libraries/megalodonte-reactivity-portable" name="megalodonte-reactivity-portable">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/libraries/megalodonte-reactivity-portable" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/libraries/megalodonte-router" name="megalodonte-router">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/libraries/megalodonte-router" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/megalodonte-declarative/megalodonte-script-app" name="megalodonte-script-app">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/megalodonte-declarative/megalodonte-script-app" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../../framework/libraries/megalodonte-theme" name="megalodonte-theme">
+                <projects>
+                  <project path="$PROJECT_DIR$/../../framework/libraries/megalodonte-theme" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/../../framework/libraries/megalodonte-base" />
+            <option value="$PROJECT_DIR$/../../framework/libraries/megalodonte-components" />
+            <option value="$PROJECT_DIR$/../../framework/libraries/megalodonte-core" />
+            <option value="$PROJECT_DIR$/../../framework/libraries/megalodonte-reactivity" />
+            <option value="$PROJECT_DIR$/../../framework/libraries/megalodonte-reactivity-portable" />
+            <option value="$PROJECT_DIR$/../../framework/libraries/megalodonte-router" />
+            <option value="$PROJECT_DIR$/../../framework/libraries/megalodonte-theme" />
+            <option value="$PROJECT_DIR$/../../framework/megalodonte-declarative/megalodonte-jsonc-ui" />
+            <option value="$PROJECT_DIR$/../../framework/megalodonte-declarative/megalodonte-script-app" />
+            <option value="$PROJECT_DIR$/../../framework/megalodonte-ecossystem" />
+            <option value="$PROJECT_DIR$/../../framework/megalodonte-packaging" />
           </set>
         </option>
       </GradleProjectSettings>
