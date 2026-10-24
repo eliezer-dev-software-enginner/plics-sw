@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "splash",
+  "states": {
+    "versao": {
+      "type": "string",
+      "initial": ""
+    }
+  },
+  "view": {
+    "type": "Column",
+    "props": {
+      "alignment": "center",
+      "fillWidth": true,
+      "fillHeight": true,
+      "spacing": 16
+    },
+    "children": [
+      {
+        "type": "Image",
+        "props": {
+          "source": "/logo_256x256.png",
+          "width": 96,
+          "height": 96
+        }
+      },
+      {
+        "type": "Text",
+        "id": "appTitle",
+        "props": {
+          "text": ""
+        },
+        "style": {
+          "fontSize": 18,
+          "bold": true
+        }
+      },
+      {
+        "type": "Text",
+        "id": "carregando",
+        "props": {
+          "text": "Carregando..."
+        },
+        "style": {
+          "fontSize": 14
+        }
+      }
+    ]
+  }
+}
