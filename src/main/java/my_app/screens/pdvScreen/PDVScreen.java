@@ -53,7 +53,11 @@ public final class PDVScreen implements ScreenComponent {
         watchMoney("totalAPagar", vm.totalAPagar);
         watchMoney("troco", vm.troco);
         subscriptions.add(vm.sugestoesProduto.observe(this::updateProductOptions));
-        subscriptions.add(vm.itensCarrinho.observe(items -> session.states().string("cart").set(cartJson(items))));
+        subscriptions.add(vm.itensCarrinho.observe(items -> {
+            session.states().string("cart").set(cartJson(items));
+            selectCart();
+        }));
+        subscriptions.add(session.states().string("selectedCart").observe(ignored -> selectCart()));
         subscriptions.add(vm.clientes.observe(this::updateClientOptions));
         subscriptions.add(vm.clienteSelected.observe(cliente -> session.states().string("cliente").set(
                 cliente == null ? "" : String.valueOf(cliente.getId()))));
@@ -106,6 +110,7 @@ public final class PDVScreen implements ScreenComponent {
 
     private void selectCart() {
         var item = selectedCartItem();
+        session.states().state("selectedCartVisible", Boolean.class).set(item != null);
         session.states().string("editQuantity").set(item == null ? "" : item.quantidade.toPlainString());
     }
 
@@ -118,7 +123,10 @@ public final class PDVScreen implements ScreenComponent {
 
     private void removeItem() {
         var item = selectedCartItem();
-        if (item != null) vm.removerItem(item);
+        if (item != null) {
+            vm.removerItem(item);
+            session.states().string("selectedCart").set("");
+        }
     }
 
     private String cartJson(List<ItemVenda> items) {

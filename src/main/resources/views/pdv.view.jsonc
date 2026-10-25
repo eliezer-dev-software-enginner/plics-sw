@@ -22,6 +22,10 @@
       "type": "string",
       "initial": ""
     },
+    "selectedCartVisible": {
+      "type": "boolean",
+      "initial": false
+    },
     "editQuantity": {
       "type": "string",
       "initial": ""
@@ -219,12 +223,14 @@
                                     }
                                   },
                                   {
-                                    "type": "Input",
+                                    "type": "InputSelector",
                                     "props": {
                                       "placeholder": "Leia o código de barras ou busque pelo nome"
                                     },
                                     "bind": {
-                                      "value": "productSearch"
+                                      "text": "productSearch",
+                                      "value": "selectedProduct",
+                                      "items": "productOptions"
                                     }
                                   }
                                 ]
@@ -274,34 +280,6 @@
                                   "textColor": "#ffffff",
                                   "bold": true
                                 }
-                              }
-                            ]
-                          },
-                          {
-                            "type": "Column",
-                            "props": {
-                              "spacing": 5,
-                              "fillWidth": true
-                            },
-                            "children": [
-                              {
-                                "type": "Text",
-                                "props": {
-                                  "text": "Resultados da busca"
-                                },
-                                "style": {
-                                  "fontSize": 12,
-                                  "textColor": "#53657e",
-                                  "bold": true
-                                }
-                              },
-                              {
-                                "type": "Select",
-                                "bind": {
-                                  "value": "selectedProduct",
-                                  "items": "productOptions"
-                                },
-                                "props": {}
                               }
                             ]
                           },
@@ -381,6 +359,9 @@
                             "type": "Row",
                             "props": {
                               "spacing": 8
+                            },
+                            "bind": {
+                              "visible": "selectedCartVisible"
                             },
                             "children": [
                               {
