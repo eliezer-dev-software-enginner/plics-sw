@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import megalodonte.base.Redirect;
 import megalodonte.base.components.Component;
@@ -60,7 +61,8 @@ final class HomeAdsPane implements AutoCloseable {
         if(!urgent.isEmpty()) {
             VBox section=new VBox(12);
             section.getChildren().add(heading("Em destaque", "Confira esta oportunidade"));
-            urgent.forEach(ad -> section.getChildren().add(card(ad,true)));
+            if(urgent.size()==1) section.getChildren().add(featuredCard(urgent.getFirst()));
+            else urgent.forEach(ad -> section.getChildren().add(card(ad,true)));
             urgentRoot.getChildren().add(section);
             urgentRoot.setManaged(true);
             urgentRoot.setVisible(true);
@@ -90,6 +92,31 @@ final class HomeAdsPane implements AutoCloseable {
         box.setStyle(urgent
                 ? "-fx-background-color: #fff7ed; -fx-background-radius: 12; -fx-border-color: #f0b66b; -fx-border-radius: 12;"
                 : "-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #dce6ef; -fx-border-radius: 12;");
+        if(ad.redirect()!=null) {
+            box.setCursor(Cursor.HAND);
+            box.setOnMouseClicked(event -> Redirect.to(ad.redirect().toString()));
+        }
+        return box;
+    }
+
+    private static HBox featuredCard(AdsScraper.Ad ad) {
+        ImageView image=new ImageView(new Image(ad.image().toString(),true));
+        image.setPreserveRatio(true);
+        image.setFitHeight(300);
+        Label title=new Label(ad.title());
+        title.setWrapText(true);
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #18324d;");
+        VBox copy=new VBox(12,title);
+        copy.setAlignment(Pos.CENTER_LEFT);
+        copy.setMinWidth(0);
+        copy.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(copy,Priority.ALWAYS);
+        HBox box=new HBox(28,image,copy);
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.setPadding(new Insets(18));
+        box.setMaxWidth(Double.MAX_VALUE);
+        box.setStyle("-fx-background-color: #fff7ed; -fx-background-radius: 12; -fx-border-color: #f0b66b; -fx-border-radius: 12;");
+        image.fitWidthProperty().bind(box.widthProperty().multiply(.55));
         if(ad.redirect()!=null) {
             box.setCursor(Cursor.HAND);
             box.setOnMouseClicked(event -> Redirect.to(ad.redirect().toString()));
