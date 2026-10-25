@@ -24,6 +24,6 @@ class AdsScraperTest {
         var ads=AdsScraper.parse("<span>;<!-- -->./assets/banner.png<!-- -->;<!-- -->;<!-- -->undefined</span>",PAGE);
         assertEquals(1,ads.size());
         assertFalse(ads.getFirst().urgent());
-        assertNull(ads.getFirst().redirect());
+        assertEquals("https://eliezer-dev.vercel.app/",ads.getFirst().redirect().toString());
     }
 }

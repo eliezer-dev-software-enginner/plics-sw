@@ -53,8 +53,9 @@ final class AdsScraper {
             URI assetBase=page.resolve(page.getPath().endsWith("/") ? page.getPath() : page.getPath()+"/");
             URI imageUrl=assetBase.resolve(image.strip());
             if(!safe(imageUrl)) return;
-            URI destination=redirect==null || redirect.isBlank() || redirect.equals("undefined") ? null : page.resolve(redirect.strip());
-            if(destination!=null && !safe(destination)) destination=null;
+            URI destination=redirect==null || redirect.isBlank() || redirect.equals("undefined")
+                    ? page.resolve("/") : page.resolve(redirect.strip());
+            if(!safe(destination)) destination=page.resolve("/");
             ads.add(new Ad(title==null || title.isBlank() ? "Conheça esta novidade" : title.strip(),imageUrl,urgent,destination));
         } catch(IllegalArgumentException ignored) { }
     }
