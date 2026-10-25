@@ -8,15 +8,11 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.jsoup.Jsoup;
 
 /** Reads the public ad markup without executing scripts from the website. */
 final class AdsScraper {
     static final URI PAGE = URI.create("https://eliezer-dev.vercel.app/anuncios");
-    private static final Pattern TAG = Pattern.compile("<span\\b([^>]*)>", Pattern.CASE_INSENSITIVE);
-    private static final Pattern ATTRIBUTE = Pattern.compile("([\\w-]+)=\"([^\"]*)\"");
-    private static final Pattern LEGACY = Pattern.compile("<span>(.*?)</span>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
     private final HttpClient client;
 
     record Ad(String title, URI image, boolean urgent, URI redirect) { }
@@ -37,21 +33,15 @@ final class AdsScraper {
 
     static List<Ad> parse(String html, URI page) {
         var ads=new ArrayList<Ad>();
-        Matcher tags=TAG.matcher(html);
-        while(tags.find()) {
-            String attributes=tags.group(1);
-            if(!attributes.contains("data-plics-ad=")) continue;
-            var values=new java.util.HashMap<String,String>();
-            Matcher matches=ATTRIBUTE.matcher(attributes);
-            while(matches.find()) values.put(matches.group(1),decode(matches.group(2)));
-            add(ads,page,values.get("data-title"),values.get("data-image"),
-                    "true".equalsIgnoreCase(values.get("data-urgent")),values.get("data-redirect"));
+        var document=Jsoup.parse(html,page.toString());
+        for(var element:document.select("span[data-plics-ad=true]")) {
+            add(ads,page,element.attr("data-title"),element.attr("data-image"),
+                    "true".equalsIgnoreCase(element.attr("data-urgent")),element.attr("data-redirect"));
         }
         if(!ads.isEmpty()) return List.copyOf(ads);
         // Older published page emits semicolon fields and React comment separators.
-        Matcher legacy=LEGACY.matcher(html);
-        while(legacy.find()) {
-            String[] fields=decode(legacy.group(1).replace("<!-- -->","")).split(";",-1);
+        for(var element:document.select("span")) {
+            String[] fields=element.wholeText().split(";",-1);
             if(fields.length>=4) add(ads,page,fields[0],fields[1],"true".equalsIgnoreCase(fields[2]),fields[3]);
         }
         return List.copyOf(ads);
@@ -74,8 +64,4 @@ final class AdsScraper {
                 && uri.getHost()!=null;
     }
 
-    private static String decode(String value) {
-        return value.replace("&amp;","&").replace("&quot;","\"").replace("&#x27;", "'")
-                .replace("&lt;","<").replace("&gt;",">");
-    }
 }
