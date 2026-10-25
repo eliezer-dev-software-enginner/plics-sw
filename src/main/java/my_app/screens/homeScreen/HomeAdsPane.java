@@ -18,11 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 /** Optional home promotion area; unavailable feeds never block the dashboard. */
 final class HomeAdsPane implements AutoCloseable {
     private static final Logger log=LoggerFactory.getLogger(HomeAdsPane.class);
+    private record LoadedAd(AdsScraper.Ad ad, Image image) { }
     private final VBox regularRoot=new VBox(18);
     private final VBox urgentRoot=new VBox(18);
     private volatile boolean closed;
@@ -36,34 +38,59 @@ final class HomeAdsPane implements AutoCloseable {
         CompletableFuture.supplyAsync(() -> {
             try { return new AdsScraper().fetch(); }
             catch(Exception error) { log.debug("Anúncios indisponíveis",error);return List.<AdsScraper.Ad>of(); }
-        }).thenAccept(ads -> Platform.runLater(() -> { if(!closed) show(ads); }));
+        }).thenAccept(ads -> Platform.runLater(() -> { if(!closed) preload(ads); }));
     }
 
     Component regularComponent() { return Component.CreateFromJavaFxNode(regularRoot); }
     Component urgentComponent() { return Component.CreateFromJavaFxNode(urgentRoot); }
 
-    private void show(List<AdsScraper.Ad> ads) {
+    private void preload(List<AdsScraper.Ad> ads) {
         if(ads.isEmpty()) return;
-        regularRoot.getChildren().clear();
-        urgentRoot.getChildren().clear();
         var regular=ads.stream().filter(ad -> !ad.urgent()).toList();
         var urgent=ads.stream().filter(AdsScraper.Ad::urgent).toList();
-        if(!regular.isEmpty()) {
+        preloadSection(regular,false);
+        preloadSection(urgent,true);
+    }
+
+    private void preloadSection(List<AdsScraper.Ad> ads,boolean urgent) {
+        if(ads.isEmpty()) return;
+        var images=new ArrayList<LoadedAd>();
+        for(var ad:ads) {
+            try { images.add(new LoadedAd(ad,new Image(ad.image().toString(),true))); }
+            catch(IllegalArgumentException error) { log.debug("Imagem de anúncio inválida: {}",ad.image(),error); }
+        }
+        if(images.isEmpty()) return;
+        boolean[] completed={false};
+        Runnable reveal=() -> {
+            if(closed || completed[0] || images.stream().anyMatch(item ->
+                    !item.image().isError() && item.image().getProgress()<1)) return;
+            completed[0]=true;
+            var ready=images.stream().filter(item -> !item.image().isError() && item.image().getWidth()>0).toList();
+            if(!ready.isEmpty()) showSection(ready,urgent);
+        };
+        for(var item:images) {
+            item.image().progressProperty().addListener((ignored,oldValue,newValue) -> Platform.runLater(reveal));
+            item.image().errorProperty().addListener((ignored,oldValue,newValue) -> Platform.runLater(reveal));
+        }
+        reveal.run();
+    }
+
+    private void showSection(List<LoadedAd> ads,boolean urgent) {
+        if(!urgent) {
             VBox section=new VBox(12);
             section.getChildren().add(heading("Para você", "Novidades e serviços selecionados"));
             FlowPane cards=new FlowPane(12,12);
             cards.setPrefWrapLength(1000);
-            regular.forEach(ad -> cards.getChildren().add(card(ad,false).getJavaFxNode()));
+            ads.forEach(ad -> cards.getChildren().add(card(ad,false).getJavaFxNode()));
             section.getChildren().add(cards);
             regularRoot.getChildren().add(section);
             regularRoot.setManaged(true);
             regularRoot.setVisible(true);
-        }
-        if(!urgent.isEmpty()) {
+        } else {
             VBox section=new VBox(12);
             section.getChildren().add(heading("Em destaque", "Confira esta oportunidade"));
-            if(urgent.size()==1) section.getChildren().add(featuredCard(urgent.getFirst()).getJavaFxNode());
-            else urgent.forEach(ad -> section.getChildren().add(card(ad,true).getJavaFxNode()));
+            if(ads.size()==1) section.getChildren().add(featuredCard(ads.getFirst()).getJavaFxNode());
+            else ads.forEach(ad -> section.getChildren().add(card(ad,true).getJavaFxNode()));
             urgentRoot.getChildren().add(section);
             urgentRoot.setManaged(true);
             urgentRoot.setVisible(true);
@@ -78,8 +105,9 @@ final class HomeAdsPane implements AutoCloseable {
         return new VBox(3,title,detail);
     }
 
-    private static Component card(AdsScraper.Ad ad,boolean urgent) {
-        ImageView image=new ImageView(new Image(ad.image().toString(),true));
+    private static Component card(LoadedAd loaded,boolean urgent) {
+        AdsScraper.Ad ad=loaded.ad();
+        ImageView image=new ImageView(loaded.image());
         image.setFitWidth(urgent ? 360 : 260);
         image.setFitHeight(urgent ? 140 : 125);
         image.setPreserveRatio(true);
@@ -96,8 +124,9 @@ final class HomeAdsPane implements AutoCloseable {
         return clickable(ad,box,false);
     }
 
-    private static Component featuredCard(AdsScraper.Ad ad) {
-        ImageView image=new ImageView(new Image(ad.image().toString(),true));
+    private static Component featuredCard(LoadedAd loaded) {
+        AdsScraper.Ad ad=loaded.ad();
+        ImageView image=new ImageView(loaded.image());
         image.setPreserveRatio(true);
         image.setFitHeight(300);
         Label title=new Label(ad.title());
