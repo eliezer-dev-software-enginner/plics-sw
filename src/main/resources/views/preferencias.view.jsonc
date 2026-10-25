@@ -4,7 +4,6 @@
   "states": {
     "yesNo": { "type": "string", "initial": "[\"Sim\",\"Não\"]" },
     "credentialsEnabled": { "type": "string", "initial": "Não" },
-    "instagramPopup": { "type": "string", "initial": "Não" },
     "printers": { "type": "string", "initial": "[\"N/D\"]" },
     "printer": { "type": "string", "initial": "N/D" },
     "login": { "type": "string", "initial": "" },
@@ -21,10 +20,6 @@
           { "type": "Column", "props": { "spacing": 6 }, "children": [
             { "type": "Text", "props": { "text": "Habilitar credenciais" } },
             { "type": "Select", "bind": { "items": "yesNo", "value": "credentialsEnabled" } }
-          ] },
-          { "type": "Column", "props": { "spacing": 6 }, "children": [
-            { "type": "Text", "props": { "text": "Exibir popup Instagram na abertura" } },
-            { "type": "Select", "bind": { "items": "yesNo", "value": "instagramPopup" } }
           ] },
           { "type": "Column", "props": { "spacing": 6 }, "children": [
             { "type": "Text", "props": { "text": "Selecionar impressora" } },

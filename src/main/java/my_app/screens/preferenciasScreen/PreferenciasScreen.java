@@ -32,7 +32,6 @@ public final class PreferenciasScreen implements ScreenComponent {
                     catch (SQLException error) { Components.ShowAlertError(error.getMessage()); }
                 }));
         session.bind("credentialsEnabled", viewModel.habilitarCredenciaisSelected, String.class)
-                .bind("instagramPopup", viewModel.habilitarPopupInstagramSelected, String.class)
                 .bind("printer", viewModel.comportsStateSelected, String.class)
                 .bind("login", viewModel.loginState, String.class)
                 .bind("password", viewModel.passwordState, String.class);

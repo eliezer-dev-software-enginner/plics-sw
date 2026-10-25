@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 public class HomeScreenViewModel {
 
     private static final Logger log = LoggerFactory.getLogger(HomeScreenViewModel.class);
-    private final PreferenciasService preferenciasService;
     private final ContaAreceberService receitasService;
     private final ContasPagarService despesasService;
     private final VendaService vendaService;
@@ -44,8 +43,6 @@ public class HomeScreenViewModel {
     public final State<String> vendasHoje = new State<>("R$ 0,00");
 
     public final State<Boolean> gifVisible = State.of(true);
-    public final State<Boolean> mostrarPromoInstagram = State.of(false);
-    private static final long DELAY_PROMO_INSTAGRAM_MS = 2500;
 
     private final ScreenContextInterface screenContext;
     public final State<String> currentGif = new State<>(null);
@@ -71,7 +68,6 @@ public class HomeScreenViewModel {
 
     public HomeScreenViewModel(ScreenContextInterface screenContext) {
         this.screenContext = screenContext;
-        this.preferenciasService = createOrReport(PreferenciasService::new);
         this.receitasService = createOrReport(ContaAreceberService::new);
         this.despesasService = createOrReport(ContasPagarService::new);
         this.vendaService = createOrReport(VendaService::new);
@@ -93,21 +89,6 @@ public class HomeScreenViewModel {
         calcularFinanceiroMesAtual();
         EventBus.getInstance().subscribe(eventListener);
 
-        Async.Run(()->{
-            try{
-                var prefs = preferenciasService.listar();
-                if (!prefs.isEmpty()) {
-                    var pref = prefs.getFirst();
-                    boolean showPopup = pref.getPopupInstagramHabilitado() == 1;
-                        // Espera um pouco antes de exibir o modal — mostrar na hora, junto com o
-                        // resto da tela ainda carregando, seria mais irritante que chamativo.
-                        executor.schedule(() -> UI.runOnUi(() -> mostrarPromoInstagram.set(showPopup)),
-                                DELAY_PROMO_INSTAGRAM_MS, TimeUnit.MILLISECONDS);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     private void onEntityEvent(Object event) {
@@ -202,7 +183,6 @@ public class HomeScreenViewModel {
         this.despesasService.close();
         this.pedidoService.close();
         this.receitasService.close();
-        this.preferenciasService.close();
         this.vendaService.close();
     }
 }

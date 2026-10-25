@@ -24,7 +24,6 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
     private final PreferenciasService preferenciasService;
 
     final State<String> habilitarCredenciaisSelected = State.of("Não");
-    final State<String> habilitarPopupInstagramSelected = State.of("Não");
     final State<String> loginState = State.of("");
     final State<String> passwordState = State.of("");
     final ListState<String> comportsState = new ListState<>(List.of("N/D"));
@@ -69,7 +68,6 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
                     prefLoaded = pref;
                 UI.runOnUi(() -> {
                         habilitarCredenciaisSelected.set(pref.getCredenciaisHabilitadas() == 1 ? "Sim" : "Não");
-                        habilitarPopupInstagramSelected.set(pref.getPopupInstagramHabilitado() == 1 ? "Sim" : "Não");
                         loginState.set(pref.getLogin());
                         passwordState.set(pref.getSenha());
                         var savedPort = pref.getPortaImpressora();
@@ -102,7 +100,6 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
 
     public void signOut() throws SQLException {
        prefLoaded.setCredenciaisHabilitadas(1);
-       prefLoaded.setPopupInstagramHabilitado(1);
        prefLoaded.setPrimeiroAcesso(1);
         preferenciasService.atualizar(prefLoaded);
 
@@ -125,7 +122,6 @@ public class PreferenciasViewModel extends ViewModelScreenContract<PreferenciasM
     @Override
     public PreferenciasModel populateModelFromFields() {
         prefLoaded.setCredenciaisHabilitadas(habilitarCredenciaisSelected.get().equals("Sim") ? 1 : 0);
-        prefLoaded.setPopupInstagramHabilitado(habilitarPopupInstagramSelected.get().equals("Sim") ? 1 : 0);
         prefLoaded.setLogin(loginState.get());
         prefLoaded.setSenha(passwordState.get());
 

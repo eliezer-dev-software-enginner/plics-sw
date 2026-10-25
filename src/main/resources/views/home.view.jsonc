@@ -22,10 +22,6 @@
       "type": "string",
       "initial": ""
     },
-    "showPromo": {
-      "type": "boolean",
-      "initial": false
-    },
     "canCheckUpdates": {
       "type": "boolean",
       "initial": true
@@ -662,52 +658,6 @@
                 ]
               },
               {
-                "type": "Container",
-                "props": {
-                  "padding": 18,
-                  "fillWidth": true,
-                  "bgColor": "#e9f5f2"
-                },
-                "bind": {
-                  "visible": "showPromo"
-                },
-                "children": [
-                  {
-                    "type": "Column",
-                    "props": {
-                      "spacing": 10
-                    },
-                    "children": [
-                      {
-                        "type": "Text",
-                        "props": {
-                          "text": "Impulsione seu Instagram!"
-                        },
-                        "style": {
-                          "bold": true
-                        }
-                      },
-                      {
-                        "type": "Text",
-                        "props": {
-                          "text": "Conheça os pacotes de divulgação."
-                        }
-                      },
-                      {
-                        "type": "Button",
-                        "props": {
-                          "text": "Comprar agora",
-                          "fillWidth": true
-                        },
-                        "events": {
-                          "onClick": "buyInstagram"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
                 "type": "Row",
                 "props": {
                   "spacing": 10
@@ -721,20 +671,6 @@
                     },
                     "events": {
                       "onClick": "videos"
-                    },
-                    "style": {
-                      "bgColor": "#edf2f7",
-                      "textColor": "#254365"
-                    }
-                  },
-                  {
-                    "type": "Button",
-                    "props": {
-                      "text": "Serviços para Instagram",
-                      "fillWidth": true
-                    },
-                    "events": {
-                      "onClick": "instagram"
                     },
                     "style": {
                       "bgColor": "#edf2f7",

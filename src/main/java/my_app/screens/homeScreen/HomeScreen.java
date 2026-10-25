@@ -9,7 +9,6 @@ import megalodonte.jsonc.UiDefinition;
 import megalodonte.jsonc.UiSession;
 import my_app.Main;
 import my_app.core.AppRoutes;
-import my_app.core.Data;
 
 /** Home layout, navigation and promotion are declared in JSONC. */
 public final class HomeScreen implements ScreenComponent {
@@ -38,16 +37,13 @@ public final class HomeScreen implements ScreenComponent {
                 .register("logs", ignored -> open(ctx, AppRoutes.Screens.LOGS))
                 .register("terms", ignored -> open(ctx, AppRoutes.Screens.TERMOS_DE_USO))
                 .register("checkUpdates", ignored -> viewModel.verificarAtualizacao())
-                .register("videos", ignored -> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK"))
-                .register("instagram", ignored -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram"))
-                .register("buyInstagram", ignored -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram")));
+                .register("videos", ignored -> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK")));
         session.mount("ads", adsPane.component());
         session.display("receitas", viewModel.receitas, String.class);
         session.display("despesas", viewModel.despesas, String.class);
         session.display("lucroLiquido", viewModel.lucroLiquido, String.class);
         session.display("mesAtual", viewModel.mesAtual, String.class);
         session.display("vendasHoje", viewModel.vendasHoje, String.class);
-        session.display("showPromo", viewModel.mostrarPromoInstagram, Boolean.class);
         session.states().set("canCheckUpdates", !Main.isMicrosoftStore);
     }
 
