@@ -3,16 +3,17 @@ package my_app.screens.homeScreen;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import megalodonte.base.Redirect;
 import megalodonte.base.components.Component;
+import megalodonte.components.Clickable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ final class HomeAdsPane implements AutoCloseable {
             section.getChildren().add(heading("Para você", "Novidades e serviços selecionados"));
             FlowPane cards=new FlowPane(12,12);
             cards.setPrefWrapLength(1000);
-            regular.forEach(ad -> cards.getChildren().add(card(ad,false)));
+            regular.forEach(ad -> cards.getChildren().add(card(ad,false).getJavaFxNode()));
             section.getChildren().add(cards);
             regularRoot.getChildren().add(section);
             regularRoot.setManaged(true);
@@ -61,8 +62,8 @@ final class HomeAdsPane implements AutoCloseable {
         if(!urgent.isEmpty()) {
             VBox section=new VBox(12);
             section.getChildren().add(heading("Em destaque", "Confira esta oportunidade"));
-            if(urgent.size()==1) section.getChildren().add(featuredCard(urgent.getFirst()));
-            else urgent.forEach(ad -> section.getChildren().add(card(ad,true)));
+            if(urgent.size()==1) section.getChildren().add(featuredCard(urgent.getFirst()).getJavaFxNode());
+            else urgent.forEach(ad -> section.getChildren().add(card(ad,true).getJavaFxNode()));
             urgentRoot.getChildren().add(section);
             urgentRoot.setManaged(true);
             urgentRoot.setVisible(true);
@@ -77,7 +78,7 @@ final class HomeAdsPane implements AutoCloseable {
         return new VBox(3,title,detail);
     }
 
-    private static HBox card(AdsScraper.Ad ad,boolean urgent) {
+    private static Component card(AdsScraper.Ad ad,boolean urgent) {
         ImageView image=new ImageView(new Image(ad.image().toString(),true));
         image.setFitWidth(urgent ? 360 : 260);
         image.setFitHeight(urgent ? 140 : 125);
@@ -92,14 +93,10 @@ final class HomeAdsPane implements AutoCloseable {
         box.setStyle(urgent
                 ? "-fx-background-color: #fff7ed; -fx-background-radius: 12; -fx-border-color: #f0b66b; -fx-border-radius: 12;"
                 : "-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #dce6ef; -fx-border-radius: 12;");
-        if(ad.redirect()!=null) {
-            box.setCursor(Cursor.HAND);
-            box.setOnMouseClicked(event -> Redirect.to(ad.redirect().toString()));
-        }
-        return box;
+        return clickable(ad,box,false);
     }
 
-    private static HBox featuredCard(AdsScraper.Ad ad) {
+    private static Component featuredCard(AdsScraper.Ad ad) {
         ImageView image=new ImageView(new Image(ad.image().toString(),true));
         image.setPreserveRatio(true);
         image.setFitHeight(300);
@@ -117,11 +114,14 @@ final class HomeAdsPane implements AutoCloseable {
         box.setMaxWidth(Double.MAX_VALUE);
         box.setStyle("-fx-background-color: #fff7ed; -fx-background-radius: 12; -fx-border-color: #f0b66b; -fx-border-radius: 12;");
         image.fitWidthProperty().bind(box.widthProperty().multiply(.55));
-        if(ad.redirect()!=null) {
-            box.setCursor(Cursor.HAND);
-            box.setOnMouseClicked(event -> Redirect.to(ad.redirect().toString()));
-        }
-        return box;
+        return clickable(ad,box,true);
+    }
+
+    private static Component clickable(AdsScraper.Ad ad,HBox box,boolean fillWidth) {
+        var clickable=new Clickable(Component.CreateFromJavaFxNode(box))
+                .onClick(() -> Redirect.to(ad.redirect().toString()));
+        if(fillWidth && clickable.getJavaFxNode() instanceof Region region) region.setMaxWidth(Double.MAX_VALUE);
+        return clickable;
     }
 
     @Override public void close() {
