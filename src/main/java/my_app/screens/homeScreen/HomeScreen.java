@@ -16,9 +16,11 @@ public final class HomeScreen implements ScreenComponent {
     private static final UiDefinition VIEW = UiDefinition.fromResource(HomeScreen.class, "/views/home.view.jsonc");
     private final HomeScreenViewModel viewModel;
     private final UiSession session;
+    private final HomeAdsPane adsPane;
 
     public HomeScreen(ScreenContextInterface ctx) {
         viewModel = new HomeScreenViewModel(ctx);
+        adsPane = new HomeAdsPane();
         session = VIEW.open(new Actions()
                 .register("sales", ignored -> open(ctx, AppRoutes.Screens.VENDAS))
                 .register("products", ignored -> open(ctx, AppRoutes.Screens.PRODUTOS))
@@ -39,6 +41,7 @@ public final class HomeScreen implements ScreenComponent {
                 .register("videos", ignored -> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK"))
                 .register("instagram", ignored -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram"))
                 .register("buyInstagram", ignored -> Redirect.to(Data.linkWebsiteOfficial + "comprar-inscritos-instagram")));
+        session.mount("ads", adsPane.component());
         session.display("receitas", viewModel.receitas, String.class);
         session.display("despesas", viewModel.despesas, String.class);
         session.display("lucroLiquido", viewModel.lucroLiquido, String.class);
@@ -54,6 +57,7 @@ public final class HomeScreen implements ScreenComponent {
 
     @Override public Component render() { return session.render(); }
     @Override public void onDestroy() {
+        adsPane.close();
         session.close();
         try { viewModel.onDestroy(); }
         catch (Exception error) { throw new IllegalStateException("Could not close home services", error); }

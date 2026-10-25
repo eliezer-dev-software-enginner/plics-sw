@@ -115,6 +115,13 @@
                 ]
               },
               {
+                "type": "Slot",
+                "props": {
+                  "name": "ads",
+                  "fillWidth": true
+                }
+              },
+              {
                 "type": "Row",
                 "props": {
                   "spacing": 12,
