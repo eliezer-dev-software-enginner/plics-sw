@@ -113,7 +113,7 @@
               {
                 "type": "Slot",
                 "props": {
-                  "name": "ads",
+                  "name": "urgentAds",
                   "fillWidth": true
                 }
               },
@@ -678,6 +678,13 @@
                     }
                   }
                 ]
+              },
+              {
+                "type": "Slot",
+                "props": {
+                  "name": "regularAds",
+                  "fillWidth": true
+                }
               }
             ]
           }

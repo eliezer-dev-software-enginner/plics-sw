@@ -20,7 +20,8 @@ class HomeViewTest {
         try (var session = UiDefinition.fromResource(getClass(), "/views/home.view.jsonc").open(actions)) {
             assertEquals("home", session.id());
             String view=new String(getClass().getResourceAsStream("/views/home.view.jsonc").readAllBytes(),StandardCharsets.UTF_8);
-            assertTrue(view.contains("\"name\": \"ads\""));
+            assertTrue(view.contains("\"name\": \"urgentAds\""));
+            assertTrue(view.indexOf("\"name\": \"regularAds\"") > view.indexOf("Canal de vídeos"));
             assertFalse(view.contains("Impulsione seu Instagram"));
             assertFalse(view.contains("showPromo"));
         }

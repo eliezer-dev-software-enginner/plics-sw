@@ -38,7 +38,8 @@ public final class HomeScreen implements ScreenComponent {
                 .register("terms", ignored -> open(ctx, AppRoutes.Screens.TERMOS_DE_USO))
                 .register("checkUpdates", ignored -> viewModel.verificarAtualizacao())
                 .register("videos", ignored -> Redirect.to("https://youtube.com/playlist?list=PLG06evrpS2RlBbxDBYcDkVKpWrEoSy8tq&si=2-MbcHrUrJsHJxyK")));
-        session.mount("ads", adsPane.component());
+        session.mount("urgentAds", adsPane.urgentComponent());
+        session.mount("regularAds", adsPane.regularComponent());
         session.display("receitas", viewModel.receitas, String.class);
         session.display("despesas", viewModel.despesas, String.class);
         session.display("lucroLiquido", viewModel.lucroLiquido, String.class);

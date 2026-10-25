@@ -21,24 +21,29 @@ import java.util.concurrent.CompletableFuture;
 /** Optional home promotion area; unavailable feeds never block the dashboard. */
 final class HomeAdsPane implements AutoCloseable {
     private static final Logger log=LoggerFactory.getLogger(HomeAdsPane.class);
-    private final VBox root=new VBox(18);
+    private final VBox regularRoot=new VBox(18);
+    private final VBox urgentRoot=new VBox(18);
     private volatile boolean closed;
 
     HomeAdsPane() {
-        root.setManaged(false);
-        root.setVisible(false);
-        root.setMaxWidth(Double.MAX_VALUE);
+        for(VBox root:List.of(regularRoot,urgentRoot)) {
+            root.setManaged(false);
+            root.setVisible(false);
+            root.setMaxWidth(Double.MAX_VALUE);
+        }
         CompletableFuture.supplyAsync(() -> {
             try { return new AdsScraper().fetch(); }
             catch(Exception error) { log.debug("Anúncios indisponíveis",error);return List.<AdsScraper.Ad>of(); }
         }).thenAccept(ads -> Platform.runLater(() -> { if(!closed) show(ads); }));
     }
 
-    Component component() { return Component.CreateFromJavaFxNode(root); }
+    Component regularComponent() { return Component.CreateFromJavaFxNode(regularRoot); }
+    Component urgentComponent() { return Component.CreateFromJavaFxNode(urgentRoot); }
 
     private void show(List<AdsScraper.Ad> ads) {
         if(ads.isEmpty()) return;
-        root.getChildren().clear();
+        regularRoot.getChildren().clear();
+        urgentRoot.getChildren().clear();
         var regular=ads.stream().filter(ad -> !ad.urgent()).toList();
         var urgent=ads.stream().filter(AdsScraper.Ad::urgent).toList();
         if(!regular.isEmpty()) {
@@ -48,16 +53,18 @@ final class HomeAdsPane implements AutoCloseable {
             cards.setPrefWrapLength(1000);
             regular.forEach(ad -> cards.getChildren().add(card(ad,false)));
             section.getChildren().add(cards);
-            root.getChildren().add(section);
+            regularRoot.getChildren().add(section);
+            regularRoot.setManaged(true);
+            regularRoot.setVisible(true);
         }
         if(!urgent.isEmpty()) {
             VBox section=new VBox(12);
             section.getChildren().add(heading("Em destaque", "Confira esta oportunidade"));
             urgent.forEach(ad -> section.getChildren().add(card(ad,true)));
-            root.getChildren().add(section);
+            urgentRoot.getChildren().add(section);
+            urgentRoot.setManaged(true);
+            urgentRoot.setVisible(true);
         }
-        root.setManaged(true);
-        root.setVisible(true);
     }
 
     private static VBox heading(String label,String subtitle) {
@@ -90,5 +97,9 @@ final class HomeAdsPane implements AutoCloseable {
         return box;
     }
 
-    @Override public void close() { closed=true;root.getChildren().clear(); }
+    @Override public void close() {
+        closed=true;
+        regularRoot.getChildren().clear();
+        urgentRoot.getChildren().clear();
+    }
 }
