@@ -5,7 +5,7 @@ import megalodonte.base.UI;
 import megalodonte.base.async.Async;
 import megalodonte.base.components.Ref;
 import megalodonte.base.state.State;
-import megalodonte.components.v2.Input;
+import megalodonte.components.inputs.Input;
 import megalodonte.base.route.v2.ScreenContextInterface;
 import megalodonte.v2.ListState;
 import my_app.core.AppRoutes;
