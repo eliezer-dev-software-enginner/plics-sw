@@ -1836,3 +1836,6 @@ Os anúncios do portfólio declaram `audience` como array e publicam a lista em
 permitindo que o mesmo anúncio seja reutilizado por outros aplicativos sem
 duplicação na origem. `data-plics-ad` permanece como compatibilidade temporária
 com a página já publicada.
+
+`bannerType` assume `banner` quando ausente. Campanhas `square` são renderizadas
+como cards 1:1 preenchidos pela imagem, sem o bloco textual alterar a proporção.

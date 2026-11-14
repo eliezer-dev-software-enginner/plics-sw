@@ -107,6 +107,7 @@ final class HomeAdsPane implements AutoCloseable {
 
     private static Component card(LoadedAd loaded,boolean urgent) {
         AdsScraper.Ad ad=loaded.ad();
+        if(ad.bannerType().equals("square")) return squareCard(loaded);
         ImageView image=new ImageView(loaded.image());
         image.setFitWidth(urgent ? 360 : 260);
         image.setFitHeight(urgent ? 140 : 125);
@@ -126,6 +127,7 @@ final class HomeAdsPane implements AutoCloseable {
 
     private static Component featuredCard(LoadedAd loaded) {
         AdsScraper.Ad ad=loaded.ad();
+        if(ad.bannerType().equals("square")) return squareCard(loaded);
         ImageView image=new ImageView(loaded.image());
         image.setPreserveRatio(true);
         image.setFitHeight(300);
@@ -144,6 +146,21 @@ final class HomeAdsPane implements AutoCloseable {
         box.setStyle("-fx-background-color: #fff7ed; -fx-background-radius: 12; -fx-border-color: #f0b66b; -fx-border-radius: 12;");
         image.fitWidthProperty().bind(box.widthProperty().multiply(.55));
         return clickable(ad,box,true);
+    }
+
+    private static Component squareCard(LoadedAd loaded) {
+        ImageView image=new ImageView(loaded.image());
+        image.setFitWidth(300);
+        image.setFitHeight(300);
+        image.setPreserveRatio(true);
+        HBox box=new HBox(image);
+        box.setMinSize(300,300);
+        box.setPrefSize(300,300);
+        box.setMaxSize(300,300);
+        box.setAlignment(Pos.CENTER);
+        box.setStyle("-fx-background-color: white; -fx-background-radius: 12; " +
+                "-fx-border-color: #f0b66b; -fx-border-radius: 12;");
+        return clickable(loaded.ad(),box,false);
     }
 
     private static Component clickable(AdsScraper.Ad ad,HBox box,boolean fillWidth) {

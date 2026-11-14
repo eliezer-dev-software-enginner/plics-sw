@@ -15,7 +15,7 @@ final class AdsScraper {
     static final URI PAGE = URI.create("https://eliezer-dev.vercel.app/anuncios");
     private final HttpClient client;
 
-    record Ad(String title, URI image, boolean urgent, URI redirect) { }
+    record Ad(String title, URI image, boolean urgent, URI redirect, String bannerType) { }
 
     AdsScraper() {
         this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NORMAL).build());
@@ -37,18 +37,20 @@ final class AdsScraper {
         for(var element:document.select("span[data-audiences]")) {
             if(!supports(element.attr("data-audiences"),"plics-sw")) continue;
             add(ads,page,element.attr("data-title"),element.attr("data-image"),
-                    "true".equalsIgnoreCase(element.attr("data-urgent")),element.attr("data-redirect"));
+                    "true".equalsIgnoreCase(element.attr("data-urgent")),element.attr("data-redirect"),
+                    element.attr("data-banner-type"));
         }
         if(!ads.isEmpty()) return List.copyOf(ads);
         for(var element:document.select("span[data-plics-ad=true]")) {
             add(ads,page,element.attr("data-title"),element.attr("data-image"),
-                    "true".equalsIgnoreCase(element.attr("data-urgent")),element.attr("data-redirect"));
+                    "true".equalsIgnoreCase(element.attr("data-urgent")),element.attr("data-redirect"),
+                    element.attr("data-banner-type"));
         }
         if(!ads.isEmpty()) return List.copyOf(ads);
         // Older published page emits semicolon fields and React comment separators.
         for(var element:document.select("span")) {
             String[] fields=element.wholeText().split(";",-1);
-            if(fields.length>=4) add(ads,page,fields[0],fields[1],"true".equalsIgnoreCase(fields[2]),fields[3]);
+            if(fields.length>=4) add(ads,page,fields[0],fields[1],"true".equalsIgnoreCase(fields[2]),fields[3],"banner");
         }
         return List.copyOf(ads);
     }
@@ -59,7 +61,7 @@ final class AdsScraper {
                 .anyMatch(application::equals);
     }
 
-    private static void add(List<Ad> ads,URI page,String title,String image,boolean urgent,String redirect) {
+    private static void add(List<Ad> ads,URI page,String title,String image,boolean urgent,String redirect,String bannerType) {
         if(image==null || image.isBlank()) return;
         try {
             URI assetBase=page.resolve(page.getPath().endsWith("/") ? page.getPath() : page.getPath()+"/");
@@ -68,7 +70,8 @@ final class AdsScraper {
             URI destination=redirect==null || redirect.isBlank() || redirect.equals("undefined")
                     ? page.resolve("/") : page.resolve(redirect.strip());
             if(!safe(destination)) destination=page.resolve("/");
-            ads.add(new Ad(title==null || title.isBlank() ? "Conheça esta novidade" : title.strip(),imageUrl,urgent,destination));
+            ads.add(new Ad(title==null || title.isBlank() ? "Conheça esta novidade" : title.strip(),
+                    imageUrl,urgent,destination,"square".equalsIgnoreCase(bannerType) ? "square" : "banner"));
         } catch(IllegalArgumentException ignored) { }
     }
 
