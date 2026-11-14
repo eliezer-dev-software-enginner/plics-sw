@@ -34,6 +34,12 @@ final class AdsScraper {
     static List<Ad> parse(String html, URI page) {
         var ads=new ArrayList<Ad>();
         var document=Jsoup.parse(html,page.toString());
+        for(var element:document.select("span[data-audiences]")) {
+            if(!supports(element.attr("data-audiences"),"plics-sw")) continue;
+            add(ads,page,element.attr("data-title"),element.attr("data-image"),
+                    "true".equalsIgnoreCase(element.attr("data-urgent")),element.attr("data-redirect"));
+        }
+        if(!ads.isEmpty()) return List.copyOf(ads);
         for(var element:document.select("span[data-plics-ad=true]")) {
             add(ads,page,element.attr("data-title"),element.attr("data-image"),
                     "true".equalsIgnoreCase(element.attr("data-urgent")),element.attr("data-redirect"));
@@ -45,6 +51,12 @@ final class AdsScraper {
             if(fields.length>=4) add(ads,page,fields[0],fields[1],"true".equalsIgnoreCase(fields[2]),fields[3]);
         }
         return List.copyOf(ads);
+    }
+
+    private static boolean supports(String audiences,String application) {
+        return java.util.Arrays.stream(audiences.split(","))
+                .map(String::strip)
+                .anyMatch(application::equals);
     }
 
     private static void add(List<Ad> ads,URI page,String title,String image,boolean urgent,String redirect) {

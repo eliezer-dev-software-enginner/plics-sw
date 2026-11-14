@@ -1828,3 +1828,11 @@ Manter apenas nome do artefato, versão base, patch e classe principal no
 `gradle.properties`, pois são compartilhados pelo Gradle e pelo empacotador.
 Metadados exclusivos do instalador ficam em `packaging.toml`. A versão permanece
 centralizada no arquivo de propriedades e gerenciada por `scripts/bump_version.py`.
+
+## 2026-11-14: Campanhas compartilhadas por audiência
+
+Os anúncios do portfólio declaram `audience` como array e publicam a lista em
+`data-audiences`. O Plics seleciona somente campanhas que contenham `plics-sw`,
+permitindo que o mesmo anúncio seja reutilizado por outros aplicativos sem
+duplicação na origem. `data-plics-ad` permanece como compatibilidade temporária
+com a página já publicada.
