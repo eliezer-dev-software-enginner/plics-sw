@@ -5,6 +5,7 @@ import megalodonte.application.MegalodonteApp;
 import megalodonte.application.MegalodonteApplication;
 import megalodonte.base.theme.ThemeManager;
 import megalodonte.theme.DefaultTheme;
+import plics_sw_new.screens.home.HomeScreen;
 
 
 public final class Main {

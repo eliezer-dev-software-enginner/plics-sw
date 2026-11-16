@@ -12,10 +12,17 @@ javafx { version = "25.0.1"; modules("javafx.controls", "javafx.graphics") }
 dependencies {
 
     implementation("megalodonte:megalodonte-components:1.0.0-beta")
-
     implementation("megalodonte:megalodonte-base:1.0.0-beta")
-
     implementation("megalodonte:megalodonte-theme:1.0.0-beta")
+
+    //logs
+    implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("ch.qos.logback:logback-classic:1.5.18")
+
+    //json
+    implementation("com.google.code.gson:gson:2.11.0")
+    //soup
+    implementation("org.jsoup:jsoup:1.23.1")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
 
