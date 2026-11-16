@@ -1,0 +1,33 @@
+name: Package installers
+on:
+
+  workflow_dispatch:
+
+  push:
+
+    tags: ['v*']
+permissions:
+
+  contents: write
+concurrency:
+
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+  cancel-in-progress: false
+jobs:
+
+  package:
+
+    uses: eliezer-dev-software-enginner/megalodonte-packaging/.github/workflows/package-javafx.yml@main
+
+    with:
+
+      project-directory: .
+
+      artifact-name: plics-sw-new
+
+      dependencies: ''
+
+      release: true
+
+      smoke-test: true

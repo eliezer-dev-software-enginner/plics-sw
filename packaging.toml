@@ -1,0 +1,27 @@
+schema_version = 1
+
+
+[app]
+name = "plics-sw-new"
+main_class = "plics_sw_new.Main"
+icon_linux = "src/main/resources/icon.png"
+
+
+[build]
+mode = "distribution"
+tasks = ["installDist"]
+jar = "build/install/plics-sw-new/lib/plics-sw-new-{version}.jar"
+
+
+[javafx]
+version = "25.0.1"
+
+
+[runtime]
+modules = ["javafx.controls", "java.logging", "java.xml", "jdk.charsets"]
+exclude_natives = ["libjfxwebkit.so", "libjfxmedia.so", "jfxwebkit.dll"]
+
+
+[linux]
+package_name = "plics-sw-new"
+menu_group = "Office"
