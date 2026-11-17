@@ -22,11 +22,11 @@ final class HomeAdsPane implements AutoCloseable {
     private static final Logger log=LoggerFactory.getLogger(HomeAdsPane.class);
     private record LoadedAd(AdsScraper.Ad ad, Image image) { }
     private final VBox regularRoot=new VBox(18);
-    private final VBox urgentRoot=new VBox(18);
+    private final HBox urgentRoot=new HBox(18);
     private volatile boolean closed;
 
     HomeAdsPane() {
-        for(VBox root:List.of(regularRoot,urgentRoot)) {
+        for(var root:List.of(regularRoot,urgentRoot)) {
             root.setManaged(false);
             root.setVisible(false);
             root.setMaxWidth(Double.MAX_VALUE);
@@ -85,9 +85,16 @@ final class HomeAdsPane implements AutoCloseable {
         } else {
             VBox section=new VBox(12);
             section.getChildren().add(heading("Em destaque", "Confira esta oportunidade"));
-            if(ads.size()==1) section.getChildren().add(featuredCard(ads.getFirst()).getJavaFxNode());
-            else ads.forEach(ad -> section.getChildren().add(card(ad,true).getJavaFxNode()));
-            urgentRoot.getChildren().add(section);
+
+            if(ads.size()==1) {
+                section.getChildren().add(featuredCard(ads.getFirst()).getJavaFxNode());
+                urgentRoot.getChildren().add(section);
+            }
+            else {
+                urgentRoot.getChildren().add(section);
+                ads.forEach(ad -> urgentRoot.getChildren().add(card(ad, true).getJavaFxNode()));
+            }
+
             urgentRoot.setManaged(true);
             urgentRoot.setVisible(true);
         }

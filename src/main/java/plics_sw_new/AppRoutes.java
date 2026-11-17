@@ -1,0 +1,95 @@
+package plics_sw_new;
+
+import megalodonte.base.route.Route;
+import megalodonte.base.route.RouteProps;
+
+
+import java.util.Set;
+
+public class AppRoutes {
+    public enum Screens {
+        SPLASH,
+        WELCOME,
+        AUTH,
+        HOME,
+        PRODUTOS,
+        CATEGORIAS,
+        FORNECEDORES,
+        EMPRESA,
+        COMPRAS,
+        CLIENTES,
+        COMPRAS_A_PAGAR,
+        COMPRAS_A_RECEBER,
+        ORDEM_SERVICO,
+        RELATAR_ERRO,
+        SUGERIR_MELHORIA,
+        PDV,
+        VENDAS,
+        PEDIDOS,
+        PREFERENCIAS,
+        INFO_UPDATE,
+        RELATORIOS,
+        LOGS,
+        PEDIDO_DETAILS,
+        TERMOS_DE_USO,
+        ADD_OR_EDIT_PRODUTO,
+        ADD_OR_EDIT_CLIENTE,
+        ADD_OR_EDIT_CATEGORIAS,
+        ADD_OR_EDIT_COMPRAS,
+        ADD_OR_EDIT_COMPRAS_A_PAGAR,
+        ADD_OR_EDIT_COMPRAS_A_RECEBER,
+        ADD_OR_EDIT_VENDA_MERCADORIA,
+        ADD_OR_EDIT_FORNECEDOR,
+    }
+
+    final int MIN_WIDTH = 600;
+    final int MIN_HEIGHT = 500;
+
+    final int MEDIUM_WIDTH = 950;
+    final int MEDIUM_HEIGHT = 530;
+
+    final int MAX_WIDTH = 1200;
+    final int MAX_HEIGHT = 620;
+
+
+    public Set<Route> routes() {
+
+        return Set.of(
+                //new Route(Screens.SPLASH.name(), ctx -> new SplashScreen(),
+                       // new RouteProps(MIN_WIDTH, MIN_HEIGHT, Main.BASE_TITLE, false)),
+//                new Route(Screens.WELCOME.name(), WelcomeScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, Main.BASE_TITLE, true)),
+//                new Route(Screens.AUTH.name(), AuthScreen::new, new RouteProps(MEDIUM_WIDTH, MAX_HEIGHT, "Seja muito bem vindo", false)),
+//                new Route(Screens.HOME.name(), HomeScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, Main.BASE_TITLE, true)),
+//                //new Route("cad-produtos/${id}",ctx-> new ProdutoScreen(ctx), new Router.RouteProps(1500, 900,"Cadastro de produtos", false)),
+//                new Route(Screens.PRODUTOS.name(), ProdutoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Cadastro de produtos", true)),
+//                //ok
+//                new Route(Screens.CATEGORIAS.name(), CategoriaScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Gerenciamento de categorias", false)),
+//                //ok
+//                new Route(Screens.FORNECEDORES.name(), FornecedorScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de Fornecedores", true)),
+//
+//                new Route(Screens.EMPRESA.name(), CadastroEmpresaScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Informações da empresa", false)),
+//                //ok
+//                new Route(Screens.CLIENTES.name(), ClienteScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de clientes", true)),
+//                //ok
+//                new Route(Screens.RELATAR_ERRO.name(), RelatarErroScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Relatar erros", true)),
+//                new Route(Screens.SUGERIR_MELHORIA.name(), SugerirMelhoriaScreen::new, new RouteProps(MIN_WIDTH, MIN_HEIGHT, "Detalhes de melhoria ou funcionalidades a serem sugeridas", true)),
+//                new Route(Screens.PDV.name(), PDVScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Seu caixa está aberto", true)),
+//                new Route(Screens.COMPRAS_A_RECEBER.name(), ContasAReceberScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerenciamento de contas a receber", true)),
+//                new Route(Screens.VENDAS.name(), VendaMercadoriaScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Gerencie sua venda de mercadorias", true)),
+//                new Route(Screens.PEDIDOS.name(), PedidosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Analise suas vendas feitas no PDV", true)),
+//                new Route(Screens.PREFERENCIAS.name(), PreferenciasScreen::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Alteração de preferências do comportamento do aplicativo", true)),
+//                new Route(Screens.INFO_UPDATE.name(), InfoUpdateScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Atualizações do aplicativo", false)),
+//                new Route(Screens.RELATORIOS.name(), RelatoriosScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Relatórios financeiros", true)),
+//                new Route(Screens.LOGS.name(), LogsScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Logs da aplicação", true)),
+//                new Route(Screens.PEDIDO_DETAILS.name() + "/${id}", PedidoDetails::new, new RouteProps(MEDIUM_WIDTH, MAX_HEIGHT, "Detalhes do pedido", true)),
+//                new Route(Screens.TERMOS_DE_USO.name(), TermoUsoScreen::new, new RouteProps(MAX_WIDTH, MAX_HEIGHT, "Termos de uso e relacionados", false)),
+//                new Route(Screens.ADD_OR_EDIT_PRODUTO.name()+"/${id}/${type}", AddOrEditProduto::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar produto", true)),
+//                new Route(Screens.ADD_OR_EDIT_CATEGORIAS.name()+"/${id}/${type}", AddOrEditCategorias::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar categoria", true)),
+//                new Route(Screens.ADD_OR_EDIT_CLIENTE.name()+"/${id}/${type}", AddOrEditClientes::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar clientes", true)),
+//                new Route(Screens.ADD_OR_EDIT_COMPRAS_A_RECEBER.name()+"/${id}/${type}", ScrenAddOrEditContasAReceber::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar conta a receber", true)),
+//                new Route(Screens.ADD_OR_EDIT_FORNECEDOR.name()+"/${id}/${type}", ScreenAddOrEditFornecedor::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar fornecedor", true)),
+//                new Route(Screens.ADD_OR_EDIT_VENDA_MERCADORIA.name()+"/${id}/${type}", ScreenAddOrEditVenda::new, new RouteProps(MEDIUM_WIDTH, MEDIUM_HEIGHT, "Gerenciar venda de mercadoria", true))
+
+        );
+    }
+}

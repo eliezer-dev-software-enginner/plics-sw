@@ -14,6 +14,7 @@ dependencies {
     implementation("megalodonte:megalodonte-components:1.0.0-beta")
     implementation("megalodonte:megalodonte-base:1.0.0-beta")
     implementation("megalodonte:megalodonte-theme:1.0.0-beta")
+    implementation("megalodonte:megalodonte-reactivity:1.0.0-beta")
 
     //logs
     implementation("org.slf4j:slf4j-api:2.0.17")
@@ -23,6 +24,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
     //soup
     implementation("org.jsoup:jsoup:1.23.1")
+
+    //ikonly
+    implementation("org.kordamp.ikonli:ikonli-core:12.4.0")
+    implementation("org.kordamp.ikonli:ikonli-javafx:12.4.0")
+    implementation("org.kordamp.ikonli:ikonli-antdesignicons-pack:12.4.0")
+    implementation("org.kordamp.ikonli:ikonli-entypo-pack:12.4.0")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
 

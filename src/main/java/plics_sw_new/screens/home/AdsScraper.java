@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Reads the public ad markup without executing scripts from the website. */
-final class AdsScraper {
+public final class AdsScraper {
     static final URI PAGE = URI.create("https://eliezer-dev.vercel.app/anuncios");
     private final HttpClient client;
 
-    record Ad(String title, URI image, boolean urgent, URI redirect, String bannerType) { }
+    public record Ad(String title, URI image, boolean urgent, URI redirect, String bannerType) { }
 
     AdsScraper() {
         this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NORMAL).build());
